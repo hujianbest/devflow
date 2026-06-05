@@ -25,6 +25,12 @@ description: 当 devflow-ar-design-review 已通过，需要把已批准的 AR �
 - 测试需要独立有效性审查：使用 `devflow-test-review`。
 - 代码需要独立评审：使用 `devflow-code-review`。
 
+## Entry Gate
+
+- AR 实现设计已通过 `devflow-ar-design-review` 且**含测试设计章节**（缺章节 → 回 `devflow-ar-design`，Hard Stop #6）
+- 内部 task queue preflight 必须产出完整 tasks 与唯一 `Current Active Task`（否则 `reroute=true`，Hard Stop #7/#8）
+- 本 skill 是**唯一的 implementer subagent 派发者**（`references/devflow-conventions.md` §10）
+
 ## 硬性门禁
 
 - `devflow-ar-design-review` 通过前不得开始。
@@ -180,6 +186,12 @@ Task queue preflight 检查：
 - traceability 与 progress 已更新。
 - 下一步：`devflow-test-review`。
 
+## Exit Handoff
+
+- 成功 → `devflow-test-review`
+- 需改设计 → `devflow-ar-design`；task queue 无法唯一确定或属 route/profile/scope blocker → `reroute=true`（→ `devflow-router`）
+- 依据 `references/devflow-conventions.md` §8 转移表
+
 ## 风险信号
 
 - task queue preflight 通过前就开始实现。
@@ -231,64 +243,9 @@ TDD 实现阶段最常见的偷懒话术与反驳。命中任意一条 → 停�
 
 本 skill 使用的每个 test design case 需要包含：case id、requirement row 或 design anchor、behavior under test、preconditions、inputs/stimuli、expected output 或 observable effect、mock/stub/simulation boundary、verification command 或 evidence path、embedded risk covered。DevFlow 不使用单独的 `test-design.md`；测试设计位于 AR design 中。
 
-## 本地 DevFlow 约定
+## 约定
 
-本节由当前 skill 自己维护。不要加载共享约定文件；项目 `AGENTS.md` 可以覆盖等价路径或模板。
-
-### 产物布局
-
-默认产物布局来自 `docs/principles/03 artifact-layout.md`。项目 `AGENTS.md` 可以覆盖等价路径；没有覆盖时，本 skill 必须使用以下组件仓库布局：
-
-```text
-<component-repo>/
-  docs/
-    component-design.md           # 长期组件实现设计
-    ar-designs/                   # 长期 AR 实现设计
-      AR<id>-<slug>.md
-    interfaces.md                 # 可选；仅团队启用时读取 / 同步
-    dependencies.md               # 可选；仅团队启用时读取 / 同步
-    runtime-behavior.md           # 可选；仅团队启用时读取 / 同步
-
-  features/
-    AR<id>-<slug>/                # 单个 AR 的过程产物
-    DTS<id>-<slug>/               # 单个缺陷 / 问题修复的过程产物
-    CHANGE<id>-<slug>/            # 单个轻量变更的过程产物
-```
-
-`docs/` 存放随代码提交的长期组件资产。`features/<id>/` 存放单个 work item 的过程产物：按需包含 `README.md`、`progress.md`、`requirement.md`、`ar-design-draft.md`、`tasks.md`、`task-board.md`、`traceability.md`、`implementation-log.md`、`reviews/`、`evidence/`、`completion.md`、`closeout.md`。
-
-Read-on-presence 规则：
-
-- 必需长期资产缺失时阻塞：component-impact 工作需要 `docs/component-design.md`；implementation closeout 前需要 `docs/ar-designs/AR<id>-<slug>.md`。
-- 可选资产（`docs/interfaces.md`、`docs/dependencies.md`、`docs/runtime-behavior.md`）仅在项目启用时读取 / 同步。缺失的可选资产记录为 `N/A (project optional asset not enabled)`，不视为阻塞。
-- 过程目录保留在 `features/` 下；不要把已关闭 work item 移到 `features/archived/`，否则会破坏追溯链接。
-
-### Progress 字段
-
-本 skill 读写 `features/<id>/progress.md` 时使用 canonical progress 字段：
-
-- Work Item Type
-- Work Item ID
-- Owning Component / Owning Subsystem
-- Workflow Profile
-- Execution Mode
-- Current Stage
-- Pending Reviews And Gates
-- Task Plan Path
-- Task Board Path
-- Current Active Task
-- Implementer Dispatch Status
-- Implementer Context Pack
-- Implementation Report
-- Next Action Or Recommended Skill
-- Blockers
-- Last Updated
-
-### Handoff 字段
-
-返回 `current_node`、`work_item_id`、`owning_component`、`artifact_paths`、`evidence_summary`、`traceability_links`、`blockers`、`next_action_or_recommended_skill`、`reroute_via_router`。
-
-不要把 `next_action_or_recommended_skill` 设为 `using-devflow` 或自由文本。
+本 skill 遵循 `references/devflow-conventions.md`（产物布局、progress 字段、handoff 字段、profile、canonical 节点、转移表、Hard Stops、reviewer 派发）；项目 `AGENTS.md` 可覆盖等价路径与模板。
 
 ## 支撑参考
 
