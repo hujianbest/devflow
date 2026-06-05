@@ -7,7 +7,7 @@ description: 当用户要求继续或推进且必须根据工件证据决定标�
 
 DevFlow workflow family 的 **runtime authority**。基于工件证据决定：Workflow Profile、Execution Mode、canonical `devflow-*` 节点、是否进入 component-impact 或 hotfix 支线、review subagent 派发，以及 review / gate 后的恢复编排。
 
-`using-devflow` 负责 public entry 与意图分流；本 skill 负责 runtime routing 与恢复。
+`using-devflow` 负责 public entry、总指导原则与 skill discovery；本 skill 负责 runtime routing 与恢复。
 
 devflow 默认以单 AR / 单 DTS 为 work item 边界；实现子街区在 AR 设计通过后维护 work item 内部的 `tasks.md` / `task-board.md` 执行索引。本 skill 不替模块架构师、开发负责人、开发人员拍板任何专业判断；只负责把工件证据转化为唯一下一步。
 

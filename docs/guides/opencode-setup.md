@@ -94,7 +94,7 @@ The user does **not** invoke skills explicitly. There are no `/spec`, `/build`, 
 
 ### 3. Lifecycle mapping
 
-The development lifecycle is encoded implicitly through `using-devflow` + `devflow-router`:
+The development lifecycle is discovered through `using-devflow` and recovered at runtime through `devflow-router`:
 
 ```
 CLARIFY    devflow-specify, devflow-spec-review
@@ -138,7 +138,7 @@ If your agent skips any of the above, fix the agent — do not relax the rule.
 
 ## Limitations
 
-- **No native slash commands.** Skills are invoked automatically via natural language and the `skill` tool. If your team prefers explicit commands, you can still wrap them as OpenCode `/commands` that simply forward an instruction like "Use DevFlow to start spec review on the current work item", but the routing is still done by `using-devflow` / `devflow-router`.
+- **No native slash commands.** Skills are invoked automatically via natural language and the `skill` tool. If your team prefers explicit commands, you can still wrap them as OpenCode `/commands` that simply forward an instruction like "Use DevFlow to start spec review on the current work item", but runtime routing is still done by `devflow-router`.
 - **Skill invocation depends on model compliance.** A weak model may try to skip review or implement past a hard gate. The `AGENTS.md` rules and per-skill `## 反向理由化` tables exist precisely to push back on this.
 - **No marketplace install.** Use `git clone`, `git subtree`, or a workspace symlink.
 

@@ -38,7 +38,7 @@ description: 当团队已接受 SR / AR / DTS / CHANGE 输入，需要澄清成�
 - IR / SR / AR 追溯关系冲突 → 阻塞，回需求负责人
 - 不把待决问题只藏在正文里，必须显式列在「Open Questions」章节
 - AR / DTS / CHANGE 若出现 `IFR` 或 `Component Impact = interface`，必须维护 `Interface Contract Candidates`；不得只写“影响接口”而不给设计可消费的契约边界
-- 未经 `using-devflow` / `devflow-router` 入口判断 → 先回 router
+- 未经 `using-devflow` 入口发现或 `devflow-router` runtime recovery → 先回 router
 
 ## 对象契约
 

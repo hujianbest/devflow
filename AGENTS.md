@@ -56,8 +56,8 @@ OpenCode automatically discovers every `skills/*/SKILL.md` and exposes them via 
 
 For any non-trivial request, the **first** skill to load is `using-devflow`. From there:
 
-- If `using-devflow` returns `direct invoke` with a single canonical target and stable artifact evidence → enter that target leaf in the same turn.
-- If `using-devflow` returns `route-first`, or you are continuing an in-flight work item, or a review / gate just produced a verdict → load `devflow-router` and let it pick the canonical next node from artifacts.
+- If the request is an explicit authoring / execution request for one canonical leaf and no runtime state decision is needed → invoke that leaf in the same turn.
+- If you are continuing an in-flight work item, deciding profile / execution mode, consuming a review or gate verdict, recovering from artifacts, handling evidence conflicts, or dispatching reviewers → load `devflow-router` and let it pick the canonical next node from artifacts.
 
 ---
 

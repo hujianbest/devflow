@@ -14,7 +14,7 @@ DevFlow is intentionally narrower than an idea-to-product workflow. It does not 
 
 ## Command Intents
 
-OpenCode v1 uses natural language plus automatic skill discovery. The `commands/` directory documents slash-style intents that teams can wire into their client, but every command is a bias, not a bypass: `using-devflow` first applies the family-level DevFlow principles and discovery rules, and `devflow-router` still checks repository evidence before choosing the next canonical node.
+OpenCode v1 uses natural language plus automatic skill discovery. The `commands/` directory documents slash-style intents that teams can wire into their client, but every command is a bias, not a bypass: `using-devflow` first applies the family-level DevFlow principles and discovery rules, while `devflow-router` owns repository-evidence checks and runtime next-node decisions.
 
 | What you're doing | Command intent | Key principle |
 |---|---|---|
@@ -112,7 +112,7 @@ DevFlow ships one public entry skill plus 13 canonical `devflow-*` runtime nodes
 
 | Skill | What it does | Use when |
 |---|---|---|
-| [`using-devflow`](skills/using-devflow/SKILL.md) | Public entry shell for direct-invoke vs route-first | Starting a session or expressing a high-level DevFlow intent |
+| [`using-devflow`](skills/using-devflow/SKILL.md) | Public entry principles and DevFlow skill discovery | Starting a session or expressing a high-level DevFlow intent |
 | [`devflow-router`](skills/devflow-router/SKILL.md) | Evidence-based runtime router and recovery controller | Continuing from artifacts or consuming review / gate outcomes |
 
 ### Define
