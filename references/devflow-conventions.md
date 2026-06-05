@@ -187,7 +187,9 @@ reroute                          # boolean：true=无法唯一映射，停下交
 
 ## 10. Reviewer 派发（角色分离）
 
-DevFlow 2.0 的评审仍是**独立 reviewer subagent**，由**编排者**（用户 / 斜杠命令 / 会话控制器）按「fan-out + merge」模式派发——`/devflow-ship` 可并发派发 `devflow-test-review` 与 `devflow-code-review` 再汇总。`devflow-router` 不再是唯一派发者。
+DevFlow 2.0 的评审仍是**独立 reviewer subagent**，但**派发者从「仅 `devflow-router`」改为「编排者」**（用户 / 斜杠命令 / 会话控制器）；可选的 `devflow-router` 在仲裁疑难时也可派发。
+
+关于「fan-out + merge」：该模式只适用于**对同一工件的相互独立的评审视角**。DevFlow 的跨节点评审链 `devflow-test-review → devflow-code-review` 受门禁约束（Hard Stop #9：未过 test-review 不得进 code-review），因此**仍顺序执行，不并行 fan-out**。`/devflow-build` 顺序派发 test-review 再派发 code-review；`/devflow-ship` 只做 completion-gate → finalize，不再重复派发评审。
 
 不变量：
 

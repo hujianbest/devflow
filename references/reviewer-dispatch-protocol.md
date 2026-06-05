@@ -2,7 +2,7 @@
 
 > DevFlow 2.0 共享参考。规定 review 节点如何派发独立 reviewer subagent，以及 reviewer 返回结果的契约。
 >
-> **派发者（2.0）**：评审由**编排者**（用户 / 斜杠命令如 `/devflow-ship` / 会话控制器）按「fan-out + merge」模式派发；可选的 `devflow-router` 在仲裁疑难情形时也可派发。作者 skill 不评审自己，也不派发评审自己的 reviewer。
+> **派发者（2.0）**：评审由**编排者**（用户 / 斜杠命令如 `/devflow-build` / 会话控制器）派发独立 reviewer subagent；可选的 `devflow-router` 在仲裁疑难情形时也可派发。作者 skill 不评审自己，也不派发评审自己的 reviewer。「fan-out + merge」仅用于对同一工件的相互独立的评审视角；DevFlow 的 `test-review → code-review` 受门禁约束顺序执行，不并行。
 
 ## 角色边界
 

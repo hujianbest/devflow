@@ -37,7 +37,7 @@ This command orchestrates the **DevFlow ship (收尾)** phase.
 
 1. 读 `features/<id>/progress.md`、`reviews/`、`evidence/`、`completion.md`（如有）
    - 实现子街区且 `devflow-code-review` 未通过 → 回 `/devflow-build`
-   - 工件证据冲突 → 回 `/devflow` 走 router
+   - 工件证据冲突 → 回 `/devflow`（`using-devflow` 发现 / 证据自路由；疑难交可选的 `devflow-router` 仲裁）
 2. 实现子街区路径：
    - a. 进入 `devflow-completion-gate`，严格遵循其 SKILL.md `工作流`，输出 `PASS` / `HOLD` / `FAIL`
    - b. `PASS` → 进入 `devflow-finalize`

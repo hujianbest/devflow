@@ -4,16 +4,16 @@ DevFlow 的两个独立子代理 persona。每个 persona 是一个 system-promp
 
 | Persona | 派发者 | 角色定位 | 包装的 canonical skills |
 |---|---|---|---|
-| [devflow-reviewer](devflow-reviewer.md) | 仅 `devflow-router` | 独立评审子代理（5 个评审节点共用，按 `target_skill` 参数化） | `devflow-spec-review`、`devflow-component-design-review`、`devflow-ar-design-review`、`devflow-test-review`、`devflow-code-review` |
+| [devflow-reviewer](devflow-reviewer.md) | 编排者（阶段命令 / 会话控制器，或仲裁时的 `devflow-router`） | 独立评审子代理（5 个评审节点共用，按 `target_skill` 参数化） | `devflow-spec-review`、`devflow-component-design-review`、`devflow-ar-design-review`、`devflow-test-review`、`devflow-code-review` |
 | [devflow-implementer](devflow-implementer.md) | 仅 `devflow-tdd-implementation` | TDD 实现子代理（每次 next-ready task 一次新派发） | 在 `devflow-tdd-implementation` 内部执行 RED-GREEN-REFACTOR |
 
 ## Persona / Skill / Command 三者关系
 
 | 层 | 它是什么 | 例 | 编排角色 |
 |---|---|---|---|
-| Skill | 工作流（步骤 + 退出准则） | `devflow-ar-design`、`devflow-spec-review` | *How*：在 command 或 persona 内部被严格遵循 |
-| Persona | 角色视角 + 输出契约的子代理 | `devflow-reviewer`、`devflow-implementer` | *Who*：被 router 或 tdd-implementation 派发 |
-| Command | 用户视角的工作流阶段入口 | `/devflow-specify`、`/devflow-build` | *When*：组合多个 skill 推进一个阶段 |
+| Skill | 工作流（步骤 + 退出准则，含 Entry Gate / Exit Handoff） | `devflow-ar-design`、`devflow-spec-review` | *How*：在 command 或 persona 内部被严格遵循 |
+| Persona | 角色视角 + 输出契约的子代理 | `devflow-reviewer`、`devflow-implementer` | *Who*：被编排者（命令 / 会话控制器，或仲裁时的 router）/ tdd-implementation 派发 |
+| Command | 用户视角的工作流阶段入口，且作为 reviewer 的派发者 | `/devflow-specify`、`/devflow-build` | *When*：组合多个 skill 推进一个阶段 |
 
 **Personas 不调用其它 personas**。这是 AGENTS.md §3 / §6 的硬约束，也是 OpenCode / Claude Code 平台对子代理的硬约束（"subagents cannot spawn other subagents"）。任何跨视角发现都写进 findings，由派发者（router 或 tdd-implementation）决定下一步。
 
@@ -21,7 +21,7 @@ DevFlow 的两个独立子代理 persona。每个 persona 是一个 system-promp
 
 ### 评审子代理（`devflow-reviewer`）
 
-`devflow-router` 构造 Review Request Pack 后派发独立子代理：
+编排者（阶段命令如 `/devflow-build` / 会话控制器，或仲裁时的 `devflow-router`）构造 Review Request Pack 后派发独立子代理。`test-review → code-review` 受门禁约束顺序派发，不并行：
 
 ```text
 target_skill        ∈ {devflow-spec-review | devflow-component-design-review |
@@ -58,13 +58,13 @@ expected_return_contract  result ∈ {DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT 
 
 ```
 要审查某个 devflow 工件？
-└── 是 → 由 devflow-router 派发 devflow-reviewer（按 target_skill 路由）
+└── 是 → 由编排者（阶段命令 / 会话控制器，或仲裁时的 router）派发 devflow-reviewer（按 target_skill 路由）
 
 要按一个 task 推进 TDD？
 └── 是 → 由 devflow-tdd-implementation 派发 devflow-implementer
 
 要在不同 persona 之间转发或合并视角？
-└── 禁止。回到 devflow-router 由其消费 verdict 并决定下一步。
+└── 禁止。把跨视角发现写进 findings / concerns；由编排者按 Exit Handoff / dispatch 协议消费 verdict，疑难交 devflow-router 仲裁。
 ```
 
 ## Personas 的硬约束

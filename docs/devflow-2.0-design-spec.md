@@ -253,7 +253,7 @@ SKILL.md
 | 决定 canonical 下一节点 | 下沉到每个 skill 的 **Exit Handoff**：skill 完成后按自己的转移表声明唯一 next skill；冲突/不唯一时标 `reroute=true` 并停下交还编排者 |
 | 决定 Workflow Profile | 下沉到 **`devflow-specify` 的 Profile 判定步** + `references/devflow-conventions.md` 的 profile 规则；profile 写入 `progress.md` 后即为单一真相，后续 skill 只读不改（升级仍单向，由 `devflow-specify`/`devflow-problem-fix` 在重判时执行） |
 | 决定 Execution Mode | 下沉到 conventions：归一化顺序固定（用户显式 → AGENTS.md 默认 → 已有值 → interactive），任何 skill 读 `progress.md` 即可 |
-| 派发 reviewer subagent | 上移到 **编排层（用户/命令/会话控制器）**，按 `agent-skills` 的 **fan-out + merge** 模式；`/devflow-ship` 可并发派发 test-review/code-review 再汇总 |
+| 派发 reviewer subagent | 上移到 **编排层（用户/命令/会话控制器）**；`fan-out + merge` 仅用于对同一工件的独立视角，DevFlow 的 `test-review → code-review` 受门禁约束**仍顺序执行**（`/devflow-build` 顺序派发两者） |
 | review/gate 后恢复编排 | 由 **证据自路由** 承担：任意时刻读 `progress.md` + 最新 `reviews/` 即可恢复；无法唯一映射时回到 `using-devflow` 发现树 + 提一个判别问题 |
 
 > **保留一个「瘦路由」选项**：对确实存在「证据冲突 / 多个 in_progress task / 跨子街区切换嫌疑」的疑难情形，2.0 仍可保留一个**可选的** `devflow-router` 作为「疑难仲裁 skill」，但它**不再是默认必经节点**，只在 `reroute=true` 时被显式调用。默认 happy path 不经过它。这与 `agent-skills` 「不建 router persona 作为默认中枢」一致，又给 DevFlow 的复杂工作项留了仲裁出口。
@@ -331,7 +331,7 @@ devflow-problem-fix
 | 维度 | 1.0 | 2.0 |
 |---|---|---|
 | reviewer 是否独立 subagent | 是 | **是（不变）** |
-| 谁派发 reviewer | 只有 `devflow-router` | **编排者（用户/命令/会话控制器），按 fan-out+merge** |
+| 谁派发 reviewer | 只有 `devflow-router` | **编排者（用户/命令/会话控制器）；可选 router 仲裁时也可** |
 | reviewer 是否改生产代码 | 否 | **否（不变）** |
 | implementer 派发者 | 只有 `devflow-tdd-implementation` | **只有 `devflow-tdd-implementation`（不变）** |
 | 作者自审 | 禁止 | **禁止（不变）** |
@@ -453,7 +453,7 @@ DevFlow 2.0 重写完成，当且仅当：
 | skill 关系 | FSM 节点，必经 router | 可独立调用、按名互引的 peer | 「multiple skills can apply」 |
 | 约定 | 14 份重复样板 | 单一真相源（conventions + AGENTS.md） | 「不复制，引用」+ 渐进披露 |
 | 体量 | 259–366 行/个 | < 250 行/个，meta < 120 | 「< 500 行 + token-conscious」 |
-| reviewer 派发 | 仅 router | 编排者 fan-out+merge | `/ship` 并行 fan-out |
+| reviewer 派发 | 仅 router | 编排者派发（gated 链仍顺序） | dispatcher 上移到命令层 |
 | 工具 | OpenCode-only | 纯 Markdown + 适配层 | 多工具可移植 |
 | 工程纪律 | 优秀 | **完全保留** | DevFlow 自有护城河 |
 
