@@ -133,4 +133,4 @@ DevFlow 面向 C/C++ 嵌入式，下列维度是**设计时的一等约束**，�
 
 ## DevFlow 约定
 
-本 skill 遵循 `references/devflow-conventions.md`（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。本 skill 是 craft 透镜，**不**写 progress/handoff，**不**产生 verdict。
+本 skill 遵循仓库根目录的 `references/devflow-conventions.md`（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。本 skill 是 craft 透镜，**不**写 progress/handoff，**不**产生 verdict。

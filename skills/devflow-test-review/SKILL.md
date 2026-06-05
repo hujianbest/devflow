@@ -56,6 +56,10 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 - **Traceability Check**: 每个用例是否回指 requirement row + AR 设计 Test Design Case ID
 - **Separation Of Author / Reviewer**: reviewer 与 implementer 必须不同角色 / subagent
 
+## 质量透镜（Craft）
+
+评审测试有效性时，以 `devflow-test-craft` 作为「好测试」的判别标尺（测试金字塔、测状态不测交互、DAMP over DRY、mock 克制、覆盖类型完整性），与本 skill 的有效性判据互补。透镜只提供判别标尺，verdict 仍由本评审节点唯一裁决；reviewer 不改测试。
+
 ## 工作流
 
 ### 1. 建立证据基线
@@ -195,71 +199,9 @@ reroute_via_router: true | false
 
 检查测试时，把 evidence 映射到 AR design cases 与 embedded risks：unit、integration/simulation、build、static analysis 以及任何 regression evidence。每条 evidence 必须包含 command、environment/config、result、freshness anchor。
 
-## 本地 DevFlow 约定
+## DevFlow 约定
 
-本节由当前 skill 自己维护。不要加载共享约定文件；项目 `AGENTS.md` 可以覆盖等价路径或模板。
-
-### 产物布局
-
-默认产物布局来自 `docs/principles/03 artifact-layout.md`。项目 `AGENTS.md` 可以覆盖等价路径；没有覆盖时，本 skill 必须使用以下组件仓库布局：
-
-```text
-<component-repo>/
-  docs/
-    component-design.md           # 长期组件实现设计
-    ar-designs/                   # 长期 AR 实现设计
-      AR<id>-<slug>.md
-    interfaces.md                 # 可选；仅团队启用时读取 / 同步
-    dependencies.md               # 可选；仅团队启用时读取 / 同步
-    runtime-behavior.md           # 可选；仅团队启用时读取 / 同步
-
-  features/
-    AR<id>-<slug>/                # 单个 AR 的过程产物
-    DTS<id>-<slug>/               # 单个缺陷 / 问题修复的过程产物
-    CHANGE<id>-<slug>/            # 单个轻量变更的过程产物
-```
-
-`docs/` 存放随代码提交的长期组件资产。`features/<id>/` 存放单个 work item 的过程产物：按需包含 `README.md`、`progress.md`、`requirement.md`、`ar-design-draft.md`、`tasks.md`、`task-board.md`、`traceability.md`、`implementation-log.md`、`reviews/`、`evidence/`、`completion.md`、`closeout.md`。
-
-Read-on-presence 规则：
-
-- 必需长期资产缺失时阻塞：component-impact 工作需要 `docs/component-design.md`；implementation closeout 前需要 `docs/ar-designs/AR<id>-<slug>.md`。
-- 可选资产（`docs/interfaces.md`、`docs/dependencies.md`、`docs/runtime-behavior.md`）仅在项目启用时读取 / 同步。缺失的可选资产记录为 `N/A (project optional asset not enabled)`，不视为阻塞。
-- 过程目录保留在 `features/` 下；不要把已关闭 work item 移到 `features/archived/`，否则会破坏追溯链接。
-
-### Progress 字段
-
-本 skill 读写 `features/<id>/progress.md` 时使用 canonical progress 字段：
-
-- Work Item Type: SR / AR / DTS / CHANGE
-- Work Item ID: SR1234、AR12345、DTS67890 或 CHANGE id
-- Owning Component: AR / DTS / CHANGE 必填
-- Owning Subsystem: SR 必填
-- Workflow Profile: requirement-analysis / standard / component-impact / hotfix / lightweight
-- Execution Mode: interactive / auto
-- Current Stage: 当前 canonical devflow node
-- Pending Reviews And Gates: 待处理 review / gate 列表
-- Next Action Or Recommended Skill: 仅允许一个 canonical node
-- Blockers: open blockers
-- Last Updated: timestamp
-
-### Handoff 字段
-
-返回结构化 handoff，并使用本 skill 已知的字段：
-
-- current_node
-- work_item_id
-- owning_component or owning_subsystem
-- result or verdict
-- artifact_paths
-- record_path, when a review / gate / verification record exists
-- evidence_summary
-- traceability_links
-- blockers
-- next_action_or_recommended_skill
-- reroute_via_router
-
-不要把 `next_action_or_recommended_skill` 设为 `using-devflow` 或自由文本。
+本 skill 遵循仓库根目录的 `references/devflow-conventions.md`（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。
 
 ### Test Check 记录
 

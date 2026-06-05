@@ -99,6 +99,15 @@ implementer subagent 返回以下状态之一：
 
 implementer 的 self-review 有价值，但永远不能替代 `devflow-test-review` 或 `devflow-code-review`。
 
+## 质量透镜（Craft）
+
+实现 Current Active Task 时，在工作流内部叠加两个质量透镜：
+
+- 步骤 6「从测试设计落地测试」与步骤 7「RED」→ 叠加 `devflow-test-craft`（决定写什么用例、怎么断言：测状态不测交互、DAMP over DRY、mock 克制、覆盖类型）。
+- 步骤 8「GREEN」与步骤 9「REFACTOR」→ 叠加 `devflow-coding-craft`（Rule 0 简单性、薄垂直切片、范围纪律、可读性与命名、嵌入式防御性编码）。
+
+透镜只提升测试与代码质量，**不放宽** fail-first RED、单 active task、Two Hats 或 fresh evidence 纪律，也不替代独立 `devflow-test-review` / `devflow-code-review`；它不写 progress/handoff、不产生 verdict。
+
 ## 工作流
 
 ### 1. 对齐输入与 work item
@@ -231,64 +240,9 @@ TDD 实现阶段最常见的偷懒话术与反驳。命中任意一条 → 停�
 
 本 skill 使用的每个 test design case 需要包含：case id、requirement row 或 design anchor、behavior under test、preconditions、inputs/stimuli、expected output 或 observable effect、mock/stub/simulation boundary、verification command 或 evidence path、embedded risk covered。DevFlow 不使用单独的 `test-design.md`；测试设计位于 AR design 中。
 
-## 本地 DevFlow 约定
+## DevFlow 约定
 
-本节由当前 skill 自己维护。不要加载共享约定文件；项目 `AGENTS.md` 可以覆盖等价路径或模板。
-
-### 产物布局
-
-默认产物布局来自 `docs/principles/03 artifact-layout.md`。项目 `AGENTS.md` 可以覆盖等价路径；没有覆盖时，本 skill 必须使用以下组件仓库布局：
-
-```text
-<component-repo>/
-  docs/
-    component-design.md           # 长期组件实现设计
-    ar-designs/                   # 长期 AR 实现设计
-      AR<id>-<slug>.md
-    interfaces.md                 # 可选；仅团队启用时读取 / 同步
-    dependencies.md               # 可选；仅团队启用时读取 / 同步
-    runtime-behavior.md           # 可选；仅团队启用时读取 / 同步
-
-  features/
-    AR<id>-<slug>/                # 单个 AR 的过程产物
-    DTS<id>-<slug>/               # 单个缺陷 / 问题修复的过程产物
-    CHANGE<id>-<slug>/            # 单个轻量变更的过程产物
-```
-
-`docs/` 存放随代码提交的长期组件资产。`features/<id>/` 存放单个 work item 的过程产物：按需包含 `README.md`、`progress.md`、`requirement.md`、`ar-design-draft.md`、`tasks.md`、`task-board.md`、`traceability.md`、`implementation-log.md`、`reviews/`、`evidence/`、`completion.md`、`closeout.md`。
-
-Read-on-presence 规则：
-
-- 必需长期资产缺失时阻塞：component-impact 工作需要 `docs/component-design.md`；implementation closeout 前需要 `docs/ar-designs/AR<id>-<slug>.md`。
-- 可选资产（`docs/interfaces.md`、`docs/dependencies.md`、`docs/runtime-behavior.md`）仅在项目启用时读取 / 同步。缺失的可选资产记录为 `N/A (project optional asset not enabled)`，不视为阻塞。
-- 过程目录保留在 `features/` 下；不要把已关闭 work item 移到 `features/archived/`，否则会破坏追溯链接。
-
-### Progress 字段
-
-本 skill 读写 `features/<id>/progress.md` 时使用 canonical progress 字段：
-
-- Work Item Type
-- Work Item ID
-- Owning Component / Owning Subsystem
-- Workflow Profile
-- Execution Mode
-- Current Stage
-- Pending Reviews And Gates
-- Task Plan Path
-- Task Board Path
-- Current Active Task
-- Implementer Dispatch Status
-- Implementer Context Pack
-- Implementation Report
-- Next Action Or Recommended Skill
-- Blockers
-- Last Updated
-
-### Handoff 字段
-
-返回 `current_node`、`work_item_id`、`owning_component`、`artifact_paths`、`evidence_summary`、`traceability_links`、`blockers`、`next_action_or_recommended_skill`、`reroute_via_router`。
-
-不要把 `next_action_or_recommended_skill` 设为 `using-devflow` 或自由文本。
+本 skill 遵循仓库根目录的 `references/devflow-conventions.md`（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。
 
 ## 支撑参考
 
