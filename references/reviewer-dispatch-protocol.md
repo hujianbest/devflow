@@ -1,6 +1,8 @@
 # devflow Reviewer Dispatch Protocol
 
-> 配套 `devflow-router/SKILL.md`。规定 devflow 中 review 节点如何派发独立 reviewer subagent，以及 reviewer 返回结果的契约。
+> DevFlow 2.0 共享参考。规定 review 节点如何派发独立 reviewer subagent，以及 reviewer 返回结果的契约。
+>
+> **派发者（2.0）**：评审由**编排者**（用户 / 斜杠命令如 `/devflow-ship` / 会话控制器）按「fan-out + merge」模式派发；可选的 `devflow-router` 在仲裁疑难情形时也可派发。作者 skill 不评审自己，也不派发评审自己的 reviewer。
 
 ## 角色边界
 
@@ -12,7 +14,7 @@ devflow 的 review 节点（spec-review / component-design-review / ar-design-re
 
 ## Dispatch Request 最小字段
 
-派发 reviewer subagent 时，父会话（router 或上游 leaf）必须传入：
+派发 reviewer subagent 时，编排者（用户 / 斜杠命令 / 会话控制器 / 可选 router）必须传入：
 
 - `target_skill`：`devflow-spec-review` / `devflow-component-design-review` / `devflow-ar-design-review` / `devflow-test-review` / `devflow-code-review`
 - `work_item_type`：`SR` / `AR` / `DTS` / `CHANGE`
