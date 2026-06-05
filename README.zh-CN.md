@@ -14,7 +14,7 @@ DevFlow 的范围故意比 idea-to-product 工作流更窄。它不负责产品�
 
 ## Command Intents
 
-OpenCode v1 通过自然语言和自动 skill discovery 使用 DevFlow。`commands/` 目录记录 slash-style 阶段意图，团队可以把它们接入自己的客户端；但每个 command 都只是 bias，不是 bypass：`using-devflow` 和 `devflow-router` 仍然要先检查仓库工件，再选择下一个 canonical 节点。
+OpenCode v1 通过自然语言和自动 skill discovery 使用 DevFlow。`commands/` 目录记录 slash-style 阶段意图，团队可以把它们接入自己的客户端；但每个 command 都只是 bias，不是 bypass：`using-devflow` 先应用 DevFlow 总纲和 skill discovery，happy path 由各 skill 的 `Entry Gate` / `Exit Handoff` + 证据自路由推进，疑难才交可选的 `devflow-router` 仲裁。
 
 | 你要做什么 | Command intent | 关键原则 |
 |---|---|---|
@@ -25,7 +25,7 @@ OpenCode v1 通过自然语言和自动 skill discovery 使用 DevFlow。`comman
 | 收尾工程工作 | [`/devflow-ship`](commands/devflow-ship.md) | 先评审和门禁，再 closeout |
 | 修复 DTS / hotfix | [`/devflow-fix`](commands/devflow-fix.md) | 先复现和根因，再做最小安全修复 |
 
-评审不是用户直接调用的捷径。`devflow-router` 负责派发独立 reviewer subagent，覆盖 spec、component-design、AR-design、test 和 code review。
+评审不是用户直接调用的捷径。由编排者（阶段命令 / 会话控制器，或仲裁时的 `devflow-router`）派发独立 reviewer subagent，覆盖 spec、component-design、AR-design、test 和 code review；`test-review → code-review` 受门禁约束顺序执行。
 
 ---
 
@@ -112,8 +112,8 @@ DevFlow 包含一个 public entry skill，以及 13 个 canonical `devflow-*` ru
 
 | Skill | 做什么 | 什么时候用 |
 |---|---|---|
-| [`using-devflow`](skills/using-devflow/SKILL.md) | public entry，判断 direct-invoke vs route-first | 新会话或高层 DevFlow 意图 |
-| [`devflow-router`](skills/devflow-router/SKILL.md) | 基于证据的 runtime router 与恢复控制器 | 从工件续作，或消费 review / gate 结论 |
+| [`using-devflow`](skills/using-devflow/SKILL.md) | 轻量 meta：意图到 leaf 的发现树 + DevFlow 共同行为准则 | 新会话或高层 DevFlow 意图 |
+| [`devflow-router`](skills/devflow-router/SKILL.md) | 可选疑难仲裁（证据冲突 / profile 升级 / 无法唯一映射）——**非** happy-path 必经 | 某个 leaf 置 `reroute=true`，或下一步无法唯一确定 |
 
 ### Define
 
@@ -168,22 +168,24 @@ DevFlow 不是 prompt 集合，而是面向 agent 的受控工程工作流。
 SKILL.md
 ├── Frontmatter classifier
 ├── Overview and trigger conditions
+├── Entry Gate（自查上游证据 / Hard Stops）
 ├── Hard gates and object contract
 ├── Step-by-step workflow
-├── Required artifacts and evidence
-├── Review or gate contract
+├── Exit Handoff（按转移表声明唯一 next 节点）
 ├── Red flags and common rationalizations
 ├── Verification checklist
-└── Local DevFlow conventions
+└── 约定（一行引用 references/devflow-conventions.md）
 ```
 
 关键设计选择：
 
 - **证据优先于记忆。** 路由读取 `features/<id>/progress.md`、reviews、approvals、evidence 和 completion records。
 - **只允许 canonical name。** `Next Action Or Recommended Skill` 必须是 canonical `devflow-*` 节点；`using-devflow` 只是 public entry，不能写入 runtime handoff 字段。
-- **受控 subagent。** `devflow-router` 是唯一 reviewer 派发者；`devflow-tdd-implementation` 是唯一 implementer 派发者。
+- **去中枢路由。** happy path 由各 skill 的 `Entry Gate` + `Exit Handoff` + 证据自路由驱动；`devflow-router` 只是疑难仲裁。
+- **单一真相源。** 跨 skill 约定（路径、字段、profile、转移表、Hard Stops、reviewer 派发）只在 `references/devflow-conventions.md` 定义一次；各 skill 用一行 `## 约定` 引用，不再复制。
+- **受控 subagent。** reviewer 由编排者（阶段命令 / 会话控制器，或仲裁时的 router）派发；`devflow-tdd-implementation` 是唯一 implementer 派发者；`test-review → code-review` 保持顺序。
 - **禁止 self-verification。** Authoring skill 只写工件并交接；独立 reviewer 返回 verdict，不修改生产工件。
-- **本地 references。** 每个 skill 自己拥有 `references/`，必要时拥有 `evals/`；不存在共享 `skills/docs/` 依赖。
+- **本地 references。** 每个 skill 自己拥有 skill 专属 `references/`（rubric / 模板），必要时拥有 `evals/`；跨 skill 约定与共享 dispatch 协议集中在项目根 `references/`。
 
 ---
 
@@ -246,10 +248,14 @@ devflow/
 │   ├── devflow-completion-gate/
 │   ├── devflow-finalize/
 │   └── devflow-problem-fix/
+├── references/                       # 共享跨 skill 约定 + reviewer-dispatch 协议
+│   ├── devflow-conventions.md        # 单一真相源（路径、字段、profile、转移表、Hard Stops）
+│   └── reviewer-dispatch-protocol.md
 ├── docs/
 │   ├── guides/
 │   │   └── opencode-setup.md
-│   └── principles/
+│   ├── principles/
+│   └── devflow-2.0-design-spec.md
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── LICENSE

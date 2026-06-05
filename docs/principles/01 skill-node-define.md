@@ -58,8 +58,8 @@ devflow 节点按职责分类，不按主链顺序分类。
 
 | Role                    | 代表 skill                      | 主职责                                   | 不应承担的事               |
 | ----------------------- | ----------------------------- | ------------------------------------- | -------------------- |
-| Public Entry            | `using-devflow`          | 判断 direct invoke 还是 route-first       | 代替 router 恢复全局状态     |
-| Router                  | `devflow-router`         | 基于工件证据决定当前阶段、下一节点和阻塞                  | 代替 leaf skill 写设计或代码 |
+| Public Entry            | `using-devflow`          | 入口总纲与 DevFlow skill discovery       | 代替 router 恢复全局状态     |
+| Router（可选仲裁）       | `devflow-router`         | 疑难时（证据冲突 / profile 升级 / 无法唯一映射）基于工件证据决定 runtime 下一节点和阻塞；非 happy-path 必经 | 代替 leaf skill 写设计或代码；当成每步必经的中枢 |
 | Specify                 | `devflow-specify`                 | 澄清明确输入的需求规格、边界、IR/SR/AR 关系            | 做产品发现、创造需求方向         |
 | Spec Review             | `devflow-spec-review`             | 独立审查规格是否清楚、可追溯、可设计                    | 顺手回写规格或替负责人拍板        |
 | Component Design        | `devflow-component-design`        | 产出或修订组件实现设计                           | 编写 AR 代码层设计          |
