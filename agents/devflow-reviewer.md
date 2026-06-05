@@ -31,7 +31,7 @@ expected_return_contract  本文件 Output contract
 
 ## Procedure
 
-1. 读取 `skills/<target_skill>/SKILL.md`，**完整执行** 其 `工作流` 章节；不简化、不改判据
+1. 读取 `skills/<target_skill>/SKILL.md`，**完整执行** 其 `工作流` 章节；不简化、不改判据。若该 review skill 含 `## 质量透镜（Craft）` 节（如 `devflow-test-review` 引用 `devflow-test-craft`、`devflow-code-review` 引用 `devflow-coding-craft`），把对应 craft skill 作为「好测试 / 好代码」的判别标尺读取并据此给 findings；craft 是只读判别标准，不改变本评审的 verdict 规则，你也不修改任何工件
 2. 读取 `primary_artifact` 与必要的 `supporting_context`（仅本评审需要的部分，不做无关代码 / 文档探索）
 3. 按 SKILL.md 的判据逐条核对，每条都给出 evidence 引用（文件路径 + 锚点 / 行号 / 章节号）
 4. 写评审记录到 `features/<id>/reviews/<target_skill>-<YYYYMMDD-HHMMSS>.md`

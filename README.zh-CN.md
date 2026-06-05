@@ -2,9 +2,11 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
-**面向 AI 编码 agent 的 artifact-first SDD、门禁式 TDD 与角色分离评审工作流。**
+**面向 AI 编码 agent 的 artifact-first SDD、门禁式 TDD、角色分离评审——并新增工程匠艺质量透镜——的工作流。**
 
 DevFlow 是一个开发阶段工作流，用来把团队已经接受的 SR / AR / DTS / CHANGE work item 推进到规格澄清、设计、TDD 实现、独立评审、完成门禁和收尾。下一步永远从持久化工件恢复，而不是从聊天记忆猜。
+
+**DevFlow 2.0** 在保留这套流程纪律的同时，补上它一直缺的一层：**匠艺质量透镜**（`devflow-design-craft`、`devflow-coding-craft`、`devflow-test-craft`）——把资深工程师的判断（简单性、抽象克制、接口契约、测试金字塔、测状态不测交互）编码进去，让流程节点产出的东西不只是「结构齐全」，而是「设计得好、代码写得好」。详见 [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md)。
 
 DevFlow 的范围故意比 idea-to-product 工作流更窄。它不负责产品发现、发布运维、系统 / 集成 / 验收测试，也不负责线上事故管理。它从团队已经接受的需求或问题单开始。
 
@@ -106,7 +108,11 @@ DevFlow:   派发 test review、code review、completion gate 和
 
 ## Skill Catalog
 
-DevFlow 包含一个 public entry skill，以及 13 个 canonical `devflow-*` runtime nodes。
+DevFlow 包含一个 public entry meta-skill、13 个 canonical `devflow-*` runtime nodes，以及 3 个匠艺质量透镜 skill。三者职责不同（见 [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md) §5.1）：
+
+- **Meta（`using-devflow`）** 发现该用哪个 skill，并承载永远生效的行为宪法。
+- **运行时路由（`devflow-router`）** 把工件证据转成唯一 canonical 下一步。
+- **匠艺透镜（`devflow-*-craft`）** 由流程节点在工作流内部叠加，提升设计 / 编码 / 测试质量；它们不写 `progress`/handoff、不产 verdict、不改流程拓扑。
 
 ### Meta 与路由
 
@@ -142,6 +148,16 @@ DevFlow 包含一个 public entry skill，以及 13 个 canonical `devflow-*` ru
 | [`devflow-finalize`](skills/devflow-finalize/SKILL.md) | 写 closeout，并 promotion 长期资产 | completion gate 允许收尾 |
 | [`devflow-problem-fix`](skills/devflow-problem-fix/SKILL.md) | 复现、根因分析并界定 DTS / hotfix 范围 | 已发布行为缺陷或紧急问题需要受控恢复 |
 
+### 匠艺质量透镜（Craft Lenses）
+
+它们**不是**流程节点，而是由设计 / 构建 / 评审节点在内部叠加的质量透镜，把「结构齐全」提升到「工程过硬」。每个透镜携带命名工程判断 + 可判别 tell + 具体反例，并本地化到 DevFlow 的嵌入式 C/C++ 语境。
+
+| Skill | 做什么 | 被谁叠加 |
+|---|---|---|
+| [`devflow-design-craft`](skills/devflow-design-craft/SKILL.md) | 怎么把设计做好：简单性优先、抽象克制（Rule of Three）、接口契约（Hyrum's Law、错误语义）、SOLID/GRASP tell、嵌入式防御性设计、有质量的方案对比 | `devflow-ar-design`、`devflow-component-design` |
+| [`devflow-coding-craft`](skills/devflow-coding-craft/SKILL.md) | 怎么把代码写好：Rule 0 简单性、薄垂直切片、范围纪律（Chesterton's Fence）、可读性与命名、嵌入式防御性编码 | `devflow-tdd-implementation`、`devflow-code-review` |
+| [`devflow-test-craft`](skills/devflow-test-craft/SKILL.md) | 怎么把测试写好：测试金字塔 + test sizes、测状态不测交互、DAMP over DRY、mock 克制（real>fake>stub>mock）、覆盖类型 | `devflow-tdd-implementation`、`devflow-test-review` |
+
 ---
 
 ## DevFlow 方法
@@ -152,6 +168,7 @@ DevFlow 不是 prompt 集合，而是面向 agent 的受控工程工作流。
 |---|---|---|
 | 意图 | 规格锚定的 SDD | 把范围、约束和验收标准留在可评审文件中 |
 | 规划 | 设计选项和评审门禁 | 在代码前显式记录架构、接口、风险和测试设计 |
+| 匠艺 | 设计 / 代码 / 测试的质量透镜 | 编码资深工程师判断（简单性、契约、测试金字塔），让产出工程过硬而不只是齐全 |
 | 执行 | 门禁式 TDD | 要求 fail-first 证据、GREEN 验证，并且一次只有一个 active task |
 | 路由 | 基于工件恢复 | 让另一个 agent 可从 `progress.md`、reviews、evidence 和 completion records 续作 |
 | 评审 | 角色分离 subagent | 防止作者和批准者塌缩到同一个会话 |
@@ -180,10 +197,11 @@ SKILL.md
 关键设计选择：
 
 - **证据优先于记忆。** 路由读取 `features/<id>/progress.md`、reviews、approvals、evidence 和 completion records。
-- **只允许 canonical name。** `Next Action Or Recommended Skill` 必须是 canonical `devflow-*` 节点；`using-devflow` 只是 public entry，不能写入 runtime handoff 字段。
+- **只允许 canonical name。** `Next Action Or Recommended Skill` 必须是 canonical `devflow-*` 节点；`using-devflow` 与 `devflow-*-craft` 透镜都不能写入 runtime handoff 字段。
+- **约定单一真相源。** 产物布局、progress 字段、handoff 字段、profile、canonical 节点表只在 [`references/devflow-conventions.md`](references/devflow-conventions.md) 定义一次，各 skill 引用而非复制。
 - **受控 subagent。** `devflow-router` 是唯一 reviewer 派发者；`devflow-tdd-implementation` 是唯一 implementer 派发者。
 - **禁止 self-verification。** Authoring skill 只写工件并交接；独立 reviewer 返回 verdict，不修改生产工件。
-- **本地 references。** 每个 skill 自己拥有 `references/`，必要时拥有 `evals/`；不存在共享 `skills/docs/` 依赖。
+- **匠艺是透镜不是阶段。** 质量透镜在既有节点内部提升标准，不新增流程阶段、不破坏工件兼容。
 
 ---
 
@@ -228,12 +246,13 @@ docs/
 
 ```text
 devflow/
-├── AGENTS.md                         # OpenCode hard contract
 ├── commands/                         # slash-style command intent definitions
 ├── agents/                           # reviewer / implementer role mirrors
-├── skills/                           # entry skill + 13 canonical devflow-* nodes
-│   ├── using-devflow/
-│   ├── devflow-router/
+├── references/
+│   └── devflow-conventions.md        # 单一真相源（布局 / 字段 / profile / 节点表）
+├── skills/                           # 1 meta + 13 canonical devflow-* nodes + 3 craft 透镜
+│   ├── using-devflow/                #   Meta：发现 + 行为宪法
+│   ├── devflow-router/               #   运行时证据路由
 │   ├── devflow-specify/
 │   ├── devflow-spec-review/
 │   ├── devflow-component-design/
@@ -245,11 +264,14 @@ devflow/
 │   ├── devflow-code-review/
 │   ├── devflow-completion-gate/
 │   ├── devflow-finalize/
-│   └── devflow-problem-fix/
+│   ├── devflow-problem-fix/
+│   ├── devflow-design-craft/         #   匠艺透镜：怎么把设计做好
+│   ├── devflow-coding-craft/         #   匠艺透镜：怎么把代码写好
+│   └── devflow-test-craft/           #   匠艺透镜：怎么把测试写好
 ├── docs/
-│   ├── guides/
-│   │   └── opencode-setup.md
-│   └── principles/
+│   ├── devflow-2.0-design-spec.md    # DevFlow 2.0 设计说明书
+│   └── guides/
+│       └── opencode-setup.md
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── LICENSE

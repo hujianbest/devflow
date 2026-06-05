@@ -15,6 +15,9 @@ This command orchestrates the **DevFlow build (构建)** phase.
   - `devflow-code-review`（`target_skill = devflow-code-review`）
 - Implementer dispatched (via `devflow-tdd-implementation`, system prompt = `agents/devflow-implementer.md`):
   - 每次 next-ready task 一次新派发；接收 Implementer Context Pack
+- Craft 透镜（节点内部叠加，不是流程节点、不进 handoff、不产 verdict）：
+  - `devflow-tdd-implementation` 落测试时叠加 `devflow-test-craft`，写实现 / 重构时叠加 `devflow-coding-craft`
+  - `devflow-test-review` / `devflow-code-review` 以 `devflow-test-craft` / `devflow-coding-craft` 作判别标尺
 
 ## When to use
 

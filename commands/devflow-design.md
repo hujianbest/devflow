@@ -14,6 +14,9 @@ This command orchestrates the **DevFlow design (设计)** phase.
 - Reviewers dispatched (via `devflow-router`, system prompt = `agents/devflow-reviewer.md`):
   - `devflow-component-design-review`（仅当组件设计存在）
   - `devflow-ar-design-review`
+- Craft 透镜（节点内部叠加，不是流程节点、不进 handoff、不产 verdict）：
+  - `devflow-component-design` / `devflow-ar-design` 起草时叠加 `devflow-design-craft`
+  - `devflow-ar-design` 写测试设计章节时叠加 `devflow-test-craft`
 
 ## When to use
 

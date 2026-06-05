@@ -2,9 +2,11 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
-**Artifact-first SDD, gated TDD, and role-separated reviews for AI coding agents.**
+**Artifact-first SDD, gated TDD, role-separated reviews — now with engineering-craft quality lenses — for AI coding agents.**
 
 DevFlow is a development-stage workflow for AI coding agents. It takes an accepted SR / AR / DTS / CHANGE work item through specification, design, TDD implementation, independent review, completion gating, and closeout. The next step is recovered from durable artifacts, not chat memory.
+
+**DevFlow 2.0** keeps that process discipline and adds the layer it was missing: **craft quality lenses** (`devflow-design-craft`, `devflow-coding-craft`, `devflow-test-craft`) that encode senior-engineer judgment — simplicity, abstraction discipline, interface contracts, the test pyramid, state-not-interaction testing — so flow nodes produce work that is not just *structurally complete* but *well-designed and well-coded*. See [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md).
 
 DevFlow is intentionally narrower than an idea-to-product workflow. It does not own product discovery, release operations, system / integration / acceptance testing, or runtime incident management. It starts after the team has accepted the requirement or problem report.
 
@@ -106,7 +108,11 @@ For a DTS or hotfix, DevFlow first reproduces the issue and records root cause i
 
 ## Skill Catalog
 
-DevFlow ships one public entry skill plus 13 canonical `devflow-*` runtime nodes.
+DevFlow ships one public entry meta-skill, 13 canonical `devflow-*` runtime nodes, and 3 quality-craft lens skills. The three roles are distinct (see [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md) §5.1):
+
+- **Meta (`using-devflow`)** discovers which skill applies and carries the always-on behavior constitution.
+- **Runtime router (`devflow-router`)** turns artifact evidence into the single next canonical node.
+- **Craft lenses (`devflow-*-craft`)** are invoked *inside* flow nodes to raise design / coding / test quality; they never write `progress`/handoff, never produce a verdict, and never change the flow topology.
 
 ### Meta And Routing
 
@@ -142,6 +148,16 @@ DevFlow ships one public entry skill plus 13 canonical `devflow-*` runtime nodes
 | [`devflow-finalize`](skills/devflow-finalize/SKILL.md) | Writes closeout and promotes long-term assets | Completion gate allows closeout |
 | [`devflow-problem-fix`](skills/devflow-problem-fix/SKILL.md) | Reproduces, root-causes, and scopes DTS / hotfix work | A shipped-behavior defect or urgent problem needs controlled recovery |
 
+### Craft Quality Lenses
+
+These are **not** flow nodes. They are quality lenses that design / build / review nodes invoke internally to turn "structurally complete" into "well-engineered". They carry named engineering judgment with concrete tells and counter-examples, localized to DevFlow's embedded C/C++ context.
+
+| Skill | What it does | Invoked by |
+|---|---|---|
+| [`devflow-design-craft`](skills/devflow-design-craft/SKILL.md) | How to design well: simplicity-first, abstraction discipline (Rule of Three), interface contracts (Hyrum's Law, error semantics), SOLID/GRASP tells, embedded defensive design, quality design-options | `devflow-ar-design`, `devflow-component-design` |
+| [`devflow-coding-craft`](skills/devflow-coding-craft/SKILL.md) | How to code well: Rule 0 simplicity, thin vertical slices, scope discipline (Chesterton's Fence), readability/naming, embedded defensive coding | `devflow-tdd-implementation`, `devflow-code-review` |
+| [`devflow-test-craft`](skills/devflow-test-craft/SKILL.md) | How to test well: test pyramid + sizes, state-not-interaction testing, DAMP over DRY, mock discipline (real>fake>stub>mock), coverage types | `devflow-tdd-implementation`, `devflow-test-review` |
+
 ---
 
 ## The DevFlow Method
@@ -152,6 +168,7 @@ DevFlow is not a prompt collection. It is a controlled engineering workflow for 
 |---|---|---|
 | Intent | Spec-anchored SDD | Keeps scope, constraints, and acceptance criteria in reviewable files |
 | Planning | Design options and review gates | Makes architecture, interfaces, risks, and test design explicit before code |
+| Craft | Quality lenses on design / code / test | Encodes senior-engineer judgment (simplicity, contracts, test pyramid) so output is well-engineered, not just complete |
 | Execution | Gated TDD | Requires fail-first evidence, GREEN verification, and one active task at a time |
 | Routing | Artifact-based recovery | Lets another agent resume from `progress.md`, reviews, evidence, and completion records |
 | Review | Role-separated subagents | Prevents authoring and approval from collapsing into one session |
@@ -180,7 +197,9 @@ SKILL.md
 Key design choices:
 
 - **Evidence over memory.** Routing reads files such as `features/<id>/progress.md`, reviews, approvals, evidence, and completion records.
-- **Canonical names only.** `Next Action Or Recommended Skill` must be one of the canonical `devflow-*` nodes; `using-devflow` is a public entry and is never written into runtime handoff fields.
+- **Canonical names only.** `Next Action Or Recommended Skill` must be one of the canonical `devflow-*` nodes; `using-devflow` and the `devflow-*-craft` lenses are never written into runtime handoff fields.
+- **Single source of truth for conventions.** Artifact layout, progress fields, handoff fields, profiles, and the canonical node list live once in [`references/devflow-conventions.md`](references/devflow-conventions.md); every skill references it instead of copying boilerplate.
+- **Craft as lenses, not stages.** Quality lenses raise the bar inside existing nodes without adding flow stages or breaking artifact compatibility.
 - **Controlled subagents.** `devflow-router` is the only reviewer dispatcher; `devflow-tdd-implementation` is the only implementer dispatcher.
 - **No self-verification.** Authoring skills write artifacts and hand off; independent reviewers return verdicts and do not edit production artifacts.
 - **Local references.** Each skill owns its `references/` and, where needed, `evals/`; there is no shared `skills/docs/` dependency.
@@ -228,12 +247,13 @@ Project-level `AGENTS.md` may override equivalent paths and templates. Closed wo
 
 ```text
 devflow/
-├── AGENTS.md                         # OpenCode hard contract
 ├── commands/                         # Slash-style command intent definitions
 ├── agents/                           # Reviewer / implementer role mirrors
-├── skills/                           # Entry skill + 13 canonical devflow-* nodes
-│   ├── using-devflow/
-│   ├── devflow-router/
+├── references/
+│   └── devflow-conventions.md        # Single source of truth (layout / fields / profiles / nodes)
+├── skills/                           # 1 meta + 13 canonical devflow-* nodes + 3 craft lenses
+│   ├── using-devflow/                #   Meta: discovery + behavior constitution
+│   ├── devflow-router/               #   Runtime evidence router
 │   ├── devflow-specify/
 │   ├── devflow-spec-review/
 │   ├── devflow-component-design/
@@ -245,11 +265,14 @@ devflow/
 │   ├── devflow-code-review/
 │   ├── devflow-completion-gate/
 │   ├── devflow-finalize/
-│   └── devflow-problem-fix/
+│   ├── devflow-problem-fix/
+│   ├── devflow-design-craft/         #   Craft lens: how to design well
+│   ├── devflow-coding-craft/         #   Craft lens: how to code well
+│   └── devflow-test-craft/           #   Craft lens: how to test well
 ├── docs/
-│   ├── guides/
-│   │   └── opencode-setup.md
-│   └── principles/
+│   ├── devflow-2.0-design-spec.md    # DevFlow 2.0 design spec
+│   └── guides/
+│       └── opencode-setup.md
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── LICENSE
