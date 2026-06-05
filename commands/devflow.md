@@ -1,13 +1,13 @@
 ---
-description: DevFlow public entry — discover where this session belongs and route to the right phase command or canonical skill
+description: DevFlow public entry — load the DevFlow principles, discover where this session belongs, and route to the right phase command or canonical skill
 ---
 
-This command orchestrates the **DevFlow entry / resume** phase.
+This command orchestrates the **DevFlow entry / resume** phase. It loads `using-devflow` as the family-level principles and discovery entry before handing control to a phase command, canonical skill, or `devflow-router`.
 
 ## Phase scope
 
 - Skills involved (in推进顺序):
-  1. `using-devflow` — public entry，分流意图为 `direct invoke` 或 `route-first`
+  1. `using-devflow` — DevFlow 总纲 + public discovery entry；先应用全局原则，再判断 `direct invoke` 或 `route-first`
   2. `devflow-router` — runtime routing（当 `using-devflow` 返回 `route-first`、或当前是评审/门禁后的恢复、或证据冲突时）
 - Reviewers dispatched: 无（本 command 不直接派发评审；如路由到评审节点，由阶段 command 与 router 共同完成）
 
@@ -31,7 +31,7 @@ This command orchestrates the **DevFlow entry / resume** phase.
 
 ## Workflow（不复制 SKILL.md，只编排）
 
-1. 载入 `using-devflow`，按其 `工作流` 章节做最小入口判定
+1. 载入 `using-devflow`，先应用 DevFlow 总纲，再按其 discovery / invocation 规则做最小入口判定
 2. `using-devflow` 输出二选一：
    - `direct invoke` + 唯一 canonical leaf + 工件证据稳定 → 进入对应阶段 command 或直接进入该 leaf skill
    - `route-first` → 立即载入 `devflow-router`，由其按工件证据决定唯一下一步

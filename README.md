@@ -14,7 +14,7 @@ DevFlow is intentionally narrower than an idea-to-product workflow. It does not 
 
 ## Command Intents
 
-OpenCode v1 uses natural language plus automatic skill discovery. The `commands/` directory documents slash-style intents that teams can wire into their client, but every command is a bias, not a bypass: `using-devflow` and `devflow-router` still check repository evidence before choosing the next canonical node.
+OpenCode v1 uses natural language plus automatic skill discovery. The `commands/` directory documents slash-style intents that teams can wire into their client, but every command is a bias, not a bypass: `using-devflow` first applies the family-level DevFlow principles and discovery rules, and `devflow-router` still checks repository evidence before choosing the next canonical node.
 
 | What you're doing | Command intent | Key principle |
 |---|---|---|

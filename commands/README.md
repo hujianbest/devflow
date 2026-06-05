@@ -12,6 +12,8 @@ Commands 与 `skills/` 的关系：
 
 Slash command **不复制** SKILL.md 的内容，只声明本阶段会跨过哪些 canonical 节点、需要派发哪些评审子代理，以及阶段开始与结束时如何形成 handoff。所有判据仍以 `skills/<name>/SKILL.md` 为唯一权威。
 
+所有 command 都继承 `using-devflow` 的 DevFlow 总纲：artifact-first、角色隔离、门禁纪律、范围纪律和验证纪律。Command 是阶段偏好（bias），不是绕过 skill、router 或 gate 的捷径。
+
 ---
 
 ## 命令清单

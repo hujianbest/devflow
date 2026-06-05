@@ -100,24 +100,25 @@ Authoring leaf 不评审自己的输出。review 节点必须由 `devflow-router
 
 ## 技能发现
 
-收到 DevFlow 相关请求后，按下面的入口图分流：
+任务到达时，识别它所处的开发阶段，落到对应 `devflow-*` 节点。下树给出的是 **bias，不是 authority**：任一歧义 → 走 `route-first` 交 `devflow-router`。
 
 ```text
-DevFlow 请求到达
-    |
-    |-- 产品发现 / 是否要做这个需求？ -------------> 停下；回到 requirement owner
-    |-- 系统 / 集成 / 验收测试？ ------------------> 停下；不属于 DevFlow，未来由 test-flow 处理
-    |-- 已经在某个 leaf skill 内部？ -------------> 继续当前 leaf skill
-    |-- review/gate 刚返回 verdict？ ------------> route-first -> devflow-router
-    |-- 需要 profile / stage / recovery 决策？ ---> route-first -> devflow-router
-    |-- 需要独立 reviewer 派发？ ----------------> route-first -> devflow-router
-    |-- 新会话 / 模糊“继续” / 命令偏好？ ---------> using-devflow 入口分类
-                                                         |
-                                                         |-- 唯一清晰 authoring leaf + 稳定工件证据
-                                                         |      -> direct invoke
-                                                         |
-                                                         |-- 其他任意情况
-                                                                -> route-first -> devflow-router
+任务到达
+    │
+    ├── 不确定入口 / 阶段或 profile 不清 / 证据冲突 / review 或 gate 刚出结论 ─→ devflow-router
+    ├── 澄清子系统级需求（SR）──────────────────→ devflow-specify（requirement-analysis）
+    ├── 澄清需求 / 整理 AR 规格 ─────────────────→ devflow-specify（实现 profile）
+    ├── 评审需求规格（SR 或 AR）────────────────→ devflow-spec-review
+    ├── 写 / 改组件实现设计 ─────────────────────→ devflow-component-design
+    ├── 评审组件实现设计 ───────────────────────→ devflow-component-design-review
+    ├── 写 / 改 AR 实现设计（含测试设计章节）─────→ devflow-ar-design
+    ├── 评审 AR 实现设计 ───────────────────────→ devflow-ar-design-review
+    ├── TDD 实现 / 改代码 / 维护任务执行索引 ─────→ devflow-tdd-implementation
+    ├── 审查 TDD 后测试用例有效性 ───────────────→ devflow-test-review
+    ├── C / C++ 代码检视 ───────────────────────→ devflow-code-review
+    ├── 判断能否完成 / completion gate ──────────→ devflow-completion-gate
+    ├── 紧急缺陷 / hotfix 复现与根因 ────────────→ devflow-problem-fix
+    └── 收口 / closeout / handoff ──────────────→ devflow-finalize
 ```
 
 典型生命周期提示：
@@ -135,91 +136,11 @@ AR / DTS / CHANGE implementation:
 
 生命周期只是上下文提醒，不是路由引擎。若无法用最小证据证明下一节点，使用 `devflow-router`。
 
-## 后续 Skill 调用规则
-
-`using-devflow` 调用后续 skill 时，不只是“选一个节点”。它必须把上面的总指导原则带入调用方式。
-
-### 1. 先确认 DevFlow 是否适用
-
-DevFlow 只处理已接受的 SR / AR / DTS / CHANGE 进入工程化执行后的过程。产品发现、业务优先级、是否立项、系统/集成/验收测试、发布事故处置不由 DevFlow 接管。
-
-不适用时要说明边界，并把问题交回对应团队角色或外部流程，而不是强行映射到某个 `devflow-*` 节点。
-
-### 2. 再判断当前要加载哪个 skill
-
-当任务属于 DevFlow 时，先识别当前是：
-
-- 总入口发现：继续使用 `using-devflow`，并决定 direct invoke 还是 route-first。
-- 运行时路由 / 恢复：进入 `devflow-router`。
-- authoring / implementation：进入对应 leaf，但仍受本总纲约束。
-- review：必须经 `devflow-router` 派发独立 reviewer。
-- implementer 执行：只能由 `devflow-tdd-implementation` 派发 implementer subagent。
-
-### 3. direct invoke 只是清晰场景的快路径
-
-direct invoke 不是默认路径。只有目标职责唯一、必要工件稳定、没有 profile/stage/review/gate/team-role 歧义时，才直接进入 leaf。
-
-使用 3 行快路径表达入口分类：
-
-```text
-1. Entry Classification: direct invoke | route-first
-2. Target Skill: <canonical devflow-* node>
-3. Why: <1-2 条决定性证据>
-```
-
-### 4. route-first 是保护机制，不是失败
-
-当证据不足、状态不清、review/gate verdict 需要消费、profile 需要判断、task-board 无法唯一判断下一任务、命令与工件冲突时，route-first 到 `devflow-router`。这不是拖延，而是在保护 DevFlow 的 review/gate 和角色边界。
-
-### 5. 每次交接都要保留约束
-
-无论进入 leaf 还是 router，都要保留这些上下文：work item、当前工件、显式 mode 偏好、已知 blocker、关键假设、以及不得跳过的 review/gate。不要只传“请继续”。
-
-## 适用场景
-
-在以下情况使用本 skill：
-
-- 新会话或任意非平凡 DevFlow 工作开始前。
-- 需要发现当前任务应使用哪个 `devflow-*` skill。
-- 用户说“继续”“推进”“开始做”“用 DevFlow”，或给出 `/devflow-*` 命令。
-- 用户表达 `auto mode` / `自动执行` / `不用等我确认`，且该偏好需要向下游传递，但不能削弱 gate。
-- 需要把 DevFlow 总指导原则传递给后续 leaf、router、reviewer 或 implementer。
-- 需要判断 `direct invoke` 还是 `route-first`。
-
-以下情况不要把本 skill 当作执行者：
-
-- 已经在某个 leaf skill 内部且该 leaf 的职责、工件和 gate 都稳定。继续当前 leaf，但仍遵守本总纲。
-- 需要 runtime recovery、profile decision、stage arbitration、evidence conflict、review/gate verdict 消费或 reviewer dispatch。使用 `devflow-router`，并继承本总纲。
-- 用户仍在决定产品方向，或 SR / AR 是否应存在。回到 requirement owner。
-- 任务属于系统测试、集成测试、发布、事故处理或验收测试。这些不属于 DevFlow。
-
-## 硬性门禁
-
-- 永远不要把 `using-devflow` 写入 `Next Action Or Recommended Skill`、progress handoff 或 runtime handoff。
-- 永远不要把本 skill 写成替代 `devflow-router` 的完整状态机；它给出总原则和入口发现，权威运行时路由属于 `devflow-router`。
-- 永远不要权威决定 Workflow Profile 或 Execution Mode。只把明确的 mode 偏好传给下游，由 router 或工件字段消费。
-- 永远不要派发或内联 reviewer 工作。review 节点必须通过 `devflow-router` 到达，由它派发独立 reviewer subagent。
-- 永远不要让 authoring leaf 自审；角色隔离优先于速度。
-- 当 artifacts、stage、profile、route 或 work item type 不清时，永远不要 direct invoke。
-- 永远不要把 `auto` 当作跳过 review、gate、approval、evidence 或团队角色决策的许可。
-- 永远不要让任何后续 skill 以“简单”“明显”“只是继续”为理由削弱本总纲。
-
-## 对象契约
-
-- 主要对象（Primary Object）：DevFlow 技能族执行纪律 + skill discovery / invocation 决策
-- 前端输入对象（Frontend Input Object）：用户请求、当前 work item 锚点、磁盘工件线索、`/devflow-*` 命令偏好、明确的 mode 偏好
-- 后端输出对象（Backend Output Object）：后续 skill 必须继承的总原则 + 当前合法下一步（direct invoke 或 route-first）
-- 转换（Transformation）：把用户意图、工件证据和 DevFlow 总原则转化为受约束的下一 skill 调用
-- 边界（Boundaries）：不替 router 做权威状态机、不替 reviewer 给 verdict、不替团队角色拍板、不修改工件
-- 不变量（Invariants）：所有后续 `devflow-*` skill 都受本总纲约束；`using-devflow` 永远不会作为 runtime next action 出现
-
 ## 工作流：先立原则，再选 skill
 
 ### 1. 加载总纲
 
-每次进入 DevFlow，先应用“DevFlow 总指导原则”。不要先急着找节点；先确认不会跳过工件、角色、gate、scope 和 verification 纪律。
-
-如果用户请求与这些原则冲突，先说明冲突并给出安全路径。
+每次进入 DevFlow，先应用“DevFlow 总指导原则”。 如果用户请求与这些原则冲突，先说明冲突并给出安全路径。
 
 ### 2. 确认 DevFlow 边界
 
