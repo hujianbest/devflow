@@ -14,7 +14,7 @@ DevFlow 的范围故意比 idea-to-product 工作流更窄。它不负责产品�
 
 ## Command Intents
 
-OpenCode v1 通过自然语言和自动 skill discovery 使用 DevFlow。`commands/` 目录记录 slash-style 阶段意图，团队可以把它们接入自己的客户端；但每个 command 都只是 bias，不是 bypass：`using-devflow` 和 `devflow-router` 仍然要先检查仓库工件，再选择下一个 canonical 节点。
+OpenCode v1 通过自然语言和自动 skill discovery 使用 DevFlow。`commands/` 目录记录 slash-style 阶段意图，团队可以把它们接入自己的客户端；但每个 command 都只是 bias，不是 bypass：`using-devflow` 先应用 DevFlow 总纲和 skill discovery，仓库工件检查与 runtime 下一节点决策归 `devflow-router`。
 
 | 你要做什么 | Command intent | 关键原则 |
 |---|---|---|
@@ -112,7 +112,7 @@ DevFlow 包含一个 public entry skill，以及 13 个 canonical `devflow-*` ru
 
 | Skill | 做什么 | 什么时候用 |
 |---|---|---|
-| [`using-devflow`](skills/using-devflow/SKILL.md) | public entry，判断 direct-invoke vs route-first | 新会话或高层 DevFlow 意图 |
+| [`using-devflow`](skills/using-devflow/SKILL.md) | public entry 总纲与 DevFlow skill discovery | 新会话或高层 DevFlow 意图 |
 | [`devflow-router`](skills/devflow-router/SKILL.md) | 基于证据的 runtime router 与恢复控制器 | 从工件续作，或消费 review / gate 结论 |
 
 ### Define

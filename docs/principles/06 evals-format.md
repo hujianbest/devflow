@@ -94,7 +94,7 @@ skills/devflow-<name>/evals/
 
 | Category | 含义 | 典型 skill |
 |---|---|---|
-| `wrong-node-routing` | 把错误的 canonical 节点当下一步 | router / using-devflow |
+| `wrong-node-routing` | 把错误的 canonical 节点当下一步 | router |
 | `profile-discipline` | 静默升级 / 降级 / 跨子街区切换 | router |
 | `evidence-missing` | 缺上游 review record / fresh evidence 仍尝试推进 | router / completion-gate |
 | `gate-skipped` | 跳过 test-review / code-review / completion-gate | router / tdd-implementation / completion-gate |

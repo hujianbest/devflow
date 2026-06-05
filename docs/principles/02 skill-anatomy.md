@@ -38,8 +38,8 @@ DevFlow workflow skill 通常是 `Technique + Pattern`。当节点依赖团队�
 
 | 角色 | 代表 skill | 写作重心 |
 |---|---|---|
-| Public Entry | `using-devflow` | 判断 direct invoke 还是 route-first |
-| Router | `devflow-router` | 恢复当前 AR / 问题修改状态，决定下一节点 |
+| Public Entry | `using-devflow` | 入口总纲与 DevFlow skill discovery |
+| Router | `devflow-router` | 恢复当前 AR / 问题修改状态，决定 runtime 下一节点 |
 | Specify | `devflow-specify` | 澄清明确输入、IR/SR/AR 追溯、待决问题 |
 | Spec Review | `devflow-spec-review` | 规格清晰性、可追溯性、可设计性审查 |
 | Component Design | `devflow-component-design` | 组件实现设计、SOA 边界、组件接口和依赖 |
