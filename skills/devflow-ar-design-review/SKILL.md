@@ -65,12 +65,12 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 ### 1.5 Precheck
 
 - 缺 ar-design-draft.md → blocked-content，下一步 `devflow-ar-design`
-- 缺组件设计且本 AR 触及组件边界 → blocked-workflow，`reroute_via_router=true`，下一步 `devflow-router`
+- 缺组件设计且本 AR 触及组件边界 → blocked-workflow，`reroute=true`，下一步 `devflow-router`
 - 否则进入步骤 2
 
 ### 2. 检查是否触及组件边界
 
-按 SOA Boundary 检查对照 AR 设计与当前 `docs/component-design.md`。**触及组件接口 / 依赖 / 状态机** → 强制 `阻塞`(workflow)，`reroute_via_router=true`，下一步 `devflow-router`（升级 component-impact）。
+按 SOA Boundary 检查对照 AR 设计与当前 `docs/component-design.md`。**触及组件接口 / 依赖 / 状态机** → 强制 `阻塞`(workflow)，`reroute=true`，下一步 `devflow-router`（升级 component-impact）。
 
 ### 3. 多维评分
 
@@ -95,7 +95,7 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 
 按下表收敛唯一 verdict + 唯一下一步：
 
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router | needs_human_confirmation |
+| 条件 | conclusion | `next_action_or_recommended_skill` | reroute | needs_human_confirmation |
 |---|---|---|---|---|
 | 8 维度均 ≥ 6、组件边界未被改写、测试设计章节充分、无 critical USER-INPUT | `通过` | `devflow-tdd-implementation` | `false` | `true`（开发负责人确认进入任务执行索引） |
 | findings 可 1-2 轮定向修订 | `需修改` | `devflow-ar-design` | `false` | `false` |
@@ -108,7 +108,7 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 ## 输出契约
 
 - Review record：`features/<id>/reviews/ar-design-review.md`
-- 结构化 reviewer 返回摘要含 record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation、reroute_via_router
+- 结构化 reviewer 返回摘要含 record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation、reroute
 
 ## Exit Handoff
 
@@ -137,7 +137,7 @@ AR 设计评审常见的偷懒话术与反驳。命中任意一条 → 停下。
 | 话术 | 反驳 |
 |---|---|
 | 「测试设计差点意思，但能跑 TDD 就先 `通过`」 | 测试设计任一关键维度低于阈值 → `需修改`；TDD 不靠 review 后补 |
-| 「AR 改了组件接口，让 AR 阶段自己消化」 | 强制 `阻塞`(workflow)，`reroute_via_router=true`，回 router 升级 `component-impact` |
+| 「AR 改了组件接口，让 AR 阶段自己消化」 | 强制 `阻塞`(workflow)，`reroute=true`，回 router 升级 `component-impact` |
 | 「顺手补两个测试用例，让设计更完整」 | reviewer **不**补测试用例。返回 finding，让 author 修 |
 | 「测试设计拆出去看更清楚，给 `通过`」 | 强制 `阻塞`(content)。测试设计必须是 `ar-design-draft.md` 的章节 |
 | 「Single obvious option 没写理由也算 OK」 | 不算。Design Options checkpoint 缺理由 → `需修改` |
@@ -157,7 +157,7 @@ AR 设计评审常见的偷懒话术与反驳。命中任意一条 → 停下。
 - [ ] review record 已落盘
 - [ ] precheck 与组件边界检查结果显式记录
 - [ ] 8 维度评分完整、findings 已分类
-- [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
+- [ ] verdict 唯一、下一步唯一、`reroute` 正确
 - [ ] `通过` 时 `needs_human_confirmation=true`
 - [ ] 测试设计章节充分性已显式审查（含 Change Type 覆盖、modify/remove baseline 覆盖、嵌入式风险覆盖矩阵）
 - [ ] 结构化摘要已回传父会话
@@ -170,7 +170,7 @@ AR 设计评审常见的偷懒话术与反驳。命中任意一条 → 停下。
 - Inputs Consumed：primary artifact path + freshness anchor、commit/branch、supporting context paths、AGENTS.md/team standards used。
 - Multi-Dimension Scoring：rubric dimensions、0-10 score，以及每个分数的 evidence；任一 critical dimension 低于阈值即不得通过。
 - Findings：ID、severity、classification、rule_id、anchor/location、description、impact、suggested fix。
-- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute_via_router、needs_human_confirmation。
+- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute、needs_human_confirmation。
 - Follow-up Actions：所需 rework 或 confirmation 的 owner 与 status。
 
 ## 评审者契约
@@ -193,10 +193,10 @@ finding_breakdown:
   minor: 0
 next_action_or_recommended_skill: <one canonical devflow node>
 needs_human_confirmation: true | false
-reroute_via_router: true | false
+reroute: true | false
 ```
 
-规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute_via_router=true`；通过结论不能包含 critical findings。
+规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute=true`；通过结论不能包含 critical findings。
 
 ## 本地测试设计契约摘录
 

@@ -118,7 +118,7 @@ Analysis closeout 专属：
 
 通用：
 
-- profile / route / 上游 verdict 冲突 → blocked-workflow，`reroute_via_router=true`，下一步 `devflow-router`
+- profile / route / 上游 verdict 冲突 → blocked-workflow，`reroute=true`，下一步 `devflow-router`
 
 Implementation 专属：
 
@@ -133,7 +133,7 @@ Analysis 专属：
 - spec-review 未通过 → blocked-content，回 `devflow-spec-review`
 - SR 声明需修订组件设计但 component-design-review 未通过 → blocked-content，回 `devflow-component-design-review`
 - AR Breakdown Candidates 章节缺失且未声明「无可拆分 AR」 → blocked-content，回 `devflow-specify`
-- SR work item 试图走 implementation closeout → blocked-workflow，`reroute_via_router=true`
+- SR work item 试图走 implementation closeout → blocked-workflow，`reroute=true`
 
 否则进入步骤 2。
 

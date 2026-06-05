@@ -119,4 +119,4 @@ CR3 / CR4 / CR5 / CR6 是嵌入式核心维度；任一 < 7 即不得 `通过`�
 | 8 维度均 ≥ 6、CR3/CR4/CR5/CR6 ≥ 7、CR8 主维度 ≥ 8 / 子维度 ≥ 6、无未解释 critical 静态分析项 | `通过` |
 | findings 可 1-2 轮定向修订 | `需修改` |
 | 核心逻辑错误 / 内存或并发安全漏洞 / SOA 边界破坏可在 task 内回修 | `阻塞`（内容） |
-| 实质修改 ADR / 组件边界 / SOA 接口 / 跨 ≥3 模块结构性变更 / escalation-bypass / 上游证据冲突 | `阻塞`（workflow） + `reroute_via_router=true` |
+| 实质修改 ADR / 组件边界 / SOA 接口 / 跨 ≥3 模块结构性变更 / escalation-bypass / 上游证据冲突 | `阻塞`（workflow） + `reroute=true` |

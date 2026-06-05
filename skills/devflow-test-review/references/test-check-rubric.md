@@ -112,4 +112,4 @@
 | 7 维度均 ≥ 6、嵌入式矩阵实测覆盖、断言强度足够、无 critical USER-INPUT | `通过` |
 | 评分某项 < 6 但 findings 可 1-2 轮定向修订 | `需修改` |
 | 评分多项 < 6 / 测试过于薄弱 / 关键行为未覆盖 | `阻塞`（内容） |
-| route / stage / profile / 上游证据冲突 | `阻塞`（workflow） + `reroute_via_router=true` |
+| route / stage / profile / 上游证据冲突 | `阻塞`（workflow） + `reroute=true` |

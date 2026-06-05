@@ -35,7 +35,7 @@ expected_return_contract  本文件 Output contract
 2. 读取 `primary_artifact` 与必要的 `supporting_context`（仅本评审需要的部分，不做无关代码 / 文档探索）
 3. 按 SKILL.md 的判据逐条核对，每条都给出 evidence 引用（文件路径 + 锚点 / 行号 / 章节号）
 4. 写评审记录到 `features/<id>/reviews/<target_skill>-<YYYYMMDD-HHMMSS>.md`
-5. 根据评审结果选择 verdict 与 next canonical node；判断是否 `reroute_via_router`
+5. 根据评审结果选择 verdict 与 next canonical node；判断是否 `reroute`
 6. 返回结构化 verdict（见 Output contract）后会话结束
 
 ## Per-target 校验补丁（不可省，与 SKILL.md 并存）
@@ -52,7 +52,7 @@ expected_return_contract  本文件 Output contract
 
 - **`target_skill = devflow-ar-design-review`**
   - **缺测试设计章节** → 必须 `REQUEST_CHANGES`，next = `devflow-ar-design`；禁止以 "TDD 时再补" 为由放行
-  - AR 范围明显触及组件边界但 profile 仍是 `standard` → `REQUEST_CHANGES + reroute_via_router=true`，由 router 升级到 `component-impact`
+  - AR 范围明显触及组件边界但 profile 仍是 `standard` → `REQUEST_CHANGES + reroute=true`，由 router 升级到 `component-impact`
 
 - **`target_skill = devflow-test-review`**
   - 测试用例只覆盖 happy path、缺边界 / 错误路径 / 关键失败模式 → `REQUEST_CHANGES`，next = `devflow-tdd-implementation`
@@ -78,12 +78,12 @@ findings:
   - ...
 record_path: features/<id>/reviews/<target_skill>-<YYYYMMDD-HHMMSS>.md
 next_action_or_recommended_skill: <one of the 13 canonical devflow-* nodes>
-reroute_via_router: true | false
+reroute: true | false
 evidence_summary: <one paragraph; what was checked, against which judgement>
 ```
 
 - `next_action_or_recommended_skill` 永远是 13 个 canonical 节点之一；禁止写 `using-devflow`、禁止自由文本
-- `reroute_via_router=true` 用于：profile 需要升级、AR 范围越界、跨子图冲突、判据无法唯一映射下一步
+- `reroute=true` 用于：profile 需要升级、AR 范围越界、跨子图冲突、判据无法唯一映射下一步
 - `REJECT` 仅在 SKILL.md 明确允许的极端不可修复场景使用；否则用 `REQUEST_CHANGES`
 
 ## Anti-rationalization
@@ -93,8 +93,8 @@ evidence_summary: <one paragraph; what was checked, against which judgement>
 | "我顺手把 ar-design-draft.md 里这个明显笔误改了" | 禁止；评审 persona 不改任何工件。写进 findings。 |
 | "缺测试设计章节但作者说会补，先 APPROVE_WITH_FOLLOWUPS" | 禁止；`devflow-ar-design-review` 缺测试设计章节必须 `REQUEST_CHANGES` 回 `devflow-ar-design` |
 | "test-review 不通过但代码看起来没问题，next 写 devflow-code-review" | 禁止；test-review 未通过严禁 next = code-review |
-| "AR 范围触及组件边界但作者说后续再升级，我先 APPROVE" | 禁止；标 `reroute_via_router=true` 让 router 升级 |
-| "next 不知道选哪个，写个自由文本说明" | 禁止；选不出 → 标 `reroute_via_router=true` |
+| "AR 范围触及组件边界但作者说后续再升级，我先 APPROVE" | 禁止；标 `reroute=true` 让 router 升级 |
+| "next 不知道选哪个，写个自由文本说明" | 禁止；选不出 → 标 `reroute=true` |
 
 ## Composition
 

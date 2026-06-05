@@ -81,7 +81,7 @@
 - 结论: `通过` | `需修改` | `阻塞`
 - 结论理由:
 - 下一步动作或推荐 Skill:                # canonical devflow-* 节点：devflow-tdd-implementation / devflow-finalize / devflow-router 等
-- reroute_via_router: true / false
+- reroute: true / false
 
 ## 备注
 

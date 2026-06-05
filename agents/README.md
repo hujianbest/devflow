@@ -32,7 +32,7 @@ primary_artifact    features/<id>/requirement.md | ar-design-draft.md | ...
 supporting_context  progress.md 摘要 + 相邻 docs/
 agents_md_anchor    项目 AGENTS.md 覆盖锚点
 expected_return_contract  verdict + findings + record_path +
-                          next_action_or_recommended_skill + reroute_via_router
+                          next_action_or_recommended_skill + reroute
 ```
 
 子代理在新会话内载入 `agents/devflow-reviewer.md` 作为 system prompt，根据 `target_skill` 加载并执行 `skills/<target_skill>/SKILL.md` 的 `工作流` 章节，返回结构化 verdict 后会话结束。
@@ -49,10 +49,10 @@ evidence_paths      evidence 输出位置（features/<id>/evidence/...）
 test_and_build_cmds 测试与构建命令
 expected_return_contract  result ∈ {DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED}
                           + task_id + files_touched + tests_added + evidence_paths
-                          + concerns + reroute_via_router
+                          + concerns + reroute
 ```
 
-`NEEDS_CONTEXT` 不外溢到父会话；由 `devflow-tdd-implementation` 内部重新打包再试。只有 `BLOCKED + reroute_via_router=true` 才回到 `devflow-router`。
+`NEEDS_CONTEXT` 不外溢到父会话；由 `devflow-tdd-implementation` 内部重新打包再试。只有 `BLOCKED + reroute=true` 才回到 `devflow-router`。
 
 ## 决策矩阵
 
@@ -71,6 +71,6 @@ expected_return_contract  result ∈ {DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT 
 
 1. 单一角色 + 单一输出契约。出现第二角色 → 应该是第二个 persona，不是第二段 system prompt。
 2. 评审 persona **不修改** 任何生产代码 / 测试 / 设计制品。
-3. 实现 persona **不修改** task 计划 / AR 设计 / task-board 顺序；越界 → `BLOCKED + reroute_via_router=true`。
+3. 实现 persona **不修改** task 计划 / AR 设计 / task-board 顺序；越界 → `BLOCKED + reroute=true`。
 4. 任一 persona 都 **不调用** 另一 persona；跨视角发现写进 findings / concerns。
 5. 每个 persona 文件末尾必须有 `Composition` 块说明唯一合法派发者。

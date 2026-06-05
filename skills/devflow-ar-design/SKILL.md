@@ -75,7 +75,7 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 
 ### 2. 检查是否触及组件边界
 
-按 SOA Boundary 检查对照 requirement.md 的 Component Impact 与当前 AR 的初步思路。**触及组件接口 / 依赖 / 状态机** → 立即停下，标 `reroute_via_router=true`，回 `devflow-router` 升级 component-impact。AR 实现设计**不**修改组件架构。
+按 SOA Boundary 检查对照 requirement.md 的 Component Impact 与当前 AR 的初步思路。**触及组件接口 / 依赖 / 状态机** → 立即停下，标 `reroute=true`，回 `devflow-router` 升级 component-impact。AR 实现设计**不**修改组件架构。
 
 ### 3. 方案选择 checkpoint
 
@@ -90,7 +90,7 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 
 给出推荐方案和理由。若只有一个显然方案，写 `Single obvious option`，说明为什么其它方案不成立（例如组件设计已限定、变更极小、接口不可变）。
 
-`interactive` 模式下，把方案摘要交给开发负责人确认后再进入完整设计；`auto` 模式下，只有当推荐方案不需要业务 / 架构拍板且不改变组件边界时才继续，否则标 `reroute_via_router=true` 回 `devflow-router`。
+`interactive` 模式下，把方案摘要交给开发负责人确认后再进入完整设计；`auto` 模式下，只有当推荐方案不需要业务 / 架构拍板且不改变组件边界时才继续，否则标 `reroute=true` 回 `devflow-router`。
 
 ### 4. 加载团队模板
 

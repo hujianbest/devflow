@@ -121,7 +121,7 @@
 | 适用维度均 ≥ 6，无 critical USER-INPUT，Open Questions 已闭合或可上抛 | `通过` |
 | 评分某项 < 6 但 findings 可 1-2 轮定向修订（无 critical USER-INPUT 阻塞） | `需修改` |
 | 评分多项 < 6 / critical USER-INPUT 阻塞 / 范围严重不清 | `阻塞`（内容） |
-| route / stage / profile / 上游证据冲突；或 SR 工件试图映射到实现节点 | `阻塞`（workflow），`reroute_via_router=true` |
+| route / stage / profile / 上游证据冲突；或 SR 工件试图映射到实现节点 | `阻塞`（workflow），`reroute=true` |
 
 `通过` verdict 后的 `next_action_or_recommended_skill` 由 SKILL.md 的 verdict 决策表按 work item 类型决定（SR → component-design / finalize；AR / DTS / CHANGE → component-design / ar-design）。
 

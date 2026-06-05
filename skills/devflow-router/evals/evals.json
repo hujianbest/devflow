@@ -37,7 +37,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-test-review",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "handoff.next_action_or_recommended_skill == 'devflow-test-review'",
@@ -76,7 +76,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-finalize",
-        "reroute_via_router": false,
+        "reroute": false,
         "blockers": ["candidate AR implementation requires a new AR work item created by the requirement owner"]
       },
       "verification": [
@@ -114,7 +114,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-component-design",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "handoff.next_action_or_recommended_skill == 'devflow-component-design'",
@@ -141,7 +141,7 @@
           "current_node": "devflow-ar-design-review",
           "verdict": "阻塞",
           "blockers": ["AR design rewrites component SOA interface signature; needs component-impact"],
-          "reroute_via_router": true
+          "reroute": true
         }
       },
       "must_do": [
@@ -156,7 +156,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-component-design",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "handoff.next_action_or_recommended_skill == 'devflow-component-design'",
@@ -194,7 +194,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-test-review",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "handoff.next_action_or_recommended_skill == 'devflow-test-review'",
@@ -204,7 +204,7 @@
     },
     {
       "id": "router-EV-006",
-      "name": "Multiple in_progress tasks must trigger reroute_via_router=true, never silently pick one",
+      "name": "Multiple in_progress tasks must trigger reroute=true, never silently pick one",
       "category": "wrong-node-routing",
       "severity": "high",
       "setup": {
@@ -221,7 +221,7 @@
       },
       "must_do": [
         "Detect that Current Active Task is not unique",
-        "Set reroute_via_router=true and stop",
+        "Set reroute=true and stop",
         "Record the conflict in blockers"
       ],
       "must_not_do": [
@@ -230,15 +230,15 @@
         "Route to devflow-completion-gate"
       ],
       "expected_handoff": {
-        "reroute_via_router": true,
+        "reroute": true,
         "blockers": ["multiple in_progress tasks: T-002, T-005"]
       },
       "verification": [
-        "handoff.reroute_via_router == true",
+        "handoff.reroute == true",
         "blockers contains 'multiple in_progress tasks' or equivalent",
         "no canonical next node was dispatched"
       ],
-      "notes": "Hard gate: task-board 无法唯一判断 Current Active Task / next-ready task → reroute_via_router=true."
+      "notes": "Hard gate: task-board 无法唯一判断 Current Active Task / next-ready task → reroute=true."
     },
     {
       "id": "router-EV-007",
@@ -272,7 +272,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-ar-design",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "handoff.next_action_or_recommended_skill == 'devflow-ar-design'",
@@ -314,7 +314,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "handoff.next_action_or_recommended_skill == 'devflow-tdd-implementation'",

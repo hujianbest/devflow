@@ -9,7 +9,7 @@ description: 当 devflow-code-review 已通过且团队需要在 devflow-finaliz
 
 devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tasks.md` / `task-board.md` 感知 task 进度。本 skill 先判断当前 active task 是否满足 DoD；若还有唯一 next-ready task，回到 `devflow-tdd-implementation`，只有所有 task 都完成后才进入 `devflow-finalize`（implementation closeout）。
 
-**适用范围**：仅实现子街区（profile = `standard` / `component-impact` / `hotfix` / `lightweight`）。SR work item（profile = `requirement-analysis`）**不**经过本节点；SR 的收口由 `devflow-finalize` 直接做 analysis closeout。如果 SR 工件被误路由进来 → blocked-workflow，`reroute_via_router=true`。
+**适用范围**：仅实现子街区（profile = `standard` / `component-impact` / `hotfix` / `lightweight`）。SR work item（profile = `requirement-analysis`）**不**经过本节点；SR 的收口由 `devflow-finalize` 直接做 analysis closeout。如果 SR 工件被误路由进来 → blocked-workflow，`reroute=true`。
 
 ## 适用场景
 
@@ -83,7 +83,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 ### 2.5 Precheck
 
 - 缺上游证据 / 实现交接块 / Refactor Note → blocked-content，下一步 `devflow-tdd-implementation`
-- profile / route / 上游 verdict 冲突 → blocked-workflow，`reroute_via_router=true`，下一步 `devflow-router`
+- profile / route / 上游 verdict 冲突 → blocked-workflow，`reroute=true`，下一步 `devflow-router`
 - 否则进入步骤 3
 
 ### 3. 决定与执行验证命令
@@ -117,7 +117,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 按下表收敛唯一 verdict + 唯一下一步：
 
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
+| 条件 | conclusion | `next_action_or_recommended_skill` | reroute |
 |---|---|---|---|
 | 上游证据齐全、本轮验证命令全绿、嵌入式风险审计 clean、当前 task 可标记 done，且存在唯一 next-ready task | `通过` | `devflow-tdd-implementation` | `false` |
 | 上游证据齐全、本轮验证命令全绿、嵌入式风险审计 clean、所有 tasks 均 done，AR 设计可由 finalize 同步到 docs/ | `通过` | `devflow-finalize` | `false` |
@@ -127,12 +127,12 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 ### 8. 同步状态
 
-把 `features/<id>/task-board.md` 中 Current Active Task 标记为 `done`（通过时），再读取 queue。若存在唯一 next-ready task，更新 `progress.md` 的 `Current Active Task` 并写 `Next Action Or Recommended Skill = devflow-tdd-implementation`；若无剩余 ready / pending task，写 `Next Action Or Recommended Skill = devflow-finalize`；若候选不唯一或状态冲突，写 `Next Action Or Recommended Skill = devflow-router` 且 `reroute_via_router=true`。非通过时回 `devflow-tdd-implementation` / `devflow-completion-gate` / `devflow-router`。
+把 `features/<id>/task-board.md` 中 Current Active Task 标记为 `done`（通过时），再读取 queue。若存在唯一 next-ready task，更新 `progress.md` 的 `Current Active Task` 并写 `Next Action Or Recommended Skill = devflow-tdd-implementation`；若无剩余 ready / pending task，写 `Next Action Or Recommended Skill = devflow-finalize`；若候选不唯一或状态冲突，写 `Next Action Or Recommended Skill = devflow-router` 且 `reroute=true`。非通过时回 `devflow-tdd-implementation` / `devflow-completion-gate` / `devflow-router`。
 
 ## 输出契约
 
 - Completion record：`features/<id>/completion.md`，按 `references/devflow-completion-record-template.md`
-- 结构化 reviewer 返回摘要：record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation（默认 `true` 等开发负责人 / 模块架构师确认进入 finalize）、reroute_via_router
+- 结构化 reviewer 返回摘要：record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation（默认 `true` 等开发负责人 / 模块架构师确认进入 finalize）、reroute
 - `features/<id>/progress.md` canonical 同步
 
 ## Exit Handoff
@@ -183,7 +183,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 - [ ] 本轮验证命令、退出码、结果摘要、新鲜度锚点已记录
 - [ ] 嵌入式风险审计显式给出
 - [ ] `modify` / `remove` 的 regression / removal evidence 已纳入 completion evidence bundle
-- [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
+- [ ] verdict 唯一、下一步唯一、`reroute` 正确
 - [ ] 通过时已检查 task-board：有唯一 next-ready task 则下一步 `devflow-tdd-implementation`，无剩余 task 才下一步 `devflow-finalize`
 - [ ] progress.md canonical 同步
 - [ ] needs_human_confirmation 默认 `true`，等开发负责人 / 模块架构师确认

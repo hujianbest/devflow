@@ -419,7 +419,7 @@ DevFlow 2.0 重写完成，当且仅当：
 1. **入口轻量**：`using-devflow` 仅含发现树 + 共同行为准则，不做权威路由、不持有运行时状态、< 120 行。
 2. **去中枢**：标准/component-impact/hotfix 三条路线端到端走通，happy path 不经过 `devflow-router`；router 仅在 `reroute=true` 时被显式调用。
 3. **门禁不丢**：1.0 列出的全部 Hard Stops（见 `04 workflow-architecture.md`）都能在 2.0 被对应 skill 的 Entry Gate 拒绝；`evals/` 通过。
-4. **去重**：约定只在 `AGENTS.md` + `references/devflow-conventions.md` 定义；任一 skill 内不再出现重复的约定样板；单个 `SKILL.md` < 250 行。
+4. **去重**：约定只在 `AGENTS.md` + `references/devflow-conventions.md` 定义；任一 skill 内不再出现重复的约定样板。单个 `SKILL.md` 目标 < 250 行；个别工作流密集的 skill（如 `devflow-specify`、`devflow-finalize`）可略超，但前提是样板已清零、超出部分均为真实工作流内容。
 5. **纪律保留**：证据优先恢复、角色分离评审（独立 subagent、不自审、不改生产代码）、门禁化 TDD、可追溯、团队角色边界，全部可被现有 `evals/` 与端到端走查验证。
 6. **可移植性就绪**：核心 `skills/` 为纯 Markdown，工具适配集中在适配层；至少保证 OpenCode 路径不退化。
 7. **文档一致**：README / `docs/principles/04` / CHANGELOG 与实现一致，并解释新心智模型。

@@ -97,7 +97,7 @@ description: 当 DTS、紧急缺陷或已上线问题在任何代码修改前需
 处理：
 
 - `interactive`：先展示「建议修什么 / 明确不修什么 / 为什么这是最小边界」，等真人确认
-- `auto`：边界仍清晰且证据充分时继续；否则 `reroute_via_router=true` 回 `devflow-router`
+- `auto`：边界仍清晰且证据充分时继续；否则 `reroute=true` 回 `devflow-router`
 
 ### 6. 决定回流节点
 
@@ -109,7 +109,7 @@ description: 当 DTS、紧急缺陷或已上线问题在任何代码修改前需
 | 修复需要正式 AR 实现设计 | `devflow-ar-design` |
 | 修复触及组件边界 | `devflow-component-design`（先升 component-impact） |
 | 实际是需求变更 | `devflow-specify` |
-| 证据不足以确认根因 | `devflow-router`（`reroute_via_router=true`） |
+| 证据不足以确认根因 | `devflow-router`（`reroute=true`） |
 
 ### 7. 同步 progress 与 traceability
 
@@ -138,7 +138,7 @@ description: 当 DTS、紧急缺陷或已上线问题在任何代码修改前需
     - features/DTS<id>-<slug>/root-cause.md
     - features/DTS<id>-<slug>/fix-design.md
   `next_action_or_recommended_skill`: <步骤 7 回流节点>
-  reroute_via_router: true | false
+  reroute: true | false
   ```
 
 ## Exit Handoff

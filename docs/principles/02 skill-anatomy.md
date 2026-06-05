@@ -188,7 +188,7 @@ This skill turns an approved AR and its component design context into an AR impl
 
 ### 3. 写工件 / record / evidence
 
-落盘到约定路径（本 skill 的本地 DevFlow 约定 / AGENTS.md 覆盖优先），保留 traceability 锚点与新鲜度证据。
+落盘到约定路径（`references/devflow-conventions.md` / `AGENTS.md` 覆盖优先），保留 traceability 锚点与新鲜度证据。
 
 ### 4. Handoff
 

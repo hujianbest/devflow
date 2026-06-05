@@ -86,7 +86,7 @@ description: 当需要创建或修订组件实现设计时使用；触发场景�
 
 - `new`：新增组件 / 新增章节
 - `revise`：修订现有 `docs/component-design.md` 的某些章节
-- `consume-only`：本次只消费现有组件设计 → 标 `reroute_via_router=true`，下一步 `devflow-router`（router 应把 profile 退回 standard，不应进入本节点）
+- `consume-only`：本次只消费现有组件设计 → 标 `reroute=true`，下一步 `devflow-router`（router 应把 profile 退回 standard，不应进入本节点）
 
 ### 3. 方案选择 checkpoint
 
@@ -102,7 +102,7 @@ description: 当需要创建或修订组件实现设计时使用；触发场景�
 
 给出推荐方案和理由。若只有一个显然方案，写 `Single obvious option`，说明为什么其它方案不成立（例如团队组件模板已限定、现有接口不可变、修订仅为文档同步）。
 
-`interactive` 模式下，把方案摘要交给模块架构师确认后再进入完整设计；`auto` 模式下，只有当推荐方案不需要架构拍板、不改变跨组件契约且无开放协调点时才继续，否则标 `reroute_via_router=true` 回 `devflow-router`。
+`interactive` 模式下，把方案摘要交给模块架构师确认后再进入完整设计；`auto` 模式下，只有当推荐方案不需要架构拍板、不改变跨组件契约且无开放协调点时才继续，否则标 `reroute=true` 回 `devflow-router`。
 
 ### 4. 加载团队模板
 

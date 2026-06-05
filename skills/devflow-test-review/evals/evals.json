@@ -27,7 +27,7 @@
       "expected_handoff": {
         "verdict": "需修改",
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "no write to any *_test.* / *_spec.* file",
@@ -60,7 +60,7 @@
       "expected_handoff": {
         "verdict": "需修改",
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "no write to any production source file (e.g. foo_handler.c)",
@@ -91,7 +91,7 @@
       "expected_handoff": {
         "verdict": "需修改",
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "reviews/test-check.md scores every rubric dimension",
@@ -123,7 +123,7 @@
       "expected_handoff": {
         "verdict": "需修改",
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "reviews/test-check.md cites the failed RED evidence specifically",
@@ -153,7 +153,7 @@
       "expected_handoff": {
         "verdict": "需修改",
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "reviews/test-check.md cites the mock boundary violation",
@@ -183,7 +183,7 @@
       "expected_handoff": {
         "verdict": "需修改",
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "reviews/test-check.md flags concurrency-dimension as uncovered",
@@ -203,7 +203,7 @@
       },
       "must_do": [
         "Return exactly one canonical next_action_or_recommended_skill",
-        "If a single canonical node cannot be determined, set reroute_via_router=true and stop"
+        "If a single canonical node cannot be determined, set reroute=true and stop"
       ],
       "must_not_do": [
         "Return multiple candidate next steps",
@@ -212,7 +212,7 @@
       "expected_handoff": {
         "verdict": "需修改",
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "handoff.next_action_or_recommended_skill is a single canonical devflow-* node",

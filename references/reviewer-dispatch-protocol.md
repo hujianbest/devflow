@@ -52,13 +52,13 @@ finding_breakdown:
   minor: <count>
 next_action_or_recommended_skill:   # 唯一 canonical devflow-* 节点名
 needs_human_confirmation: true | false
-reroute_via_router: true | false
+reroute: true | false
 ```
 
 约束：
 
 - `next_action_or_recommended_skill` 只能写一个 canonical 值；不得拼接多个候选
-- 若问题本质属于 stage / route / profile 冲突，必须 `reroute_via_router=true` 且 `next_action_or_recommended_skill=devflow-router`
+- 若问题本质属于 stage / route / profile 冲突，必须 `reroute=true` 且 `next_action_or_recommended_skill=devflow-router`
 - `通过` + `needs_human_confirmation=true`：父会话需让对应团队角色（开发负责人 / 模块架构师 / 需求负责人）确认后才能进入下一节点
 - reviewer **不允许**返回 `通过` 同时给出 critical findings
 
@@ -73,7 +73,7 @@ reroute_via_router: true | false
 | `devflow-spec-review` | `devflow-component-design`（SR 触发组件设计修订）/ `devflow-finalize`（仅澄清，无组件设计修订；写 analysis closeout） | `devflow-specify` | `devflow-specify` | `devflow-router` |
 | `devflow-component-design-review` | `devflow-finalize`（写 analysis closeout） | `devflow-component-design` | `devflow-component-design` | `devflow-router` |
 
-SR-flow 中 `devflow-ar-design-review` / `devflow-test-review` / `devflow-code-review` 不应被派发；如果发生，`devflow-router` 应在派发前拦截，或 reviewer 返回 `阻塞`(workflow) + `reroute_via_router=true`。
+SR-flow 中 `devflow-ar-design-review` / `devflow-test-review` / `devflow-code-review` 不应被派发；如果发生，`devflow-router` 应在派发前拦截，或 reviewer 返回 `阻塞`(workflow) + `reroute=true`。
 
 ### 实现子街区（profile = `standard` / `component-impact` / `hotfix` / `lightweight`）
 

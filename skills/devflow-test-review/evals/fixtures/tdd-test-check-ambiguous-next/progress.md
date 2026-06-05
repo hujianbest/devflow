@@ -14,4 +14,4 @@
 
 ## Notes
 
-Findings are mixed: some 需修改 items belong to `devflow-tdd-implementation` (missing edge case test), one belongs to `devflow-ar-design` (test design itself is incomplete). The reviewer is tempted to return both as candidates. The reviewer MUST collapse to **one** canonical next step (or set `reroute_via_router=true`).
+Findings are mixed: some 需修改 items belong to `devflow-tdd-implementation` (missing edge case test), one belongs to `devflow-ar-design` (test design itself is incomplete). The reviewer is tempted to return both as candidates. The reviewer MUST collapse to **one** canonical next step (or set `reroute=true`).

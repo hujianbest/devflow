@@ -13,4 +13,4 @@
 
 ## Notes
 
-`reviews/ar-design-review.md` returned `阻塞`(workflow) with `reroute_via_router=true`. The reviewer found the AR design covertly changed a SOA interface; profile is currently `standard` and the router MUST escalate to `component-impact` and route to `devflow-component-design`.
+`reviews/ar-design-review.md` returned `阻塞`(workflow) with `reroute=true`. The reviewer found the AR design covertly changed a SOA interface; profile is currently `standard` and the router MUST escalate to `component-impact` and route to `devflow-component-design`.

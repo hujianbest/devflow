@@ -21,7 +21,8 @@ Every `skills/devflow-*/SKILL.md` should be:
 - **Verifiable** — the `## 验证清单` (Verification) section enumerates exit conditions in terms of artifacts on disk and review verdicts, not "it looks right".
 - **Artifact-first** — the next step must be recoverable from `features/<id>/` files (`progress.md`, `reviews/`, `evidence/`), not from chat memory.
 - **Role-separated** — author, reviewer, gate, and finalizer are distinct skills. No skill self-verifies its own output.
-- **Independently installable** — references live under each skill's own `references/`. Avoid creating a shared `skills/docs/` or `skills/templates/` that other skills must load.
+- **Composable & gated** — each skill carries an `## Entry Gate` (self-check upstream evidence / hard stops) and an `## Exit Handoff` (unique next node per the transition table). Skills are invoked as composable peers; the happy path needs no central router.
+- **Convention-light** — cross-skill conventions live once in `references/devflow-conventions.md`; a skill references it via a one-line `## 约定` section. Skill-specific rubrics/templates stay under that skill's own `references/`. Avoid creating a shared `skills/docs/` or `skills/templates/` that other skills must load.
 
 The full anatomy spec is in [`docs/principles/02 skill-anatomy.md`](docs/principles/02%20skill-anatomy.md).
 
@@ -32,19 +33,21 @@ A `SKILL.md` MUST contain (in order):
 1. YAML frontmatter with `name` (= directory name, `devflow-*` prefix) and `description` (a classifier — *not* a workflow summary).
 2. `# Title` + a 1–2 line statement of "what this skill does and what it does not".
 3. `## 适用场景` — when to use, when to redirect.
-4. `## 硬性门禁` — non-negotiable stop conditions (Hard Gates).
-5. `## 对象契约` — Object Contract (Primary / Frontend Input / Backend Output / Transformation / Boundaries / Invariants).
-6. `## 方法原则` — Methodology, with each method tied to a workflow step.
-7. `## 工作流` — numbered steps, prose-style, each with method / input / output / stop rule.
-8. `## 输出契约` — what is written, where, with which trace links and evidence.
-9. `## 风险信号` — runtime stop signs.
-10. `## 反向理由化（Common Rationalizations）` — common LLM-style excuses + counter-arguments.
-11. `## 常见错误` — error → fix table.
-12. `## 验证清单` — exit conditions.
-13. `## 本地 DevFlow 约定` — artifact layout, progress fields, handoff fields, plus skill-specific local rules.
-14. `## 支撑参考` — table of `references/*.md` files.
+4. `## Entry Gate` — upstream evidence / hard stops this skill self-checks before starting (references `devflow-conventions.md` §9).
+5. `## 硬性门禁` — non-negotiable stop conditions (Hard Gates).
+6. `## 对象契约` — Object Contract (Primary / Frontend Input / Backend Output / Transformation / Boundaries / Invariants).
+7. `## 方法原则` — Methodology, with each method tied to a workflow step.
+8. `## 工作流` — numbered steps, prose-style, each with method / input / output / stop rule.
+9. `## 输出契约` — what is written, where, with which trace links and evidence.
+10. `## Exit Handoff` — the unique next canonical node per the transition table (`devflow-conventions.md` §8), or `reroute=true`.
+11. `## 风险信号` — runtime stop signs.
+12. `## 反向理由化（Common Rationalizations）` — common LLM-style excuses + counter-arguments.
+13. `## 常见错误` — error → fix table.
+14. `## 验证清单` — exit conditions.
+15. `## 约定` — one-line reference to `references/devflow-conventions.md` (do NOT restate paths/fields/profiles inline).
+16. `## 支撑参考` — table of this skill's own `references/*.md` files.
 
-References belong in `references/` under each skill, not at the repository top level.
+Skill-specific references belong in `references/` under each skill. Cross-cutting conventions and the shared reviewer-dispatch protocol live once in the project-root `references/`.
 
 ## Writing the `description` field
 
@@ -61,18 +64,19 @@ Each leaf skill carries a `## 反向理由化（Common Rationalizations）` tabl
 
 ## Profile and routing changes
 
-`devflow-router` is the runtime authority for Workflow Profile, Execution Mode, the canonical next node, reviewer dispatch, and review / gate recovery. Changes to:
+`references/devflow-conventions.md` is the single source of truth for Workflow Profile, Execution Mode, the canonical node list, the transition table, hard stops, and reviewer dispatch. `devflow-router` is optional arbitration for hard cases only; happy-path routing lives in each skill's `Entry Gate` / `Exit Handoff`. Changes to:
 
 - the legal profile set (`requirement-analysis`, `standard`, `component-impact`, `hotfix`, `lightweight`),
 - subgraph membership (which skills each profile may route to),
 - escalation rules,
 - handoff / progress field schema,
+- the canonical transition table or hard stops,
 
-MUST be proposed against `devflow-router/SKILL.md` and `devflow-router/references/profile-and-route-map.md` first, with each affected leaf updated in the same PR.
+MUST be proposed against `references/devflow-conventions.md` first, with each affected leaf's `Entry Gate` / `Exit Handoff` and `AGENTS.md` updated in the same PR.
 
 ## Reviewer dispatch
 
-Reviewer behaviour is encoded entirely in the `devflow-*-review` / `devflow-test-review` / `devflow-code-review` SKILL files. When `devflow-router` reaches a review node, it dispatches an independent subagent seeded with the corresponding skill body as its system prompt — the skill IS the reviewer prompt. Do not introduce a separate persona layer that paraphrases the skill.
+Reviewer behaviour is encoded entirely in the `devflow-*-review` / `devflow-test-review` / `devflow-code-review` SKILL files. The orchestrator (the phase command / session controller; or the optional `devflow-router` when arbitrating) dispatches an independent subagent seeded with the corresponding skill body as its system prompt — the skill IS the reviewer prompt. The `test-review → code-review` chain stays sequential (no parallel fan-out). Do not introduce a separate persona layer that paraphrases the skill. The dispatch contract lives in `references/reviewer-dispatch-protocol.md`.
 
 ## Skill `evals/`
 
@@ -98,7 +102,7 @@ When you change a hard gate, profile rule, or a key workflow step on one of thes
 
 - File naming: skill directories are `devflow-<noun>`. Reference files are `kebab-case.md`. Persona files are `devflow-<role>-reviewer.md` (or equivalent).
 - Don't add `.cursor/`, `.opencode/`, `.claude/` editor-specific directories at the repository root unless they are part of a deliberate integration release.
-- Don't introduce a `skills/docs/` or `skills/templates/` shared folder. References live per-skill.
+- Don't introduce a `skills/docs/` or `skills/templates/` shared folder. Skill-specific references live per-skill; cross-cutting conventions live once under the project-root `references/`.
 
 ## License
 

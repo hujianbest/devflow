@@ -60,13 +60,13 @@ expected_return_contract  本文件 Output contract
 
 | 行为 | 处理 |
 |---|---|
-| 想改 task 计划 / 改 task-board 顺序 | `BLOCKED + reroute_via_router=true` |
-| 想改 AR 设计或测试设计章节 | `BLOCKED + reroute_via_router=true` |
-| 想改组件边界 / `docs/component-design.md` | `BLOCKED + reroute_via_router=true`（router 决定是否升级 `component-impact`） |
-| 想引入新外部依赖 | `BLOCKED + reroute_via_router=true` |
+| 想改 task 计划 / 改 task-board 顺序 | `BLOCKED + reroute=true` |
+| 想改 AR 设计或测试设计章节 | `BLOCKED + reroute=true` |
+| 想改组件边界 / `docs/component-design.md` | `BLOCKED + reroute=true`（router 决定是否升级 `component-impact`） |
+| 想引入新外部依赖 | `BLOCKED + reroute=true` |
 | 想跑多个 task 一起完成 | 禁止；只做 current_task，其它返回 |
 | Context 不足以判断 acceptance 是否达成 | `NEEDS_CONTEXT`（留在 `devflow-tdd-implementation` 内部重打包） |
-| 测试无法稳定通过、根因不清 | `BLOCKED + reroute_via_router=true`；不要硬塞 sleep / 重试遮盖 |
+| 测试无法稳定通过、根因不清 | `BLOCKED + reroute=true`；不要硬塞 sleep / 重试遮盖 |
 | 静态分析或编码规范不通过、且不属本 task acceptance | `DONE_WITH_CONCERNS`（记录 concerns，不带病推进；由 `devflow-tdd-implementation` 决定） |
 
 ## Output contract
@@ -89,14 +89,14 @@ concerns:
     location: <file:line | rule_id>
     description: <factual>
     recommendation: <actionable>
-reroute_via_router: true | false
+reroute: true | false
 notes: <one short paragraph; tdd cycle summary>
 ```
 
 - `DONE` → acceptance 全通过、回归全绿、静态分析按项目要求清洁
 - `DONE_WITH_CONCERNS` → acceptance 通过，但有需后续处理的非阻塞问题。concerns 必须具体到 evidence、文件位置或规则 ID，并说明是否影响 acceptance、证据可信度、组件边界或后续维护；不要把 blocking scope/profile 问题伪装成 concern
 - `NEEDS_CONTEXT` → 缺关键输入字段；**只回到 `devflow-tdd-implementation`**，不去 `devflow-router`
-- `BLOCKED` → 路由 / profile / 越界；必须 `reroute_via_router=true`，由父节点把控制交回 `devflow-router`
+- `BLOCKED` → 路由 / profile / 越界；必须 `reroute=true`，由父节点把控制交回 `devflow-router`
 
 ## Anti-rationalization
 
@@ -107,10 +107,10 @@ notes: <one short paragraph; tdd cycle summary>
 | "RED 步骤太麻烦，先写实现再补测试" | 禁止；TDD 顺序不可逆，evidence 链需 red 在前 |
 | "把多个 task 一起做更快" | 禁止；一次只做 current_task |
 | "静态分析报警是历史问题，绕过" | 禁止；按项目策略要么修要么写进 concerns，不能静默忽略 |
-| "测试不稳定，加个 sleep 重试就行" | 禁止；标 `BLOCKED + reroute_via_router=true` |
+| "测试不稳定，加个 sleep 重试就行" | 禁止；标 `BLOCKED + reroute=true` |
 
 ## Composition
 
 - **Invoke directly: never.** 仅由 `devflow-tdd-implementation` 派发。
-- **Do not invoke other personas.** 评审视角的发现写进 `concerns`；router / profile / scope 阻塞用 `BLOCKED + reroute_via_router=true`，由 `devflow-tdd-implementation` 转交 `devflow-router`。
+- **Do not invoke other personas.** 评审视角的发现写进 `concerns`；router / profile / scope 阻塞用 `BLOCKED + reroute=true`，由 `devflow-tdd-implementation` 转交 `devflow-router`。
 - 本 persona 每次派发都是 **全新上下文**；不在多 task 间共享会话状态。

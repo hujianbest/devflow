@@ -8,5 +8,5 @@
     severity: critical
     anchor: AR design §3.2 (signature change)
     rationale: AR design rewrites the public SOA service signature; this exceeds AR scope and must be revised at component-design level first.
-- reroute_via_router: true
+- reroute: true
 - next_action_or_recommended_skill: devflow-router

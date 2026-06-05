@@ -85,7 +85,7 @@ skills/devflow-<name>/evals/
 `expected_handoff` 至少含：
 - `verdict` 或 `result`（如适用）
 - `next_action_or_recommended_skill`（必须是 canonical DevFlow 节点）
-- `reroute_via_router`（boolean）
+- `reroute`（boolean）
 - `blockers` 关键字（如适用）
 
 `verification` 是一个有序检查列表，每条要么是「读 `<file>` 第 N 行 / 第 X 节」，要么是「在 handoff 中确认 `<field> == <value>`」。

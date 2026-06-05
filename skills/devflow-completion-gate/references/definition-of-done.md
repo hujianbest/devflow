@@ -93,4 +93,4 @@
 | 通用 DoD + Profile 加项均满足，所有 tasks 均 done，无 critical-open，本轮验证全绿 | `通过` | `devflow-finalize` |
 | 任一项缺失但可在 1-2 轮回修内补齐 | `需修改` | `devflow-tdd-implementation` |
 | 工具链 / 环境问题阻塞验证 | `阻塞` | `devflow-completion-gate`（恢复后重审） |
-| profile / route 冲突 / 跨组件协调缺失 / 实质修改组件边界 | `阻塞`（workflow） + `reroute_via_router=true` | `devflow-router` |
+| profile / route 冲突 / 跨组件协调缺失 / 实质修改组件边界 | `阻塞`（workflow） + `reroute=true` | `devflow-router` |

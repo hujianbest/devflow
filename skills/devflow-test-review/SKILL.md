@@ -38,7 +38,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 - reviewer **不**替开发负责人 / 模块架构师拍板
 - reviewer **不**返回多个候选下一步
 - 缺实现交接块或 fresh evidence → blocked-content，下一步 `devflow-tdd-implementation`
-- route / stage / profile 冲突 → blocked-workflow，`reroute_via_router=true`，下一步 `devflow-router`
+- route / stage / profile 冲突 → blocked-workflow，`reroute=true`，下一步 `devflow-router`
 
 ## 对象契约
 
@@ -70,7 +70,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 ### 1.5 Precheck
 
 - 缺关键测试资产或实现交接块 → blocked-content，下一步 `devflow-tdd-implementation`
-- route / stage / profile 冲突 → blocked-workflow，`reroute_via_router=true`，下一步 `devflow-router`
+- route / stage / profile 冲突 → blocked-workflow，`reroute=true`，下一步 `devflow-router`
 - 否则进入步骤 2
 
 ### 2. 多维评分
@@ -94,7 +94,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 
 按下表收敛唯一 verdict + 唯一下一步：
 
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
+| 条件 | conclusion | `next_action_or_recommended_skill` | reroute |
 |---|---|---|---|
 | 7 维度均 ≥ 6、嵌入式风险矩阵被实测覆盖、断言强度足够、无 critical USER-INPUT | `通过` | `devflow-code-review` | `false` |
 | findings 可 1-2 轮定向修订 | `需修改` | `devflow-tdd-implementation` | `false` |
@@ -107,7 +107,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 ## 输出契约
 
 - Review record：`features/<id>/reviews/test-check.md`
-- 结构化 reviewer 返回摘要：record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation（默认 `false`）、reroute_via_router
+- 结构化 reviewer 返回摘要：record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation（默认 `false`）、reroute
 
 ## Exit Handoff
 
@@ -158,7 +158,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 - [ ] review record 已落盘
 - [ ] precheck 结果显式记录
 - [ ] 7 维度评分完整、findings 已分类
-- [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
+- [ ] verdict 唯一、下一步唯一、`reroute` 正确
 - [ ] 嵌入式风险覆盖矩阵已被实际测试落实情况已显式审查
 - [ ] `modify` / `remove` 的 regression / removal evidence 已映射到 Existing Behavior / Baseline
 - [ ] 结构化摘要已回传父会话
@@ -172,7 +172,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 - Inputs Consumed：primary artifact path + freshness anchor、commit/branch、supporting context paths、AGENTS.md/team standards used。
 - Multi-Dimension Scoring：rubric dimensions、0-10 score，以及每个分数的 evidence；任一 critical dimension 低于阈值即不得通过。
 - Findings：ID、severity、classification、rule_id、anchor/location、description、impact、suggested fix。
-- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute_via_router、needs_human_confirmation。
+- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute、needs_human_confirmation。
 - Follow-up Actions：所需 rework 或 confirmation 的 owner 与 status。
 
 ## 评审者契约
@@ -195,10 +195,10 @@ finding_breakdown:
   minor: 0
 next_action_or_recommended_skill: <one canonical devflow node>
 needs_human_confirmation: true | false
-reroute_via_router: true | false
+reroute: true | false
 ```
 
-规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute_via_router=true`；通过结论不能包含 critical findings。
+规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute=true`；通过结论不能包含 critical findings。
 
 ## 本地测试设计契约摘录
 

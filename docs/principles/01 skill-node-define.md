@@ -135,7 +135,7 @@ devflow 节点必须声明采用的方法，并说明方法如何支撑对象转
 
 ### 3. 写工件 / record / evidence
 
-落盘到约定路径（本 skill 的本地 DevFlow 约定 / AGENTS.md 覆盖优先），包含 traceability 锚点和必要的新鲜度证据。
+落盘到约定路径（`references/devflow-conventions.md` / `AGENTS.md` 覆盖优先），包含 traceability 锚点和必要的新鲜度证据。
 
 ### 4. Handoff
 
@@ -178,7 +178,7 @@ devflow 节点完成时，最小 handoff 应包含：
 - `traceability_links`
 - `blockers`
 - `next_action_or_recommended_skill`
-- `reroute_via_router`，如适用
+- `reroute`，如适用
 
 约束：
 

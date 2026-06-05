@@ -6,6 +6,10 @@
   - Skill-node 设计契约: `docs/principles/01 skill-node-define.md`
   - Skill 写作原则: `docs/principles/02 skill-anatomy.md`
   - 工件管理约定: `docs/principles/03 artifact-layout.md`
+  - **2.0 路由模型与重写说明书**: `docs/devflow-2.0-design-spec.md`
+  - **运行时单一真相源**: `references/devflow-conventions.md`
+
+> **DevFlow 2.0 路由模型（去中枢）**：下文路由图保留各 profile 的**节点顺序**作为参考；但 2.0 不再强制每步经过 `devflow-router`。happy path 由各 skill 的 `Entry Gate` + `Exit Handoff`（按 `references/devflow-conventions.md` §8 转移表）+ 证据自路由驱动；`devflow-router` 仅在疑难（证据冲突 / 跨子街区 / profile 升级 / 多 in_progress task / verdict 无法唯一映射）时作为**可选仲裁**被调用。评审由编排者（阶段命令 / 会话控制器）派发独立 reviewer 子代理。
 
 ## Purpose
 
@@ -43,14 +47,13 @@ devflow 可以按风险选择不同密度，但不能降低质量底线。
 | `hotfix` | 紧急问题修改 | 先复现和根因，再最小安全修复，不能跳过必要验证 |
 | `lightweight` | 极小、低风险、纯局部修改 | 可压缩文档量，但保留 traceability、test evidence、review 和 completion |
 
-Profile 由 `devflow-router` 根据工件和风险信号判断，不由 agent 随口选择。
+Profile 首判由 `devflow-specify`（需求分析 / 实现）或 `devflow-problem-fix`（hotfix）根据工件和风险信号做出并写入 `progress.md`，不由 agent 随口选择；疑难升级由可选的 `devflow-router` 仲裁。
 
 ## Standard Route
 
 ```text
-using-devflow
-  -> devflow-router
-  -> devflow-specify
+using-devflow              # discovery（meta，非运行节点）
+  -> devflow-specify       # happy path 由各 skill Exit Handoff + 证据自路由驱动
   -> devflow-spec-review
   -> devflow-ar-design
   -> devflow-ar-design-review
@@ -82,8 +85,7 @@ using-devflow
 推荐路线：
 
 ```text
-devflow-router
-  -> devflow-specify
+devflow-specify
   -> devflow-spec-review
   -> devflow-component-design
   -> devflow-component-design-review
@@ -103,9 +105,8 @@ devflow-router
 问题修改不能直接跳到“改代码”。推荐路线：
 
 ```text
-using-devflow
-  -> devflow-router
-  -> devflow-problem-fix
+using-devflow              # discovery（meta，非运行节点）
+  -> devflow-problem-fix    # profile 首判 hotfix；疑难才调用可选 devflow-router 仲裁
   -> devflow-ar-design 或 devflow-tdd-implementation
   -> devflow-test-review
   -> devflow-code-review

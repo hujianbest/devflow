@@ -64,8 +64,8 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 ### 1.5 Precheck
 
 - 缺设计草稿 → blocked-content，下一步 `devflow-component-design`
-- route / stage / profile 冲突（如未升级 component-impact 却进入本节点） → blocked-workflow，`reroute_via_router=true`，下一步 `devflow-router`
-- spec-review 未通过 → blocked-workflow，`reroute_via_router=true`
+- route / stage / profile 冲突（如未升级 component-impact 却进入本节点） → blocked-workflow，`reroute=true`，下一步 `devflow-router`
+- spec-review 未通过 → blocked-workflow，`reroute=true`
 - 否则进入步骤 2
 
 ### 2. 多维评分
@@ -92,7 +92,7 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 
 **SR work item（profile = `requirement-analysis`）**：
 
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router | needs_human_confirmation |
+| 条件 | conclusion | `next_action_or_recommended_skill` | reroute | needs_human_confirmation |
 |---|---|---|---|---|
 | 7 维度均 ≥ 6、无 critical USER-INPUT、模块架构师可被请求 sign-off | `通过` | `devflow-finalize`（analysis closeout） | `false` | `true`（等模块架构师 sign-off） |
 | findings 可 1-2 轮定向修订 | `需修改` | `devflow-component-design` | `false` | `false` |
@@ -101,7 +101,7 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 
 **AR work item（profile = `component-impact`）**：
 
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router | needs_human_confirmation |
+| 条件 | conclusion | `next_action_or_recommended_skill` | reroute | needs_human_confirmation |
 |---|---|---|---|---|
 | 7 维度均 ≥ 6、无 critical USER-INPUT、模块架构师可被请求 sign-off | `通过` | `devflow-ar-design` | `false` | `true`（等模块架构师 sign-off） |
 | findings 可 1-2 轮定向修订 | `需修改` | `devflow-component-design` | `false` | `false` |
@@ -114,7 +114,7 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 ## 输出契约
 
 - Review record：`features/<id>/reviews/component-design-review.md`
-- 结构化 reviewer 返回摘要含 record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation、reroute_via_router
+- 结构化 reviewer 返回摘要含 record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation、reroute
 - `通过` 时 needs_human_confirmation 默认 `true`（等模块架构师 sign-off），由父会话决定何时进入 `devflow-ar-design`
 
 ## Exit Handoff
@@ -165,7 +165,7 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 - [ ] precheck 结果显式记录
 - [ ] 7 维度评分完整、findings 已分类
 - [ ] `modify` / `remove` 的 Existing Behavior / Baseline、兼容 / 迁移 / 废弃策略已显式审查
-- [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
+- [ ] verdict 唯一、下一步唯一、`reroute` 正确
 - [ ] `通过` 时 `needs_human_confirmation=true` 等模块架构师 sign-off
 - [ ] 结构化摘要已回传父会话
 - [ ] 未顺手修改设计草稿
@@ -178,7 +178,7 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 - Inputs Consumed：primary artifact path + freshness anchor、commit/branch、supporting context paths、AGENTS.md/team standards used。
 - Multi-Dimension Scoring：rubric dimensions、0-10 score，以及每个分数的 evidence；任一 critical dimension 低于阈值即不得通过。
 - Findings：ID、severity、classification、rule_id、anchor/location、description、impact、suggested fix。
-- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute_via_router、needs_human_confirmation。
+- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute、needs_human_confirmation。
 - Follow-up Actions：所需 rework 或 confirmation 的 owner 与 status。
 
 ## 评审者契约
@@ -201,10 +201,10 @@ finding_breakdown:
   minor: 0
 next_action_or_recommended_skill: <one canonical devflow node>
 needs_human_confirmation: true | false
-reroute_via_router: true | false
+reroute: true | false
 ```
 
-规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute_via_router=true`；通过结论不能包含 critical findings。
+规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute=true`；通过结论不能包含 critical findings。
 
 ## 约定
 

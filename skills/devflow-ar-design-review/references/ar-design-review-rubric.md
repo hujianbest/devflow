@@ -102,4 +102,4 @@
 | 8 维度均 ≥ 6、Design Options 已确认、组件边界未被改写、测试设计章节充分、无 critical USER-INPUT | `通过` | `true`（开发负责人确认） |
 | 评分某项 < 6 但 findings 可 1-2 轮定向修订 | `需修改` | `false` |
 | 测试设计缺失 / 嵌入式风险矩阵缺失 / 设计严重不清 / critical TEAM-EXPERT 阻塞 | `阻塞`（内容） | `false` |
-| AR 设计修改组件边界 / 上游证据冲突 | `阻塞`（workflow） + `reroute_via_router=true` | `false` |
+| AR 设计修改组件边界 / 上游证据冲突 | `阻塞`（workflow） + `reroute=true` | `false` |

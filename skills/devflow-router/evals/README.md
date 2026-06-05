@@ -13,7 +13,7 @@ Format and run procedure are defined in [`docs/principles/06 evals-format.md`](.
 | router-EV-003 | evidence-missing | critical | Component-impact AR with missing `docs/component-design.md` must block `devflow-ar-design` |
 | router-EV-004 | profile-discipline | high | AR design that changes a SOA interface must escalate to `component-impact` |
 | router-EV-005 | auto-mode-misuse | high | `Execution Mode = auto` must NOT skip review / gate / approval |
-| router-EV-006 | wrong-node-routing | high | Multiple `in_progress` tasks → `reroute_via_router=true`, never silently pick one |
+| router-EV-006 | wrong-node-routing | high | Multiple `in_progress` tasks → `reroute=true`, never silently pick one |
 | router-EV-007 | template-violation | medium | Free-text `Next Action` from a leaf must be ignored, fall back to migration table |
 | router-EV-008 | wrong-node-routing | medium | After `devflow-completion-gate = 通过` with a next-ready task, route to `devflow-tdd-implementation`, not `devflow-finalize` |
 

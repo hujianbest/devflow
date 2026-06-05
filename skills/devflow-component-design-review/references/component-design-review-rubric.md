@@ -96,4 +96,4 @@
 | 7 维度均 ≥ 6、Design Options 已确认、无 critical USER-INPUT、模块架构师可被请求 sign-off | `通过` | `true`（等 sign-off） |
 | 评分某项 < 6 但 findings 可 1-2 轮定向修订 | `需修改` | `false` |
 | 评分多项 < 6 / critical TEAM-EXPERT 阻塞 / 组件边界严重不清 | `阻塞`（内容） | `false` |
-| route / stage / profile / 上游证据冲突 | `阻塞`（workflow） + `reroute_via_router=true` | `false` |
+| route / stage / profile / 上游证据冲突 | `阻塞`（workflow） + `reroute=true` | `false` |

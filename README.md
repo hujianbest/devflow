@@ -25,7 +25,7 @@ OpenCode v1 uses natural language plus automatic skill discovery. The `commands/
 | Close engineering work | [`/devflow-ship`](commands/devflow-ship.md) | Reviews and gates before closeout |
 | Fix a DTS / hotfix | [`/devflow-fix`](commands/devflow-fix.md) | Reproduce, root-cause, then make the minimal safe fix |
 
-Reviews are not user-invoked shortcuts. `devflow-router` dispatches independent reviewer subagents for spec, component-design, AR-design, test, and code reviews.
+Reviews are not user-invoked shortcuts. The orchestrator (the phase command / session controller; or the optional `devflow-router` when arbitrating) dispatches independent reviewer subagents for spec, component-design, AR-design, test, and code reviews. The `test-review → code-review` chain is gated and sequential.
 
 ---
 
@@ -112,8 +112,8 @@ DevFlow ships one public entry skill plus 13 canonical `devflow-*` runtime nodes
 
 | Skill | What it does | Use when |
 |---|---|---|
-| [`using-devflow`](skills/using-devflow/SKILL.md) | Public entry shell for direct-invoke vs route-first | Starting a session or expressing a high-level DevFlow intent |
-| [`devflow-router`](skills/devflow-router/SKILL.md) | Evidence-based runtime router and recovery controller | Continuing from artifacts or consuming review / gate outcomes |
+| [`using-devflow`](skills/using-devflow/SKILL.md) | Thin meta-skill: intent-to-leaf discovery + common operating behaviors | Starting a session or expressing a high-level DevFlow intent |
+| [`devflow-router`](skills/devflow-router/SKILL.md) | Optional arbitration for hard cases (evidence conflict, profile escalation, non-unique next step) — **not** a default hop | A leaf set `reroute=true`, or the next step cannot be uniquely determined |
 
 ### Define
 
@@ -168,22 +168,24 @@ Each skill is a self-contained operating procedure:
 SKILL.md
 ├── Frontmatter classifier
 ├── Overview and trigger conditions
+├── Entry Gate (self-check upstream evidence / hard stops)
 ├── Hard gates and object contract
 ├── Step-by-step workflow
-├── Required artifacts and evidence
-├── Review or gate contract
+├── Exit Handoff (unique next node per the transition table)
 ├── Red flags and common rationalizations
 ├── Verification checklist
-└── Local DevFlow conventions
+└── 约定 (one-line reference to references/devflow-conventions.md)
 ```
 
 Key design choices:
 
 - **Evidence over memory.** Routing reads files such as `features/<id>/progress.md`, reviews, approvals, evidence, and completion records.
 - **Canonical names only.** `Next Action Or Recommended Skill` must be one of the canonical `devflow-*` nodes; `using-devflow` is a public entry and is never written into runtime handoff fields.
-- **Controlled subagents.** `devflow-router` is the only reviewer dispatcher; `devflow-tdd-implementation` is the only implementer dispatcher.
+- **Decentralized routing.** The happy path runs on each skill's `Entry Gate` + `Exit Handoff` + evidence self-routing; `devflow-router` is optional arbitration for hard cases only.
+- **Single source of truth.** Cross-skill conventions (paths, fields, profiles, transition table, hard stops, reviewer dispatch) live in `references/devflow-conventions.md`; each skill references it via a one-line `## 约定` section instead of restating it.
+- **Controlled subagents.** Reviewer subagents are dispatched by the orchestrator (phase command / session controller; or the optional router when arbitrating); `devflow-tdd-implementation` is the only implementer dispatcher. The `test-review → code-review` chain stays sequential.
 - **No self-verification.** Authoring skills write artifacts and hand off; independent reviewers return verdicts and do not edit production artifacts.
-- **Local references.** Each skill owns its `references/` and, where needed, `evals/`; there is no shared `skills/docs/` dependency.
+- **Local references.** Each skill owns its skill-specific `references/` (rubrics, templates) and, where needed, `evals/`. Cross-cutting conventions and the shared reviewer-dispatch protocol live once in the project-root `references/`.
 
 ---
 
@@ -246,10 +248,14 @@ devflow/
 │   ├── devflow-completion-gate/
 │   ├── devflow-finalize/
 │   └── devflow-problem-fix/
+├── references/                       # shared cross-skill conventions + reviewer-dispatch protocol
+│   ├── devflow-conventions.md        # single source of truth (paths, fields, profiles, transitions, hard stops)
+│   └── reviewer-dispatch-protocol.md
 ├── docs/
 │   ├── guides/
 │   │   └── opencode-setup.md
-│   └── principles/
+│   ├── principles/
+│   └── devflow-2.0-design-spec.md
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── LICENSE

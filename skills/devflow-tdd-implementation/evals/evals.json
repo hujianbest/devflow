@@ -27,7 +27,7 @@
       "must_do": [
         "Read ar-design-draft.md and detect the missing test-design section",
         "Refuse to set up the task queue",
-        "Hand back with reroute_via_router=true so router sends the work back to devflow-ar-design"
+        "Hand back with reroute=true so router sends the work back to devflow-ar-design"
       ],
       "must_not_do": [
         "Synthesize a test-design section on the fly",
@@ -36,12 +36,12 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-ar-design",
-        "reroute_via_router": true,
+        "reroute": true,
         "blockers": ["AR design lacks embedded test-design section"]
       },
       "verification": [
         "handoff.next_action_or_recommended_skill == 'devflow-ar-design'",
-        "handoff.reroute_via_router == true",
+        "handoff.reroute == true",
         "no write to features/AR54321-eval/tasks.md or task-board.md"
       ],
       "notes": "Hard gate from SKILL.md: AR 实现设计未含测试设计章节 → 不得路由到 devflow-tdd-implementation."
@@ -75,7 +75,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-test-review",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "handoff.next_action_or_recommended_skill == 'devflow-test-review'",
@@ -111,11 +111,11 @@
         "Mark either task done"
       ],
       "expected_handoff": {
-        "reroute_via_router": true,
+        "reroute": true,
         "blockers": ["multiple in_progress tasks: T-002, T-005"]
       },
       "verification": [
-        "handoff.reroute_via_router == true",
+        "handoff.reroute == true",
         "no test files written by the implementer",
         "task-board.md unchanged"
       ],
@@ -150,7 +150,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "implementer_subagent_input contains exactly the Context Pack fields, in the documented order",
@@ -188,7 +188,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "implementation-log.md records the GREEN diff and a separate REFACTOR diff (if any)",
@@ -224,7 +224,7 @@
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false,
+        "reroute": false,
         "blockers": ["Refactor Note missing in implementation-log.md for T-001"]
       },
       "verification": [
@@ -259,13 +259,13 @@
         "Stay inside devflow-tdd-implementation"
       ],
       "must_not_do": [
-        "Set reroute_via_router=true on a NEEDS_CONTEXT signal",
+        "Set reroute=true on a NEEDS_CONTEXT signal",
         "Hand off to devflow-router as if the issue were a routing/profile blocker",
         "Forward the missing-context list to the user as a question"
       ],
       "expected_handoff": {
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "controller dispatched implementer subagent again with an extended Context Pack",
@@ -302,13 +302,13 @@
         "Mark T-005 done with the cross-component edit included"
       ],
       "expected_handoff": {
-        "reroute_via_router": true,
+        "reroute": true,
         "blockers": ["T-005 needs cross-component edit to helper.c (out-of-scope); router must decide escalation"]
       },
       "verification": [
         "no write to helper.c by the implementer",
         "implementation-log.md Refactor Note Escalation Triggers section names the cross-component need",
-        "handoff.reroute_via_router == true"
+        "handoff.reroute == true"
       ],
       "notes": "Hard gate against scope creep; aligns with SKILL.md and AGENTS.md profile-discipline rule."
     }

@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### DevFlow 2.0 architecture refactor (in progress)
+
+Reorganizes DevFlow from a router-centric finite-state machine into a decentralized set of composable peer skills with a thin meta-skill, following the design in [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md). Engineering discipline (artifact-first recovery, role-separated reviews, gated TDD, traceability, team-role boundary) is fully preserved.
+
+#### Added
+
+- `references/devflow-conventions.md` — single source of truth for all cross-skill conventions (artifact layout, `progress.md` fields, handoff fields, profiles + escalation, execution mode, canonical node list, read-on-presence / promotion rules, canonical transition table, hard stops, reviewer-dispatch summary).
+- `## Entry Gate` and `## Exit Handoff` sections on all 12 leaf skills + `devflow-router`. Entry Gate self-checks upstream evidence / hard stops; Exit Handoff declares the unique next node per the transition table — replacing the centralized router transition logic for the happy path.
+- `Last Verdict` canonical field in `progress.md` (input to evidence self-routing).
+
+#### Changed
+
+- `using-devflow` rewritten as a thin meta-skill (intent-to-leaf discovery tree + DevFlow common operating behaviors); it no longer does direct-invoke-vs-route-first arbitration or hands control to a router (360→110 lines across the entry pair; total skill lines 4087→~3025).
+- `devflow-router` downgraded from "runtime routing authority" to an **optional arbitration** skill invoked only for hard cases (evidence conflict, cross-subgraph suspicion, profile escalation, non-unique next-ready task, unmappable verdict). It is no longer a default hop (326→~114 lines).
+- Reviewer subagents are now dispatched by the orchestrator (phase command / session controller; or the optional router when arbitrating) instead of exclusively by `devflow-router`. The `test-review → code-review` chain remains gated and sequential (no parallel fan-out).
+- Profile first-judgment moved to `devflow-specify` / `devflow-problem-fix` (written to `progress.md`); escalation arbitrated by the optional router.
+- All 14 skills drop the duplicated `## 本地 DevFlow 约定` boilerplate (~70–90 lines each) in favor of a one-line `## 约定` reference to `references/devflow-conventions.md`.
+- Handoff field `reroute_via_router` renamed to `reroute` (legacy alias still tolerated).
+- `AGENTS.md`, `README.md`, `commands/`, `agents/`, and `docs/principles/04 workflow-architecture.md` updated to describe the decentralized model.
+- Shared `reviewer-dispatch-protocol.md` moved from `skills/devflow-router/references/` to the project-root `references/`; the duplicated `profile-and-route-map.md` folded into `references/devflow-conventions.md`.
+
 ## [1.0.0] — 2026-05-09
 
 First official DevFlow release. Scope: development-stage workflow on **OpenCode**, biased toward embedded C / C++ teams.

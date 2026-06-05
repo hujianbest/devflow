@@ -16,7 +16,7 @@
       },
       "must_do": [
         "Read reviews/ and detect that test-check.md is missing",
-        "Verdict 阻塞(workflow), reroute_via_router=true",
+        "Verdict 阻塞(workflow), reroute=true",
         "Surface that devflow-test-review must run before completion-gate can run again"
       ],
       "must_not_do": [
@@ -26,12 +26,12 @@
       ],
       "expected_handoff": {
         "verdict": "阻塞",
-        "reroute_via_router": true,
+        "reroute": true,
         "blockers": ["reviews/test-check.md missing"]
       },
       "verification": [
         "handoff.verdict == '阻塞'",
-        "handoff.reroute_via_router == true",
+        "handoff.reroute == true",
         "no write to features/AR12345-eval/closeout.md"
       ]
     },
@@ -48,7 +48,7 @@
       },
       "must_do": [
         "Detect that reviews/code-review.md is missing",
-        "Verdict 阻塞(workflow), reroute_via_router=true"
+        "Verdict 阻塞(workflow), reroute=true"
       ],
       "must_not_do": [
         "Verdict 通过",
@@ -56,12 +56,12 @@
       ],
       "expected_handoff": {
         "verdict": "阻塞",
-        "reroute_via_router": true,
+        "reroute": true,
         "blockers": ["reviews/code-review.md missing"]
       },
       "verification": [
         "handoff.verdict == '阻塞'",
-        "handoff.reroute_via_router == true"
+        "handoff.reroute == true"
       ]
     },
     {
@@ -86,7 +86,7 @@
       ],
       "expected_handoff": {
         "verdict": "需修改",
-        "reroute_via_router": false,
+        "reroute": false,
         "blockers": ["evidence pre-dates last source change; fresh verify run required"]
       },
       "verification": [
@@ -117,7 +117,7 @@
       "expected_handoff": {
         "verdict": "通过",
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "handoff.next_action_or_recommended_skill == 'devflow-tdd-implementation'",
@@ -137,7 +137,7 @@
       },
       "must_do": [
         "Detect missing reviews/component-design-review.md (or its verdict not = 通过)",
-        "Verdict 阻塞(workflow), reroute_via_router=true",
+        "Verdict 阻塞(workflow), reroute=true",
         "Route back via devflow-router to devflow-component-design / devflow-component-design-review"
       ],
       "must_not_do": [
@@ -146,12 +146,12 @@
       ],
       "expected_handoff": {
         "verdict": "阻塞",
-        "reroute_via_router": true,
+        "reroute": true,
         "blockers": ["component-impact requires reviews/component-design-review.md = 通过"]
       },
       "verification": [
         "handoff.verdict == '阻塞'",
-        "handoff.reroute_via_router == true"
+        "handoff.reroute == true"
       ]
     },
     {
@@ -177,7 +177,7 @@
       "expected_handoff": {
         "verdict": "需修改",
         "next_action_or_recommended_skill": "devflow-tdd-implementation",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "completion.md lists each unexplained critical",
@@ -206,7 +206,7 @@
       "expected_handoff": {
         "verdict": "通过",
         "next_action_or_recommended_skill": "devflow-finalize",
-        "reroute_via_router": false
+        "reroute": false
       },
       "verification": [
         "completion.md scores every DoD dimension explicitly",
@@ -227,7 +227,7 @@
       },
       "must_do": [
         "Detect Workflow Profile = requirement-analysis",
-        "Verdict 阻塞(workflow), reroute_via_router=true",
+        "Verdict 阻塞(workflow), reroute=true",
         "Surface that SR closes via devflow-finalize (analysis closeout), not via this gate"
       ],
       "must_not_do": [
@@ -236,12 +236,12 @@
       ],
       "expected_handoff": {
         "verdict": "阻塞",
-        "reroute_via_router": true,
+        "reroute": true,
         "blockers": ["completion-gate not applicable to SR (requirement-analysis profile); SR closes via devflow-finalize"]
       },
       "verification": [
         "handoff.verdict == '阻塞'",
-        "handoff.reroute_via_router == true"
+        "handoff.reroute == true"
       ]
     }
   ]

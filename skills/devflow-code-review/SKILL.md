@@ -67,8 +67,8 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 ### 1.5 Precheck
 
 - 缺实现交接块 / 核心代码范围不可定位 / Refactor Note 缺失 → blocked-content，下一步 `devflow-tdd-implementation`
-- test-check 未通过 / route / stage / profile 冲突 → blocked-workflow，`reroute_via_router=true`，下一步 `devflow-router`
-- Refactor Note 中 Escalation Triggers 非 `none` 但实现节点仍指向 `devflow-test-review` → blocked-workflow，`reroute_via_router=true`
+- test-check 未通过 / route / stage / profile 冲突 → blocked-workflow，`reroute=true`，下一步 `devflow-router`
+- Refactor Note 中 Escalation Triggers 非 `none` 但实现节点仍指向 `devflow-test-review` → blocked-workflow，`reroute=true`
 - 否则进入步骤 2
 
 ### 2. 多维评分
@@ -94,7 +94,7 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 
 按下表收敛唯一 verdict + 唯一下一步：
 
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
+| 条件 | conclusion | `next_action_or_recommended_skill` | reroute |
 |---|---|---|---|
 | 8 维度均 ≥ 6、CR3 / CR4 / CR5 / CR6 ≥ 7、无 critical USER-INPUT 或未解释 critical 静态分析项 | `通过` | `devflow-completion-gate` | `false` |
 | findings 可 1-2 轮定向修订（含 Refactor Note 字段补全、Boy Scout 遗漏、in-task 范围内可识别但被遗漏的风险、可在 task 内回退的过度抽象） | `需修改` | `devflow-tdd-implementation` | `false` |
@@ -107,7 +107,7 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 ## 输出契约
 
 - Review record：`features/<id>/reviews/code-review.md`
-- 结构化 reviewer 返回摘要：record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation（默认 `false`）、reroute_via_router
+- 结构化 reviewer 返回摘要：record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation（默认 `false`）、reroute
 
 ## Exit Handoff
 
@@ -140,7 +140,7 @@ C / C++ 代码检视常见的偷懒话术与反驳。命中任意一条 → 停�
 | 「这一行 / 这个变量名我顺手改一下，比写 finding 快」 | reviewer 禁止改代码 / 改测试 / 改设计。返回 finding |
 | 「实现偏离了 AR 设计但结果一样，给 `通过`」 | 偏离必须在 `implementation-log.md` 写明且可追溯；裸偏离 → `需修改` |
 | 「需求说改了旧行为，能跑通新测试就行」 | 必须核对 `Change Type` 与 Existing Behavior / Baseline；未批准的旧行为破坏或删除遗漏 → `需修改` / `阻塞` |
-| 「只是改了点 SOA 服务签名 / 错误码语义，不影响下游」 | 强制 `阻塞`(workflow)，`reroute_via_router=true`，回 router 走 component-impact 路径 |
+| 「只是改了点 SOA 服务签名 / 错误码语义，不影响下游」 | 强制 `阻塞`(workflow)，`reroute=true`，回 router 走 component-impact 路径 |
 | 「static-analysis critical 是误报，忽略掉」 | 每条 critical 必须显式抑制 + 写理由；否则 `需修改` |
 | 「Refactor 很小，没写 Refactor Note」 | 缺 Refactor Note → CR8 直接 `需修改`；无 note 等于不可审 |
 | 「中断上下文 / 并发不在本 AR 范围」 | 只要代码触及相关数据路径就要评分 CR5；沉默不算 `通过` |
@@ -160,7 +160,7 @@ C / C++ 代码检视常见的偷懒话术与反驳。命中任意一条 → 停�
 - [ ] review record 已落盘
 - [ ] precheck 结果显式记录
 - [ ] 8 维度评分完整、findings 已分类
-- [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
+- [ ] verdict 唯一、下一步唯一、`reroute` 正确
 - [ ] Refactor Note 已被显式审查
 - [ ] `modify` / `remove` 的 baseline delta 与实现、测试证据一致
 - [ ] critical 静态分析 / 编译告警的处理已显式核对
@@ -176,7 +176,7 @@ C / C++ 代码检视常见的偷懒话术与反驳。命中任意一条 → 停�
 - Inputs Consumed：primary artifact path + freshness anchor、commit/branch、supporting context paths、AGENTS.md/team standards used。
 - Multi-Dimension Scoring：rubric dimensions、0-10 score，以及每个分数的 evidence；任一 critical dimension 低于阈值即不得通过。
 - Findings：ID、severity、classification、rule_id、anchor/location、description、impact、suggested fix。
-- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute_via_router、needs_human_confirmation。
+- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute、needs_human_confirmation。
 - Follow-up Actions：所需 rework 或 confirmation 的 owner 与 status。
 
 ## 评审者契约
@@ -199,10 +199,10 @@ finding_breakdown:
   minor: 0
 next_action_or_recommended_skill: <one canonical devflow node>
 needs_human_confirmation: true | false
-reroute_via_router: true | false
+reroute: true | false
 ```
 
-规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute_via_router=true`；通过结论不能包含 critical findings。
+规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute=true`；通过结论不能包含 critical findings。
 
 ## 本地 Refactor Note 检查
 

@@ -38,7 +38,7 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
 - reviewer 不修改 requirement.md
 - reviewer 不替需求负责人 / 模块架构师补业务事实、优先级、阈值
 - reviewer 不返回多个候选下一步
-- 工件不足以判定 stage / route → `reroute_via_router=true`，回 `devflow-router`
+- 工件不足以判定 stage / route → `reroute=true`，回 `devflow-router`
 
 ## 对象契约
 
@@ -68,7 +68,7 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
 判断能否合法进入 review：
 
 - 缺规格 / 缺 traceability → 写最小 blocked record，下一步 `devflow-specify`
-- route / stage / profile 冲突 → 写最小 blocked record，`reroute_via_router=true`，下一步 `devflow-router`
+- route / stage / profile 冲突 → 写最小 blocked record，`reroute=true`，下一步 `devflow-router`
 - 否则进入步骤 2
 
 ### 2. 多维评分与挑战式审查
@@ -106,7 +106,7 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
 
 **SR work item（profile = `requirement-analysis`）**：
 
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
+| 条件 | conclusion | `next_action_or_recommended_skill` | reroute |
 |---|---|---|---|
 | 范围清晰、Affected Components / AR Breakdown Candidates 章节充分、Component Design Impact 显式判断为「需修订组件设计」、无阻塞 USER-INPUT | `通过` | `devflow-component-design` | `false` |
 | 范围清晰、Affected Components / AR Breakdown Candidates 章节充分、Component Design Impact 显式判断为「无需修订」、无阻塞 USER-INPUT | `通过` | `devflow-finalize`（analysis closeout） | `false` |
@@ -116,7 +116,7 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
 
 **AR / DTS / CHANGE work item（实现 profile）**：
 
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
+| 条件 | conclusion | `next_action_or_recommended_skill` | reroute |
 |---|---|---|---|
 | 范围清晰、核心 rows 含 Acceptance、Component Impact 已判断、涉及接口时 Interface Contract Candidates 完整、无阻塞 USER-INPUT、足以喂下一节点 | `通过` | `devflow-component-design`（Component Impact ≠ none）/ `devflow-ar-design`（其余） | `false` |
 | 有用但不完整，findings 可 1-2 轮定向修订 | `需修改` | `devflow-specify` | `false` |
@@ -136,7 +136,7 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
   - `finding_breakdown`：critical / important / minor 计数
   - `next_action_or_recommended_skill`：唯一 canonical devflow-* 节点
   - `needs_human_confirmation`：`通过` 时通常 `true`（需求负责人确认）
-  - `reroute_via_router`：`true` 仅在 workflow blocker 时
+  - `reroute`：`true` 仅在 workflow blocker 时
 
 ## Exit Handoff
 
@@ -168,7 +168,7 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
 | 「顺手把规格小问题改了再 review」 | reviewer **不**修改被评审工件。所有问题写成 finding 返回 |
 | 「Component Impact 显然不影响，跳过这条 finding」 | 缺 Component Impact 显式判断 → critical finding，`需修改` |
 | 「这条只是需求新描述，不用管旧行为」 | row 的 `Change Type` 必须按既有可观察行为变化判断；`modify` / `remove` 缺 baseline 或回归 / 删除验收 → 至少 important finding |
-| 「下一步给两个候选让父会话选」 | 必须返回**唯一** `next_action_or_recommended_skill`；无法收敛 → `reroute_via_router=true` |
+| 「下一步给两个候选让父会话选」 | 必须返回**唯一** `next_action_or_recommended_skill`；无法收敛 → `reroute=true` |
 
 ## 常见错误
 
@@ -178,14 +178,14 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
 | `modify` / `remove` 缺 Existing Behavior / Baseline 却给 `通过` | 标 important/critical finding，要求补旧行为基线和回归 / 删除验收 |
 | Component Impact 没判断 → 给 `通过` | 标 critical finding，verdict 至少 `需修改` |
 | 影响接口但缺 Interface Contract Candidates | 标 critical finding，verdict 至少 `需修改` |
-| 多个候选下一步 | 收敛为唯一 canonical 值；无法收敛即 `reroute_via_router=true` |
+| 多个候选下一步 | 收敛为唯一 canonical 值；无法收敛即 `reroute=true` |
 
 ## 验证清单
 
 - [ ] review record 已落盘
 - [ ] precheck 结果显式记录
 - [ ] 6 维度评分完整、findings 已分类
-- [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
+- [ ] verdict 唯一、下一步唯一、`reroute` 正确
 - [ ] USER-INPUT 阻塞项显式列出
 - [ ] 结构化摘要已回传父会话
 - [ ] 未顺手修改 requirement.md
@@ -198,7 +198,7 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
 - Inputs Consumed：primary artifact path + freshness anchor、commit/branch、supporting context paths、AGENTS.md/team standards used。
 - Multi-Dimension Scoring：rubric dimensions、0-10 score，以及每个分数的 evidence；任一 critical dimension 低于阈值即不得通过。
 - Findings：ID、severity、classification、rule_id、anchor/location、description、impact、suggested fix。
-- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute_via_router、needs_human_confirmation。
+- Verdict：conclusion（pass / needs changes / blocked）、rationale、next_action_or_recommended_skill、reroute、needs_human_confirmation。
 - Follow-up Actions：所需 rework 或 confirmation 的 owner 与 status。
 
 ## 评审者契约
@@ -221,10 +221,10 @@ finding_breakdown:
   minor: 0
 next_action_or_recommended_skill: <one canonical devflow node>
 needs_human_confirmation: true | false
-reroute_via_router: true | false
+reroute: true | false
 ```
 
-规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute_via_router=true`；通过结论不能包含 critical findings。
+规则：只返回一个 `next_action_or_recommended_skill`；workflow conflict 路由到 `devflow-router` 且 `reroute=true`；通过结论不能包含 critical findings。
 
 ## 约定
 

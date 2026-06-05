@@ -6,7 +6,7 @@
 >
 > - 受众：DevFlow skills 的作者 / reviewer / 维护者
 > - 用法：在新增、修订、评审 `skills/devflow-*/` 下的 skill 时，先来这里对齐 soul / skill-node 契约 / skill anatomy / artifact layout / workflow architecture
-> - DevFlow 不再维护一份集中式的「shared conventions」文档；任何运行时约定（路径、字段、profile、handoff、Promotion Rules、必含章节集）由各 skill 在自己的 `## 本地 DevFlow 约定` 节内自包含维护，项目级 `AGENTS.md` 可覆盖等价路径与模板
+> - DevFlow 2.0 把跨 skill 的运行时约定（路径、字段、profile、handoff、Promotion Rules、转移表、Hard Stops、reviewer 派发）收敛到**单一真相源** `references/devflow-conventions.md`；各 skill 通过一行 `## 约定` 引用它，不再各自复制。项目级 `AGENTS.md` 可覆盖等价路径与模板。（1.0 的「每个 skill 自包含一份 `## 本地 DevFlow 约定`」做法已被该单一真相源取代——见 `docs/devflow-2.0-design-spec.md`。）
 
 - 定位: `DevFlow`（简称 `devflow`）skills 的最高原则文档，定义这套面向**软件开发阶段**的 skill family 的目标、协作关系与硬性纪律。
 - 背景: `DevFlow` 是 `*-flow` skill family 体系中**专注开发（development）阶段**的一员；同体系下还会陆续出现 `test-flow`、`design-flow` 等姊妹 family，分别覆盖独立测试、产品 / 架构设计等阶段。`devflow` 不替代它们，也不被它们替代——本 family 的范围严格限定在「拿到明确输入需求 / 问题修改后，把它落到代码与可追溯证据」这一段。
