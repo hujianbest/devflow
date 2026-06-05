@@ -1,272 +1,110 @@
 ---
 name: using-devflow
-description: 当新会话需要进入 DevFlow 工作流，或用户只表达继续某个 AR、开始处理缺陷、做规格澄清、做 AR 设计、做 TDD、做评审等泛化意图但尚未确认标准 devflow 节点时使用；也用于判断单个 devflow-* 技能能否直接进入还是必须先路由。不用于运行时恢复、工作流档位决策、已在叶子技能内部的继续执行，或产品发现。
+description: DevFlow 的 public entry meta-skill。当新会话进入 DevFlow，或用户表达"继续推进 / 澄清需求 / 做设计 / 做 TDD / 评审 / 收口"等意图但尚未确定具体 devflow 节点时使用，把意图映射到唯一 leaf skill，并施加 DevFlow 共同行为准则。不做权威路由、不持有运行时状态、不替团队角色拍板；疑难仲裁交 devflow-router。
 ---
 
 # Using DevFlow
 
-`DevFlow` (devflow) skill family 的 **public entry**。本 skill 在新会话或意图模糊时帮助决定：
+DevFlow skill family 的 **public entry meta-skill**。它只做两件事：
 
-- `direct invoke`：当前节点已经明确，且工件证据稳定 → 直接进入对应 `devflow-*` leaf skill
-- `route-first`：阶段 / profile / 证据不稳定 → 交给 `devflow-router` 做权威路由
+1. **发现（discovery）**：把用户意图映射到唯一的 `devflow-*` leaf skill。
+2. **共同行为准则（operating behaviors）**：施加一组跨所有 DevFlow skill 永远生效的纪律。
 
-本 skill 不做 authoritative routing，不替 `devflow-router` 决定 profile / execution mode；不做团队角色拍板（模块架构师 / 开发负责人 / 开发人员的判断不能被入口接管）。
+它**不是**调度中枢，也**不是**运行时权威：不决定 profile/execution mode、不消费 verdict、不持有 stage 状态、不做 review 派发。运行时编排由「用户 + 斜杠命令 + 各 leaf skill 自身的 Entry Gate / Exit Handoff + 证据自路由」承担。疑难仲裁交可选的 `devflow-router`。
 
-## 适用场景
+> `using-devflow` 是 public entry，**永远不写入** `Next Action Or Recommended Skill` 或任何 handoff 字段。
 
-适用：
+## When to Use
 
-- 新会话不确定从哪进入 DevFlow
-- 用户说"继续"/"推进"/"开始做"但当前节点未确认
-- 用户提出 `/devflow-*` 命令意图但是否能直接落到 leaf skill 仍不清
-- 需判断 direct invoke 还是 route-first
-- 用户表达 `auto mode` 偏好但还没确定交给哪个节点
+- 新会话进入 DevFlow，不确定从哪个 leaf 开始
+- 用户表达泛化意图（"继续 / 推进 / 开始做 / 澄清 / 设计 / 实现 / 评审 / 收口"）但未点到具体节点
 
-不适用 → 直接走对应入口：
+**When NOT to use**：
 
-- 已在某个 leaf skill 内部 → 继续当前 skill
-- 需要 authoritative routing / profile 判断 / review 派发 → `devflow-router`
-- 仍在做产品发现 / 决定要不要做这个 SR / AR → 回需求负责人，devflow 不承担产品发现
-- 已经是系统 / 集成 / 验收级测试 → 不属于 DevFlow，由 `test-flow` 处理（未来 family）
+- 已在某个 leaf skill 内部 → 继续该 skill
+- 工件已存在、要按证据恢复 → 直接读 `features/<id>/progress.md` 的 `Current Stage` + `Next Action Or Recommended Skill`，进对应 leaf（证据自路由）
+- 证据冲突 / 跨子街区嫌疑 / 多个 in_progress task 等疑难 → `devflow-router`
+- 产品发现 / 决定要不要做这个 SR / AR → 回需求负责人，DevFlow 不承担产品发现
 
-## 硬性门禁
+## Discovery（意图 → leaf）
 
-- 不替 `devflow-router` 做 profile / execution mode / canonical 节点的最终决定
-- 不替模块架构师、开发负责人、开发人员拍板任何专业判断
-- 不把本 skill 写进 `Next Action Or Recommended Skill`
-- direct invoke 仅在节点明确 + 工件证据稳定时才允许；任一不满足 → route-first
+把请求映射到下表唯一一项；映射不出唯一项 → 用「单事实检查点」补一个判别问题；仍不唯一或属疑难 → `devflow-router`。
 
-## 对象契约
+```
+进入 DevFlow
+  ├── 只说"继续推进" ───────────→ 读 progress.md 的 Current Stage + Next Action，按证据恢复到对应 leaf
+  ├── 澄清 SR / 子系统需求 ──────→ devflow-specify（profile = requirement-analysis）
+  ├── 澄清 AR 规格 ────────────→ devflow-specify（实现 profile）
+  ├── 写 / 改组件实现设计 ───────→ devflow-component-design
+  ├── 写 / 改 AR 实现设计 ───────→ devflow-ar-design（含测试设计章节）
+  ├── TDD 实现 / 改代码 ────────→ devflow-tdd-implementation
+  ├── 紧急缺陷 / hotfix 复现根因 →  devflow-problem-fix
+  ├── 评审（规格/设计/测试/代码）→  对应 devflow-*-review（由编排者按 fan-out 派发独立 subagent）
+  ├── 判断能否完成 ────────────→ devflow-completion-gate
+  └── 收口 / closeout ─────────→ devflow-finalize
+```
 
-- Primary Object: 用户意图分类结果（`direct invoke` / `route-first`）
-- Frontend Input Object: 用户原始请求 + `/devflow-*` 命令偏好 + 当前 work item 锚点（如有）
-- Backend Output Object: 进入合法 leaf skill 的 minimal kickoff 或交给 `devflow-router`
-- Transformation: 把模糊意图分类为两条路径之一
-- Boundaries: 不读取大量代码 / 不做 routing 决定 / 不修改任何工件
-- Invariants: 输出永远是两类之一，且不会自我递归地把 `using-devflow` 写进 handoff
+`requirement-analysis` 子街区（SR）只经过 specify → spec-review →（可选）component-design → component-design-review → finalize；实现类节点对 SR 一律非法。
 
-## 方法原则
+### 命令是 bias，不是 authority
 
-- **Front Controller Pattern**：作为统一入口，识别意图后分发，不内嵌 router 状态机
-- **Evidence-Based Dispatch**：仅做最小必要工件检查（progress.md 是否存在、work item 类型是否清晰），不展开全量探查
-- **Separation Of Concerns**：入口层只负责分流，不做 authoritative routing 或工件修改
-- **Team Role Discipline（devflow-soul）**：本 skill 不替团队角色拍板；遇到需要专业判断的请求，告诉用户 devflow 的协作边界并把工程化执行交给对应 leaf skill 或 router
+`/devflow-spec`→specify、`/devflow-design`→ar-design、`/devflow-build`→tdd-implementation、`/devflow-fix`→problem-fix、`/devflow-ship`→评审+门禁+收口、`/devflow-route`→router。命令只给默认偏向；与工件证据冲突时按证据走，缺上游工件时进缺失的上游 leaf。
 
-## 工作流
+### 单事实检查点
 
-### 1. 判断 entry vs runtime recovery
+若只差**一个**关键事实就能确定唯一 leaf（如"这是 AR 还是 DTS"、"AR 设计是否已过 review"），先问这一个最小判别问题再进。需要 ≥2 个事实、工件互相冲突、涉及 profile 升级或跨组件协调 → 直接 `devflow-router`。
 
-入口（继续本 skill）适用：新会话、高层意图、命令偏好、direct vs route 决策。
-runtime recovery（交给 router）适用：review / gate 刚完成、evidence 冲突、需要切支线、需要消费 gate 结论 → 直接 `devflow-router`。本 skill 不做 runtime 编排。
+## DevFlow 共同行为准则（永远生效）
 
-### 2. 识别主意图
+这些准则跨所有 DevFlow skill 生效，不可协商：
 
-把请求归到下表之一；归不出来或同时落在 ≥2 个候选 → route-first。
+1. **Evidence over memory**：决策读磁盘工件（`progress.md` / `reviews/` / `evidence/` / `completion.md`），不读聊天记忆；冲突时工件优先并记入 `Blockers`。
+2. **No self-verification**：作者 skill 不评审自己；评审由独立 reviewer subagent 给 verdict，且不改生产代码 / 不补测试。
+3. **Respect hard gates**：门禁（见 `references/devflow-conventions.md` §9）不被 `auto` 模式豁免；`auto` 只去掉节点间的人工确认停顿。
+4. **Surface assumptions / manage confusion**：先亮出关键假设；遇到矛盾或不一致就停下发问，不带着猜测往前冲。
+5. **Team-role boundary**：不替模块架构师 / 开发负责人 / 开发人员拍板业务、范围、架构、接口契约。
+6. **Scope discipline & simplicity**：外科手术式修改，不顺手重构无关代码；优先简单直接的做法。
 
-| 用户意图 | 默认偏向 leaf | 子街区 |
-|---|---|---|
-| 澄清 SR / 子系统级需求分析 | `devflow-specify`（profile = `requirement-analysis`） | 需求分析 |
-| 澄清需求 / 整理 AR 规格 | `devflow-specify`（profile = 实现 profile） | 实现 |
-| 评审需求规格（SR 或 AR） | `devflow-spec-review` | 共享 |
-| 写 / 修组件实现设计（SR-analysis 触发 或 AR component-impact 触发） | `devflow-component-design` | 共享 |
-| 评审组件实现设计 | `devflow-component-design-review` | 共享 |
-| 写 / 修 AR 实现设计（含测试设计章节） | `devflow-ar-design` | 实现 |
-| 评审 AR 实现设计 | `devflow-ar-design-review` | 实现 |
-| 写 / 修任务执行索引（tasks.md / task-board.md） | `devflow-tdd-implementation` | 实现 |
-| 评审任务执行索引 | `devflow-tdd-implementation` | 实现 |
-| TDD 实现 / 改代码 | `devflow-tdd-implementation` | 实现 |
-| TDD 后审查测试用例有效性 | `devflow-test-review` | 实现 |
-| C / C++ 代码检视 | `devflow-code-review` | 实现 |
-| 判断能否完成 / completion gate | `devflow-completion-gate` | 实现 |
-| 收口 / closeout / handoff（SR analysis closeout 或 AR/DTS implementation closeout） | `devflow-finalize` | 共享 |
-| 紧急缺陷 / hotfix 复现与根因 | `devflow-problem-fix` | 实现 |
-
-`devflow-completion-gate` / `devflow-ar-design` / `devflow-test-review` / `devflow-code-review` / `devflow-problem-fix` **不**适用于 SR 工作项；SR 走 `requirement-analysis` profile，仅经过 specify → spec-review → (可选) component-design → finalize。
-
-不明确时统一回退 `devflow-router`。
-
-### 3. 提取 Execution Mode 偏好
-
-用户说 `auto mode` / `自动执行` / `不用等我确认` → 视为 Execution Mode 偏好，原样向下游传递；本 skill 不归一化为 canonical 字段。`auto` 不是跳过 review / gate / approval 的理由，也不是 direct invoke 的充分条件。
-
-### 4. 判断是否允许 direct invoke
-
-同时满足才可：
-
-- 候选节点唯一
-- 请求明确属于该节点职责
-- 必要工件可读（如：进入 `devflow-ar-design` 至少需要 `requirement.md` 已存在）
-- 没有 profile / route / 证据冲突
-- Execution Mode 偏好已记录可传递
-
-任一不满足 → route-first 交给 `devflow-router`。
-
-### 4A. 单事实分流检查点
-
-如果只差 **1 个关键事实**就能稳定判断 direct invoke vs route-first，先问 1 个最小判别问题，再继续。典型适用：只差「这是 AR 还是 DTS」、只差「组件实现设计是否需要修订」、只差「AR 实现设计是否已通过 review」。
-
-不适用：需要 ≥2 个事实、工件互相冲突、涉及 profile 升级（component-impact / hotfix / lightweight）、涉及跨组件协调。任一命中 → 直接 route-first。
-
-### 5. 命令当作 bias，不当作 authority
-
-| 命令 | 默认偏向 |
-|---|---|
-| `/devflow-spec` | `devflow-specify` |
-| `/devflow-design` | `devflow-ar-design` |
-| `/devflow-component-design` | `devflow-component-design` |
-| `/devflow-build` / `/devflow-tdd` | `devflow-tdd-implementation` |
-| `/devflow-test-review` | `devflow-test-review` |
-| `/devflow-code-review` | `devflow-code-review` |
-| `/devflow-completion` | `devflow-completion-gate` |
-| `/devflow-finalize` / `/devflow-closeout` | `devflow-finalize` |
-| `/devflow-hotfix` / `/devflow-problem-fix` | `devflow-problem-fix` |
-| `/devflow-route` | `devflow-router` |
-
-命令不替代工件检查；命令偏好与工件证据冲突时一律 route-first。
-
-### 6. 正确结束
+## 正确结束
 
 输出只有两类：
 
-1. 进入合法 devflow-* leaf skill 的最小 kickoff
-2. 立即转交 `devflow-router`
+1. 进入唯一合法 `devflow-*` leaf skill，并在**同一回复**继续该 leaf 的 Entry Gate / 第 1 步；
+2. 属疑难（证据冲突 / 跨子街区 / profile 升级 / 多 in_progress task）→ 转交 `devflow-router`，只说明为什么不能直接落点。
 
-唯一确定下一步时用 3 行编号快路径：
+`clear case` 用 3 行快路径：
 
 ```text
-1. Entry Classification: direct invoke | route-first
-2. Target Skill: <canonical devflow-* 节点名>
-3. Why: <1-2 条决定性证据>
+1. Target Skill: <canonical devflow-* 节点名>
+2. Why: <1-2 条决定性证据>
+3. （direct）继续目标 leaf 的 Entry Gate / 第 1 步  ｜ （router）转交原因
 ```
 
-`direct invoke` 时，3 行之后**同一回复**继续追加目标 leaf skill 的最小 kickoff（第 1 步动作 / 最小 intake），不再等一轮「要不要继续」。`route-first` 时，只说明「为什么不能 direct invoke」，立即转交 `devflow-router`，不展开 transition map、不做 review recovery、不把 `using-devflow` 写进 handoff。
+## Red Flags
 
-## 输出契约
+- 把 `using-devflow` 写进 `Next Action Or Recommended Skill` 或 handoff
+- 在入口层做权威路由 / 决定 profile / 消费 verdict / 派发 reviewer
+- 映射不唯一却硬选一个 leaf
+- 因为用户报了命令名就跳过工件证据
+- 已在 leaf 内部或可证据恢复时仍回入口绕一圈
 
-- 输出永远是两类之一：
-  1. 进入合法 `devflow-*` leaf skill 并执行其第 1 步
-  2. 把控制权交给 `devflow-router`
-- 不修改任何工件
-- 不把 `using-devflow` 写进 handoff
-
-## 风险信号
-
-- 把 `using-devflow` 写成完整 routing 状态机
-- 路由不清却硬做 direct invoke
-- 因为用户报命令名就跳过工件检查
-- review / gate 完成后仍在做恢复编排（应交 router）
-- 把本 skill 写进 `Next Action Or Recommended Skill`
-- 替模块架构师、开发负责人、开发人员拍板
-
-## 反向理由化（Common Rationalizations）
-
-入口阶段最常见的偷懒话术与反驳。命中任意一条 → 停下，按反驳动作执行。
+## Common Rationalizations
 
 | 话术 | 反驳 |
 |---|---|
-| 「用户给了 `/devflow-build`，意图明显，直接进 `devflow-tdd-implementation`」 | 命令是 bias，不是 authority。缺 AR 设计 / 缺 design review / 阶段不清 → route-first，让 `devflow-router` 决定 |
-| 「节点很明确，跳过工件检查」 | direct invoke 必须节点 + 必要工件**同时**清晰；任一不满足 → route-first |
-| 「上一次会话已经走过 router，这次直接进入即可」 | 任何继续 / 恢复都属于 runtime 编排，必须 `devflow-router`。本 skill 只做入口分流 |
-| 「这只是闲聊问下一步，不必分类」 | 输出永远只有两类：direct invoke 或 route-first，没有第三种合法出口 |
-| 「用户说 `auto mode`，可以省掉 review 派发」 | `auto` 是 Execution Mode 偏好，不是跳过 review / gate / approval 的理由，也不是 direct invoke 的充分条件 |
-| 「为了响应快，把 `using-devflow` 写进 handoff」 | 禁止。`using-devflow` 是 public entry，不允许出现在 `Next Action Or Recommended Skill` |
+| 「用户给了 `/devflow-build`，直接进 tdd-implementation」 | 命令是 bias。缺 AR 设计 / 缺 design review → 进缺失的上游 leaf；疑难 → router |
+| 「上次走过 router，这次直接进入即可」 | 证据恢复读 `progress.md` 即可，不必回入口；但入口也不持有上次状态 |
+| 「用户说 auto，可省掉 review 派发」 | `auto` 不豁免 review / gate / approval，只去掉人工确认停顿 |
+| 「为响应快，把 using-devflow 写进 handoff」 | 禁止；它是 public entry，永不出现在 handoff |
+| 「证据有点冲突，挑个顺的 leaf」 | 冲突属疑难 → `devflow-router` 仲裁，不在入口猜 |
 
-## 常见错误
+## Verification
 
-| 错误 | 修复 |
-|---|---|
-| 用户说「我要做这个 AR」就直接进入 `devflow-tdd-implementation` | 先确认是否有 AR 实现设计和已批准 tasks；缺设计进 `devflow-ar-design`，缺 tasks 进 `devflow-tdd-implementation` |
-| 把产品发现请求强行分类成 devflow 节点 | 告知 devflow 不承担产品发现，回需求负责人 |
-| 命令是 `/devflow-build` 但工件还停留在规格阶段 | route-first，让 router 决定 |
+- [ ] 已把意图映射到唯一 leaf，或转交 `devflow-router`
+- [ ] clear case 用了 3 行快路径并在同一回复进入目标 leaf 的 Entry Gate
+- [ ] 未把 `using-devflow` 写进任何 handoff 字段
+- [ ] 未在入口做 profile / verdict / 派发决定
 
-## 验证清单
+## 约定
 
-- [ ] 已识别 entry vs runtime recovery
-- [ ] 已分类 direct invoke vs route-first
-- [ ] 单事实分流检查点（如适用）已使用
-- [ ] clear case 使用 3 行编号快路径
-- [ ] direct invoke 时已在同一回复进入 target leaf skill 的最小 kickoff
-- [ ] route-first 时已立即转交 `devflow-router`
-- [ ] Execution Mode 偏好已记录可传递
-- [ ] 未把本 skill 写入 handoff
-
-## 本地 DevFlow 约定
-
-本节由当前 skill 自己维护。不要加载共享约定文件；项目 `AGENTS.md` 可以覆盖等价路径或模板。
-
-### 产物布局
-
-默认产物布局来自 `docs/principles/03 artifact-layout.md`。项目 `AGENTS.md` 可以覆盖等价路径；没有覆盖时，本 skill 必须使用以下组件仓库布局：
-
-```text
-<component-repo>/
-  docs/
-    component-design.md           # 长期组件实现设计
-    ar-designs/                   # 长期 AR 实现设计
-      AR<id>-<slug>.md
-    interfaces.md                 # 可选；仅团队启用时读取 / 同步
-    dependencies.md               # 可选；仅团队启用时读取 / 同步
-    runtime-behavior.md           # 可选；仅团队启用时读取 / 同步
-
-  features/
-    AR<id>-<slug>/                # 单个 AR 的过程产物
-    DTS<id>-<slug>/               # 单个缺陷 / 问题修复的过程产物
-    CHANGE<id>-<slug>/            # 单个轻量变更的过程产物
-```
-
-`docs/` 存放随代码提交的长期组件资产。`features/<id>/` 存放单个 work item 的过程产物：按需包含 `README.md`、`progress.md`、`requirement.md`、`ar-design-draft.md`、`tasks.md`、`task-board.md`、`traceability.md`、`implementation-log.md`、`reviews/`、`evidence/`、`completion.md`、`closeout.md`。
-
-Read-on-presence 规则：
-
-- 必需长期资产缺失时阻塞：component-impact 工作需要 `docs/component-design.md`；implementation closeout 前需要 `docs/ar-designs/AR<id>-<slug>.md`。
-- 可选资产（`docs/interfaces.md`、`docs/dependencies.md`、`docs/runtime-behavior.md`）仅在项目启用时读取 / 同步。缺失的可选资产记录为 `N/A (project optional asset not enabled)`，不视为阻塞。
-- 过程目录保留在 `features/` 下；不要把已关闭 work item 移到 `features/archived/`，否则会破坏追溯链接。
-
-### Progress 字段
-
-本 skill 读写 `features/<id>/progress.md` 时使用 canonical progress 字段：
-
-- Work Item Type: SR / AR / DTS / CHANGE
-- Work Item ID: SR1234、AR12345、DTS67890 或 CHANGE id
-- Owning Component: AR / DTS / CHANGE 必填
-- Owning Subsystem: SR 必填
-- Workflow Profile: requirement-analysis / standard / component-impact / hotfix / lightweight
-- Execution Mode: interactive / auto
-- Current Stage: 当前 canonical devflow node
-- Pending Reviews And Gates: 待处理 review / gate 列表
-- Next Action Or Recommended Skill: 仅允许一个 canonical node
-- Blockers: open blockers
-- Last Updated: timestamp
-
-### Handoff 字段
-
-返回结构化 handoff，并使用本 skill 已知的字段：
-
-- current_node
-- work_item_id
-- owning_component or owning_subsystem
-- result or verdict
-- artifact_paths
-- record_path, when a review / gate / verification record exists
-- evidence_summary
-- traceability_links
-- blockers
-- next_action_or_recommended_skill
-- reroute_via_router
-
-不要把 `next_action_or_recommended_skill` 设为 `using-devflow` 或自由文本。
-
-### 入口路由
-
-- `using-devflow` 只是 public entry skill；永远不要写入 runtime handoff。
-- 只有 target leaf skill 与 required artifacts 都明确时，才允许 direct invoke。
-- stage、profile、route 或 evidence 不清楚时，route-first 进入 `devflow-router`。
-
-### Canonical 节点
-
-using-devflow, devflow-router, devflow-specify, devflow-spec-review, devflow-component-design, devflow-component-design-review, devflow-ar-design, devflow-ar-design-review, devflow-tdd-implementation, devflow-test-review, devflow-code-review, devflow-completion-gate, devflow-finalize, devflow-problem-fix.
-## 支撑参考
-
-| 文件 | 用途 |
-|---|---|
-| `devflow-router/SKILL.md` | authoritative runtime routing |
+本 skill 遵循 `references/devflow-conventions.md`（产物布局、字段、profile、节点清单、转移表、Hard Stops、reviewer 派发）；项目 `AGENTS.md` 可覆盖等价路径与模板。

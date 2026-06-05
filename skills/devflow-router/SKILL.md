@@ -1,326 +1,114 @@
 ---
 name: devflow-router
-description: 当用户要求继续或推进且必须根据工件证据决定标准 devflow 节点时使用；也用于评审或门禁后恢复编排、路由 / 阶段 / 工作流档位不清或证据冲突、判断是否进入 component-impact 或 hotfix 档位，以及派发规格、组件设计、AR 设计、测试检查、代码检视的独立评审子代理。不用于新会话入口发现或叶子节点内部的写作、评审、实现。
+description: DevFlow 的可选疑难仲裁 skill（非 happy-path 必经）。当证据冲突、跨子街区切换嫌疑、profile 升级判断、多个 in_progress task / next-ready 不唯一、review 或 gate verdict 无法唯一映射下一步（reroute=true）时使用，把工件证据仲裁成唯一 canonical 下一步。不用于新会话入口发现（用 using-devflow）、不用于 happy-path 顺序推进（由各 leaf 的 Exit Handoff + 证据自路由承担）、不用于 leaf 内部写作/评审/实现。
 ---
 
-# DevFlow Router
+# DevFlow Router（可选疑难仲裁）
 
-DevFlow workflow family 的 **runtime authority**。基于工件证据决定：Workflow Profile、Execution Mode、canonical `devflow-*` 节点、是否进入 component-impact 或 hotfix 支线、review subagent 派发，以及 review / gate 后的恢复编排。
+DevFlow 2.0 的路由是**去中枢**的：happy path 由各 leaf 的 `Entry Gate`（自查上游证据）+ `Exit Handoff`（按转移表声明唯一 next）+ 证据自路由（读 `progress.md`）驱动，**不经过本 skill**。
 
-`using-devflow` 负责 public entry 与意图分流；本 skill 负责 runtime routing 与恢复。
+本 skill 只在 happy path **走不通**时被显式调用，做**疑难仲裁**：把冲突 / 模糊的工件证据收敛成唯一下一步，或明确停下等待团队角色。它不替模块架构师 / 开发负责人 / 开发人员拍板专业判断。
 
-devflow 默认以单 AR / 单 DTS 为 work item 边界；实现子街区在 AR 设计通过后维护 work item 内部的 `tasks.md` / `task-board.md` 执行索引。本 skill 不替模块架构师、开发负责人、开发人员拍板任何专业判断；只负责把工件证据转化为唯一下一步。
+## When to Use
 
-## 适用场景
+仅当出现以下任一「疑难信号」时（通常由某个 leaf 标了 `reroute=true`，或编排者识别出冲突）：
 
-适用：
+- 工件证据冲突（如 `progress.md` 与 `reviews/` 不一致）
+- 跨子街区切换嫌疑（SR ↔ 实现 profile）
+- profile 升级判断（如改动是否触及组件边界 → 是否升级 `component-impact`）
+- 多个 `in_progress` task，或 next-ready task 不唯一
+- review / gate verdict 无法唯一映射下一步
+- reviewer 子代理返回 `reroute=true`
 
-- 用户说"继续 / 推进"，需依据工件判断当前节点
-- review / gate 刚完成，需消费结论并决定下一步
-- route / stage / profile 不清，或工件证据冲突
-- 需判断本 work item 走 **需求分析子街区**（SR → `requirement-analysis`）还是 **实现子街区**（AR / DTS / CHANGE → `standard` / `component-impact` / `hotfix` / `lightweight`）
-- 需判断是否进入 `devflow-component-design`（SR-analysis 可选 / AR component-impact 触发）或 `devflow-problem-fix`（hotfix）
-- 需派发 reviewer subagent 执行 spec / component-design / ar-design / test-check / code-review
-- reviewer subagent 返回 `reroute_via_router=true`
+**When NOT to use**：
 
-不适用 → 改用：
+- 新会话入口发现 → `using-devflow`
+- happy-path 顺序推进 → 各 leaf 的 Exit Handoff + 证据自路由
+- leaf 内部 authoring / review / 实现 → 对应 `devflow-*` leaf
 
-- 新会话 family discovery → `using-devflow`
-- 节点内部 authoring / review / 实现 → 对应 `devflow-*` leaf skill
+## Entry Gate
 
-## 硬性门禁
+进入前确认这**确实**是疑难仲裁（命中上面任一信号），而非可由证据自路由直接解决的普通推进。若 `progress.md` 已能唯一确定下一步 → 退出，让编排者直接进对应 leaf，不要多绕一层。
 
-- 不替模块架构师 / 开发负责人 / 开发人员拍板专业判断
-- 不在父会话内联做 review；review 节点必须派发独立 reviewer subagent
-- Profile 一旦升级（standard → component-impact / hotfix），不允许在同一 work item 内静默降级
-- **不允许跨子街区切换 profile**：同一 work item 不得在 `requirement-analysis` 与任何实现 profile 之间切换。SR 拆出的候选 AR 必须**新建** AR work item，由 router 重新分流
-- `requirement-analysis` profile 下不得路由到 `devflow-ar-design` / `devflow-ar-design-review` / `devflow-tdd-implementation` / `devflow-test-review` / `devflow-code-review` / `devflow-completion-gate` / `devflow-problem-fix`
-- 缺组件实现设计但本次修改影响组件边界 → 必须升级到 `component-impact` profile（仅适用于 AR 工作项），路由到 `devflow-component-design`
-- AR 实现设计未含测试设计章节 → 不得路由到 `devflow-tdd-implementation`，必须回 `devflow-ar-design`
-- AR 设计通过后由 `devflow-tdd-implementation` 内部执行 task queue preflight；preflight 无法产出完整 task queue 或唯一 Current Active Task 时必须回 `devflow-router`
-- task-board 无法唯一判断 `Current Active Task` / next-ready task → 标 `reroute_via_router=true`
-- TDD 完成后未经 `devflow-test-review` 审查 → 不得路由到 `devflow-code-review`
-- review / gate 结论无法唯一映射下一步 → 标 `reroute_via_router=true`，停下让父会话重新评估
+## Core Process
 
-## 对象契约
+### 1. 读最少必要证据
 
-- Primary Object: routing 决定（profile + execution mode + canonical 节点 + reviewer 派发）
-- Frontend Input Object: `features/<id>/progress.md`、`reviews/`、`evidence/`、`completion.md`、用户最新请求
-- Backend Output Object: 唯一下一步 + 必要的 reviewer 派发说明 + 状态字段同步
-- Transformation: 把工件证据转化为唯一 canonical 节点
-- Boundaries: 不写设计 / 不写代码 / 不替 reviewer 给出 verdict
-- Invariants: profile / execution mode 一旦决定，不允许 leaf 节点自改；canonical 节点名严格使用 `devflow-*` 前缀
+只读仲裁所需：项目 `AGENTS.md` 路径映射、用户请求、`features/<id>/progress.md`、相关 `reviews/` / `completion.md`、必要时 `docs/component-design.md` / `docs/ar-designs/`。不在仲裁阶段做大范围代码探索。
 
-## 方法原则
+### 2. 子街区与 profile 仲裁
 
-- **Finite State Machine Routing**: workflow 阶段建模为 FSM，每条转移由工件状态驱动
-- **Evidence-Based Decision Making**: 所有路由判断基于磁盘证据，证据冲突时取保守策略（更上游节点 / 更高 profile）
-- **Escalation Pattern**: 只允许向上升级 profile（standard → component-impact / hotfix），不允许降级
-- **Role-Separated Review Dispatch**: review 必须派发独立 reviewer subagent，不内联，不让 author 自审
-- **Fresh Implementer Dispatch**: implementation 可由 `devflow-tdd-implementation` 派发新的 implementer subagent；router 只消费其状态，不消费其代码上下文
-- **Read-On-Presence**: 项目当前未启用的可选资产（如 `docs/runbooks/`）缺失不阻塞路由
+依 `references/devflow-conventions.md` §4：
 
-## 工作流
+- 先定子街区（SR=需求分析；AR/CHANGE/DTS=实现），**禁止跨子街区切换**——SR 拆出的候选 AR 由需求负责人**新建** AR work item。
+- profile 单向升级、不降级。证据冲突取更保守：选更上游节点 / 更高 profile。
+- 升级到 `component-impact` 时下一步指向 `devflow-component-design`。
 
-### 1. 确认是否属于 runtime routing
+### 3. 归一化 Execution Mode
 
-如果是 public entry / family discovery → 回 `using-devflow`。否则（恢复编排、profile 判断、消费 review/gate 结论、evidence conflict、切支线）继续。
+依 conventions §5：用户显式 → `AGENTS.md` 默认 → 已有值 → `interactive`。`auto` 不豁免 review / gate / approval。
 
-### 2. 读取最少必要证据
+### 4. 校验 leaf 的显式 handoff
 
-按 Read-On-Presence 原则只读路由所需的最少内容：项目 `AGENTS.md` 路径映射、用户请求、`features/<id>/progress.md`、`features/<id>/reviews/` 与 `features/<id>/completion.md`、`docs/component-design.md` / `docs/ar-designs/`（必要时）。不在路由阶段做大范围代码探索。证据冲突 → 选更上游节点 / 升级 profile，不擅自调和。
+leaf 返回的 `next_action_or_recommended_skill` 是 bias 不是 authority。校验它是否归一化、是否在当前 profile 合法集合内（conventions §6/§8）、是否与最新 evidence 一致。任一不满足 → 忽略，按转移表（conventions §8）重新决定。`requirement-analysis` 下 leaf 返回实现类节点一律非法 → 停下，由真人决定是否新建 AR。
 
-### 3. 子街区判定
+### 5. 决定唯一 canonical 下一步
 
-先决定本 work item 走 **需求分析子街区** 还是 **实现子街区**——profile 集合不同、合法节点集不同、closeout 类型不同。
+按 conventions §8 转移表与 §9 Hard Stops 收敛到唯一节点：支线优先于主链 → review/gate 恢复优先于实现 → 缺失上游优先于下游 → 冲突取更保守。无法唯一映射 → `reroute=true` 停下，写明阻塞原因。
 
-| Work Item Type | 子街区 | profile 候选集 |
-|---|---|---|
-| `SR` | 需求分析 | 仅 `requirement-analysis` |
-| `AR` / `CHANGE` | 实现 | `standard` / `component-impact` / `lightweight` |
-| `DTS` | 实现 | `hotfix`（默认）；判断为常规缺陷修改时也可走 `standard` |
+### 6. review / gate 恢复
 
-**禁止跨子街区升级**：同一个 work item 的 profile 不允许在 `requirement-analysis` 与任何实现 profile 之间切换。如果用户提出 SR 拆出的某个候选 AR 应该立刻进入实现，由需求负责人**新建** AR work item，由 router 重新走一次步骤 1-7。
+读最新 record，按 verdict（依 `references/reviewer-dispatch-protocol.md`）：
 
-### 4. 检查支线信号（仅实现子街区）
+- `通过` → 转移表的成功后节点；`needs_human_confirmation=true` 时按 Execution Mode 处理
+- `需修改` / `阻塞`(内容) → 回授权 authoring 节点做定向回修
+- `阻塞`(workflow) → `reroute=true` 停下
 
-实现子街区内，支线优先于普通主链：
+completion-gate 通过后先读 `Task Board Path`：唯一 next-ready task → 更新 `Current Active Task` 并指向 `devflow-tdd-implementation`；无剩余 task → `devflow-finalize`；候选不唯一 → 停下。
 
-| 信号 | 路由 |
-|---|---|
-| DTS / 紧急缺陷 / 已上线问题修复 | `devflow-problem-fix`，profile = `hotfix` |
-| 新增组件 / 修改 SOA 接口 / 修改组件职责 / 修改组件依赖 / 组件设计缺失或过期 | profile 升级到 `component-impact`，下一步 `devflow-component-design` |
-| AR 实现需要跨组件协调 | profile = `component-impact` |
+### 7. reviewer 派发（疑难场景）
 
-命中支线 → 走对应路径，不再回主链。
+仲裁中若需评审，按 `references/reviewer-dispatch-protocol.md` 派发独立 reviewer subagent（不内联、不让作者自审）。日常评审派发由编排者（`/devflow-ship` 等）按 fan-out + merge 承担，不必经本 skill。
 
-`Change Type = modify/remove` 本身不自动升级 profile；它是风险信号。若该 row 同时触及 `Component Impact = interface / dependency / state-machine / runtime-behavior`、跨组件协调、组件职责或组件设计章节，则按上表升级 `component-impact`。若仅为组件内部行为修改且组件设计稳定，可保持 `standard`，但后续设计 / TDD / review 必须消费 Existing Behavior / Baseline。
+## Exit Handoff
 
-需求分析子街区不存在「升级到 component-impact」的概念——SR-flow 内的组件设计修订是 `requirement-analysis` profile 自带的可选步，不切换 profile。
+输出唯一下一步或显式停下，写入 `progress.md`：
 
-### 5. 决定 Workflow Profile
+- `Current Stage` / `Workflow Profile` / `Execution Mode`
+- `Target Skill`：唯一 canonical `devflow-*` 节点
+- `Why`：1-2 条决定性证据
+- `reroute`：`false`（已唯一映射，编排者据此进目标 leaf）或 `true`（仍无法唯一映射，停下等团队角色）
 
-按 Escalation Pattern：先执行 `AGENTS.md` 强制规则 → 沿用已有 profile → 按证据选择 → 冲突选更重。**只允许在同一子街区内升级，不允许降级，也不允许跨子街区切换**。
+非 hard stop → 编排者同一轮进目标 leaf；hard stop → 停下等待。
 
-需求分析子街区：
+## Red Flags
 
-| Profile | 适用场景 |
-|---|---|
-| `requirement-analysis` | Work Item Type = `SR`；澄清子系统级需求 + 可选组件实现设计；不进入实现 |
-
-实现子街区：
-
-| Profile | 适用场景 |
-|---|---|
-| `standard` | 既有组件 AR 增量、组件设计稳定、纯组件内修改 |
-| `component-impact` | 命中步骤 4 component-impact 信号 |
-| `hotfix` | 命中步骤 4 hotfix 信号 |
-| `lightweight` | 极小、低风险、纯局部修改（错别字 / magic number / 注释）；保留 specify → completion 全链，仅允许压缩文档量 |
-
-详细规则见 `references/profile-and-route-map.md`。
-
-### 6. 决定 Execution Mode
-
-与 Profile 正交。归一化顺序：用户显式要求 → `AGENTS.md` 默认 → 已有值 → 默认 `interactive`。`auto` 不删除 review / gate / approval，也不让 leaf 节点静默降级。
-
-### 7. 归一化显式 handoff
-
-leaf skill 返回的 `next_action_or_recommended_skill` 是受控字段。检查它是否归一化、是否与最新 evidence 一致、是否在当前 profile 合法集合内（见 `references/profile-and-route-map.md`）。全部满足才采用；否则忽略，回退到迁移表。
-
-特别注意：`requirement-analysis` profile 下，leaf 返回 `devflow-ar-design` / `devflow-tdd-implementation` / `devflow-test-review` / `devflow-code-review` / `devflow-completion-gate` / `devflow-problem-fix` 一律视为非法 → `reroute_via_router=true`，由真人决定是否新建 AR work item。
-
-### 8. 决定 canonical 节点
-
-路由原则：支线优先于主链 → review / gate 恢复优先于实现 → 缺失上游优先于下游 → 冲突选更保守。
-
-迁移意图（与 `references/profile-and-route-map.md` 的 profile 主链 / 支线表一致）：
-
-| 当前节点 | profile | 成功后 | 需修改 / 阻塞 |
-|---|---|---|---|
-| `devflow-specify` | `requirement-analysis`（SR） | `devflow-spec-review` | 回需求负责人 / `devflow-router` |
-| `devflow-spec-review` | `requirement-analysis` | `devflow-component-design`（本 SR 触发组件设计修订）/ `devflow-finalize`（仅澄清，无组件设计修订） | `devflow-specify` |
-| `devflow-component-design` | `requirement-analysis` | `devflow-component-design-review` | 继续修订 |
-| `devflow-component-design-review` | `requirement-analysis` | `devflow-finalize`（analysis closeout） | `devflow-component-design` |
-| `devflow-finalize` | `requirement-analysis` | workflow closed（analysis closeout） | 回 router |
-| `devflow-specify` | 实现 profile | `devflow-spec-review` | 回需求负责人 / `devflow-router` |
-| `devflow-spec-review` | 实现 profile | `devflow-component-design`（component-impact）/ `devflow-ar-design`（standard / lightweight） | `devflow-specify` |
-| `devflow-component-design` | `component-impact` | `devflow-component-design-review` | 继续修订 |
-| `devflow-component-design-review` | `component-impact` | `devflow-ar-design` | `devflow-component-design` |
-| `devflow-ar-design` | 实现 profile | `devflow-ar-design-review` | 继续修订 |
-| `devflow-ar-design-review` | 实现 profile | `devflow-tdd-implementation`（含 task queue preflight） | `devflow-ar-design` |
-| `devflow-tdd-implementation` | 实现 profile | `devflow-test-review` | 继续实现 / `devflow-ar-design` / `devflow-router` |
-| `devflow-test-review` | 实现 profile | `devflow-code-review` | `devflow-tdd-implementation` |
-| `devflow-code-review` | 实现 profile | `devflow-completion-gate` | `devflow-tdd-implementation` |
-| `devflow-completion-gate` | 实现 profile | `devflow-tdd-implementation`（有唯一 next-ready task）/ `devflow-finalize`（无剩余 task） | 缺什么回什么 |
-| `devflow-finalize` | 实现 profile | workflow closed | 回 router |
-| `devflow-problem-fix` | `hotfix` | `devflow-ar-design` 或 `devflow-tdd-implementation` | 继续 hotfix 分析 |
-
-若结论无法映射唯一节点 → 标 `reroute_via_router=true` 停下。
-
-### 9. 处理 review / gate 恢复
-
-读取最新 review record / completion record，按 verdict 与角色边界判定：
-
-- `通过` → 进入迁移表的成功后节点；`needs_human_confirmation=true` 时按 Mode 处理（interactive 等真人，auto 写 approval record）
-- `需修改` / `阻塞`（内容） → 回授权节点（如 `devflow-tdd-implementation` / `devflow-ar-design`）
-- `阻塞`（workflow） → `reroute_via_router=true`，停下并写明阻塞原因
-
-completion-gate 通过后先读取 `Task Board Path`。若存在唯一 `next-ready task`，更新 `Current Active Task` 并路由到 `devflow-tdd-implementation`；若不存在剩余 ready / pending task，才路由到 `devflow-finalize`；若候选不唯一或状态冲突，回 `devflow-router` hard stop。
-
-Implementer subagent status 只通过 `devflow-tdd-implementation` 产物消费（`task-board.md`、`implementation-log.md`、evidence paths）。`NEEDS_CONTEXT` 留在 `devflow-tdd-implementation`，用更收敛的 context pack 处理；只有 blocker 与 route / profile / scope 相关时，`BLOCKED` 才路由到 `devflow-router`。
-
-### 10. 派发 reviewer subagent
-
-review 节点不在父会话内联执行。构造最小 review request（`target_skill`、`work_item_id`、`owning_component`、`primary_artifact`、`supporting_context`、`agents_md_anchor`、`expected_return_contract`），派发独立 subagent，消费结构化 reviewer 返回。详见 `references/reviewer-dispatch-protocol.md`。
-
-### 11. 连续执行与暂停点
-
-路由结论不是独立用户交互：
-
-- 非 hard stop → 同一轮进入目标 skill
-- review 节点 → 立刻派发 subagent
-- approval step → 按 Execution Mode 处理
-- hard stop（缺组件设计、缺测试设计章节、TDD 后未经 test-review、SR-flow 试图进入实现节点等）→ 必须停下等待
-
-## 输出契约
-
-最小输出：
-
-- `Current Stage`
-- `Workflow Profile`
-- `Execution Mode`
-- `Target Skill`（唯一 canonical `devflow-*` 节点）
-- `Why`（1-2 条决定性证据）
-- `reroute_via_router`：`false`（已唯一映射）或 `true`（无法唯一映射，等待父会话）
-
-evidence 充足时使用紧凑格式；不回放未命中分支，不复述 authority 说明。
-
-runtime canonical 字段统一：`devflow-router`、`reroute_via_router`，不出现自由文本下一步。
-
-## 风险信号
-
-- 没经过 router 就跨节点切换
-- 因命令名 / 用户点名跳过 route / profile 判断
-- 把 `using-devflow` 写进 runtime handoff
-- 在 route 阶段做大范围代码探索
+- 把本 skill 当成 happy-path 的必经中枢（2.0 中它是**可选仲裁**）
+- 在仲裁阶段做大范围代码探索
 - 忽略证据冲突沿用旧印象推进
-- 把 `auto` 解读为「不写 review record / 不要 approval」
-- 父会话内联 review，没派发 reviewer subagent
-- profile 不再成立却不升级（如修改影响 SOA 接口却仍走 standard）
+- 把 `auto` 解读为不写 review record / 不要 approval
+- 内联 review 而不派发独立 reviewer subagent
+- 替团队角色拍板组件边界 / 接口 / 优先级
 
-## 反向理由化（Common Rationalizations）
-
-routing 阶段最常见的偷懒话术与反驳。命中任意一条 → 停下，按反驳动作执行。
+## Common Rationalizations
 
 | 话术 | 反驳 |
 |---|---|
-| 「上一次走了 standard，这次维持就行」 | 每轮路由必须按当前证据重判 profile。SOA 接口 / 依赖 / 状态机 / 组件设计变化 → 升级到 `component-impact`，不允许沿用旧印象 |
-| 「TDD 完成了，直接 `devflow-code-review`」 | TDD 完成后**必须**先派发 `devflow-test-review`，verdict = `通过` 才能进入 code review |
-| 「用户说 `auto`，跳过 review」 | `auto` 仅表示节点之间不停下来等真人确认；**不**删除 review / gate / approval / 证据要求 |
-| 「leaf 给了 `next_action_or_recommended_skill = ...`，直接采纳」 | leaf 是 bias 不是 authority。先校验是否归一化、是否在当前 profile 合法集合内、是否与最新 evidence 一致；不满足任一 → 忽略，按迁移表回退 |
-| 「这是个非常小的 SR，让它直接进 `devflow-ar-design`」 | 跨子街区切换被禁止。SR 必须经 `devflow-finalize` analysis closeout；候选 AR 由需求负责人**新建** AR work item |
-| 「证据有点冲突，但选个看起来更顺的节点」 | 证据冲突时取保守策略：更上游节点 / 更高 profile；无法唯一映射 → `reroute_via_router=true` 停下 |
-| 「review 在父会话里顺带做一下更快」 | 内联 review 被禁止。review 必须派发独立 reviewer subagent，使用对应 `devflow-*-review` skill 作为 system prompt |
-| 「把 `using-devflow` 写进 next_action 让它再分流一次」 | 禁止。`using-devflow` 永远不出现在 runtime handoff |
+| 「每步都先过 router 更稳」 | 2.0 路由去中枢；happy path 由 leaf 的 Exit Handoff + 证据自路由承担，router 只处理疑难 |
+| 「上次走 standard，这次沿用」 | 每次仲裁按当前证据重判 profile；触及 SOA 接口 / 依赖 / 状态机 → 升级 component-impact |
+| 「TDD 完成了，直接 code-review」 | 必须先有 `devflow-test-review` 通过 verdict（见 Hard Stops #9） |
+| 「证据冲突，挑个顺的节点」 | 取更保守：更上游 / 更高 profile；无法唯一映射 → `reroute=true` 停下 |
+| 「这个小 SR 直接进 ar-design」 | 禁止跨子街区；SR 经 finalize analysis closeout，候选 AR 另建 work item |
 
-## 常见错误
+## Verification
 
-| 错误 | 修复 |
-|---|---|
-| TDD 完成后直接路由到 `devflow-code-review` | 必须先派发 `devflow-test-review` |
-| 看到 AR 设计修改了组件接口，仍走 standard | 升级到 component-impact，先 `devflow-component-design` |
-| review 返回 `阻塞`(workflow) 还硬选下一节点 | 标 `reroute_via_router=true` 停下 |
+- [ ] 已确认是疑难仲裁（命中 When to Use 信号），非普通推进
+- [ ] 已按最新证据决定 profile（含升级判断），未降级 / 未跨子街区
+- [ ] 推荐节点在当前 profile 合法集合内（conventions §6/§8）
+- [ ] verdict 已按 dispatch 协议消费
+- [ ] 无法唯一映射时已置 `reroute=true` 并写明原因
+- [ ] 字段统一用 `reroute`
 
-## 验证清单
+## 约定
 
-- [ ] 已确认是 runtime routing（非 family discovery）
-- [ ] 已基于最新证据决定 Workflow Profile，并执行升级判断
-- [ ] 已归一化 Execution Mode 且未违反 policy
-- [ ] 已验证显式 handoff 合法性
-- [ ] 推荐节点在当前 profile 合法集合内
-- [ ] review 节点已派发独立 reviewer subagent
-- [ ] hard stop 命中时已显式停下且写明原因
-- [ ] 非 hard stop 时在同一轮继续执行
-- [ ] 字段名严格使用 `devflow-router` 与 `reroute_via_router`
-
-## 本地 DevFlow 约定
-
-本节由当前 skill 自己维护。不要加载共享约定文件；项目 `AGENTS.md` 可以覆盖等价路径或模板。
-
-### 产物布局
-
-默认产物布局来自 `docs/principles/03 artifact-layout.md`。项目 `AGENTS.md` 可以覆盖等价路径；没有覆盖时，本 skill 必须使用以下组件仓库布局：
-
-```text
-<component-repo>/
-  docs/
-    component-design.md           # 长期组件实现设计
-    ar-designs/                   # 长期 AR 实现设计
-      AR<id>-<slug>.md
-    interfaces.md                 # 可选；仅团队启用时读取 / 同步
-    dependencies.md               # 可选；仅团队启用时读取 / 同步
-    runtime-behavior.md           # 可选；仅团队启用时读取 / 同步
-
-  features/
-    AR<id>-<slug>/                # 单个 AR 的过程产物
-    DTS<id>-<slug>/               # 单个缺陷 / 问题修复的过程产物
-    CHANGE<id>-<slug>/            # 单个轻量变更的过程产物
-```
-
-`docs/` 存放随代码提交的长期组件资产。`features/<id>/` 存放单个 work item 的过程产物：按需包含 `README.md`、`progress.md`、`requirement.md`、`ar-design-draft.md`、`tasks.md`、`task-board.md`、`traceability.md`、`implementation-log.md`、`reviews/`、`evidence/`、`completion.md`、`closeout.md`。
-
-Read-on-presence 规则：
-
-- 必需长期资产缺失时阻塞：component-impact 工作需要 `docs/component-design.md`；implementation closeout 前需要 `docs/ar-designs/AR<id>-<slug>.md`。
-- 可选资产（`docs/interfaces.md`、`docs/dependencies.md`、`docs/runtime-behavior.md`）仅在项目启用时读取 / 同步。缺失的可选资产记录为 `N/A (project optional asset not enabled)`，不视为阻塞。
-- 过程目录保留在 `features/` 下；不要把已关闭 work item 移到 `features/archived/`，否则会破坏追溯链接。
-
-### Progress 字段
-
-本 skill 读写 `features/<id>/progress.md` 时使用 canonical progress 字段：
-
-- Work Item Type: SR / AR / DTS / CHANGE
-- Work Item ID: SR1234、AR12345、DTS67890 或 CHANGE id
-- Owning Component: AR / DTS / CHANGE 必填
-- Owning Subsystem: SR 必填
-- Workflow Profile: requirement-analysis / standard / component-impact / hotfix / lightweight
-- Execution Mode: interactive / auto
-- Current Stage: 当前 canonical devflow node
-- Pending Reviews And Gates: 待处理 review / gate 列表
-- Next Action Or Recommended Skill: 仅允许一个 canonical node
-- Blockers: open blockers
-- Last Updated: timestamp
-
-### Handoff 字段
-
-返回结构化 handoff，并使用本 skill 已知的字段：
-
-- current_node
-- work_item_id
-- owning_component or owning_subsystem
-- result or verdict
-- artifact_paths
-- record_path, when a review / gate / verification record exists
-- evidence_summary
-- traceability_links
-- blockers
-- next_action_or_recommended_skill
-- reroute_via_router
-
-不要把 `next_action_or_recommended_skill` 设为 `using-devflow` 或自由文本。
-
-### Router 权威
-
-- `devflow-router` 是 profile、execution mode、canonical next node、reviewer dispatch、review / gate recovery 的 runtime authority。
-- Legal profiles: requirement-analysis, standard, component-impact, hotfix, lightweight.
-- 如果 leaf handoff 与 artifact evidence 冲突，忽略 handoff，按 evidence 路由。
-
-### 任务路由字段
-
-对 implementation profiles，还要读取 Current Active Task、Task Plan Path、Task Board Path。多个 in_progress tasks 或不明确的 next-ready tasks 都是 workflow blockers。
-## 支撑参考
-
-| 文件 | 用途 |
-|---|---|
-| `references/profile-and-route-map.md` | 各 profile 主链与支线、Hard Stops |
-| `references/reviewer-dispatch-protocol.md` | reviewer subagent 派发协议与返回契约 |
+本 skill 遵循 `references/devflow-conventions.md` 与 `references/reviewer-dispatch-protocol.md`；项目 `AGENTS.md` 可覆盖等价路径与模板。
