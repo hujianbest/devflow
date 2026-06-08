@@ -151,7 +151,7 @@ SKILL.md
 2. **注入匠艺层（Craft injected）**：新增一组 **craft peer skills**，把 agent-skills 式的工程判断（简单性、抽象克制、接口契约、测试金字塔、五维审查、对抗式复核）编码为可被流程节点随时调用的 skill。
 3. **匠艺是「质量透镜」而非「新流程阶段」**：craft skills **不进** `progress.md` 的 `Current Stage`、**不进** handoff 的 `next_action_or_recommended_skill`、**不产生** review verdict。它们是流程节点在 `ar-design` / `tdd-implementation` / `code-review` 等阶段**内部调用的透镜**，提升产物质量，不改变流程拓扑。
 4. **meta↔leaf 关系采纳 agent-skills 模型**：`using-devflow` = 「发现树 + 行为宪法」；leaf 是按名互引的 peer；`devflow-router` 是**运行时证据路由权威**（保留，DevFlow 独有），与 meta-skill 的「发现」职责清晰分离。
-5. **单一真相源（Single source of truth）**：路径布局 / progress 字段 / handoff 字段 / profile / canonical 节点只在 `references/devflow-conventions.md`（+ 项目 `AGENTS.md` 覆盖点）定义一次，所有 skill 引用而不复制。
+5. **单一真相源（Single source of truth）**：路径布局 / progress 字段 / handoff 字段 / profile / canonical 节点只在 `using-devflow` 的「DevFlow 共同约定」章节（+ 项目 `AGENTS.md` 覆盖点）定义一次，所有 skill 引用而不复制。把约定收进 meta-skill 而非独立文件，是因为 `using-devflow` 本就是「发现 + 行为宪法」的入口，共同约定与行为宪法同处一地、随入口一起加载，最自然。
 6. **节点名与字段稳定（Backward compatible）**：13 个 canonical 工作节点名、`progress.md`/handoff 字段保持稳定，兼容存量 `features/<id>/` 工件。craft skills 是**新增的非 canonical 透镜**，不占用 canonical 节点名空间。
 7. **渐进披露 + 可移植**：纯 Markdown；单个 `SKILL.md` 目标 < 280 行；匠艺判断用表格 / 决策树 / 反例承载，便于跨工具稳定执行。
 
@@ -167,11 +167,12 @@ SKILL.md
 │   /devflow /devflow-specify /devflow-design /devflow-build     │
 │   /devflow-ship /devflow-fix   —— 用户面向入口，bias 非 authority │
 ├──────────────────────────────────────────────────────────────┤
-│ Meta（发现 + 宪法）  skills/using-devflow/SKILL.md             │
+│ Meta（发现 + 宪法 + 共同约定）  skills/using-devflow/SKILL.md  │
 │   ① 发现树：意图 → leaf skill（含「写设计 / 写码 / 写测试时叠加  │
 │      哪个 craft 透镜」）                                          │
 │   ② DevFlow 行为宪法（Core Operating Behaviors）               │
 │   ③ meta / router / craft 三者关系说明                          │
+│   ④ DevFlow 共同约定（单一真相源：布局 / 字段 / profile / 节点） │
 ├──────────────────────────────────────────────────────────────┤
 │ Runtime Router（Where-next）  skills/devflow-router/SKILL.md   │
 │   工件证据 → 唯一 canonical 下一步 + profile + reviewer 派发    │
@@ -191,7 +192,7 @@ SKILL.md
 │ Personas（Who）  agents/*.md                                    │
 │   devflow-reviewer / devflow-implementer                       │
 ├──────────────────────────────────────────────────────────────┤
-│ Conventions（单一真相源）  references/devflow-conventions.md     │
+│ Conventions（单一真相源）  并入 using-devflow「DevFlow 共同约定」 │
 │   产物布局 / progress 字段 / handoff 字段 / profile / 节点表    │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -247,13 +248,13 @@ SKILL.md
 
 ### 5.4 约定去重：单一真相源
 
-新增 `references/devflow-conventions.md`，集中定义：产物布局、`progress.md` canonical 字段、handoff 字段、合法 profile 集合与升级规则、合法 execution mode 与归一化顺序、canonical 节点清单、Read-on-presence 与 Promotion 规则。
+在 `using-devflow` 内新增「DevFlow 共同约定」章节，集中定义：产物布局、`progress.md` canonical 字段、handoff 字段、合法 profile 集合与升级规则、合法 execution mode 与归一化顺序、canonical 节点清单、Read-on-presence 与 Promotion 规则。约定与「发现树 + 行为宪法」同处入口 meta-skill，不单独建文件。
 
 各 skill 末尾的「本地 DevFlow 约定」大段样板**整段删除**，替换为一行引用：
 
 ```markdown
 ## DevFlow 约定
-本 skill 遵循 `references/devflow-conventions.md`（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。
+本 skill 遵循 `using-devflow` 的「DevFlow 共同约定」章节（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。
 ```
 
 skill-specific 的内容（如某节点的 review record 路径）以一两行保留在该 skill 内。预计每个 skill 因此瘦身 ~55–65 行。
@@ -282,7 +283,7 @@ description: <"做什么"> + <"Use when …" 触发> + <"Not for …" 反向排�
 ## 工作流          # 编号步骤；在相关步骤显式「叠加 craft 透镜」
 ## 输出契约        # 产物 + 唯一 next canonical node + handoff 字段
 ## 风险信号 / 反向理由化 / 验证清单
-## DevFlow 约定    # 一行引用 references/devflow-conventions.md
+## DevFlow 约定    # 一行引用 using-devflow「DevFlow 共同约定」章节
 ```
 
 ### 6.2 Craft / 质量透镜 skill 模板（目标 < 230 行）
@@ -309,7 +310,7 @@ description: <"教 agent 如何把<设计/代码/测试>做好"> + <"Use when �
 
 | 阶段 | 内容 | 完成判据 |
 |---|---|---|
-| **R0 单一真相源** | 新建 `references/devflow-conventions.md`，合并 14 个 skill 的重复约定 | 覆盖所有 1.0 约定项，无信息丢失 |
+| **R0 单一真相源** | 在 `using-devflow` 内新增「DevFlow 共同约定」章节，合并 14 个 skill 的重复约定 | 覆盖所有 1.0 约定项，无信息丢失 |
 | **R1 注入匠艺**（核心） | 新建 `devflow-design-craft` / `devflow-coding-craft` / `devflow-test-craft` 三个透镜 skill | 三 skill 携带命名原则 + tell + 反例；< 230 行 |
 | **R2 编织匠艺** | `ar-design` / `component-design` / `tdd-implementation` / `code-review` / `test-review` 在工作流相关步骤显式「叠加 craft 透镜」 | 五节点工作流出现对 craft skill 的具名调用 |
 | **R3 重写 meta** | `using-devflow` 重写为「发现树 + 行为宪法 + 三层关系」，发现树纳入 craft 透镜 | meta 清晰区分 meta/router/craft；保留行为宪法 |
@@ -343,7 +344,7 @@ description: <"教 agent 如何把<设计/代码/测试>做好"> + <"Use when �
 2. **匠艺被编织**：`ar-design` / `component-design` / `tdd-implementation` / `code-review` / `test-review` 的工作流显式具名调用对应 craft 透镜。
 3. **关系清晰**：`using-devflow` 明确区分 meta（发现）/ router（运行时路由）/ craft（质量透镜）三者，且保留行为宪法；craft 与 meta 都不写入 `next_action_or_recommended_skill`。
 4. **纪律保留**：工件优先恢复、角色分离评审、门禁化 TDD、可追溯、团队角色边界全部不变。
-5. **去重**：约定只在 `references/devflow-conventions.md` + `AGENTS.md` 定义；任一 skill 不再出现重复约定样板。
+5. **去重**：约定只在 `using-devflow` 的「DevFlow 共同约定」章节 + `AGENTS.md` 定义；任一 skill 不再出现重复约定样板。
 6. **兼容**：13 个 canonical 节点名与 `progress.md`/handoff 字段稳定。
 7. **文档一致**：README / README.zh-CN / CHANGELOG / commands / agents 与实现一致并解释三层关系。
 
