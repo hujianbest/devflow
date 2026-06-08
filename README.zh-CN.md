@@ -155,9 +155,9 @@ DevFlow 包含一个 public entry meta-skill、13 个 canonical `devflow-*` runt
 
 | Skill | 做什么 | 被谁叠加 |
 |---|---|---|
-| [`devflow-design-craft`](skills/devflow-design-craft/SKILL.md) | 怎么把设计做好：简单性优先、抽象克制（Rule of Three）、接口契约（Hyrum's Law、错误语义）、SOLID/GRASP tell、嵌入式防御性设计、有质量的方案对比 | `devflow-ar-design`、`devflow-component-design` |
+| [`devflow-design-craft`](skills/devflow-design-craft/SKILL.md) | 怎么把设计做好：简单性优先、抽象克制（Rule of Three）、接口契约（Hyrum's Law、错误语义）、SOLID/GRASP tell、嵌入式防御性设计、有质量的方案对比 | `devflow-ar-design`、`devflow-component-design`、`devflow-component-design-review`、`devflow-ar-design-review` |
 | [`devflow-coding-craft`](skills/devflow-coding-craft/SKILL.md) | 怎么把代码写好：Rule 0 简单性、薄垂直切片、范围纪律（Chesterton's Fence）、可读性与命名、嵌入式防御性编码 | `devflow-tdd-implementation`、`devflow-code-review` |
-| [`devflow-test-craft`](skills/devflow-test-craft/SKILL.md) | 怎么把测试写好：测试金字塔 + test sizes、测状态不测交互、DAMP over DRY、mock 克制（real>fake>stub>mock）、覆盖类型 | `devflow-tdd-implementation`、`devflow-test-review` |
+| [`devflow-test-craft`](skills/devflow-test-craft/SKILL.md) | 怎么把测试写好：测试金字塔 + test sizes、测状态不测交互、DAMP over DRY、mock 克制（real>fake>stub>mock）、覆盖类型 | `devflow-tdd-implementation`、`devflow-test-review`、`devflow-ar-design-review` |
 
 ---
 

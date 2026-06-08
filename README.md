@@ -155,9 +155,9 @@ These are **not** flow nodes. They are quality lenses that design / build / revi
 
 | Skill | What it does | Invoked by |
 |---|---|---|
-| [`devflow-design-craft`](skills/devflow-design-craft/SKILL.md) | How to design well: simplicity-first, abstraction discipline (Rule of Three), interface contracts (Hyrum's Law, error semantics), SOLID/GRASP tells, embedded defensive design, quality design-options | `devflow-ar-design`, `devflow-component-design` |
+| [`devflow-design-craft`](skills/devflow-design-craft/SKILL.md) | How to design well: simplicity-first, abstraction discipline (Rule of Three), interface contracts (Hyrum's Law, error semantics), SOLID/GRASP tells, embedded defensive design, quality design-options | `devflow-ar-design`, `devflow-component-design`, `devflow-component-design-review`, `devflow-ar-design-review` |
 | [`devflow-coding-craft`](skills/devflow-coding-craft/SKILL.md) | How to code well: Rule 0 simplicity, thin vertical slices, scope discipline (Chesterton's Fence), readability/naming, embedded defensive coding | `devflow-tdd-implementation`, `devflow-code-review` |
-| [`devflow-test-craft`](skills/devflow-test-craft/SKILL.md) | How to test well: test pyramid + sizes, state-not-interaction testing, DAMP over DRY, mock discipline (real>fake>stub>mock), coverage types | `devflow-tdd-implementation`, `devflow-test-review` |
+| [`devflow-test-craft`](skills/devflow-test-craft/SKILL.md) | How to test well: test pyramid + sizes, state-not-interaction testing, DAMP over DRY, mock discipline (real>fake>stub>mock), coverage types | `devflow-tdd-implementation`, `devflow-test-review`, `devflow-ar-design-review` |
 
 ---
 
