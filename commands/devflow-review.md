@@ -42,7 +42,6 @@ This command orchestrates the **DevFlow review (评审)** phase as an **on-deman
 - **本命令不改任何工件**：不写 / 不修 `requirement.md`、`component-design-draft.md`、`ar-design-draft.md`、源代码、测试；回修交对应 authoring 命令
 - **顺序门禁链不可跳序**：同时检查测试与代码时，**必须** 先 `devflow-test-review` 再 `devflow-code-review`；test-review 未通过 **严禁** 进入 code-review
 - **评审目标必须存在**：被选评审的 `primary_artifact` 在磁盘上缺失或证据不稳定 → 不得强行评审，回 `/devflow` 走 router 或回对应 authoring 命令补齐
-- `requirement-analysis` 子街区只可走 `devflow-spec-review` / `devflow-component-design-review`，**不得** 路由到 `devflow-ar-design-review` / `devflow-test-review` / `devflow-code-review`
 - `next_action_or_recommended_skill` 仅限 13 个 canonical 节点之一；选不出唯一下一步 → `reroute_via_router = true` 交 router
 - `auto` execution mode 不豁免任何评审或门禁；只移除节点间人工确认
 

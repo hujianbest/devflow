@@ -63,4 +63,4 @@ This command orchestrates the **DevFlow design (设计)** phase.
 | "改动看起来不影响组件边界，跳过组件设计" | 由 router 判，不由 leaf 自判；任何 SOA 接口 / 依赖 / 状态机 / 运行机制变化都触发 `component-impact` |
 | "测试设计章节先空着，TDD 时再补" | 禁止；缺章节直接被 ar-design-review 打回 |
 | "ar-design 我改完顺手 review 一下" | 禁止；必须 router 派发独立子代理 |
-| "把 SR 的组件设计当成 AR 的 AR 设计用" | 禁止跨子图，组件设计与 AR 设计是不同 canonical 节点 |
+| "组件设计写完就拿去当 AR 设计用，跳过 ar-design" | 禁止；组件设计与 AR 设计是不同 canonical 节点，组件设计通过后仍须做 AR 设计 |

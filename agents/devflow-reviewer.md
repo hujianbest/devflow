@@ -81,7 +81,7 @@ evidence_summary: <one paragraph; what was checked, against which judgement>
 ```
 
 - `next_action_or_recommended_skill` 永远是 13 个 canonical 节点之一；禁止写 `using-devflow`、禁止自由文本
-- `reroute_via_router=true` 用于：profile 需要升级、AR 范围越界、跨子图冲突、判据无法唯一映射下一步
+- `reroute_via_router=true` 用于：profile 需要升级、AR 范围越界、判据无法唯一映射下一步
 - `REJECT` 仅在 SKILL.md 明确允许的极端不可修复场景使用；否则用 `REQUEST_CHANGES`
 
 ## Anti-rationalization
