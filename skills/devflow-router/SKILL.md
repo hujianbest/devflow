@@ -9,7 +9,7 @@ DevFlow workflow family 的 **runtime authority**。基于工件证据决定：W
 
 `using-devflow` 负责 public entry、总指导原则与 skill discovery；本 skill 负责 runtime routing 与恢复。
 
-devflow 默认以单 AR / 单 DTS 为 work item 边界；实现子街区在 AR 设计通过后维护 work item 内部的 `tasks.md` / `task-board.md` 执行索引。本 skill 不替模块架构师、开发负责人、开发人员拍板任何专业判断；只负责把工件证据转化为唯一下一步。
+DevFlow 只处理实现类 work item（AR / DTS / CHANGE），默认以单 AR / 单 DTS 为 work item 边界；AR 设计通过后维护 work item 内部的 `tasks.md` / `task-board.md` 执行索引。本 skill 不替模块架构师、开发负责人、开发人员拍板任何专业判断；只负责把工件证据转化为唯一下一步。
 
 ## 适用场景
 
@@ -18,8 +18,8 @@ devflow 默认以单 AR / 单 DTS 为 work item 边界；实现子街区在 AR �
 - 用户说"继续 / 推进"，需依据工件判断当前节点
 - review / gate 刚完成，需消费结论并决定下一步
 - route / stage / profile 不清，或工件证据冲突
-- 需判断本 work item 走 **需求分析子街区**（SR → `requirement-analysis`）还是 **实现子街区**（AR / DTS / CHANGE → `standard` / `component-impact` / `hotfix` / `lightweight`）
-- 需判断是否进入 `devflow-component-design`（SR-analysis 可选 / AR component-impact 触发）或 `devflow-problem-fix`（hotfix）
+- 需在实现 profile（`standard` / `component-impact` / `hotfix` / `lightweight`）之间做判定
+- 需判断是否进入 `devflow-component-design`（AR component-impact 触发）或 `devflow-problem-fix`（hotfix）
 - 需派发 reviewer subagent 执行 spec / component-design / ar-design / test-check / code-review
 - reviewer subagent 返回 `reroute_via_router=true`
 
@@ -33,9 +33,7 @@ devflow 默认以单 AR / 单 DTS 为 work item 边界；实现子街区在 AR �
 - 不替模块架构师 / 开发负责人 / 开发人员拍板专业判断
 - 不在父会话内联做 review；review 节点必须派发独立 reviewer subagent
 - Profile 一旦升级（standard → component-impact / hotfix），不允许在同一 work item 内静默降级
-- **不允许跨子街区切换 profile**：同一 work item 不得在 `requirement-analysis` 与任何实现 profile 之间切换。SR 拆出的候选 AR 必须**新建** AR work item，由 router 重新分流
-- `requirement-analysis` profile 下不得路由到 `devflow-ar-design` / `devflow-ar-design-review` / `devflow-tdd-implementation` / `devflow-test-review` / `devflow-code-review` / `devflow-completion-gate` / `devflow-problem-fix`
-- 缺组件实现设计但本次修改影响组件边界 → 必须升级到 `component-impact` profile（仅适用于 AR 工作项），路由到 `devflow-component-design`
+- 缺组件实现设计但本次修改影响组件边界 → 必须升级到 `component-impact` profile，路由到 `devflow-component-design`
 - AR 实现设计未含测试设计章节 → 不得路由到 `devflow-tdd-implementation`，必须回 `devflow-ar-design`
 - AR 设计通过后由 `devflow-tdd-implementation` 内部执行 task queue preflight；preflight 无法产出完整 task queue 或唯一 Current Active Task 时必须回 `devflow-router`
 - task-board 无法唯一判断 `Current Active Task` / next-ready task → 标 `reroute_via_router=true`
@@ -70,21 +68,20 @@ devflow 默认以单 AR / 单 DTS 为 work item 边界；实现子街区在 AR �
 
 按 Read-On-Presence 原则只读路由所需的最少内容：项目 `AGENTS.md` 路径映射、用户请求、`features/<id>/progress.md`、`features/<id>/reviews/` 与 `features/<id>/completion.md`、`docs/component-design.md` / `docs/ar-designs/`（必要时）。不在路由阶段做大范围代码探索。证据冲突 → 选更上游节点 / 升级 profile，不擅自调和。
 
-### 3. 子街区判定
+### 3. 确认 work item 类型
 
-先决定本 work item 走 **需求分析子街区** 还是 **实现子街区**——profile 集合不同、合法节点集不同、closeout 类型不同。
+DevFlow 只处理实现类 work item。确认类型并据此定 profile 候选集：
 
-| Work Item Type | 子街区 | profile 候选集 |
-|---|---|---|
-| `SR` | 需求分析 | 仅 `requirement-analysis` |
-| `AR` / `CHANGE` | 实现 | `standard` / `component-impact` / `lightweight` |
-| `DTS` | 实现 | `hotfix`（默认）；判断为常规缺陷修改时也可走 `standard` |
+| Work Item Type | profile 候选集 |
+|---|---|
+| `AR` / `CHANGE` | `standard` / `component-impact` / `lightweight` |
+| `DTS` | `hotfix`（默认）；判断为常规缺陷修改时也可走 `standard` |
 
-**禁止跨子街区升级**：同一个 work item 的 profile 不允许在 `requirement-analysis` 与任何实现 profile 之间切换。如果用户提出 SR 拆出的某个候选 AR 应该立刻进入实现，由需求负责人**新建** AR work item，由 router 重新走一次步骤 1-7。
+子系统需求（SR）分析不在 DevFlow 范围内；AR 仅以上游 SR / IR 作为可选追溯锚点引用，不作为 DevFlow work item 处理。
 
-### 4. 检查支线信号（仅实现子街区）
+### 4. 检查支线信号
 
-实现子街区内，支线优先于普通主链：
+支线优先于普通主链：
 
 | 信号 | 路由 |
 |---|---|
@@ -96,19 +93,9 @@ devflow 默认以单 AR / 单 DTS 为 work item 边界；实现子街区在 AR �
 
 `Change Type = modify/remove` 本身不自动升级 profile；它是风险信号。若该 row 同时触及 `Component Impact = interface / dependency / state-machine / runtime-behavior`、跨组件协调、组件职责或组件设计章节，则按上表升级 `component-impact`。若仅为组件内部行为修改且组件设计稳定，可保持 `standard`，但后续设计 / TDD / review 必须消费 Existing Behavior / Baseline。
 
-需求分析子街区不存在「升级到 component-impact」的概念——SR-flow 内的组件设计修订是 `requirement-analysis` profile 自带的可选步，不切换 profile。
-
 ### 5. 决定 Workflow Profile
 
-按 Escalation Pattern：先执行 `AGENTS.md` 强制规则 → 沿用已有 profile → 按证据选择 → 冲突选更重。**只允许在同一子街区内升级，不允许降级，也不允许跨子街区切换**。
-
-需求分析子街区：
-
-| Profile | 适用场景 |
-|---|---|
-| `requirement-analysis` | Work Item Type = `SR`；澄清子系统级需求 + 可选组件实现设计；不进入实现 |
-
-实现子街区：
+按 Escalation Pattern：先执行 `AGENTS.md` 强制规则 → 沿用已有 profile → 按证据选择 → 冲突选更重。**只允许单向升级，不允许降级**。
 
 | Profile | 适用场景 |
 |---|---|
@@ -127,8 +114,6 @@ devflow 默认以单 AR / 单 DTS 为 work item 边界；实现子街区在 AR �
 
 leaf skill 返回的 `next_action_or_recommended_skill` 是受控字段。检查它是否归一化、是否与最新 evidence 一致、是否在当前 profile 合法集合内（见 `references/profile-and-route-map.md`）。全部满足才采用；否则忽略，回退到迁移表。
 
-特别注意：`requirement-analysis` profile 下，leaf 返回 `devflow-ar-design` / `devflow-tdd-implementation` / `devflow-test-review` / `devflow-code-review` / `devflow-completion-gate` / `devflow-problem-fix` 一律视为非法 → `reroute_via_router=true`，由真人决定是否新建 AR work item。
-
 ### 8. 决定 canonical 节点
 
 路由原则：支线优先于主链 → review / gate 恢复优先于实现 → 缺失上游优先于下游 → 冲突选更保守。
@@ -137,11 +122,6 @@ leaf skill 返回的 `next_action_or_recommended_skill` 是受控字段。检查
 
 | 当前节点 | profile | 成功后 | 需修改 / 阻塞 |
 |---|---|---|---|
-| `devflow-specify` | `requirement-analysis`（SR） | `devflow-spec-review` | 回需求负责人 / `devflow-router` |
-| `devflow-spec-review` | `requirement-analysis` | `devflow-component-design`（本 SR 触发组件设计修订）/ `devflow-finalize`（仅澄清，无组件设计修订） | `devflow-specify` |
-| `devflow-component-design` | `requirement-analysis` | `devflow-component-design-review` | 继续修订 |
-| `devflow-component-design-review` | `requirement-analysis` | `devflow-finalize`（analysis closeout） | `devflow-component-design` |
-| `devflow-finalize` | `requirement-analysis` | workflow closed（analysis closeout） | 回 router |
 | `devflow-specify` | 实现 profile | `devflow-spec-review` | 回需求负责人 / `devflow-router` |
 | `devflow-spec-review` | 实现 profile | `devflow-component-design`（component-impact）/ `devflow-ar-design`（standard / lightweight） | `devflow-specify` |
 | `devflow-component-design` | `component-impact` | `devflow-component-design-review` | 继续修订 |
@@ -180,7 +160,7 @@ review 节点不在父会话内联执行。构造最小 review request（`target
 - 非 hard stop → 同一轮进入目标 skill
 - review 节点 → 立刻派发 subagent
 - approval step → 按 Execution Mode 处理
-- hard stop（缺组件设计、缺测试设计章节、TDD 后未经 test-review、SR-flow 试图进入实现节点等）→ 必须停下等待
+- hard stop（缺组件设计、缺测试设计章节、TDD 后未经 test-review 等）→ 必须停下等待
 
 ## 输出契约
 
@@ -218,7 +198,6 @@ routing 阶段最常见的偷懒话术与反驳。命中任意一条 → 停下�
 | 「TDD 完成了，直接 `devflow-code-review`」 | TDD 完成后**必须**先派发 `devflow-test-review`，verdict = `通过` 才能进入 code review |
 | 「用户说 `auto`，跳过 review」 | `auto` 仅表示节点之间不停下来等真人确认；**不**删除 review / gate / approval / 证据要求 |
 | 「leaf 给了 `next_action_or_recommended_skill = ...`，直接采纳」 | leaf 是 bias 不是 authority。先校验是否归一化、是否在当前 profile 合法集合内、是否与最新 evidence 一致；不满足任一 → 忽略，按迁移表回退 |
-| 「这是个非常小的 SR，让它直接进 `devflow-ar-design`」 | 跨子街区切换被禁止。SR 必须经 `devflow-finalize` analysis closeout；候选 AR 由需求负责人**新建** AR work item |
 | 「证据有点冲突，但选个看起来更顺的节点」 | 证据冲突时取保守策略：更上游节点 / 更高 profile；无法唯一映射 → `reroute_via_router=true` 停下 |
 | 「review 在父会话里顺带做一下更快」 | 内联 review 被禁止。review 必须派发独立 reviewer subagent，使用对应 `devflow-*-review` skill 作为 system prompt |
 | 「把 `using-devflow` 写进 next_action 让它再分流一次」 | 禁止。`using-devflow` 永远不出现在 runtime handoff |
@@ -250,7 +229,7 @@ routing 阶段最常见的偷懒话术与反驳。命中任意一条 → 停下�
 ### Router 权威
 
 - `devflow-router` 是 profile、execution mode、canonical next node、reviewer dispatch、review / gate recovery 的 runtime authority。
-- Legal profiles: requirement-analysis, standard, component-impact, hotfix, lightweight.
+- Legal profiles: standard, component-impact, hotfix, lightweight.
 - 如果 leaf handoff 与 artifact evidence 冲突，忽略 handoff，按 evidence 路由。
 
 ### 任务路由字段

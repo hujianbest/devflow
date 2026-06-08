@@ -34,7 +34,7 @@ DevFlow 2.0 有三类协作但职责不同的 skill。混淆它们是最常见�
     |-- 不确定当前阶段 / 继续推进 / 消费 review 或 gate / profile 不清 / 证据冲突
     |   -> devflow-router
     |
-    |-- 澄清已接受的 SR / AR / DTS / CHANGE 需求
+    |-- 澄清已接受的 AR / DTS / CHANGE 需求
     |   -> devflow-specify
     |
     |-- 独立审查 requirement spec
@@ -132,7 +132,7 @@ DevFlow 不做业务、范围、优先级、架构边界或接口契约决策。
 5. 把 `using-devflow` 或任何 `devflow-*-craft` 透镜写进 `Next Action Or Recommended Skill` 或 handoff 字段。
 6. 发现证据冲突时按聊天记忆推进。
 7. 因为用户说 `auto` 就跳过 review / gate / approval / evidence。
-8. 在同一 work item 内把 SR analysis 切到 AR implementation。
+8. component-impact 缺 `docs/component-design.md` 时仍进入 AR 设计或 TDD。
 9. 跳过验证，因为「看起来对」。
 10. 把 craft 透镜误当成新的流程门禁或流程阶段（它只提质，不裁决、不路由）。
 
@@ -151,13 +151,6 @@ DevFlow 不做业务、范围、优先级、架构边界或接口契约决策。
 完整 feature 或 work item 的典型 DevFlow sequence（不是每个任务都需要每个节点；router 按证据恢复和裁剪运行时路径；craft 透镜按需叠加）：
 
 ```text
-SR requirement-analysis:
-1. devflow-specify                  -> 澄清子系统级需求
-2. devflow-spec-review              -> 独立审查规格
-3. devflow-component-design         -> 可选：修订组件设计   ⟲ devflow-design-craft
-4. devflow-component-design-review  -> 可选：独立审查
-5. devflow-finalize                 -> analysis closeout
-
 AR / CHANGE implementation:
 1. devflow-specify                  -> 澄清需求规格
 2. devflow-spec-review              -> 独立审查规格
@@ -187,7 +180,7 @@ DTS / hotfix:
 |---|---|---|
 | Meta | `using-devflow` | 入口发现、行为宪法、三层关系 |
 | Route | `devflow-router` | 基于工件证据做 runtime routing、profile 判定、恢复编排和 reviewer 派发 |
-| Define | `devflow-specify` | 把已接受的 SR/AR/DTS/CHANGE 澄清为可评审规格 |
+| Define | `devflow-specify` | 把已接受的 AR/DTS/CHANGE 澄清为可评审规格 |
 | Review | `devflow-spec-review` | 独立审查规格清晰度、可追溯性和可设计性 |
 | Design | `devflow-component-design` | 编写或修订组件实现设计 |
 | Review | `devflow-component-design-review` | 独立审查组件实现设计 |
@@ -222,7 +215,7 @@ DTS / hotfix:
     dependencies.md                 # 可选；仅团队启用时读取 / 同步
     runtime-behavior.md             # 可选；仅团队启用时读取 / 同步
   features/
-    AR<id>-<slug>/ DTS<id>-<slug>/ CHANGE<id>-<slug>/ SR<id>-<slug>/
+    AR<id>-<slug>/ DTS<id>-<slug>/ CHANGE<id>-<slug>/
 ```
 
 `features/<id>/` 下按需包含：`README.md`、`progress.md`、`requirement.md`、`component-design-draft.md`、`ar-design-draft.md`、`tasks.md`、`task-board.md`、`traceability.md`、`implementation-log.md`、`reviews/`（spec-review / component-design-review / ar-design-review / test-check / code-review）、`evidence/`（unit / integration / static-analysis / build）、`completion.md`、`closeout.md`。
@@ -235,23 +228,22 @@ DTS / hotfix:
 
 ### `progress.md` canonical 字段
 
-`Work Item Type`（SR/AR/DTS/CHANGE）、`Work Item ID`、`Owning Component`（AR/DTS/CHANGE 必填）、`Owning Subsystem`（SR 必填）、`Workflow Profile`、`Execution Mode`、`Current Stage`（canonical 节点；**craft 透镜不写入**）、`Pending Reviews And Gates`、`Next Action Or Recommended Skill`（仅一个 canonical 节点）、`Blockers`、`Last Updated`。实现 profile 还需：`Task Plan Path`、`Task Board Path`、`Current Active Task`、`Implementer Dispatch Status`、`Implementer Context Pack`、`Implementation Report`。
+`Work Item Type`（AR/DTS/CHANGE）、`Work Item ID`、`Owning Component`（必填）、`Workflow Profile`、`Execution Mode`、`Current Stage`（canonical 节点；**craft 透镜不写入**）、`Pending Reviews And Gates`、`Next Action Or Recommended Skill`（仅一个 canonical 节点）、`Blockers`、`Last Updated`。实现 profile 还需：`Task Plan Path`、`Task Board Path`、`Current Active Task`、`Implementer Dispatch Status`、`Implementer Context Pack`、`Implementation Report`。
 
 ### Handoff 字段
 
-`current_node`、`work_item_id`、`owning_component`/`owning_subsystem`、`result`/`verdict`、`artifact_paths`、`record_path`（有 review/gate/verification record 时）、`evidence_summary`、`traceability_links`、`blockers`、`next_action_or_recommended_skill`（仅 canonical 节点）、`reroute_via_router`。
+`current_node`、`work_item_id`、`owning_component`、`result`/`verdict`、`artifact_paths`、`record_path`（有 review/gate/verification record 时）、`evidence_summary`、`traceability_links`、`blockers`、`next_action_or_recommended_skill`（仅 canonical 节点）、`reroute_via_router`。
 
 ### 合法 Workflow Profile 与升级规则
 
-| Profile | 子街区 | 适用场景 |
-|---|---|---|
-| `requirement-analysis` | 需求分析（SR） | 澄清子系统级需求 + 可选组件设计修订；不进入实现 |
-| `standard` | 实现 | 既有组件 AR 增量、组件设计稳定、纯组件内修改 |
-| `component-impact` | 实现 | 新增组件 / 改 SOA 接口 / 改组件职责 / 改依赖 / 改状态机 / 组件设计缺失或过期 / 跨组件协调 |
-| `hotfix` | 实现 | DTS / 紧急缺陷 / 已上线问题修复 |
-| `lightweight` | 实现 | 极小、低风险、纯局部修改；保留 specify→completion 全链，仅压缩文档量 |
+| Profile | 适用场景 |
+|---|---|
+| `standard` | 既有组件 AR 增量、组件设计稳定、纯组件内修改 |
+| `component-impact` | 新增组件 / 改 SOA 接口 / 改组件职责 / 改依赖 / 改状态机 / 组件设计缺失或过期 / 跨组件协调 |
+| `hotfix` | DTS / 紧急缺陷 / 已上线问题修复 |
+| `lightweight` | 极小、低风险、纯局部修改；保留 specify→completion 全链，仅压缩文档量 |
 
-只允许同一子街区内单向升级（`standard → component-impact`），不允许降级，禁止跨子街区切换；SR 拆出的候选 AR 必须**新建** AR work item。Profile 由 `devflow-router` 判定写入 `progress.md` 后为单一真相，其余 skill 只读。
+只允许单向升级（`standard → component-impact`），不允许降级。Profile 由 `devflow-router` 判定写入 `progress.md` 后为单一真相，其余 skill 只读。
 
 ### 合法 Execution Mode
 
@@ -276,9 +268,9 @@ review 必须由 `devflow-router` 派发**独立 reviewer subagent**，不内联
 - `using-devflow` 是 public entry，永远不是合法 runtime next action。
 - `devflow-*-craft` 是质量透镜，同样永远不是合法 runtime next action。
 - `next_action_or_recommended_skill` 必须是上文「DevFlow 共同约定 → Canonical 节点清单」中的 canonical runtime node，不能是 `using-devflow`、craft 透镜或自由文本。
-- Legal profiles：`requirement-analysis` / `standard` / `component-impact` / `hotfix` / `lightweight`；profile 判定由 `devflow-router` 执行。
+- Legal profiles：`standard` / `component-impact` / `hotfix` / `lightweight`；profile 判定由 `devflow-router` 执行。
 - Legal execution modes：`interactive` / `auto`；`auto` 不跳过任何 review / gate / approval / evidence。
-- SR work item 只属于 `requirement-analysis` 子图；SR 派生的候选 AR 必须新建 AR work item。
+- DevFlow 只处理实现类 work item（AR / DTS / CHANGE）；子系统需求（SR）分析不在 DevFlow 范围内，AR 仅以上游 SR / IR 作为可选追溯锚点引用，不作为 DevFlow work item 处理。
 - 项目 `AGENTS.md` 与各 leaf skill 的 hard gates 不能被入口 discovery 或 craft 透镜削弱。
 
 ## 支撑参考
