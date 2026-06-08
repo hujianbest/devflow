@@ -15,15 +15,14 @@ devflow 的 review 节点（spec-review / component-design-review / ar-design-re
 派发 reviewer subagent 时，父会话（router 或上游 leaf）必须传入：
 
 - `target_skill`：`devflow-spec-review` / `devflow-component-design-review` / `devflow-ar-design-review` / `devflow-test-review` / `devflow-code-review`
-- `work_item_type`：`SR` / `AR` / `DTS` / `CHANGE`
+- `work_item_type`：`AR` / `DTS` / `CHANGE`
 - `work_item_id`
-- `owning_component`：AR / DTS / CHANGE 必填
-- `owning_subsystem`：SR 必填
-- `workflow_profile`：`requirement-analysis` / `standard` / `component-impact` / `hotfix` / `lightweight`
+- `owning_component`：必填
+- `workflow_profile`：`standard` / `component-impact` / `hotfix` / `lightweight`
 - `primary_artifact`：被评审对象的路径与版本锚点（commit / 分支）
 - `supporting_context`：上游工件路径列表（按目标 skill 与 work item 类型）：
   - spec-review（任何 work item）：`features/<id>/requirement.md`
-  - component-design-review（SR-analysis 或 AR component-impact）：`features/<id>/requirement.md` + `features/<id>/component-design-draft.md` + 当前 `docs/component-design.md`
+  - component-design-review（AR component-impact）：`features/<id>/requirement.md` + `features/<id>/component-design-draft.md` + 当前 `docs/component-design.md`
   - ar-design-review（**仅** AR / DTS / CHANGE）：`features/<id>/requirement.md` + `features/<id>/ar-design-draft.md` + `docs/component-design.md`
   - test-review（**仅** AR / DTS / CHANGE）：`features/<id>/ar-design-draft.md`（含测试设计章节）+ `features/<id>/evidence/unit/`、`features/<id>/evidence/integration/` + `features/<id>/implementation-log.md`
   - code-review（**仅** AR / DTS / CHANGE）：上述全部 + 代码 diff + `features/<id>/reviews/test-check.md`
@@ -62,18 +61,7 @@ reroute_via_router: true | false
 
 ## Verdict 与下一步映射
 
-`通过` 后的下一步取决于 work item 的 `workflow_profile`。下表分子街区列出。
-
-### 需求分析子街区（profile = `requirement-analysis`，仅 SR）
-
-| Reviewer | 通过 | 需修改 | 阻塞（内容） | 阻塞（workflow） |
-|---|---|---|---|---|
-| `devflow-spec-review` | `devflow-component-design`（SR 触发组件设计修订）/ `devflow-finalize`（仅澄清，无组件设计修订；写 analysis closeout） | `devflow-specify` | `devflow-specify` | `devflow-router` |
-| `devflow-component-design-review` | `devflow-finalize`（写 analysis closeout） | `devflow-component-design` | `devflow-component-design` | `devflow-router` |
-
-SR-flow 中 `devflow-ar-design-review` / `devflow-test-review` / `devflow-code-review` 不应被派发；如果发生，`devflow-router` 应在派发前拦截，或 reviewer 返回 `阻塞`(workflow) + `reroute_via_router=true`。
-
-### 实现子街区（profile = `standard` / `component-impact` / `hotfix` / `lightweight`）
+`通过` 后的下一步取决于 work item 的 `workflow_profile`（`standard` / `component-impact` / `hotfix` / `lightweight`）：
 
 | Reviewer | 通过 | 需修改 | 阻塞（内容） | 阻塞（workflow） |
 |---|---|---|---|---|

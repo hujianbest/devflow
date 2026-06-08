@@ -2,28 +2,7 @@
 
 本 reference 属于 `devflow-router`，定义合法 profile 路径、route upgrades 和 hard stops。
 
-DevFlow 有两个子街区：
-
-- `requirement-analysis`：SR work item；不包含实现节点。
-- `implementation`：AR / DTS / CHANGE work item 使用 `standard` / `component-impact` / `hotfix` / `lightweight` profiles。
-
-同一个 work item 内不得在 SR analysis 与 implementation 之间切换。SR closeout 可以列出 AR candidates；由需求负责人另行创建新的 AR work items。
-
-## Requirement-Analysis 路由
-
-```text
-using-devflow
-  -> devflow-router
-  -> devflow-specify
-  -> devflow-spec-review
-  -> (optional) devflow-component-design
-  -> (optional) devflow-component-design-review
-  -> devflow-finalize
-```
-
-合法节点：`devflow-specify`、`devflow-spec-review`、`devflow-component-design`、`devflow-component-design-review`、`devflow-finalize`。
-
-此 profile 下实现节点均非法。
+DevFlow 处理 AR / DTS / CHANGE work item，使用 `standard` / `component-impact` / `hotfix` / `lightweight` profiles。
 
 ## Standard 路由
 
@@ -100,18 +79,16 @@ Lightweight 只压缩文档量，不移除质量门禁。
 命中任一项必须停止，并设置 `reroute_via_router=true`：
 
 1. Requirement input 在 scope / acceptance / direction 上不清楚。
-2. IR / SR / AR traceability 冲突。
+2. AR / 上游需求（IR / SR）traceability 冲突。
 3. AR / DTS / CHANGE 缺唯一 owning component。
-4. SR 缺 owning subsystem。
-5. SR work item 试图进入实现节点。
-6. 变更影响组件边界，但 component design 缺失或过期。
-7. AR design 缺 embedded test design。
-8. Task queue preflight 无法产出完整 tasks 或唯一 `Current Active Task`。
-9. `task-board.md` 存在多个 in_progress tasks、next-ready tasks 不明确，或与 `progress.md` 冲突。
-10. TDD 已完成但测试尚未通过 `devflow-test-review`。
-11. 代码变更破坏 SOA boundary，或新增未解释的跨组件依赖。
-12. critical static-analysis / build / coding-standard 问题未解释。
-13. review / gate verdict 无法映射到唯一 next action。
+4. 变更影响组件边界，但 component design 缺失或过期。
+5. AR design 缺 embedded test design。
+6. Task queue preflight 无法产出完整 tasks 或唯一 `Current Active Task`。
+7. `task-board.md` 存在多个 in_progress tasks、next-ready tasks 不明确，或与 `progress.md` 冲突。
+8. TDD 已完成但测试尚未通过 `devflow-test-review`。
+9. 代码变更破坏 SOA boundary，或新增未解释的跨组件依赖。
+10. critical static-analysis / build / coding-standard 问题未解释。
+11. review / gate verdict 无法映射到唯一 next action。
 
 ## Reviewer 派发锚点
 

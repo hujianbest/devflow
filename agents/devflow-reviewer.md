@@ -12,9 +12,8 @@ description: Independent DevFlow reviewer subagent dispatched ONLY by devflow-ro
 ```
 target_skill              ∈ {devflow-spec-review | devflow-component-design-review |
                              devflow-ar-design-review | devflow-test-review | devflow-code-review}
-work_item_id              e.g. SR1234 / AR12345 / DTS67890 / CHANGE123
-owning_component          e.g. memory-pool         # AR / DTS / CHANGE
-owning_subsystem          # SR
+work_item_id              e.g. AR12345 / DTS67890 / CHANGE123
+owning_component          e.g. memory-pool         # 必填
 primary_artifact          features/<id>/<artifact>.md
 supporting_context        progress.md 摘要 + 相邻 docs/ 锚点
 agents_md_anchor          项目 AGENTS.md 覆盖锚点
@@ -43,7 +42,6 @@ expected_return_contract  本文件 Output contract
 每个 target 的判据完整来自 `skills/<target_skill>/SKILL.md`。下表是 router 派发链路上的最关键不变式，作为加强检查；任何冲突时本表与 SKILL.md 都必须满足。
 
 - **`target_skill = devflow-spec-review`**
-  - SR 工作项的 candidate AR breakdown **必须** 标注为新建 AR work item 候选，**不得** 在同一 SR 内跨子图直接做实现
   - 缺少 traceability、约束、可设计性中的任一关键面 → `REQUEST_CHANGES`，next = `devflow-specify`
 
 - **`target_skill = devflow-component-design-review`**

@@ -135,35 +135,6 @@ QAS:
 - Response Measure: 100% 配置块在启用前通过完整性校验；失败时上报事件 ConfigVerifyFailed 在 100 ms 内被监控通道收到
 ```
 
-## SR 视角的 NFR
-
-SR work item 的 NFR 通常是**子系统级目标**：
-
-- `Stimulus Source` / `Environment` 在子系统层（例：「子系统 Y 的调度器」「子系统启动期」）
-- `Response` 是子系统级行为（例：「子系统 Y 必须在 200 ms 内把请求路由到对应组件」）
-- `Response Measure` 仍需可量化，但通常是端到端目标，不绑定具体组件实现细节
-- 当 SR 拆出候选 AR 后，AR 工作项可以把同一个 NFR 下沉为更细粒度的组件级 QAS
-
-示例：
-
-```markdown
-### NFR-S-001（SR）子系统级模式切换端到端延迟
-- 类别: Performance Efficiency / Time behavior
-- 优先级: Must
-- 来源: SR-1234 § 4.1（子系统级 SLO）
-
-QAS:
-- Stimulus Source: 子系统 Y 的外部消费者
-- Stimulus: 发起 Subsystem.SetMode(NORMAL)
-- Environment: 子系统 Y 处于 ready 状态、所有受影响组件均就绪
-- Response: 子系统 Y 把请求路由到对应组件、收到组件确认、返回成功
-- Response Measure: 端到端 95th ≤ 50 ms；100% ≤ 200 ms
-
-# 拆出 AR 后，AR-12345 / AR-12346 各自把这一目标下沉为组件级 NFR：
-# - AR-12345（组件 X）: 95th ≤ 5 ms（NFR-001 上面）
-# - AR-12346（组件 Z）: 95th ≤ 10 ms
-```
-
 ## 与其他 reference 的关系
 
 - 单条 NFR 的最小字段（ID / Statement / Acceptance / Priority / Source）：`requirement-rows-contract.md`
@@ -193,7 +164,6 @@ QAS:
 - 一条 NFR 覆盖多个不同质量维度（性能 + 安全 + 可用性混在一起）
 - QAS 与 Acceptance 矛盾（一个写 5 ms，另一个写 10 ms）
 - ISO 25010 维度无关的内容被强行归类
-- SR 的 NFR 直接写到组件级 QAS（应在子系统层；下沉到组件由拆出的 AR 完成）
 
 ## 最小签入条件
 
@@ -204,4 +174,4 @@ QAS:
 - [ ] `Response Measure` 含阈值或可判定准则
 - [ ] `Environment` 显式写出系统状态
 - [ ] Acceptance（BDD）与 QAS 一致
-- [ ] AR 工作项的 NFR 在组件级；SR 工作项的 NFR 在子系统级（不混层）
+- [ ] NFR 在组件级表达，绑定到本 AR 的组件行为
