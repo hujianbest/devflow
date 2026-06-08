@@ -110,7 +110,7 @@ DevFlow:   派发 test review、code review、completion gate 和
 
 DevFlow 包含一个 public entry meta-skill、13 个 canonical `devflow-*` runtime nodes，以及 3 个匠艺质量透镜 skill。三者职责不同（见 [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md) §5.1）：
 
-- **Meta（`using-devflow`）** 发现该用哪个 skill，并承载永远生效的行为宪法。
+- **Meta（`using-devflow`）** 发现该用哪个 skill，承载永远生效的行为宪法，并托管其他所有 skill 共同遵循的约定。
 - **运行时路由（`devflow-router`）** 把工件证据转成唯一 canonical 下一步。
 - **匠艺透镜（`devflow-*-craft`）** 由流程节点在工作流内部叠加，提升设计 / 编码 / 测试质量；它们不写 `progress`/handoff、不产 verdict、不改流程拓扑。
 
@@ -198,7 +198,7 @@ SKILL.md
 
 - **证据优先于记忆。** 路由读取 `features/<id>/progress.md`、reviews、approvals、evidence 和 completion records。
 - **只允许 canonical name。** `Next Action Or Recommended Skill` 必须是 canonical `devflow-*` 节点；`using-devflow` 与 `devflow-*-craft` 透镜都不能写入 runtime handoff 字段。
-- **约定单一真相源。** 产物布局、progress 字段、handoff 字段、profile、canonical 节点表只在 [`references/devflow-conventions.md`](references/devflow-conventions.md) 定义一次，各 skill 引用而非复制。
+- **约定单一真相源。** 产物布局、progress 字段、handoff 字段、profile、canonical 节点表只在 [`using-devflow`](skills/using-devflow/SKILL.md) 的「DevFlow 共同约定」章节定义一次，各 skill 引用而非复制。
 - **受控 subagent。** `devflow-router` 是唯一 reviewer 派发者；`devflow-tdd-implementation` 是唯一 implementer 派发者。
 - **禁止 self-verification。** Authoring skill 只写工件并交接；独立 reviewer 返回 verdict，不修改生产工件。
 - **匠艺是透镜不是阶段。** 质量透镜在既有节点内部提升标准，不新增流程阶段、不破坏工件兼容。
@@ -248,10 +248,8 @@ docs/
 devflow/
 ├── commands/                         # slash-style command intent definitions
 ├── agents/                           # reviewer / implementer role mirrors
-├── references/
-│   └── devflow-conventions.md        # 单一真相源（布局 / 字段 / profile / 节点表）
 ├── skills/                           # 1 meta + 13 canonical devflow-* nodes + 3 craft 透镜
-│   ├── using-devflow/                #   Meta：发现 + 行为宪法
+│   ├── using-devflow/                #   Meta：发现 + 行为宪法 + 共同约定
 │   ├── devflow-router/               #   运行时证据路由
 │   ├── devflow-specify/
 │   ├── devflow-spec-review/
