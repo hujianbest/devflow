@@ -13,7 +13,7 @@ description: 当 devflow-specify 产出的 AR / DTS / CHANGE requirement.md 草�
 
 适用：
 
-- `devflow-specify` 已产出 requirement.md 草稿（SR 或 AR / DTS / CHANGE），需正式 verdict
+- `devflow-specify` 已产出 requirement.md 草稿（AR / DTS / CHANGE），需正式 verdict
 - reviewer subagent 被派发执行 spec 评审
 - 用户明确要求「review 这份规格 / 评审需求」
 

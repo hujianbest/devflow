@@ -12,7 +12,6 @@
 - 验收标准开始覆盖大量互不相同的路径
 - 当前 work item 范围和「以后再做」的能力混在同一条 row 里
 - 用户同时提到了 MVP、后续版本、增量补做、第二期能力
-- SR 的候选 AR 拆得很粗（一条候选覆盖多个组件）或很细（一条候选只够 1 个函数）
 
 ## G1-G6 Oversized Row Heuristics（INVEST `Small` + `Independent`）
 

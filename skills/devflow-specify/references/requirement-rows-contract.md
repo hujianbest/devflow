@@ -155,7 +155,7 @@ DTS 规格不必填写所有类别；至少应有 FR（或 IFR / CON）描述被
 
 1. 「确认过的事实」 vs「还未确认的想法」
 2. 「业务 / 子系统意图」 vs「实现细节」
-3. 「当前 work item 必须做」 vs「后续候选 work item」（SR 写到 candidates；AR 应直接拆新 work item）
+3. 「当前 work item 必须做」 vs「后续候选 work item」（应拆出新 work item，不埋在 prose）
 
 如果做不到这三步，还没到正式 requirement rows 的时机，回步骤 3 继续 Socratic Elicitation。
 
