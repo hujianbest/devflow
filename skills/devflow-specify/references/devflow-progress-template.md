@@ -8,19 +8,17 @@
 
 ## 标识信息
 
-- 工作项类型:                          # SR / AR / DTS / CHANGE
+- 工作项类型:                          # AR / DTS / CHANGE
 - 工作项 ID:
-- 所属组件:                            # AR / DTS / CHANGE 必填；SR 可空
-- 所属子系统:                          # SR 必填；AR / DTS / CHANGE 可空
-- 关联 IR:
-- 关联 SR:                             # AR 必填
+- 所属组件:                            # 必填
+- 关联 IR:                             # 上游追溯锚点（可选）
+- 关联 SR:                             # 上游追溯锚点（可选）
 - 关联 AR:                             # DTS 影响功能需求时填写
-- AR 拆分候选:                         # 仅 SR 适用；spec-review 后定稿，analysis closeout 时写入 closeout.md
 
 ## 工作流状态
 
 - 当前阶段:                            # canonical devflow-* 节点
-- 工作流 Profile:                      # requirement-analysis / standard / component-impact / hotfix / lightweight
+- 工作流 Profile:                      # standard / component-impact / hotfix / lightweight
 - 执行模式:                            # interactive / auto
 - 当前活跃任务:                        # task queue preflight 通过后填写唯一 active task；无则留空
 - 任务计划路径:                        # features/<id>/tasks.md

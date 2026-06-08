@@ -3,28 +3,19 @@
 使用说明：
 
 - 默认保存路径：`features/<工作项ID>-<slug>/traceability.md`。
-- 列集按工作项类型有所不同：
-  - SR（需求分析子街区）：IR -> SR -> Affected Components -> Component Design Section -> Candidate AR Breakdown
-  - AR / DTS / CHANGE（实现子街区）：IR -> SR -> AR -> Requirement Row / Change Type -> 组件设计 -> AR 设计 -> Task -> 代码 -> 测试 -> 验证
+- 列集：上游 IR / SR -> AR -> Requirement Row / Change Type -> 组件设计 -> AR 设计 -> Task -> 代码 -> 测试 -> 验证（上游 IR / SR 为可选追溯锚点）。
 
 ## 标识信息
 
-- 工作项类型:                          # SR / AR / DTS / CHANGE
+- 工作项类型:                          # AR / DTS / CHANGE
 - 工作项 ID:
-- 所属组件:                            # AR / DTS / CHANGE
-- 所属子系统:                          # SR
+- 所属组件:                            # 必填
 
-## 追溯行 — 实现子街区（AR / DTS / CHANGE）
+## 追溯行（AR / DTS / CHANGE）
 
 | IR | SR | AR | Requirement Row | Change Type | Existing Behavior / Baseline | 组件设计章节 | AR 设计章节 | 任务 ID | 测试设计用例 | 代码文件 / 函数 | 测试代码文件 | 验证证据 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 |   |   |   |   |   |   |   |   |   |   |   |   |   |
-
-## 追溯行 — 需求分析子街区（SR）
-
-| IR | SR | 受影响组件 | 修改面 | 组件设计章节 | 候选 AR ID | 覆盖 SR 行 |
-|---|---|---|---|---|---|---|
-|   |   |   |   |   |   |   |
 
 ## 备注
 
