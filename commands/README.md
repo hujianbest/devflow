@@ -24,7 +24,7 @@ Slash command **不复制** SKILL.md 的内容，只声明本阶段会跨过哪�
 | [`/devflow-specify`](devflow-specify.md) | 规格阶段 | `devflow-specify` → `devflow-router` | `devflow-spec-review` |
 | [`/devflow-design`](devflow-design.md) | 设计阶段 | （组件影响时）`devflow-component-design` →（评审）→ `devflow-ar-design` →（评审）| `devflow-component-design-review`、`devflow-ar-design-review` |
 | [`/devflow-build`](devflow-build.md) | 构建阶段 | `devflow-tdd-implementation` →（评审）→（评审）| `devflow-test-review`、`devflow-code-review` |
-| [`/devflow-review`](devflow-review.md) | 评审再入口（按需检查） | `devflow-router`（按意图 / 工件选评审节点并派发）| 按需：`devflow-spec-review`、`devflow-component-design-review`、`devflow-ar-design-review`、`devflow-test-review`、`devflow-code-review` |
+| [`/devflow-review`](devflow-review.md) | 独立 / 随流程评审 | 按用户诉求选评审 skill 并派发独立 reviewer：standalone 直接派发，in-flow 经 `devflow-router` | 按需：`devflow-spec-review`、`devflow-component-design-review`、`devflow-ar-design-review`、`devflow-test-review`、`devflow-code-review` |
 | [`/devflow-ship`](devflow-ship.md) | 收尾阶段 | `devflow-completion-gate` → `devflow-finalize` | — |
 | [`/devflow-fix`](devflow-fix.md) | hotfix 子图 | `devflow-router`（升级 `hotfix`）→ `devflow-problem-fix` → 回到 `/devflow-build` → `/devflow-ship` | 继承 `devflow-test-review`、`devflow-code-review` |
 
@@ -33,7 +33,7 @@ Slash command **不复制** SKILL.md 的内容，只声明本阶段会跨过哪�
 ## 通用规则（每个 command 都遵守）
 
 1. **不写自由文本下一步**。`Next Action Or Recommended Skill` 字段必须是 13 个 canonical 节点之一；`using-devflow` 不得写入任何 handoff 字段。
-2. **不内联评审**。所有 5 个评审节点（spec / component-design / ar-design / test / code）一律由 `devflow-router` 派发独立 `devflow-reviewer` 子代理，禁止父会话或作者节点自审。
+2. **不内联自审**。所有 5 个评审节点（spec / component-design / ar-design / test / code）必须由 **独立** `devflow-reviewer` 子代理执行：随流程评审默认由 `devflow-router` 派发；`/devflow-review` 独立评审场景下由该命令作为上游入口直接派发（见 `devflow-router/references/reviewer-dispatch-protocol.md`「router 或上游 leaf」）。无论哪种，禁止父会话或作者节点自审。
 3. **profile 单调升级**。一个 work item 内允许 `standard → component-impact`、`standard / component-impact → hotfix`；禁止反向降级。
 4. **不替团队角色拍板**。涉及业务、需求方向、架构边界、接口契约的决策 → 停下，交还需求负责人 / 模块架构师 / 开发负责人。
 5. **artifact-first**。任何下一步只来自磁盘工件（`features/<id>/progress.md`、`reviews/`、`evidence/`、`completion.md`、长期 `docs/`）；与聊天记忆冲突时以工件为准。
@@ -48,4 +48,4 @@ Slash command **不复制** SKILL.md 的内容，只声明本阶段会跨过哪�
 - ℹ️ Craft 透镜（`devflow-design-craft` / `devflow-coding-craft` / `devflow-test-craft`）不设独立 command：它们由设计 / 构建 / 评审节点在工作流内部叠加，提升产物质量，不改变流程拓扑、不进 handoff、不产 verdict。
 - ❌ `/plan`：tasks 队列由 `devflow-tdd-implementation` 内部 preflight 管理，不另立 command。
 - ❌ 任何 meta-orchestrator command：`devflow-router` 是唯一编排权威。
-- ℹ️ `/devflow-review` 是评审 **再入口**，不是 **自审捷径**：它仍由 `devflow-router` 派发独立 `devflow-reviewer` 子代理，父会话 / 作者不自审，也不绕过顺序门禁链；它只让"现在检查一下设计 / 代码 / 测试 / 规格"这个意图唯一映射到 canonical 评审节点。
+- ℹ️ `/devflow-review` 是 **灵活评审入口**（可 standalone 独立运行，也可随流程评审），不是 **自审捷径**：它按用户诉求选评审 skill 并交 **独立** `devflow-reviewer` 子代理执行（standalone 直接派发对用户目标出审查内容；in-flow 经 `devflow-router` 派发并喂顺序门禁）；父会话 / 作者永不自审，本命令也不改任何工件、不替代各阶段命令内已编排的评审。

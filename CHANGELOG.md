@@ -6,9 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-### Added — on-demand review command
+### Added — flexible review command
 
-- `commands/devflow-review.md` (`/devflow-review`) — an **on-demand review re-entry** that maps a "现在检查一下设计 / 代码 / 测试 / 规格" intent to the matching canonical review node(s) (`devflow-spec-review`, `devflow-component-design-review`, `devflow-ar-design-review`, `devflow-test-review`, `devflow-code-review`). It is a **re-entry, not a self-review shortcut**: every review is still dispatched by `devflow-router` to an independent `devflow-reviewer` subagent; the command never authors or modifies artifacts, never self-reviews, and never skips the sequential `test-review → code-review` gate order. Documented in `commands/README.md`, both READMEs, and the 2.0 design spec.
+- `commands/devflow-review.md` (`/devflow-review`) — a **flexible review entry** that takes the user's request, picks the matching review skill(s) (`devflow-spec-review`, `devflow-component-design-review`, `devflow-ar-design-review`, `devflow-test-review`, `devflow-code-review`), and runs an **independent** review to produce review content. It has two run modes:
+  - **standalone (默认)** — runs on any target the user names (file / dir / diff / draft), with no work-item / `progress.md` / gate coupling required; the command dispatches the independent `devflow-reviewer` subagent directly (as an upstream leaf, per the dispatch protocol's "router or upstream leaf") and returns the review content to the user.
+  - **in-flow** — when part of a work item, `devflow-router` dispatches the reviewer, consumes the verdict into the sequential `test-review → code-review` gate, and forms the canonical handoff.
+  - The one invariant is an **independent reviewer (never author / parent self-review)**; the command never authors or modifies artifacts. Aligned `agents/devflow-reviewer.md` (standalone/ad-hoc dispatch inputs), `commands/README.md` (rule "不内联自审" now covers router or upstream-leaf dispatch), both READMEs, and the 2.0 design spec.
 
 ### Removed — SR / requirement-analysis sub-track
 
