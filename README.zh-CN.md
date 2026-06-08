@@ -23,7 +23,7 @@ DevFlow 的范围故意比 idea-to-product 工作流更窄。它不负责产品�
 
 OpenCode v1 通过自然语言和自动 skill discovery 使用 DevFlow。`commands/` 目录记录 slash-style 阶段意图，团队可以把它们接入自己的客户端；但每个 command 都只是 bias，不是 bypass：`using-devflow` 先应用 DevFlow 总纲和 skill discovery，仓库工件检查与 runtime 下一节点决策归 `devflow-router`。
 
-| 你要做什么 | Command intent | 关键原则 |
+| 你要做什么 | 对应命令 | 关键原则 |
 |---|---|---|
 | 进入或续作 DevFlow | [`/devflow`](commands/devflow.md) | 从工件路由 |
 | 定义要做什么 | [`/devflow-specify`](commands/devflow-specify.md) | 先规格，后设计或代码 |
