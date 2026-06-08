@@ -1,11 +1,11 @@
 ---
 name: devflow-component-design-review
-description: 当 devflow-component-design 产出的 component-design-draft.md 需要独立评审结论时使用，覆盖 SR 触发的分析子街区和 AR 触发的 component-impact 子街区；也用于派发评审子代理审查组件边界、SOA 接口、依赖、状态机、运行机制，或修订后重跑组件设计评审。不用于编写或修订组件设计、AR 代码层设计评审，或阶段和路由混乱。
+description: 当 devflow-component-design 产出的 component-design-draft.md 需要独立评审结论时使用（AR component-impact 触发）；也用于派发评审子代理审查组件边界、SOA 接口、依赖、状态机、运行机制，或修订后重跑组件设计评审。不用于编写或修订组件设计、AR 代码层设计评审，或阶段和路由混乱。
 ---
 
-# devflow 组件实现设计评审（覆盖 SR-分析 与 AR-实现 两条子街区）
+# devflow 组件实现设计评审（AR component-impact）
 
-独立评审 `features/<id>/component-design-draft.md`，判断它是否可由 `devflow-finalize` 同步到 `docs/component-design.md`，以及（仅 AR 实现子街区）是否可作为下游 `devflow-ar-design` 的稳定输入。
+独立评审 `features/<id>/component-design-draft.md`，判断它是否可由 `devflow-finalize` 同步到 `docs/component-design.md`，以及是否可作为下游 `devflow-ar-design` 的稳定输入。
 
 本 skill 不写设计 / 不替模块架构师拍板组件边界 / 不修改设计草稿。它只产出 verdict + findings + 唯一下一步。
 
@@ -25,8 +25,7 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 
 ## 硬性门禁
 
-- AR 子街区中，组件设计通过本 review 之前不得进入 `devflow-ar-design`
-- SR 子街区中，组件设计通过本 review 之前不得进入 `devflow-finalize`（analysis closeout）；通过后 SR 子街区**仍不得**进入 `devflow-ar-design`
+- 组件设计通过本 review 之前不得进入 `devflow-ar-design`
 - reviewer 不修改设计草稿
 - reviewer 不替模块架构师拍板组件边界 / SOA 接口 / 跨组件协调
 - reviewer 不返回多个候选下一步
@@ -83,18 +82,7 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 
 ### 4. 形成 verdict
 
-按下表收敛唯一 verdict + 唯一下一步；`通过` 时下一步取决于本 work item 的 profile：
-
-**SR work item（profile = `requirement-analysis`）**：
-
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router | needs_human_confirmation |
-|---|---|---|---|---|
-| 7 维度均 ≥ 6、无 critical USER-INPUT、模块架构师可被请求 sign-off | `通过` | `devflow-finalize`（analysis closeout） | `false` | `true`（等模块架构师 sign-off） |
-| findings 可 1-2 轮定向修订 | `需修改` | `devflow-component-design` | `false` | `false` |
-| 组件边界 / SOA 接口严重不清 / 跨组件协调缺失 | `阻塞`（内容） | `devflow-component-design` | `false` | `false` |
-| route / stage / profile / 上游证据冲突；或 SR 工件试图映射到 `devflow-ar-design` | `阻塞`（workflow） | `devflow-router` | `true` | `false` |
-
-**AR work item（profile = `component-impact`）**：
+按下表收敛唯一 verdict + 唯一下一步（AR work item，profile = `component-impact`）：
 
 | 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router | needs_human_confirmation |
 |---|---|---|---|---|

@@ -1,8 +1,8 @@
 # devflow Granularity And Split
 
-> 配套 `devflow-specify/SKILL.md`。规定 `features/<id>/requirement.md` 的需求条目过大时如何检测、如何拆分；以及 SR work item 如何把候选 AR 拆出粒度合适。
+> 配套 `devflow-specify/SKILL.md`。规定 `features/<id>/requirement.md` 的需求条目过大时如何检测、如何拆分。
 >
-> devflow 不维护跨工作项的 deferred backlog——候选拆分的去向是「拆出新 AR work item」（实现子街区）或「写入 SR 的 AR Breakdown Candidates 章节」（需求分析子街区），由需求负责人决定何时新建。
+> devflow 不维护跨工作项的 deferred backlog——候选拆分的去向是「拆出新 AR work item」，由需求负责人决定何时新建。
 
 ## 触发时机
 
@@ -12,7 +12,6 @@
 - 验收标准开始覆盖大量互不相同的路径
 - 当前 work item 范围和「以后再做」的能力混在同一条 row 里
 - 用户同时提到了 MVP、后续版本、增量补做、第二期能力
-- SR 的候选 AR 拆得很粗（一条候选覆盖多个组件）或很细（一条候选只够 1 个函数）
 
 ## G1-G6 Oversized Row Heuristics（INVEST `Small` + `Independent`）
 
@@ -69,61 +68,19 @@ devflow 不维护 `spec-deferred.md` 等跨工作项 backlog。当一条 row 拆
 
 | 场景 | 处理 |
 |---|---|
-| AR / DTS / CHANGE 的 row 拆出后构成独立 AR | **拆出新 AR work item**（由需求负责人新建，由 router 重新分流走实现子街区）；当前 work item 的 `EXC` 中显式注明「该能力已拆出 AR-XXXX」 |
+| AR / DTS / CHANGE 的 row 拆出后构成独立 AR | **拆出新 AR work item**（由需求负责人新建，由 router 重新分流）；当前 work item 的 `EXC` 中显式注明「该能力已拆出 AR-XXXX」 |
 | AR row 拆出后构成独立 DTS / hotfix | 同上，新建 DTS work item |
-| SR row 拆出后构成候选 AR | 写入 SR 的 `AR Breakdown Candidates` 章节，**不**自动新建 AR work item；候选 AR 是否新建由需求负责人按团队优先级决定 |
 
-无论哪种场景，原 work item 的 `requirement.md` 里**必须**留 trace anchor（指向新 work item ID 或 SR 候选编号）；不允许「拆掉就不见」。
-
-## SR 拆分启发式（仅 SR work item）
-
-SR 的 `AR Breakdown Candidates` 章节是分析子街区的核心交付。下面是判断候选 AR 拆得「太粗 / 太细 / 刚好」的启发式：
-
-候选**太粗**的信号：
-
-- 一条候选 AR 跨多个组件（候选 AR 必须 Owning Component 唯一）
-- 一条候选 AR 的 `Covers SR Rows` 包含 4+ 条独立 SR row
-- 一条候选 AR 的 Scope 描述里出现「以及」「同时」「附带」连接的多个独立结果
-- 候选 AR 的预估复杂度全是 `L`，没有 `M` 或 `S`
-
-候选**太细**的信号：
-
-- 一条候选 AR 的 Scope 只够 1 个函数 / 1 个常量 / 1 个 magic number 修改（应合并到相邻候选或考虑 lightweight profile）
-- 多条候选 AR 共享同一组测试设计、同一段控制流、同一段组件章节修订
-- 候选 AR 之间有循环依赖（A 必须先于 B 完成、B 又必须先于 A）
-- 候选 AR 的拆分理由是「按文件拆」而不是「按行为拆」
-
-候选**刚好**的标志：
-
-- 每条候选 AR 的 `Owning Component` 唯一
-- 每条候选 AR 的 `Covers SR Rows` 是 1-3 条 SR row
-- 候选之间有清晰的依赖序但**无环**
-- 每条候选可以独立交付一个用户 / 上游可感知的能力增量
-
-如果 SR 的所有候选 AR 全部「太粗」或「太细」，spec-review 的 `S7-SR AR Breakdown Candidates` 维度应给低分，回 `devflow-specify` 重拆。
-
-## SR-Only：声明「无可拆分 AR」
-
-部分 SR 只做组件级设计修订或文档级修订，不需要拆出 AR。处理：
-
-- 在 `AR Breakdown Candidates` 章节显式写「无可拆分 AR」+ 理由（例如「本 SR 只是把现有组件的状态机文档同步到团队新模板」）
-- 由需求负责人在 spec-review 中确认
-- 在 `devflow-finalize` analysis closeout 时这条声明仍要保留在 `closeout.md`
-
-reviewer 不得放过未确认的「无可拆分 AR」声明给出 `通过`。
+无论哪种场景，原 work item 的 `requirement.md` 里**必须**留 trace anchor（指向新 work item ID）；不允许「拆掉就不见」。
 
 ## 常见失败模式
 
 - 看到「大需求」只在 prose 里说「后面再拆」
 - 拆分后没有保留来源 / 优先级 / 验收标准
 - AR row 拆出独立可发布能力却仍留在原 work item（应拆出新 AR work item）
-- SR 把候选 AR 写成「按文件 / 按目录 / 按提交批次」拆，而不是按行为拆
-- SR 的候选 AR 跨多个组件（违反 Owning Component 唯一）
-- SR 的候选 AR 之间循环依赖
-- 「无可拆分 AR」声明缺理由 / 缺需求负责人确认
 
 ## 与其他 reference 的关系
 
 - 单条 row 的最小字段、句式、acceptance、priority、anchor：`requirement-rows-contract.md`
 - NFR 行的 QAS 五要素：`nfr-quality-attribute-scenarios.md`
-- spec-review 中对粒度的 rubric 检查（含 G1-G6 与 SR 候选 AR 拆分质量）：the spec-review rubric
+- spec-review 中对粒度的 rubric 检查（含 G1-G6）：the spec-review rubric

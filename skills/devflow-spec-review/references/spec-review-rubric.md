@@ -1,30 +1,17 @@
 # devflow Spec Review Rubric
 
-> 配套 `devflow-spec-review/SKILL.md`。展开评分维度与 Group Q/A/C/G/SR rule IDs。维度集按 work item 类型不同。
+> 配套 `devflow-spec-review/SKILL.md`。展开评分维度与 Group Q/A/C/G rule IDs。
 
-## 通用维度（任何 work item 类型）
+## 评分维度
 
 | 维度 | 关键检查 | < 6 的典型信号 |
 |---|---|---|
-| **S1 Identity & Traceability** | Work Item Type / ID 唯一；Owning Component / Subsystem 按类型必填且唯一；上游单据锚点齐全可解析 | SR 缺所属子系统；AR 多组件混写；上游锚点无版本号 |
-| **S2 Scope & Non-Scope Clarity** | 范围内 / 范围外显式；当前轮目标可被设计者 / 需求负责人冷读 | 仅有"做这个 SR / AR"一句话；非范围隐藏在正文 |
-| **S3 Requirement Row Quality** | 每条核心 row 含 ID / Statement（EARS 句式）/ Acceptance（BDD Given/When/Then）/ Priority / Source / Change Type；`modify` / `remove` 含 Existing Behavior / Baseline；按类型必填 Component Impact（AR）或 Affected Components（SR）。详见 `references/requirement-rows-contract.md` | 缺 Acceptance；缺 Change Type；`modify` / `remove` 缺旧行为基线；Source 是口头会议；SR row 缺 Affected Components；Statement 不是 EARS 句式；Acceptance 不是 BDD 格式 |
+| **S1 Identity & Traceability** | Work Item Type / ID 唯一；Owning Component 必填且唯一；上游单据锚点齐全可解析 | AR 多组件混写；上游锚点无版本号 |
+| **S2 Scope & Non-Scope Clarity** | 范围内 / 范围外显式；当前轮目标可被设计者 / 需求负责人冷读 | 仅有"做这个 AR"一句话；非范围隐藏在正文 |
+| **S3 Requirement Row Quality** | 每条核心 row 含 ID / Statement（EARS 句式）/ Acceptance（BDD Given/When/Then）/ Priority / Source / Change Type；`modify` / `remove` 含 Existing Behavior / Baseline；必填 Component Impact。详见 `references/requirement-rows-contract.md` | 缺 Acceptance；缺 Change Type；`modify` / `remove` 缺旧行为基线；Source 是口头会议；Statement 不是 EARS 句式；Acceptance 不是 BDD 格式 |
 | **S4 Embedded NFR Quality** | 核心 NFR 已归类到 ISO/IEC 25010 维度并含 QAS 五要素（Stimulus Source / Stimulus / Environment / Response / Response Measure）；Response Measure 含可判定阈值；Acceptance 与 QAS 一致。详见 `references/nfr-quality-attribute-scenarios.md` | "性能要好"、"低内存"；Response Measure 无阈值；QAS 与 Acceptance 矛盾；一条 NFR 覆盖多个 25010 维度 |
-| **S6 Open Questions Closure** | 阻塞 / 非阻塞分类；阻塞项闭合或显式 USER-INPUT | 阻塞项隐藏在正文 |
-
-## AR / DTS / CHANGE 额外维度
-
-| 维度 | 关键检查 | < 6 的典型信号 |
-|---|---|---|
 | **S5 Component Impact Assessment** | 是否影响组件接口 / 依赖 / 状态机已显式判断；涉及接口时 Interface Contract Candidates 足够设计消费 | 章节缺失；判断与 row 中 Component Impact 字段冲突；影响接口但无接口候选契约 |
-
-## SR 额外维度
-
-| 维度 | 关键检查 | < 6 的典型信号 |
-|---|---|---|
-| **S5-SR Subsystem Scope & Affected Components** | 子系统范围明确；Affected Components 章节完整且与 row 表交叉一致 | 受影响组件清单缺失；row 的 Affected Components 与章节不一致 |
-| **S7-SR AR Breakdown Candidates** | 候选 AR 拆分清单存在；每条候选 Owning Component 唯一、Covers SR Rows 完整、Hand-off Owner 明确；如显式声明「无可拆分 AR」由需求负责人确认 | 缺候选清单；候选 Owning Component 不唯一；候选不能反向覆盖 SR row |
-| **S8-SR Component Design Impact** | 若本 SR 触发组件设计修订，已显式列出受影响章节与修订方向；触发与不触发的判断与 Affected Components 一致 | 章节缺失；与 Affected Components 表互相打架 |
+| **S6 Open Questions Closure** | 阻塞 / 非阻塞分类；阻塞项闭合或显式 USER-INPUT | 阻塞项隐藏在正文 |
 
 任一维度 < 6 → 不得 `通过`。
 
@@ -81,23 +68,6 @@
 | GS1 | 当前 work item 范围与「拆出新 work item」候选未分清 |
 | GS2 | findings 足够具体可支持定向回修 |
 
-## Group SR：SR-only
-
-仅在 work item type = `SR` 时检查。详细启发式见 `references/granularity-and-split.md` 的 SR Breakdown Heuristics 节。
-
-| Rule | 检查 |
-|---|---|
-| SR1 | `Owning Subsystem` 唯一 |
-| SR2 | Affected Components 章节存在、清单完整、字段（Component / Modification Surface / Covers Rows / Owning Module Architect / Component Design Impact）齐全 |
-| SR3 | Affected Components 表的 Covers Rows 反向覆盖所有核心 SR row（除显式声明的「跨子系统外溢」row） |
-| SR4 | AR Breakdown Candidates 章节存在；每条候选含 Candidate ID / Scope / Owning Component（唯一）/ Covers SR Rows / Hand-off Owner；显式声明「无可拆分 AR」时已注明理由并由需求负责人确认 |
-| SR5 | 候选 AR 的 Owning Component 必须出现在 Affected Components 表里 |
-| SR6 | 候选 AR 之间无范围重叠或循环依赖；如有依赖关系已在 Notes 中说明 |
-| SR7 | Component Design Impact 章节存在；与 Affected Components 表的 `Component Design Impact` 列一致 |
-| SR8 | SR 不写 AR 级实现设计 / 不预先指定 SOA 接口字段 / 不写代码；只描述子系统级行为与拆分 |
-| SR9 | 候选 AR 通过 SR Breakdown Heuristics「不太粗 / 不太细」检查（候选 AR 不跨多组件 / 不只够 1 个函数 / 拆分理由按行为不按文件） |
-| SR10 | SR 的 NFR 在子系统层（Stimulus Source / Environment 在子系统层），不直接写到组件级 QAS（组件级 NFR 由拆出的 AR 完成） |
-
 ## Severity 分级
 
 - `critical`：阻塞设计 / 阻塞业务交付（缺核心 Acceptance、组件归属冲突、IR-SR-AR 追溯断裂）
@@ -121,9 +91,9 @@
 | 适用维度均 ≥ 6，无 critical USER-INPUT，Open Questions 已闭合或可上抛 | `通过` |
 | 评分某项 < 6 但 findings 可 1-2 轮定向修订（无 critical USER-INPUT 阻塞） | `需修改` |
 | 评分多项 < 6 / critical USER-INPUT 阻塞 / 范围严重不清 | `阻塞`（内容） |
-| route / stage / profile / 上游证据冲突；或 SR 工件试图映射到实现节点 | `阻塞`（workflow），`reroute_via_router=true` |
+| route / stage / profile / 上游证据冲突 | `阻塞`（workflow），`reroute_via_router=true` |
 
-`通过` verdict 后的 `next_action_or_recommended_skill` 由 SKILL.md 的 verdict 决策表按 work item 类型决定（SR → component-design / finalize；AR / DTS / CHANGE → component-design / ar-design）。
+`通过` verdict 后的 `next_action_or_recommended_skill` 由 SKILL.md 的 verdict 决策表决定（AR / DTS / CHANGE → component-design / ar-design）。
 
 定向回修协议（reviewer 返回 `需修改` / `阻塞`(内容) 后 authoring 节点的处理顺序、interactive vs auto、单次回合最小问询、反复循环阻断）见 `SKILL.md` 的 Reviewer Contract。
 
@@ -132,7 +102,6 @@
 | 评分维度 / Rule Group | 对应的 authoring 端契约 |
 |---|---|
 | S3 / Group A / Group Q（部分） | `references/requirement-rows-contract.md`（EARS / BDD / MoSCoW / Change Type / Existing Behavior Baseline / Brainstorming Notes / Common Failure Modes） |
-| Group G + S3 中的拆分判断 + Group SR 的 SR9 | `references/granularity-and-split.md` |
-| S4 + Group Q 的 Q5 / Q6 + Group SR 的 SR10 | `references/nfr-quality-attribute-scenarios.md` |
+| Group G + S3 中的拆分判断 | `references/granularity-and-split.md` |
+| S4 + Group Q 的 Q5 / Q6 | `references/nfr-quality-attribute-scenarios.md` |
 | S5 / Group C 的 C4-C8 | `SKILL.md` 的「Component Impact Assessment」/「Interface Contract Candidates」与 work item 类型必含章节集 |
-| S5-SR / S7-SR / S8-SR / Group SR | `references/requirement-rows-contract.md` 的 SR-only 章节 + `references/granularity-and-split.md` SR Breakdown Heuristics |

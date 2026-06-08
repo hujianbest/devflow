@@ -33,7 +33,7 @@ Slash command **不复制** SKILL.md 的内容，只声明本阶段会跨过哪�
 
 1. **不写自由文本下一步**。`Next Action Or Recommended Skill` 字段必须是 13 个 canonical 节点之一；`using-devflow` 不得写入任何 handoff 字段。
 2. **不内联评审**。所有 5 个评审节点（spec / component-design / ar-design / test / code）一律由 `devflow-router` 派发独立 `devflow-reviewer` 子代理，禁止父会话或作者节点自审。
-3. **profile 单调升级**。一个 work item 内允许 `standard → component-impact`、`standard / component-impact → hotfix`；禁止反向降级，禁止 `requirement-analysis` 与任何实现 profile 互转。
+3. **profile 单调升级**。一个 work item 内允许 `standard → component-impact`、`standard / component-impact → hotfix`；禁止反向降级。
 4. **不替团队角色拍板**。涉及业务、需求方向、架构边界、接口契约的决策 → 停下，交还需求负责人 / 模块架构师 / 开发负责人。
 5. **artifact-first**。任何下一步只来自磁盘工件（`features/<id>/progress.md`、`reviews/`、`evidence/`、`completion.md`、长期 `docs/`）；与聊天记忆冲突时以工件为准。
 6. **`auto` execution mode** 不豁免任何评审、门禁或证据要求；只移除节点间人工确认。

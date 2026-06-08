@@ -29,7 +29,6 @@ This command orchestrates the **DevFlow build (构建)** phase.
 
 - AR 设计未通过 → `/devflow-design`
 - 完成判断 / 收口 → `/devflow-ship`
-- `requirement-analysis` 子街区（SR）→ 严禁进入本阶段
 
 ## Hard contract（节选自 AGENTS.md，不可绕开）
 

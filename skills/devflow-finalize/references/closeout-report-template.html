@@ -7,23 +7,22 @@
   · 占位符约定：{{NAME}}（标量替换）、{{#SECTION}}…{{/SECTION}}（按 Closeout Type 或可选块裁剪）、列表行手动复制。
   · 严禁修改 <style> 之外的视觉样式（避免每个工作项渲染风格漂移）；如需团队级品牌定制，在团队 AGENTS.md 中维护一份覆盖文件。
 
-  必填占位符（所有 Closeout Type 通用）：
-    {{WORK_ITEM_TYPE}}             SR / AR / DTS / CHANGE
-    {{WORK_ITEM_ID}}               例：AR12345 / SR1234 / DTS67890 / CHANGE123
+  必填占位符：
+    {{WORK_ITEM_TYPE}}             AR / DTS / CHANGE
+    {{WORK_ITEM_ID}}               例：AR12345 / DTS67890 / CHANGE123
     {{WORK_ITEM_SLUG}}             work item slug（用于标题）
-    {{OWNING_COMPONENT_OR_SUBSYSTEM}}  AR/DTS/CHANGE 填 Owning Component；SR 填 Owning Subsystem
-    {{WORKFLOW_PROFILE}}           requirement-analysis / standard / component-impact / hotfix / lightweight
+    {{OWNING_COMPONENT}}           Owning Component
+    {{WORKFLOW_PROFILE}}           standard / component-impact / hotfix / lightweight
     {{EXECUTION_MODE}}             interactive / auto
-    {{CLOSEOUT_TYPE}}              implementation / analysis / blocked
+    {{CLOSEOUT_TYPE}}              implementation / blocked
     {{CLOSEOUT_VERDICT}}           closed / blocked
     {{CLOSEOUT_VERDICT_CLASS}}     verdict-pass / verdict-warn / verdict-fail（驱动 badge 颜色）
     {{REPORT_DATE}}                ISO-8601 日期（例 2026-05-11）
     {{LAST_UPDATED}}               progress.md 的 Last Updated
-    {{UPSTREAM_VERDICT_SOURCE}}    例：features/<id>/completion.md（implementation）
-                                       或 features/<id>/reviews/spec-review.md（analysis）
+    {{UPSTREAM_VERDICT_SOURCE}}    例：features/<id>/completion.md
     {{HEADLINE}}                   1 句话总结（例：「AR12345 mode-switch 实现已通过完成门禁，长期资产已同步。」）
 
-  汇总卡片（implementation closeout 必填；analysis closeout 用 N/A 占位）：
+  汇总卡片：
     {{SUMMARY_TASKS_DONE}}         已完成 task 数（done + cancelled）
     {{SUMMARY_TASKS_TOTAL}}        task 总数
     {{SUMMARY_TESTS_PASSED}}       本轮验证命令通过的测试数（来自 evidence/unit + evidence/integration）；缺则 "—"
@@ -66,7 +65,7 @@
       （clean → risk-clean / documented-debt → risk-warn / critical-open → risk-fail / N/A → risk-na）
       {{RISK_EVIDENCE}}
 
-  长期资产同步表（所有类型；analysis closeout 多行写 N/A）：
+  长期资产同步表：
     复制 <tr class="asset-row"> 行，每行填：
       {{ASSET_NAME}} {{ASSET_PATH}} {{ASSET_SYNCED}}（yes/no/N/A）
       {{ASSET_SYNCED_CLASS}} {{ASSET_NOTE}}
@@ -78,21 +77,15 @@
       5. Dependencies（可选） — docs/dependencies.md
       6. Runtime Behavior（可选） — docs/runtime-behavior.md
 
-  AR Breakdown Candidates 表（仅 analysis closeout；implementation 段整块隐藏）：
-    复制 <tr class="candidate-row"> 行，每行填：
-      {{CAND_ID}} {{CAND_SCOPE}} {{CAND_OWNING_COMPONENT}}
-      {{CAND_COVERS_ROWS}} {{CAND_PRIORITY}} {{CAND_COMPLEXITY}} {{CAND_HANDOFF_OWNER}} {{CAND_NOTE}}
-
-  Handoff（所有类型）：
+  Handoff：
     {{HANDOFF_NEXT_ACTION}}        canonical node；closeout 后通常为 "null（已完成）"
-    {{HANDOFF_BRANCH_OR_PR}}       implementation：分支 / MR / PR；analysis：候选 AR 交付清单摘要
+    {{HANDOFF_BRANCH_OR_PR}}       分支 / MR / PR
     {{HANDOFF_NOTE}}               1-3 行交接说明
     {{HANDOFF_OPEN_RISKS}}         未关闭风险；无则 "无"
 
   渲染规则：
     1. {{...}} 占位符必须全部替换。未提供数据的字段填 "N/A" 或 "未提供"，不要留空。
     2. {{#SECTION_IMPLEMENTATION}}…{{/SECTION_IMPLEMENTATION}} 块仅在 Closeout Type = implementation 时保留，其他类型整段删除。
-       {{#SECTION_ANALYSIS}}…{{/SECTION_ANALYSIS}} 块仅在 Closeout Type = analysis 时保留。
        {{#SECTION_BLOCKED}}…{{/SECTION_BLOCKED}} 块仅在 Closeout Type = blocked 时保留。
     3. 表格 / 时间线的占位行（标记 "示例行 - 渲染时按实际数据复制并重复"）必须按实际数据复制并重复；若数据为空则保留占位行并改为 "无"。
     4. 渲染产物保存到 features/<id>/closeout-report.html；不要写入 docs/。
@@ -360,7 +353,7 @@
     <div class="headline">{{HEADLINE}}</div>
     <dl class="meta">
       <div><dt>工作项类型</dt><dd>{{WORK_ITEM_TYPE}}</dd></div>
-      <div><dt>所属组件 / 子系统</dt><dd>{{OWNING_COMPONENT_OR_SUBSYSTEM}}</dd></div>
+      <div><dt>所属组件</dt><dd>{{OWNING_COMPONENT}}</dd></div>
       <div><dt>Workflow Profile</dt><dd>{{WORKFLOW_PROFILE}}</dd></div>
       <div><dt>Execution Mode</dt><dd>{{EXECUTION_MODE}}</dd></div>
       <div><dt>报告日期</dt><dd>{{REPORT_DATE}}</dd></div>
@@ -370,8 +363,7 @@
   </header>
 
   <!-- ============================================================
-       汇总卡片（implementation closeout 全填；analysis closeout 把
-       不适用的卡片 value 填 "N/A"，detail 填 "analysis 不适用"）
+       汇总卡片
   ============================================================ -->
   <div class="summary">
     <div class="stat accent-info">
@@ -397,7 +389,7 @@
   </div>
 
   <!-- ============================================================
-       Reviews & Gates 时间线（implementation + analysis 都需要）
+       Reviews & Gates 时间线
   ============================================================ -->
   <section class="card">
     <header>
@@ -550,49 +542,7 @@
   <!-- {{/SECTION_IMPLEMENTATION}} -->
 
   <!-- ============================================================
-       {{#SECTION_ANALYSIS}}
-       仅 Closeout Type = analysis 时保留
-  ============================================================ -->
-  <section class="card">
-    <header>
-      <h2>AR 拆分候选（交付给需求负责人）</h2>
-      <div class="hint">候选 AR 由需求负责人决定何时新建 work item · DevFlow 不自动新建</div>
-    </header>
-    <div class="body">
-      <table class="df">
-        <thead>
-          <tr>
-            <th style="width: 100px;">Candidate ID</th>
-            <th>范围</th>
-            <th style="width: 140px;">所属组件</th>
-            <th>覆盖 SR 行</th>
-            <th style="width: 80px;">优先级</th>
-            <th style="width: 70px;">复杂度</th>
-            <th>交接 Owner</th>
-            <th>备注</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- 示例行 - 渲染时按实际候选复制并重复 -->
-          <tr class="candidate-row">
-            <td class="mono">{{CAND_ID}}</td>
-            <td>{{CAND_SCOPE}}</td>
-            <td>{{CAND_OWNING_COMPONENT}}</td>
-            <td class="mono">{{CAND_COVERS_ROWS}}</td>
-            <td>{{CAND_PRIORITY}}</td>
-            <td>{{CAND_COMPLEXITY}}</td>
-            <td>{{CAND_HANDOFF_OWNER}}</td>
-            <td>{{CAND_NOTE}}</td>
-          </tr>
-          <!-- /示例行 -->
-        </tbody>
-      </table>
-    </div>
-  </section>
-  <!-- {{/SECTION_ANALYSIS}} -->
-
-  <!-- ============================================================
-       长期资产同步（implementation + analysis 都展示）
+       长期资产同步
   ============================================================ -->
   <section class="card">
     <header>

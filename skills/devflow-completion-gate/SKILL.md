@@ -1,15 +1,15 @@
 ---
 name: devflow-completion-gate
-description: 当 devflow-code-review 已通过且团队需要在 devflow-finalize 前独立确认 AR / DTS / CHANGE 实现工作项是否满足 devflow 完成定义时使用；也用于返工后复检，或用户询问某个 AR 是否可以算完成。仅适用于实现子街区，不适用于 requirement-analysis 档位下的 SR 工作项。不用于最终收口、状态收口、代码评审、新实现，或阶段和路由混乱。
+description: 当 devflow-code-review 已通过且团队需要在 devflow-finalize 前独立确认 AR / DTS / CHANGE 实现工作项是否满足 devflow 完成定义时使用；也用于返工后复检，或用户询问某个 AR 是否可以算完成。不用于最终收口、状态收口、代码评审、新实现，或阶段和路由混乱。
 ---
 
-# devflow 完成门禁（仅实现子街区）
+# devflow 完成门禁
 
 判断当前 AR / DTS / CHANGE 实现 work item 是否满足 devflow Definition of Done：所有上游 review / gate 通过、证据齐全、追溯完整、嵌入式风险无未解释的 critical 项。**不**自宣完成、**不**自我验收、**不**做新实现。
 
 devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tasks.md` / `task-board.md` 感知 task 进度。本 skill 先判断当前 active task 是否满足 DoD；若还有唯一 next-ready task，回到 `devflow-tdd-implementation`，只有所有 task 都完成后才进入 `devflow-finalize`（implementation closeout）。
 
-**适用范围**：仅实现子街区（profile = `standard` / `component-impact` / `hotfix` / `lightweight`）。SR work item（profile = `requirement-analysis`）**不**经过本节点；SR 的收口由 `devflow-finalize` 直接做 analysis closeout。如果 SR 工件被误路由进来 → blocked-workflow，`reroute_via_router=true`。
+**适用范围**：实现 profile（`standard` / `component-impact` / `hotfix` / `lightweight`）。
 
 ## 适用场景
 

@@ -5,22 +5,21 @@
 - 本模板是 `devflow-specify` 生成 `features/<Work Item Id>-<slug>/requirement.md` 的默认模板。
 - 若团队 `AGENTS.md` 声明了等价模板或路径，优先遵循团队约定。
 - 本模板延续旧 `mdc-specify/references/spec-template.md` 的定位：作为规格 / requirement 的文档骨架；devflow 中默认落点为 `features/<id>/requirement.md`。
-- 详细字段契约不在本模板重复维护：Requirement Rows、Interface Contract Candidates、SR-only 章节字段以 `requirement-rows-contract.md` 为准；NFR 的 QAS 写法以 `nfr-quality-attribute-scenarios.md` 为准。
+- 详细字段契约不在本模板重复维护：Requirement Rows、Interface Contract Candidates 以 `requirement-rows-contract.md` 为准；NFR 的 QAS 写法以 `nfr-quality-attribute-scenarios.md` 为准。
 
 ## 1. 身份信息
 
 | 字段 | 内容 |
 |---|---|
-| Work Item Type | SR / AR / DTS / CHANGE |
+| Work Item Type | AR / DTS / CHANGE |
 | Work Item ID |  |
 | Title |  |
 | Owner |  |
-| Owning Component | AR / DTS / CHANGE 必填；SR 可空 |
-| Owning Subsystem | SR 必填；AR / DTS / CHANGE 可空 |
-| Related IR |  |
-| Related SR | AR 必填 |
+| Owning Component | 必填 |
+| Related IR | 上游追溯锚点（可选） |
+| Related SR | 上游追溯锚点（可选） |
 | Related AR | DTS 影响功能需求时填写 |
-| Workflow Profile | requirement-analysis / standard / component-impact / hotfix / lightweight |
+| Workflow Profile | standard / component-impact / hotfix / lightweight |
 
 ## 2. 背景与目标
 
@@ -81,40 +80,9 @@
 |---|---|---|---|---|
 | ASM-001 | Assumption / Dependency |  |  |  |
 
-## 9. 按工作项类型划分的章节
+## 9. 组件影响章节（AR / DTS / CHANGE）
 
-### 9.1 SR：子系统范围评估
-
-| 项 | 内容 |
-|---|---|
-| 影响子系统范围 |  |
-| 跨组件影响 |  |
-| 需求负责人 |  |
-
-### 9.2 SR：受影响组件
-
-字段契约见 `references/requirement-rows-contract.md#sr-only-章节字段`。
-
-| Component | Modification Surface | Covers Rows | Component Design Impact |
-|---|---|---|---|
-|  |  |  |  |
-
-### 9.3 SR：AR 拆分候选
-
-字段契约见 `references/requirement-rows-contract.md#sr-only-章节字段`。
-
-| Candidate ID | Scope | Owning Component | Covers SR Rows | Notes |
-|---|---|---|---|---|
-| CAR-001 |  |  |  |  |
-
-### 9.4 SR：组件设计影响
-
-- 是否需要修订组件实现设计:
-- 影响章节:
-- 模块架构师:
-- 未决问题:
-
-### 9.5 AR / DTS / CHANGE：组件影响评估
+### 9.1 组件影响评估
 
 | 影响面 | 是否影响 | 说明 | 指向组件设计章节 |
 |---|---|---|---|
@@ -124,7 +92,7 @@
 | 运行时行为 | yes / no |  |  |
 | 内部实现 | yes / no |  |  |
 
-### 9.6 AR / DTS / CHANGE：接口契约候选（Interface Contract Candidates，如适用）
+### 9.2 接口契约候选（Interface Contract Candidates，如适用）
 
 当存在 `IFR` row，或 `Component Impact = interface` 时必填。字段契约见 `references/requirement-rows-contract.md#interface-contract-candidatesar--dts--change`。
 

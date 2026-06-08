@@ -27,13 +27,9 @@ DTS 规格不必填写所有类别；至少应有 FR（或 IFR / CON）描述被
 | `Change Type` | FR / NFR / IFR / CON 必填 | `new` / `modify` / `remove`，按对既有可观察行为的影响分类 |
 | `Existing Behavior / Baseline` | `modify` / `remove` 必填；`new` 可写 `N/A` | 被修改或删除的既有行为、接口语义、阈值、错误码、状态机路径或兼容性基线 |
 | `Component Impact` | AR / DTS / CHANGE 必填（FR / IFR / NFR） | `none` / `interface` / `dependency` / `state-machine` / `runtime-behavior` |
-| `Affected Components` | SR 必填（FR / IFR / NFR） | SR 视角下受影响的组件清单（一个 row 可能影响多个组件） |
 | `Notes` | 可选 | 例如风险点、与其他 row 的关系 |
 
-按 work item 类型：
-
-- AR / DTS / CHANGE：使用 `Component Impact`；不为 `none` 时，规格必须在 `Component Impact Assessment` 章节显式说明，并由 `devflow-router` 决定是否升级 `component-impact` profile。
-- SR：使用 `Affected Components`；列出本 row 影响的所有组件（一条 SR row 通常跨多个组件）；规格必须在 `Affected Components` / `AR Breakdown Candidates` / `Component Design Impact` 三个章节中分别消费这些字段。
+`Component Impact` 不为 `none` 时，规格必须在 `Component Impact Assessment` 章节显式说明，并由 `devflow-router` 决定是否升级 `component-impact` profile。
 
 ## Change Type / Existing Behavior 规则
 
@@ -79,61 +75,21 @@ DTS 规格不必填写所有类别；至少应有 FR（或 IFR / CON）描述被
 - 不写内部函数签名、私有数据结构、线程模型、具体重试次数、具体库选择；这些属于 design。
 - 若接口候选的 provider / consumer / error semantics 无法确认，必须写 Open Question，不能猜。
 
-## SR-only 章节字段
-
-SR 规格在 row 表之外，必须维护以下章节级字段。它们不是 row 的一部分，但 reviewer 会把它们跟 row 表反向核对。
-
-### Affected Components
-
-| 字段 | 说明 |
-|---|---|
-| `Component` | 受影响组件名 |
-| `Modification Surface` | `interface` / `dependency` / `state-machine` / `runtime-behavior` / `implementation` 中的一个或多个 |
-| `Covers Rows` | 引用本 SR row 表中的若干 row ID |
-| `Owning Module Architect` | 该组件的模块架构师 |
-| `Component Design Impact` | `unchanged` / `revise-section` / `new-component`；为 `revise-section` / `new-component` 时本 SR 应在 `Component Design Impact` 章节展开 |
-
-### AR Breakdown Candidates
-
-候选 AR 拆分清单，每条至少含：
-
-| 字段 | 说明 |
-|---|---|
-| `Candidate ID` | 例 `CAR-001`（SR-flow 内部编号；新建 AR work item 时由需求负责人分配真正的 AR ID） |
-| `Scope` | 1-2 句话总结候选 AR 的范围 |
-| `Owning Component` | 候选 AR 的所属组件（必须唯一） |
-| `Covers SR Rows` | 引用本 SR row 表中的若干 row ID |
-| `Priority Hint` | 团队约定的优先级提示（不替需求负责人定优先级） |
-| `Estimated Complexity` | `S` / `M` / `L`（不替开发负责人估算） |
-| `Hand-off Owner` | 候选 AR 应交给哪位开发负责人 / 团队 |
-| `Notes` | 例如依赖关系、与其他候选的拆分边界 |
-
-`AR Breakdown Candidates` 草稿期可为空；`devflow-spec-review` 通过后到 `devflow-finalize` analysis closeout 之前应定稿。如果 SR 显式声明「无可拆分 AR」（仅做组件设计修订或文档级修订），需在 `Notes` 中写明并由需求负责人确认。
-
-### Component Design Impact
-
-仅当本 SR 触发 `devflow-component-design`（修订组件实现设计）时填写，含：
-
-- 受影响 `docs/component-design.md` 章节清单
-- 修订方向概述
-- 是否同步触发可选子资产（`docs/interfaces.md` / `docs/dependencies.md` / `docs/runtime-behavior.md`）变化
-
 ## Statement Patterns（EARS — Mavin et al., REFSQ 2009）
 
 如果项目未声明固定句式，默认使用 EARS（Easy Approach to Requirements Syntax）的中文等价模式：
 
-| 模式 | 句式 | 示例（AR / 实现子街区） | 示例（SR / 需求分析子街区） |
-|---|---|---|---|
-| 常驻行为 | `<主体> 必须 <持续成立的能力或约束>` | 组件 X 必须始终保持运行模式记录与 ModeChanged 事件流一致 | 子系统 Y 必须始终对外暴露 ModeService 接口 |
-| 事件触发 | `当 <触发条件> 时，<主体> 必须 <可观察结果>` | 当组件 X 收到 SetMode(NORMAL) 时，必须在下一控制周期切换到 NORMAL 并发出 ModeChanged | 当外部子系统请求模式切换时，子系统 Y 必须把请求路由到对应组件 |
-| 状态约束 | `在 <状态 / 角色 / 前置条件> 下，<主体> 必须 <行为结果>` | 在 SAFE 状态下，组件 X 必须拒绝任何写配置请求 | 在子系统启动期间，子系统 Y 必须缓存请求直到所有组件就绪 |
-| 异常 / 负路径 | `如果 <异常条件>，<主体> 必须 <保护 / 反馈 / 恢复行为>` | 如果输入 mode ∉ {NORMAL, SAFE}，组件 X 必须返回 ERR_INVALID_ARG 且不更新内部状态 | 如果某个受影响组件初始化失败，子系统 Y 必须回退到 SAFE 模式并上报 |
-| 可选 / 配置 | `在启用 <策略 / 配置> 时，<主体> 必须 <行为结果>` | 在启用 PERSIST_MODE_HISTORY 时，组件 X 必须把每次 ModeChanged 写入 NVRAM | 在启用 SUBSYSTEM_DEGRADED_LOG 时，子系统 Y 必须输出降级原因事件 |
+| 模式 | 句式 | 示例（AR / DTS / CHANGE） |
+|---|---|---|
+| 常驻行为 | `<主体> 必须 <持续成立的能力或约束>` | 组件 X 必须始终保持运行模式记录与 ModeChanged 事件流一致 |
+| 事件触发 | `当 <触发条件> 时，<主体> 必须 <可观察结果>` | 当组件 X 收到 SetMode(NORMAL) 时，必须在下一控制周期切换到 NORMAL 并发出 ModeChanged |
+| 状态约束 | `在 <状态 / 角色 / 前置条件> 下，<主体> 必须 <行为结果>` | 在 SAFE 状态下，组件 X 必须拒绝任何写配置请求 |
+| 异常 / 负路径 | `如果 <异常条件>，<主体> 必须 <保护 / 反馈 / 恢复行为>` | 如果输入 mode ∉ {NORMAL, SAFE}，组件 X 必须返回 ERR_INVALID_ARG 且不更新内部状态 |
+| 可选 / 配置 | `在启用 <策略 / 配置> 时，<主体> 必须 <行为结果>` | 在启用 PERSIST_MODE_HISTORY 时，组件 X 必须把每次 ModeChanged 写入 NVRAM |
 
 句式约束：
 
-- **AR / DTS / CHANGE row** 的主体一般是「本组件 / 该模块 / 该函数路径」；不写「系统」这种无主体被动表达
-- **SR row** 的主体一般是「子系统 / 子系统中的某个服务」；通常**不**指定具体组件接口字段（那些细节留给 AR 拆出后填）
+- row 的主体一般是「本组件 / 该模块 / 该函数路径」；不写「系统」这种无主体被动表达
 - 不写实现细节（接口签名、数据结构、库名、并发原语）；这些属于设计
 
 ## Acceptance Criteria Rules（BDD — Dan North, 2006）
@@ -149,10 +105,7 @@ SR 规格在 row 表之外，必须维护以下章节级字段。它们不是 ro
 
 按 work item 类型的强度差异：
 
-| 类型 | Acceptance 强度 | 备注 |
-|---|---|---|
-| AR / DTS / CHANGE | **可测试**（testable acceptance）：每条 acceptance 要能直接落成 RED 用例（与 AR 实现设计中的测试设计章节双向锚点） | 可测试性是 `devflow-ar-design` / `devflow-tdd-implementation` 的硬上游输入 |
-| SR | **可观察**（observable acceptance）：表达子系统级行为是否成立的判定准则；不要求落到单条单元测试 | SR 的 acceptance 通常会在 AR 拆出后下沉为更细粒度的 testable acceptance |
+每条核心 `FR` 的 acceptance 要**可测试**（testable acceptance）：能直接落成 RED 用例（与 AR 实现设计中的测试设计章节双向锚点）。可测试性是 `devflow-ar-design` / `devflow-tdd-implementation` 的硬上游输入。
 
 示例（AR row）：
 
@@ -163,21 +116,12 @@ SR 规格在 row 表之外，必须维护以下章节级字段。它们不是 ro
   - Given 组件 X 当前 mode=SAFE；When 调用 SetMode(INVALID)；Then 返回 ERR_INVALID_ARG，mode 仍为 SAFE。
 ```
 
-示例（SR row）：
-
-```markdown
-### FR-S-002 子系统级模式切换路由
-- Acceptance:
-  - Given 子系统 Y 已就绪；When 外部 Subsystem.SetMode(NORMAL)；Then 子系统 Y 在 200 ms 内把请求路由到 ModeService 并返回 OK，受影响组件均切换到 NORMAL。
-  - Given 受影响组件中至少一个初始化失败；When 外部请求模式切换；Then 子系统 Y 回退到 SAFE 并返回 ERR_DEGRADED。
-```
-
 ## Priority Rules（MoSCoW — DSDM Consortium, 1994 — 或团队等价）
 
 - 若 `AGENTS.md` / 项目模板声明了固定优先级体系，**优先**使用该体系
 - 没有显式体系时，默认使用 MoSCoW 四级：`Must` / `Should` / `Could` / `Won't`
 - 优先级是**逐条 row 的属性**，不是整份规格的总体评价
-- 真实需要后续接力的 row（候选 AR）：在 SR 的 `AR Breakdown Candidates` 章节中显式列出，**不**埋在 prose；devflow 不维护跨工作项 deferred backlog
+- 真实需要后续接力的 row：拆出新 work item 并在 `EXC` 中显式注明，**不**埋在 prose；devflow 不维护跨工作项 deferred backlog
 - 多条 row 都声称最高优先级且互相冲突 → 回需求负责人，不自行拍板
 
 ## Source / Trace Anchor 写法
@@ -203,7 +147,7 @@ SR 规格在 row 表之外，必须维护以下章节级字段。它们不是 ro
 | 嵌入式硬性限制（目标平台 / 内核 / ABI / 编译条件） | `CON` | 没有来源锚点的猜测性限制 |
 | 外部接口 / 协议 / 跨系统契约 | `IFR` | 内部接口（应归入设计阶段） |
 | 团队假设、待确认说法 | `ASM` 或 Open Questions | 被伪装成已确认需求 |
-| 当前轮不做但真实存在 | AR：`EXC` 或拆出新 work item；SR：`AR Breakdown Candidates` | 只埋在 prose 里的「以后再做」 |
+| 当前轮不做但真实存在 | `EXC` 或拆出新 work item | 只埋在 prose 里的「以后再做」 |
 | 修改 / 删除既有行为 | `Change Type = modify/remove` + `Existing Behavior / Baseline` | 被伪装成普通新增需求 |
 | 接口签名 / 数据结构 / 重试次数 / 服务划分 | 设计输入或 Open Questions | `FR` / `NFR` 正文 |
 
@@ -211,7 +155,7 @@ SR 规格在 row 表之外，必须维护以下章节级字段。它们不是 ro
 
 1. 「确认过的事实」 vs「还未确认的想法」
 2. 「业务 / 子系统意图」 vs「实现细节」
-3. 「当前 work item 必须做」 vs「后续候选 work item」（SR 写到 candidates；AR 应直接拆新 work item）
+3. 「当前 work item 必须做」 vs「后续候选 work item」（应拆出新 work item，不埋在 prose）
 
 如果做不到这三步，还没到正式 requirement rows 的时机，回步骤 3 继续 Socratic Elicitation。
 
@@ -289,11 +233,11 @@ NFR 若涉及嵌入式特性，必须写成可判定条件。每条核心 NFR �
 - 把触及状态机 / 接口 / 运行时行为的新功能一律标成 `new`，未说明既有行为保持不变
 - NFR 不能写成 QAS 五要素却仍尝试 `通过`（详见 `nfr-quality-attribute-scenarios.md`）
 - AR row 的 Acceptance 不可直接落成 RED 用例（应回写更可测试的判定条件）
-- SR row 试图指定具体接口字段或实现选择（应抽到子系统级行为，把细节留给 AR 拆出后填）
+- row 试图指定具体接口字段或实现选择（应抽到行为级，把实现细节留给设计阶段）
 
 ## 与其他 reference 的关系
 
 - 行最小字段、句式、acceptance、priority、anchor、归一化、failure modes：本文
-- 一条 row 是否过大、是否应拆 / 应作为 SR 候选 AR 拆出：`granularity-and-split.md`
+- 一条 row 是否过大、是否应拆出新 work item：`granularity-and-split.md`
 - 核心 NFR 的 QAS 五要素与 ISO/IEC 25010 分类：`nfr-quality-attribute-scenarios.md`
 - spec review 维度与 finding 分类：the spec-review rubric

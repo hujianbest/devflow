@@ -4,7 +4,7 @@
 
 **Artifact-first SDD, gated TDD, role-separated reviews — now with engineering-craft quality lenses — for AI coding agents.**
 
-DevFlow is a development-stage workflow for AI coding agents. It takes an accepted SR / AR / DTS / CHANGE work item through specification, design, TDD implementation, independent review, completion gating, and closeout. The next step is recovered from durable artifacts, not chat memory.
+DevFlow is a development-stage workflow for AI coding agents. It takes an accepted AR / DTS / CHANGE work item through specification, design, TDD implementation, independent review, completion gating, and closeout. The next step is recovered from durable artifacts, not chat memory.
 
 **DevFlow 2.0** keeps that process discipline and adds the layer it was missing: **craft quality lenses** (`devflow-design-craft`, `devflow-coding-craft`, `devflow-test-craft`) that encode senior-engineer judgment — simplicity, abstraction discipline, interface contracts, the test pyramid, state-not-interaction testing — so flow nodes produce work that is not just *structurally complete* but *well-designed and well-coded*. See [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md).
 
@@ -125,14 +125,14 @@ DevFlow ships one public entry meta-skill, 13 canonical `devflow-*` runtime node
 
 | Skill | What it does | Use when |
 |---|---|---|
-| [`devflow-specify`](skills/devflow-specify/SKILL.md) | Turns SR / AR / DTS / CHANGE intent into testable requirements | Writing or revising a reviewable spec |
+| [`devflow-specify`](skills/devflow-specify/SKILL.md) | Turns AR / DTS / CHANGE intent into testable requirements | Writing or revising a reviewable spec |
 | [`devflow-spec-review`](skills/devflow-spec-review/SKILL.md) | Reviews specs for clarity, completeness, and testability | A spec artifact is ready for independent review |
 
 ### Plan
 
 | Skill | What it does | Use when |
 |---|---|---|
-| [`devflow-component-design`](skills/devflow-component-design/SKILL.md) | Writes or revises component implementation design | The work has component-impact or SR analysis needs component design |
+| [`devflow-component-design`](skills/devflow-component-design/SKILL.md) | Writes or revises component implementation design | An AR has component-impact (touches SOA interfaces, dependencies, or state machines) |
 | [`devflow-component-design-review`](skills/devflow-component-design-review/SKILL.md) | Reviews component design with role separation | Component design needs an independent verdict |
 | [`devflow-ar-design`](skills/devflow-ar-design/SKILL.md) | Produces AR implementation design with embedded test design | Approved requirements need code-level design before TDD |
 | [`devflow-ar-design-review`](skills/devflow-ar-design-review/SKILL.md) | Reviews AR design and test design | AR design is ready for independent review |
