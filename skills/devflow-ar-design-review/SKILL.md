@@ -51,6 +51,15 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 - **Traceability Check**: 检查每个用例回指 requirement row、嵌入式 NFR 至少一个 embedded-risk 用例
 - **Template Conformance Check**: 检查团队 AR 设计模板的章节齐全（或显式占位）
 
+## 质量透镜（Craft）
+
+评审 AR 实现设计与测试设计章节时，叠加两个判别标尺，与本 skill 的 conformance / traceability rubric 互补：
+
+- 以 `devflow-design-craft` 作为「好设计」标尺（简单性优先、抽象克制、接口契约与错误语义、SOLID/GRASP 可判别 tell、嵌入式防御性设计）判别代码层设计。
+- 以 `devflow-test-craft` 作为「好测试」标尺（测试金字塔、测状态不测交互、覆盖类型、mock 克制）判别测试设计章节的有效性。
+
+透镜只提供判别标尺，verdict 仍由本评审节点唯一裁决；reviewer 不改设计 / 不改测试。
+
 ## 工作流
 
 ### 1. 建立证据基线

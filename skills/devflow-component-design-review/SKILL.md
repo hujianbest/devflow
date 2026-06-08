@@ -49,6 +49,10 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 - **Embedded Risk Review**: 检查并发、实时性、资源生命周期、错误处理、ABI / API 兼容性
 - **Cross-Component Impact Audit**: 跨组件影响是否被显式列出且与下游组件的协调路径明确
 
+## 质量透镜（Craft）
+
+评审组件设计质量时，以 `devflow-design-craft` 作为「好设计」的判别标尺（简单性优先、抽象克制、SOA 接口契约与错误语义、SOLID/GRASP 可判别 tell、嵌入式防御性设计），与本 skill 的组件边界 / 接口隔离 / 跨组件影响 rubric 互补——前者抓「设计得好不好」，后者抓「边界对不对」。透镜只提供判别标尺，verdict 仍由本评审节点唯一裁决；reviewer 不改设计。
+
 ## 工作流
 
 ### 1. 建立证据基线

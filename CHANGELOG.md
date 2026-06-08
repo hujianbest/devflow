@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added — flexible review command
+
+- `commands/devflow-review.md` (`/devflow-review`) — a **flexible review entry** that takes the user's request, picks the matching review skill(s) (`devflow-spec-review`, `devflow-component-design-review`, `devflow-ar-design-review`, `devflow-test-review`, `devflow-code-review`), and runs an **independent** review to produce review content. It has two run modes:
+  - **standalone (默认)** — runs on any target the user names (file / dir / diff / draft), with no work-item / `progress.md` / gate coupling required; the command dispatches the independent `devflow-reviewer` subagent directly (as an upstream leaf, per the dispatch protocol's "router or upstream leaf") and returns the review content to the user.
+  - **in-flow** — when part of a work item, `devflow-router` dispatches the reviewer, consumes the verdict into the sequential `test-review → code-review` gate, and forms the canonical handoff.
+  - The one invariant is an **independent reviewer (never author / parent self-review)**; the command never authors or modifies artifacts. Aligned `agents/devflow-reviewer.md` (standalone/ad-hoc dispatch inputs), `commands/README.md` (rule "不内联自审" now covers router or upstream-leaf dispatch), both READMEs, and the 2.0 design spec.
+- **Craft lens wired into the design-review nodes** — `devflow-component-design-review` and `devflow-ar-design-review` now carry an explicit `## 质量透镜（Craft）` section (design-craft for component-design-review; design-craft + test-craft for ar-design-review), matching the existing `devflow-code-review` / `devflow-test-review` craft sections. This makes the 2.0 claim "design / build / review nodes carry a craft section" true for the design reviewers and gives `/devflow-review` an accurate craft mapping. (`devflow-spec-review` has no craft lens.)
+- **Relaxed invocation exclusivity on commands and agents** — commands and agents are independently invocable; the docs no longer assert that a subagent may *only* be dispatched by a specific node. Dropped "dispatched ONLY by" / "Invoke directly: never" / "仅由 … 派发" / "必须由 devflow-router 派发" / "唯一编排权威" framing from `agents/devflow-reviewer.md`, `agents/devflow-implementer.md`, `commands/devflow-review.md`, `commands/devflow-design.md`, `commands/devflow-specify.md`, `commands/devflow-build.md`, and `commands/README.md`. The **behavioral** invariants are unchanged: reviewers stay independent of the author (no self-review) and never modify artifacts; the implementer always works from an Implementer Context Pack and never edits AR design / task plan / task-board order.
+
 ### Removed — SR / requirement-analysis sub-track
 
 - DevFlow now processes **implementation work items only** (`AR` / `DTS` / `CHANGE`). The subsystem-requirement (`SR`) analysis sub-track and the `requirement-analysis` profile are removed. An AR may still reference an upstream `SR` / `IR` as an optional traceability anchor, but `SR` is no longer a DevFlow-processed work item.

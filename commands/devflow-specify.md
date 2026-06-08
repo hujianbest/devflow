@@ -25,7 +25,7 @@ This command orchestrates the **DevFlow specify (规格)** phase.
 
 ## Hard contract（节选自 AGENTS.md，不可绕开）
 
-- 作者不自审：`devflow-specify` 完成后 **不允许** 在父会话内联评审；必须交 `devflow-router` 派发独立 `devflow-reviewer` 子代理
+- 作者不自审：`devflow-specify` 完成后 **不允许** 在父会话内联自审；评审交由独立 `devflow-reviewer` 子代理执行
 - 规格未通过 spec-review 不得进入 `devflow-component-design` / `devflow-ar-design` / `devflow-tdd-implementation`
 - `auto` execution mode 不豁免 spec-review
 
@@ -49,6 +49,6 @@ This command orchestrates the **DevFlow specify (规格)** phase.
 
 | 误判 | 反向行动 |
 |---|---|
-| "规格我看一遍就行，跳过 spec-review" | 禁止；评审必须由 router 派发独立子代理 |
+| "规格我看一遍就行，跳过 spec-review" | 禁止；评审必须由独立子代理执行，作者不自审 |
 | "auto 模式可以跳过评审" | `auto` 只移除人工确认，不豁免评审 |
 | "规格不清的地方我替需求负责人定" | 禁止；写进 `Blockers`，交需求负责人 |

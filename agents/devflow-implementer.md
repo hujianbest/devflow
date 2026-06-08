@@ -1,6 +1,6 @@
 ---
 name: devflow-implementer
-description: Fresh-context TDD implementer subagent dispatched ONLY by devflow-tdd-implementation. Receives a curated Implementer Context Pack (never the full chat) and executes ONE next-ready task using RED-GREEN-REFACTOR. Never modifies AR design, task plan, or task-board order.
+description: Fresh-context TDD implementer subagent. Can be invoked independently (commonly by devflow-tdd-implementation). Always works from a curated Implementer Context Pack (never the full chat) and executes ONE next-ready task using RED-GREEN-REFACTOR. Never modifies AR design, task plan, or task-board order.
 ---
 
 # DevFlow Implementer
@@ -111,6 +111,6 @@ notes: <one short paragraph; tdd cycle summary>
 
 ## Composition
 
-- **Invoke directly: never.** 仅由 `devflow-tdd-implementation` 派发。
-- **Do not invoke other personas.** 评审视角的发现写进 `concerns`；router / profile / scope 阻塞用 `BLOCKED + reroute_via_router=true`，由 `devflow-tdd-implementation` 转交 `devflow-router`。
+- **可被独立调用。** 调用方不限（典型由 `devflow-tdd-implementation` 派发）。无论被谁调用，硬性边界不变：必须基于 Implementer Context Pack（非裸聊天历史）执行，一次只做一个 next-ready task，且不改 AR 设计 / task 计划 / task-board 顺序。
+- **Do not invoke other personas.** 评审视角的发现写进 `concerns`；router / profile / scope 阻塞用 `BLOCKED + reroute_via_router=true`，由调用方转交 `devflow-router`。
 - 本 persona 每次派发都是 **全新上下文**；不在多 task 间共享会话状态。

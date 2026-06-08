@@ -165,7 +165,8 @@ SKILL.md
 ┌──────────────────────────────────────────────────────────────┐
 │ Commands（When）  commands/*.md                                │
 │   /devflow /devflow-specify /devflow-design /devflow-build     │
-│   /devflow-ship /devflow-fix   —— 用户面向入口，bias 非 authority │
+│   /devflow-review /devflow-ship /devflow-fix                   │
+│       —— 用户面向入口，bias 非 authority                         │
 ├──────────────────────────────────────────────────────────────┤
 │ Meta（发现 + 宪法 + 共同约定）  skills/using-devflow/SKILL.md  │
 │   ① 发现树：意图 → leaf skill（含「写设计 / 写码 / 写测试时叠加  │

@@ -63,8 +63,8 @@ Each leaf skill carries a `## 反向理由化（Common Rationalizations）` tabl
 
 `devflow-router` is the runtime authority for Workflow Profile, Execution Mode, the canonical next node, reviewer dispatch, and review / gate recovery. Changes to:
 
-- the legal profile set (`requirement-analysis`, `standard`, `component-impact`, `hotfix`, `lightweight`),
-- subgraph membership (which skills each profile may route to),
+- the legal profile set (`standard`, `component-impact`, `hotfix`, `lightweight`),
+- routing membership (which skills each profile may route to),
 - escalation rules,
 - handoff / progress field schema,
 

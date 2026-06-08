@@ -24,10 +24,11 @@ OpenCode v1 uses natural language plus automatic skill discovery. The `commands/
 | Define what to build | [`/devflow-specify`](commands/devflow-specify.md) | Spec before design or code |
 | Plan how to build it | [`/devflow-design`](commands/devflow-design.md) | Design options before a chosen design |
 | Build one active task | [`/devflow-build`](commands/devflow-build.md) | RED -> GREEN -> REFACTOR with fresh evidence |
+| Review design / code / test (standalone or in-flow) | [`/devflow-review`](commands/devflow-review.md) | Intent-driven, independent reviewer, never self-review |
 | Close engineering work | [`/devflow-ship`](commands/devflow-ship.md) | Reviews and gates before closeout |
 | Fix a DTS / hotfix | [`/devflow-fix`](commands/devflow-fix.md) | Reproduce, root-cause, then make the minimal safe fix |
 
-Reviews are not user-invoked shortcuts. `devflow-router` dispatches independent reviewer subagents for spec, component-design, AR-design, test, and code reviews.
+Reviews are never self-review shortcuts. The one invariant is an **independent reviewer subagent** for spec, component-design, AR-design, test, and code reviews — never the author or parent session. In-flow reviews are dispatched by `devflow-router`; the standalone [`/devflow-review`](commands/devflow-review.md) command can run on any target the user names and dispatches the same independent reviewer directly (per the dispatch protocol's "router or upstream leaf").
 
 ---
 
@@ -154,9 +155,9 @@ These are **not** flow nodes. They are quality lenses that design / build / revi
 
 | Skill | What it does | Invoked by |
 |---|---|---|
-| [`devflow-design-craft`](skills/devflow-design-craft/SKILL.md) | How to design well: simplicity-first, abstraction discipline (Rule of Three), interface contracts (Hyrum's Law, error semantics), SOLID/GRASP tells, embedded defensive design, quality design-options | `devflow-ar-design`, `devflow-component-design` |
+| [`devflow-design-craft`](skills/devflow-design-craft/SKILL.md) | How to design well: simplicity-first, abstraction discipline (Rule of Three), interface contracts (Hyrum's Law, error semantics), SOLID/GRASP tells, embedded defensive design, quality design-options | `devflow-ar-design`, `devflow-component-design`, `devflow-component-design-review`, `devflow-ar-design-review` |
 | [`devflow-coding-craft`](skills/devflow-coding-craft/SKILL.md) | How to code well: Rule 0 simplicity, thin vertical slices, scope discipline (Chesterton's Fence), readability/naming, embedded defensive coding | `devflow-tdd-implementation`, `devflow-code-review` |
-| [`devflow-test-craft`](skills/devflow-test-craft/SKILL.md) | How to test well: test pyramid + sizes, state-not-interaction testing, DAMP over DRY, mock discipline (real>fake>stub>mock), coverage types | `devflow-tdd-implementation`, `devflow-test-review` |
+| [`devflow-test-craft`](skills/devflow-test-craft/SKILL.md) | How to test well: test pyramid + sizes, state-not-interaction testing, DAMP over DRY, mock discipline (real>fake>stub>mock), coverage types | `devflow-tdd-implementation`, `devflow-test-review`, `devflow-ar-design-review` |
 
 ---
 

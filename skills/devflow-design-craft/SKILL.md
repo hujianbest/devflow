@@ -1,6 +1,6 @@
 ---
 name: devflow-design-craft
-description: 教 agent 如何把组件设计与 AR 实现设计做好——简单性优先、抽象克制、接口契约、SOLID/GRASP 的可判别 tell、嵌入式防御性设计、有质量的方案对比。适用于在 devflow-component-design 或 devflow-ar-design 内部起草 / 修订设计时，需要把「填章节」升级为「做出好设计」。这是质量透镜，不是流程节点：不写 progress/handoff，不产生 review verdict，不替代独立设计评审。
+description: 教 agent 如何把组件设计与 AR 实现设计做好 / 审好——简单性优先、抽象克制、接口契约、SOLID/GRASP 的可判别 tell、嵌入式防御性设计、有质量的方案对比。适用于在 devflow-component-design 或 devflow-ar-design 内部起草 / 修订设计时，或在 devflow-component-design-review / devflow-ar-design-review 评审设计时，把「填章节」升级为「做出 / 认出好设计」。这是质量透镜，不是流程节点：不写 progress/handoff，不产生 review verdict，不替代独立设计评审。
 ---
 
 # DevFlow 设计匠艺（质量透镜）
@@ -23,6 +23,8 @@ DevFlow 的设计流程节点（`devflow-component-design` / `devflow-ar-design`
 |---|---|
 | `devflow-component-design` | 「方案选择 checkpoint」与「起草 / 修订设计」步骤 |
 | `devflow-ar-design` | 「方案选择 checkpoint」与「起草代码层设计」步骤 |
+| `devflow-component-design-review` | 评审组件设计时——作为「好设计」的判别标准 |
+| `devflow-ar-design-review` | 评审 AR 代码层设计时——作为「好设计」的判别标准 |
 
 ## 核心判断
 
