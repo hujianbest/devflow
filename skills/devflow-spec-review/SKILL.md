@@ -1,16 +1,13 @@
 ---
 name: devflow-spec-review
-description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评审结论时使用，覆盖 SR 工作项的 requirement-analysis 子街区和 AR / DTS / CHANGE 工作项的实现子街区；也用于派发评审子代理审查规格清晰度、追溯性、可设计性，或修订后重跑规格评审。不用于编写或修订规格、组件设计评审、AR 设计评审，或阶段和路由混乱。
+description: 当 devflow-specify 产出的 AR / DTS / CHANGE requirement.md 草稿需要独立评审结论时使用；也用于派发评审子代理审查规格清晰度、追溯性、可设计性，或修订后重跑规格评审。不用于编写或修订规格、组件设计评审、AR 设计评审，或阶段和路由混乱。
 ---
 
-# devflow 需求规格评审（覆盖 SR-分析 与 AR-实现 两条子街区）
+# devflow 需求规格评审（AR / DTS / CHANGE 实现）
 
-独立评审 `features/<id>/requirement.md`：
+独立评审 `features/<id>/requirement.md`（AR / DTS / CHANGE 实现 work item）→ 判断它是否可作为 `devflow-component-design`（component-impact）或 `devflow-ar-design`（standard / lightweight）的稳定输入。
 
-- **SR work item**（profile = `requirement-analysis`）→ 判断它是否可作为 `devflow-component-design`（仅当 SR 触发组件设计修订）或直接 `devflow-finalize`（analysis closeout）的稳定输入；同时把 AR Breakdown Candidates 推到可被需求负责人决策的程度
-- **AR / DTS / CHANGE work item**（实现 profile）→ 判断它是否可作为 `devflow-component-design`（component-impact）或 `devflow-ar-design`（standard / lightweight）的稳定输入
-
-本 skill 不写规格、不替需求负责人补业务事实、不替模块架构师决定组件归属、不替开发负责人决定候选 AR 的优先级。它只对规格对象给出 verdict + findings，并把唯一下一步交回父会话。
+本 skill 不写规格、不替需求负责人补业务事实、不替模块架构师决定组件归属、不替开发负责人决定优先级。它只对规格对象给出 verdict + findings，并把唯一下一步交回父会话。
 
 ## 适用场景
 
@@ -67,26 +64,18 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
 
 ### 2. 多维评分与挑战式审查
 
-按 Structured Walkthrough 对维度做 0-10 评分；任一关键维度 < 6 不得 `通过`。维度按 work item 类型有所不同（详见 `references/spec-review-rubric.md`）。
+按 Structured Walkthrough 对维度做 0-10 评分；任一关键维度 < 6 不得 `通过`（详见 `references/spec-review-rubric.md`）。
 
-通用维度（所有 work item）：
+评分维度：
 
 | 维度 | 关注 |
 |---|---|
-| S1 Identity & Traceability | Work Item Type / ID、所属组件 / 子系统唯一、上游单据锚点齐全 |
+| S1 Identity & Traceability | Work Item Type / ID、所属组件唯一、上游单据锚点齐全 |
 | S2 Scope & Non-Scope Clarity | 范围与非范围显式且不冲突 |
-| S3 Requirement Row Quality | 核心 row 含 ID / Statement / Acceptance / Source / Change Type；`modify` / `remove` 含 Existing Behavior / Baseline；Component Impact / Affected Components 按类型必填 |
+| S3 Requirement Row Quality | 核心 row 含 ID / Statement / Acceptance / Source / Change Type；`modify` / `remove` 含 Existing Behavior / Baseline；Component Impact 必填 |
 | S4 Embedded NFR Quality | 实时性 / 内存 / 并发 / 资源 / 错误处理 NFR 含可判定阈值 |
+| S5 Component Impact Assessment + Interface Contract Candidates | 是否影响组件接口 / 依赖 / 状态机已显式判断；涉及接口时是否给出可供设计消费的语义级接口候选契约 |
 | S6 Open Questions Closure | 阻塞 / 非阻塞分类、阻塞项已闭合或显式 USER-INPUT |
-
-按 work item 类型的额外维度：
-
-| Work Item Type | 额外维度 | 关注 |
-|---|---|---|
-| AR / DTS / CHANGE | S5 Component Impact Assessment + Interface Contract Candidates | 是否影响组件接口 / 依赖 / 状态机已显式判断；涉及接口时是否给出可供设计消费的语义级接口候选契约 |
-| SR | S5-SR Subsystem Scope & Affected Components | 子系统范围与受影响组件清单完整且与 row 表交叉一致 |
-| SR | S7-SR AR Breakdown Candidates | 候选 AR 拆分清单存在；每条候选含 Scope / Owning Component（唯一）/ Covers SR Rows / Hand-off Owner；如 SR 显式声明「无可拆分 AR」也明确说明并由需求负责人确认 |
-| SR | S8-SR Component Design Impact | 若本 SR 触发 `devflow-component-design`，已显式列出受影响组件设计章节与修订方向 |
 
 ### 3. 正式 checklist 审查
 
@@ -95,20 +84,6 @@ description: 当 devflow-specify 产出的 requirement.md 草稿需要独立评�
 ### 4. 形成 verdict
 
 按下表收敛唯一 verdict + 唯一下一步；不能映射下表任一行 → verdict 未收敛，回步骤 2 / 3。
-
-按 work item 类型：
-
-**SR work item（profile = `requirement-analysis`）**：
-
-| 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
-|---|---|---|---|
-| 范围清晰、Affected Components / AR Breakdown Candidates 章节充分、Component Design Impact 显式判断为「需修订组件设计」、无阻塞 USER-INPUT | `通过` | `devflow-component-design` | `false` |
-| 范围清晰、Affected Components / AR Breakdown Candidates 章节充分、Component Design Impact 显式判断为「无需修订」、无阻塞 USER-INPUT | `通过` | `devflow-finalize`（analysis closeout） | `false` |
-| 有用但不完整，findings 可 1-2 轮定向修订 | `需修改` | `devflow-specify` | `false` |
-| 子系统范围 / 候选 AR 拆分严重不清，findings 无法定向回修 | `阻塞`（内容） | `devflow-specify` | `false` |
-| route / stage / profile / 上游证据冲突；或 SR 工件试图映射到实现节点 | `阻塞`（workflow） | `devflow-router` | `true` |
-
-**AR / DTS / CHANGE work item（实现 profile）**：
 
 | 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
 |---|---|---|---|

@@ -1,16 +1,13 @@
 ---
 name: devflow-component-design
-description: 当需要创建或修订组件实现设计时使用；触发场景包括 requirement-analysis 档位下的 SR 被 devflow-spec-review 判定需要修订组件设计，或 component-impact 档位下的 AR 范围触及 SOA 接口、依赖、状态机、运行机制。也用于 devflow-component-design-review 返回需修改或阻塞后的修订。不用于 AR 代码层设计、通用规格澄清，或普通组件内变更。
+description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依赖、状态机或运行机制，需要创建或修订组件实现设计时使用。也用于 devflow-component-design-review 返回需修改或阻塞后的修订。不用于 AR 代码层设计、通用规格澄清，或普通组件内变更。
 ---
 
-# devflow 组件实现设计（覆盖 SR-分析 与 AR-实现 两条子街区）
+# devflow 组件实现设计（AR component-impact）
 
 为唯一所属组件产出或修订**组件实现设计**，描述该组件的职责、SOA 接口、依赖、数据 / 状态、运行机制和对 AR 实现设计的约束。
 
-本 skill 同时服务两个子街区：
-
-1. **需求分析子街区（SR triggered）**：SR 在 `devflow-spec-review` 中被判定「需修订组件设计」时进入；通过 review 后由 `devflow-finalize` 写 **analysis closeout** 并 promote 到 `docs/component-design.md`；**不**进入 `devflow-ar-design`。
-2. **实现子街区（AR component-impact triggered）**：AR work item profile 升级为 component-impact 时进入；通过 review 后下一步是 `devflow-ar-design`。
+本 skill 仅在 AR `component-impact` 下进入：AR work item profile 升级为 `component-impact` 时进入；通过 `devflow-component-design-review` 后下一步是 `devflow-ar-design`，并由 `devflow-finalize` 在 closeout 时 promote 到 `docs/component-design.md`。
 
 本 skill 不写单个 AR 的代码层设计（那是 `devflow-ar-design` 的职责），不写代码，不修改其他组件。它的输出是组件长期资产，受团队组件设计模板约束。
 
@@ -18,8 +15,7 @@ description: 当需要创建或修订组件实现设计时使用；触发场景�
 
 适用：
 
-- **SR triggered**：profile = `requirement-analysis`，SR `devflow-spec-review` 通过且 verdict 表明 SR 需修订组件设计
-- **AR triggered**：`devflow-router` 已升级到 `component-impact` profile 且组件设计需要新增 / 修订（新增组件、修改 SOA 接口、修改组件职责或依赖方向、修改状态机或运行时机制）
+- `devflow-router` 已升级到 `component-impact` profile 且组件设计需要新增 / 修订（新增组件、修改 SOA 接口、修改组件职责或依赖方向、修改状态机或运行时机制）
 - 现有 `docs/component-design.md` 缺失、过期或与代码明显不一致
 - `devflow-component-design-review` 返回 `需修改` / `阻塞` 需修订
 
@@ -39,8 +35,7 @@ description: 当需要创建或修订组件实现设计时使用；触发场景�
 - 组件实现设计 review 通过前，AR 实现设计**不得**消费本设计的草稿版本
 - 组件实现设计中**不得**写单个 AR 的代码层设计
 - 不修改其他组件
-- AR triggered 时未经 router 升级到 component-impact profile，不得直接进入本节点
-- SR triggered 时本节点完成后下一步是 `devflow-component-design-review` → `devflow-finalize`（analysis closeout），**不得**指向 `devflow-ar-design`
+- 未经 router 升级到 component-impact profile，不得直接进入本节点
 - 正式输出不得残留 `AI提示`、示例业务内容、变量替换说明、`TBD` / `{DATE}` 等模板占位符
 
 ## 对象契约
@@ -50,7 +45,7 @@ description: 当需要创建或修订组件实现设计时使用；触发场景�
 - Backend Output Object: `features/<id>/component-design-draft.md`（过程版） + 同步到 `docs/component-design.md`（review 通过且模块架构师 sign-off 后）
 - Object Transformation: 把组件职责 / 接口 / 依赖 / 数据 / 运行机制写成长期可消费的设计
 - Object Boundaries: 不写 AR 代码层设计；不修改其他组件；不写代码
-- Object Invariants: 组件名、所属子系统、模块架构师 owner 在 review 通过前保持稳定
+- Object Invariants: 组件名、所属系统、模块架构师 owner 在 review 通过前保持稳定
 
 ## 方法原则
 
@@ -73,10 +68,7 @@ description: 当需要创建或修订组件实现设计时使用；触发场景�
 
 按 Read-On-Presence 读取 `features/<id>/requirement.md`（SR 含 Affected Components / Component Design Impact 章节；AR 含 Component Impact Assessment 章节）、`features/<id>/reviews/spec-review.md`（verdict 应 `通过`）、当前 `docs/component-design.md`（若存在）、组件代码现状的最少必要摘要；项目若启用了可选子资产 `docs/interfaces.md` / `docs/dependencies.md` / `docs/runtime-behavior.md` 也一并读取，未启用直接跳过、不阻塞。spec-review 未通过 → 阻塞，回 `devflow-router`；模块架构师 owner 未指定 → 阻塞，回需求负责人。
 
-确认本次进入子街区：
-
-- profile = `requirement-analysis` → SR triggered，本节点完成后下一步是 `devflow-component-design-review` → `devflow-finalize`（analysis closeout）
-- profile = `component-impact` → AR triggered，本节点完成后下一步是 `devflow-component-design-review` → `devflow-ar-design`
+本节点仅在 `component-impact` profile 下进入；完成后下一步是 `devflow-component-design-review` → `devflow-ar-design`。
 
 ### 2. 判定本次是新增 / 修订 / 单纯消费
 
@@ -130,7 +122,7 @@ description: 当需要创建或修订组件实现设计时使用；触发场景�
 
 按 Requirements Traceability 在 `features/<id>/traceability.md` 补「Component Design Section」列，并把 `features/<id>/progress.md` 写为 `Current Stage = devflow-component-design`、`Pending Reviews And Gates` 含 `component-design-review`、`Next Action Or Recommended Skill = devflow-component-design-review`。canonical 字段不允许自由文本。
 
-`Workflow Profile` 字段保持 router 分配的值（`requirement-analysis` 或 `component-impact`），本节点不切换 profile。
+`Workflow Profile` 字段保持 router 分配的 `component-impact`，本节点不切换 profile。
 
 ### 8. 自检与 handoff
 
@@ -199,7 +191,7 @@ description: 当需要创建或修订组件实现设计时使用；触发场景�
 
 ## 本地路由触发说明
 
-仅当 router 选择了带组件设计修订的 `requirement-analysis`，或因 AR 触及组件职责、SOA interfaces、dependencies、state machine、runtime mechanism 而选择 `component-impact` 时，才进入本 skill。若本 skill 只是消费既有组件设计，回路由到 `devflow-router`。
+仅当因 AR 触及组件职责、SOA interfaces、dependencies、state machine、runtime mechanism 而 router 选择 `component-impact` 时，才进入本 skill。若本 skill 只是消费既有组件设计，回路由到 `devflow-router`。
 
 ## DevFlow 约定
 
