@@ -43,6 +43,7 @@ Slash command **不复制** SKILL.md 的内容，只声明本阶段会跨过哪�
 ## 不引入的命令（明确划线）
 
 - ❌ `/ship` 并行 fan-out：与 DevFlow 顺序门禁链（test-review → code-review → completion-gate → finalize）冲突。
-- ❌ `/code-simplify`：简化属于 `devflow-tdd-implementation` 的 REFACTOR 步骤，不另立节点。
+- ❌ `/code-simplify`：简化属于 `devflow-coding-craft` 透镜，在 `devflow-tdd-implementation` 的 REFACTOR 步骤内部叠加，不另立命令或节点。
+- ℹ️ Craft 透镜（`devflow-design-craft` / `devflow-coding-craft` / `devflow-test-craft`）不设独立 command：它们由设计 / 构建 / 评审节点在工作流内部叠加，提升产物质量，不改变流程拓扑、不进 handoff、不产 verdict。
 - ❌ `/plan`：tasks 队列由 `devflow-tdd-implementation` 内部 preflight 管理，不另立 command。
 - ❌ 任何 meta-orchestrator command：`devflow-router` 是唯一编排权威。
