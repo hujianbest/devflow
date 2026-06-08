@@ -13,13 +13,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
   - `devflow-coding-craft` — Rule 0 simplicity, thin vertical slices, scope discipline (Chesterton's Fence), readability/naming, embedded defensive coding.
   - `devflow-test-craft` — test pyramid + test sizes, state-not-interaction testing, DAMP over DRY, mock discipline (real>fake>stub>mock), coverage types.
   - These are **lenses, not flow nodes**: invoked inside `devflow-ar-design` / `devflow-component-design` / `devflow-tdd-implementation` / `devflow-code-review` / `devflow-test-review`; they never write `progress`/handoff, never produce a verdict, and never change the flow topology.
-- `references/devflow-conventions.md` — single source of truth for artifact layout, `progress.md` fields, handoff fields, profiles, execution modes, the canonical node list, read-on-presence, and promotion rules.
+- A **"DevFlow 共同约定" (shared conventions) section inside the `using-devflow` meta-skill** — the single source of truth for artifact layout, `progress.md` fields, handoff fields, profiles, execution modes, the canonical node list, read-on-presence, and promotion rules. Every other skill references this section instead of carrying its own copy.
 - `docs/devflow-2.0-design-spec.md` — the DevFlow 2.0 design spec: analysis of `addyosmani/agent-skills` (especially the `using-agent-skills` ↔ skills relationship), diagnosis of DevFlow 1.0's design/coding-craft gap, and the 2.0 target architecture.
 
 ### Changed — DevFlow 2.0
 
 - `using-devflow` rewritten as a true meta-skill: **discovery tree** (now indicating which craft lens to overlay at each phase) + **behavior constitution** (the always-on Core Operating Behaviors) + an explicit **three-layer relationship** (meta discovers / router routes / craft raises quality).
-- The duplicated `## 本地 DevFlow 约定` boilerplate (artifact layout, progress fields, handoff fields) was removed from all 13 canonical skills and replaced with a one-line reference to `references/devflow-conventions.md` — every `SKILL.md` shrank by ~55–65 lines, restoring progressive disclosure.
+- The duplicated `## 本地 DevFlow 约定` boilerplate (artifact layout, progress fields, handoff fields) was removed from all 13 canonical skills and replaced with a one-line reference to the `using-devflow` "DevFlow 共同约定" section — every `SKILL.md` shrank by ~55–65 lines, restoring progressive disclosure.
 - Design / build / review nodes now carry an explicit `## 质量透镜（Craft）` section that names which craft lens to overlay at which workflow step.
 
 ### Preserved

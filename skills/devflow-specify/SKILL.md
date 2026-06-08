@@ -266,7 +266,7 @@ AR / DTS / CHANGE work item 额外项：
 
 ## DevFlow 约定
 
-本 skill 遵循仓库根目录的 `references/devflow-conventions.md`（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。
+本 skill 遵循 `using-devflow` 的「DevFlow 共同约定」章节（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。
 
 ### Work Item 骨架
 

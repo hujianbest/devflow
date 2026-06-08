@@ -110,7 +110,7 @@ For a DTS or hotfix, DevFlow first reproduces the issue and records root cause i
 
 DevFlow ships one public entry meta-skill, 13 canonical `devflow-*` runtime nodes, and 3 quality-craft lens skills. The three roles are distinct (see [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md) §5.1):
 
-- **Meta (`using-devflow`)** discovers which skill applies and carries the always-on behavior constitution.
+- **Meta (`using-devflow`)** discovers which skill applies, carries the always-on behavior constitution, and hosts the shared conventions every other skill follows.
 - **Runtime router (`devflow-router`)** turns artifact evidence into the single next canonical node.
 - **Craft lenses (`devflow-*-craft`)** are invoked *inside* flow nodes to raise design / coding / test quality; they never write `progress`/handoff, never produce a verdict, and never change the flow topology.
 
@@ -198,7 +198,7 @@ Key design choices:
 
 - **Evidence over memory.** Routing reads files such as `features/<id>/progress.md`, reviews, approvals, evidence, and completion records.
 - **Canonical names only.** `Next Action Or Recommended Skill` must be one of the canonical `devflow-*` nodes; `using-devflow` and the `devflow-*-craft` lenses are never written into runtime handoff fields.
-- **Single source of truth for conventions.** Artifact layout, progress fields, handoff fields, profiles, and the canonical node list live once in [`references/devflow-conventions.md`](references/devflow-conventions.md); every skill references it instead of copying boilerplate.
+- **Single source of truth for conventions.** Artifact layout, progress fields, handoff fields, profiles, and the canonical node list live once in the [`using-devflow`](skills/using-devflow/SKILL.md) meta-skill's "DevFlow 共同约定" section; every skill references it instead of copying boilerplate.
 - **Craft as lenses, not stages.** Quality lenses raise the bar inside existing nodes without adding flow stages or breaking artifact compatibility.
 - **Controlled subagents.** `devflow-router` is the only reviewer dispatcher; `devflow-tdd-implementation` is the only implementer dispatcher.
 - **No self-verification.** Authoring skills write artifacts and hand off; independent reviewers return verdicts and do not edit production artifacts.
@@ -249,10 +249,8 @@ Project-level `AGENTS.md` may override equivalent paths and templates. Closed wo
 devflow/
 ├── commands/                         # Slash-style command intent definitions
 ├── agents/                           # Reviewer / implementer role mirrors
-├── references/
-│   └── devflow-conventions.md        # Single source of truth (layout / fields / profiles / nodes)
 ├── skills/                           # 1 meta + 13 canonical devflow-* nodes + 3 craft lenses
-│   ├── using-devflow/                #   Meta: discovery + behavior constitution
+│   ├── using-devflow/                #   Meta: discovery + behavior constitution + shared conventions
 │   ├── devflow-router/               #   Runtime evidence router
 │   ├── devflow-specify/
 │   ├── devflow-spec-review/
