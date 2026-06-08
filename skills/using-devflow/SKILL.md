@@ -286,5 +286,8 @@ review 必须由 `devflow-router` 派发**独立 reviewer subagent**，不内联
 | 文件 | 用途 |
 |---|---|
 | 本 skill「DevFlow 共同约定」章节 | 单一真相源：产物布局 / progress 字段 / handoff 字段 / profile / 节点表 |
+| `skills/using-devflow/references/devflow-work-item-readme-template.md` | 通用 work item README 模板（跨 skill 共享） |
+| `skills/using-devflow/references/devflow-progress-template.md` | 通用 progress.md 模板（跨 skill 共享） |
+| `skills/using-devflow/references/devflow-traceability-template.md` | 通用 traceability.md 模板（跨 skill 共享） |
 | `skills/devflow-router/SKILL.md` | 权威 runtime routing、恢复编排与 reviewer dispatch |
 | `docs/devflow-2.0-design-spec.md` | DevFlow 2.0 设计说明书（三层关系与匠艺注入的依据） |
