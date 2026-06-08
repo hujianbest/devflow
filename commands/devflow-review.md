@@ -7,7 +7,7 @@ This command orchestrates the **DevFlow review (评审)** phase. 它既能 **独
 ## 运行模式
 
 - **独立评审（standalone / ad-hoc）—— 默认**
-  - 按用户诉求确定"审什么、用哪个评审 skill"，以用户指定的目标（文件 / 目录 / diff / 设计稿 / 测试 / 任意工件）为 `primary_artifact`，**直接** 派发独立 `devflow-reviewer` 子代理执行对应 review skill（本命令作为上游入口直接派发，符合 Reviewer Dispatch Protocol「router 或上游 leaf」）。
+  - 按用户诉求确定"审什么、用哪个评审 skill"，以用户指定的目标（文件 / 目录 / diff / 设计稿 / 测试 / 任意工件）为 `primary_artifact`，**直接** 派发独立 `devflow-reviewer` 子代理执行对应 review skill。
   - 把审查内容（结论 + findings + 建议）**直接交给用户**。
   - **不要求** work item / `progress.md`，**不推进** 门禁，**不强制** canonical handoff；record 落盘可选。
 - **随流程评审（in-flow）**
@@ -46,7 +46,7 @@ This command orchestrates the **DevFlow review (评审)** phase. 它既能 **独
 
 ## Hard contract（节选自 AGENTS.md，不可绕开）
 
-- **独立 reviewer，不自审**：评审一律由独立 `devflow-reviewer` 子代理执行，父会话 / 作者 **不得** 自评（standalone 由本命令作为上游入口直接派发，in-flow 由 `devflow-router` 派发；均符合 Reviewer Dispatch Protocol「router 或上游 leaf」）
+- **独立 reviewer，不自审**：评审由独立 `devflow-reviewer` 子代理执行，父会话 / 作者 **不得** 自评。standalone 直接派发，in-flow 经 `devflow-router`
 - **本命令不改任何工件**：发现写进 findings，回修交对应 authoring 命令
 - **顺序门禁纪律**：同时审测试与代码时 **必须** 先 `devflow-test-review` 再 `devflow-code-review`；test-review 未通过 **严禁** 进入 code-review。standalone 模式至少给出该风险提示，in-flow 模式严格喂门禁、不可跳序
 - **评审目标必须存在且可定位**：`primary_artifact`（用户指定目标或工件）缺失 / 不可定位 → 不得凭空评审，让用户补齐目标，或回对应 authoring 命令
@@ -64,7 +64,7 @@ This command orchestrates the **DevFlow review (评审)** phase. 它既能 **独
 3. **选评审 skill**：按"意图 → skill"映射；多个对象就绪时按 canonical 顺序排队 `spec → component-design → ar-design → test → code`
 4. **派发独立 reviewer**：
    - 构造 Review Request Pack（`target_skill`、`primary_artifact` = 用户目标 / 工件、`supporting_context`、`agents_md_anchor`；standalone 下缺失的 `work_item_*` / `owning_component` 标 `ad-hoc`，`expected_record_path` 可选）
-   - standalone：本命令作为上游入口 **直接** 派发；in-flow：交 `devflow-router` 派发
+   - standalone：**直接** 派发独立 reviewer；in-flow：交 `devflow-router` 派发
 5. **取回 reviewer 结论与 findings**：
    - standalone：把审查内容（结论 + findings + 建议下一步）**直接呈现给用户**；如存在 work item 或用户要求则落 review record；**不** 推进门禁、**不** 强制 canonical handoff
    - in-flow：交 `devflow-router` 消费 verdict，按 Reviewer Dispatch Protocol 的 Verdict 映射推进 / 回修 / `reroute_via_router`，形成 canonical handoff

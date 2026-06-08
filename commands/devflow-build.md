@@ -36,7 +36,7 @@ This command orchestrates the **DevFlow build (构建)** phase.
 - 多个 `in_progress` task 或 next-ready 不唯一 → `reroute_via_router = true`，停下交 router
 - TDD 完成后 **未经** `devflow-test-review` → 不得进入 `devflow-code-review`
 - `devflow-code-review` 未通过 → 不得进入 `devflow-completion-gate`
-- 实现子代理只能 `devflow-tdd-implementation` 派发；必须传 Implementer Context Pack，禁止裸传聊天历史
+- 实现子代理必须接收 Implementer Context Pack，禁止裸传聊天历史
 - 实现子代理 **不修改** task 计划 / AR 设计 / task-board 顺序
 - 评审子代理 **不修改** 生产代码 / 测试
 
@@ -69,5 +69,5 @@ This command orchestrates the **DevFlow build (构建)** phase.
 | "测试都跑过了，跳过 test-review" | 禁止；test-review 评的是测试 **有效性** 与覆盖度，不是是否跑过 |
 | "把全部 task 一起做" | 禁止；一次 next-ready task，一次新派发 |
 | "implementer 顺手调一下 AR 设计" | 禁止；越界改 AR 设计或 task 计划必须 `BLOCKED + reroute` |
-| "code-review 我自己读一遍代码就行" | 禁止；必须 router 派发独立子代理 |
+| "code-review 我自己读一遍代码就行" | 禁止；必须由独立子代理评审，作者不自审 |
 | "evidence 写差不多就行" | 必须按 SKILL.md 写齐 evidence 路径，否则后续完成门禁会被卡 |

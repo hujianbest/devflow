@@ -36,7 +36,7 @@ This command orchestrates the **DevFlow design (设计)** phase.
 - profile 单调升级：`standard → component-impact` 允许；反向降级禁止
 - 组件影响型 work item 缺 `docs/component-design.md` → 必须先完成 `devflow-component-design`
 - **AR 设计未含测试设计章节 → 不得进入 `devflow-tdd-implementation`**；评审若发现缺测试设计章节，必须 `REQUEST_CHANGES` 回 `devflow-ar-design`
-- 作者不自审：两个评审节点都必须由 `devflow-router` 派发独立 `devflow-reviewer` 子代理
+- 作者不自审：两个评审节点都由独立 `devflow-reviewer` 子代理评审（作者 / 父会话不自审）
 
 ## Workflow（不复制 SKILL.md，只编排）
 
@@ -62,5 +62,5 @@ This command orchestrates the **DevFlow design (设计)** phase.
 |---|---|
 | "改动看起来不影响组件边界，跳过组件设计" | 由 router 判，不由 leaf 自判；任何 SOA 接口 / 依赖 / 状态机 / 运行机制变化都触发 `component-impact` |
 | "测试设计章节先空着，TDD 时再补" | 禁止；缺章节直接被 ar-design-review 打回 |
-| "ar-design 我改完顺手 review 一下" | 禁止；必须 router 派发独立子代理 |
+| "ar-design 我改完顺手 review 一下" | 禁止；必须由独立子代理评审，作者不自审 |
 | "组件设计写完就拿去当 AR 设计用，跳过 ar-design" | 禁止；组件设计与 AR 设计是不同 canonical 节点，组件设计通过后仍须做 AR 设计 |
