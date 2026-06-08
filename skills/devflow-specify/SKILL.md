@@ -1,13 +1,11 @@
 ---
 name: devflow-specify
-description: 当团队已接受 AR / DTS / CHANGE 输入，需要澄清成可评审的实现需求规格时使用；在进入 devflow-ar-design 或 devflow-tdd-implementation 前澄清 AR 范围、所属组件、上游追溯与验收标准。不用于子系统需求（SR）分析、产品发现、需求负责人决策、AR 实现设计、组件实现设计写作，或紧急修复的复现与根因分析。
+description: 当团队已接受 AR / DTS / CHANGE 输入，需要澄清成可评审的实现需求规格时使用；在进入 devflow-ar-design 或 devflow-tdd-implementation 前澄清 AR 范围、所属组件、上游追溯与验收标准。不用于产品发现、需求负责人决策、AR 实现设计、组件实现设计写作，或紧急修复的复现与根因分析。
 ---
 
 # devflow 需求规格澄清（AR / DTS / CHANGE 实现）
 
-把团队已经接受的实现类需求输入澄清成可被 `devflow-spec-review` 评审的需求规格对象。本 skill 只服务实现类 work item（AR / DTS / CHANGE）：澄清单个 AR（或需要 AR-级规格的 DTS / CHANGE），下一步进入 `devflow-ar-design` 或 `devflow-component-design`（component-impact）。
-
-子系统需求（SR）分析不在 DevFlow 范围内；AR 仅以上游 SR / IR 作为可选追溯锚点引用，不作为 DevFlow work item 处理。
+把团队已经接受的实现类需求输入澄清成可被 `devflow-spec-review` 评审的需求规格对象。本 skill 服务 AR / DTS / CHANGE work item：澄清单个 AR（或需要 AR-级规格的 DTS / CHANGE），下一步进入 `devflow-ar-design` 或 `devflow-component-design`（component-impact）。
 
 本 skill 不做产品发现、不创造需求方向、不替需求负责人决定优先级；当输入不清且涉及方向 / 范围 / 验收标准时，只整理待决问题列表，回需求负责人。
 
@@ -49,7 +47,7 @@ description: 当团队已接受 AR / DTS / CHANGE 输入，需要澄清成可评
 
 ## 方法原则
 
-- **Requirements Traceability**: 显式建立上游 IR / SR -> AR 链路；DTS 修改若涉及功能需求时建立 DTS -> AR -> SR 反向锚点（上游 SR / IR 为外部追溯锚点，不作为 DevFlow work item）
+- **Requirements Traceability**: 显式建立上游 IR / SR -> AR 链路；DTS 修改若涉及功能需求时建立 DTS -> AR -> SR 反向锚点
 - **Scope / Non-Scope / Acceptance Criteria**: 规格按"做什么 / 不做什么 / 怎样算完成"组织
 - **Socratic Elicitation**: Capture → Challenge → Clarify 三段式提问，先收敛范围 / 角色 / 成功标准，再收敛边界细节
 - **EARS（Easy Approach to Requirements Syntax — Mavin 等, 2009）**: 需求 Statement 使用结构化句式（常驻 / 事件触发 / 状态约束 / 异常 / 可选），让 reviewer 可冷读判断；详见 `references/requirement-rows-contract.md` 的 Statement Patterns 节
@@ -69,7 +67,7 @@ description: 当团队已接受 AR / DTS / CHANGE 输入，需要澄清成可评
 
 按 Read-On-Presence 读取澄清规格所需的最少材料：用户请求 / 上游单据（IR / SR / AR / DTS）摘要、团队 `AGENTS.md` 路径映射、`features/<id>/progress.md`（若存在）、当前组件仓库的 `docs/component-design.md` / `docs/ar-designs/`（若存在）。
 
-显式确认本 work item 类型（DevFlow 只处理实现类）：
+显式确认本 work item 类型：
 
 - `AR` / `CHANGE` → 按 router 分配的 `standard` / `component-impact` / `lightweight` profile 推进
 - `DTS`（需要 AR-级规格）→ 通常已先经 `devflow-problem-fix` 产出 reproduction / root-cause / fix-design

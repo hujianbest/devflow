@@ -4,7 +4,7 @@
 
 **Artifact-first SDD, gated TDD, role-separated reviews — now with engineering-craft quality lenses — for AI coding agents.**
 
-DevFlow is a development-stage workflow for AI coding agents. It takes an accepted AR / DTS / CHANGE work item through specification, design, TDD implementation, independent review, completion gating, and closeout. The next step is recovered from durable artifacts, not chat memory. (Subsystem-requirement (SR) analysis is out of scope; an AR only references an upstream SR / IR as an optional traceability anchor.)
+DevFlow is a development-stage workflow for AI coding agents. It takes an accepted AR / DTS / CHANGE work item through specification, design, TDD implementation, independent review, completion gating, and closeout. The next step is recovered from durable artifacts, not chat memory.
 
 **DevFlow 2.0** keeps that process discipline and adds the layer it was missing: **craft quality lenses** (`devflow-design-craft`, `devflow-coding-craft`, `devflow-test-craft`) that encode senior-engineer judgment — simplicity, abstraction discipline, interface contracts, the test pyramid, state-not-interaction testing — so flow nodes produce work that is not just *structurally complete* but *well-designed and well-coded*. See [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md).
 

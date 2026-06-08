@@ -9,7 +9,7 @@ DevFlow workflow family 的 **runtime authority**。基于工件证据决定：W
 
 `using-devflow` 负责 public entry、总指导原则与 skill discovery；本 skill 负责 runtime routing 与恢复。
 
-DevFlow 只处理实现类 work item（AR / DTS / CHANGE），默认以单 AR / 单 DTS 为 work item 边界；AR 设计通过后维护 work item 内部的 `tasks.md` / `task-board.md` 执行索引。本 skill 不替模块架构师、开发负责人、开发人员拍板任何专业判断；只负责把工件证据转化为唯一下一步。
+DevFlow 处理 AR / DTS / CHANGE work item，默认以单 AR / 单 DTS 为 work item 边界；AR 设计通过后维护 work item 内部的 `tasks.md` / `task-board.md` 执行索引。本 skill 不替模块架构师、开发负责人、开发人员拍板任何专业判断；只负责把工件证据转化为唯一下一步。
 
 ## 适用场景
 
@@ -70,14 +70,12 @@ DevFlow 只处理实现类 work item（AR / DTS / CHANGE），默认以单 AR / 
 
 ### 3. 确认 work item 类型
 
-DevFlow 只处理实现类 work item。确认类型并据此定 profile 候选集：
+据 work item 类型定 profile 候选集：
 
 | Work Item Type | profile 候选集 |
 |---|---|
 | `AR` / `CHANGE` | `standard` / `component-impact` / `lightweight` |
 | `DTS` | `hotfix`（默认）；判断为常规缺陷修改时也可走 `standard` |
-
-子系统需求（SR）分析不在 DevFlow 范围内；AR 仅以上游 SR / IR 作为可选追溯锚点引用，不作为 DevFlow work item 处理。
 
 ### 4. 检查支线信号
 

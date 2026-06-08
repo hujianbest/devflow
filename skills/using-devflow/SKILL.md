@@ -270,7 +270,7 @@ review 必须由 `devflow-router` 派发**独立 reviewer subagent**，不内联
 - `next_action_or_recommended_skill` 必须是上文「DevFlow 共同约定 → Canonical 节点清单」中的 canonical runtime node，不能是 `using-devflow`、craft 透镜或自由文本。
 - Legal profiles：`standard` / `component-impact` / `hotfix` / `lightweight`；profile 判定由 `devflow-router` 执行。
 - Legal execution modes：`interactive` / `auto`；`auto` 不跳过任何 review / gate / approval / evidence。
-- DevFlow 只处理实现类 work item（AR / DTS / CHANGE）；子系统需求（SR）分析不在 DevFlow 范围内，AR 仅以上游 SR / IR 作为可选追溯锚点引用，不作为 DevFlow work item 处理。
+- DevFlow 处理 AR / DTS / CHANGE work item；profile 判定与节点路由由 `devflow-router` 执行。
 - 项目 `AGENTS.md` 与各 leaf skill 的 hard gates 不能被入口 discovery 或 craft 透镜削弱。
 
 ## 支撑参考

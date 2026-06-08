@@ -2,7 +2,7 @@
 
 本 reference 属于 `devflow-router`，定义合法 profile 路径、route upgrades 和 hard stops。
 
-DevFlow 只处理实现类 work item（AR / DTS / CHANGE），使用 `standard` / `component-impact` / `hotfix` / `lightweight` profiles。子系统需求（SR）分析不在 DevFlow 范围内；AR 仅以上游 SR / IR 作为可选追溯锚点引用。
+DevFlow 处理 AR / DTS / CHANGE work item，使用 `standard` / `component-impact` / `hotfix` / `lightweight` profiles。
 
 ## Standard 路由
 

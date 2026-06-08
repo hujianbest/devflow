@@ -20,7 +20,6 @@ This command orchestrates the **DevFlow specify (规格)** phase.
 不适用：
 
 - 仍在做产品发现 / 决定要不要做这个 AR → 交回需求负责人
-- 子系统需求（SR）分析 → 不在 DevFlow 范围内
 - 规格已通过，准备进入设计 → 改用 `/devflow-design`
 - 紧急修复 → 改用 `/devflow-fix`
 

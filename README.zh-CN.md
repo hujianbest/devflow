@@ -4,7 +4,7 @@
 
 **面向 AI 编码 agent 的 artifact-first SDD、门禁式 TDD、角色分离评审——并新增工程匠艺质量透镜——的工作流。**
 
-DevFlow 是一个开发阶段工作流，用来把团队已经接受的 AR / DTS / CHANGE work item 推进到规格澄清、设计、TDD 实现、独立评审、完成门禁和收尾。下一步永远从持久化工件恢复，而不是从聊天记忆猜。（子系统需求（SR）分析不在范围内；AR 仅以上游 SR / IR 作为可选追溯锚点。）
+DevFlow 是一个开发阶段工作流，用来把团队已经接受的 AR / DTS / CHANGE work item 推进到规格澄清、设计、TDD 实现、独立评审、完成门禁和收尾。下一步永远从持久化工件恢复，而不是从聊天记忆猜。
 
 **DevFlow 2.0** 在保留这套流程纪律的同时，补上它一直缺的一层：**匠艺质量透镜**（`devflow-design-craft`、`devflow-coding-craft`、`devflow-test-craft`）——把资深工程师的判断（简单性、抽象克制、接口契约、测试金字塔、测状态不测交互）编码进去，让流程节点产出的东西不只是「结构齐全」，而是「设计得好、代码写得好」。详见 [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md)。
 
