@@ -66,7 +66,7 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 
 ### 1. 对齐输入与角色
 
-按 Read-On-Presence 读取 `features/<id>/requirement.md`（SR 含 Affected Components / Component Design Impact 章节；AR 含 Component Impact Assessment 章节）、`features/<id>/reviews/spec-review.md`（verdict 应 `通过`）、当前 `docs/component-design.md`（若存在）、组件代码现状的最少必要摘要；项目若启用了可选子资产 `docs/interfaces.md` / `docs/dependencies.md` / `docs/runtime-behavior.md` 也一并读取，未启用直接跳过、不阻塞。spec-review 未通过 → 阻塞，回 `devflow-router`；模块架构师 owner 未指定 → 阻塞，回需求负责人。
+按 Read-On-Presence 读取 `features/<id>/requirement.md`（含 Component Impact Assessment 章节）、`features/<id>/reviews/spec-review.md`（verdict 应 `通过`）、当前 `docs/component-design.md`（若存在）、组件代码现状的最少必要摘要；项目若启用了可选子资产 `docs/interfaces.md` / `docs/dependencies.md` / `docs/runtime-behavior.md` 也一并读取，未启用直接跳过、不阻塞。spec-review 未通过 → 阻塞，回 `devflow-router`；模块架构师 owner 未指定 → 阻塞，回需求负责人。
 
 本节点仅在 `component-impact` profile 下进入；完成后下一步是 `devflow-component-design-review` → `devflow-ar-design`。
 

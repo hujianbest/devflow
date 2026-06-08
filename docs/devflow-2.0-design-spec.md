@@ -126,7 +126,7 @@ SKILL.md
 1. **工件优先恢复（Evidence over memory）**：下一步从 `features/<id>/progress.md`、`reviews/`、`evidence/`、`completion.md` 恢复，而非聊天记忆。
 2. **角色分离评审（No self-verification）**：作者不审自己；reviewer 作为独立 subagent 给 verdict 且不改生产代码。
 3. **门禁化 TDD（Gated TDD）**：fail-first 证据；「跑通」≠「有效」，需独立 test-review。
-4. **需求到代码可追溯**：SR/AR/DTS/CHANGE 工作项追溯链；长期资产 closeout 提升。
+4. **需求到代码可追溯**：AR/DTS/CHANGE 工作项追溯链（上游 SR/IR 作为可选追溯锚点）；长期资产 closeout 提升。
 5. **运行时证据路由**：`devflow-router` 把工件证据转成唯一下一步、profile 判定、reviewer 派发——这是 agent-skills 没有的「可恢复编排」能力。
 6. **嵌入式 C/C++ 风险维度**：内存 / 并发 / 实时性 / 资源 / ABI 的 reviewer rubric。
 

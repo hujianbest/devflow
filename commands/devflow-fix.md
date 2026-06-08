@@ -30,7 +30,7 @@ This command orchestrates the **DevFlow hotfix (紧急修复)** sub-graph entry.
 ## Hard contract（节选自 AGENTS.md，不可绕开）
 
 - profile 升级到 `hotfix` 由 `devflow-router` 决定；leaf 不允许自升 / 自降
-- `requirement-analysis` 子街区**不允许** 路由到 `devflow-problem-fix`
+- `devflow-problem-fix` 仅服务实现类 work item（DTS / hotfix）
 - `devflow-problem-fix` 在任何代码修改前必须先完成复现 + 根因 + 最小安全修复边界的工件证据；缺失即不得进入 `devflow-tdd-implementation`
 - 进入实现后仍走标准顺序门禁链：`devflow-test-review` → `devflow-code-review` → `devflow-completion-gate` → `devflow-finalize`，**不可** 因 `hotfix` 跳过任一评审 / 门禁
 - `auto` execution mode 不豁免任何评审与门禁

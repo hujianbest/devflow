@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Removed — SR / requirement-analysis sub-track
+
+- DevFlow now processes **implementation work items only** (`AR` / `DTS` / `CHANGE`). The subsystem-requirement (`SR`) analysis sub-track and the `requirement-analysis` profile are removed. An AR may still reference an upstream `SR` / `IR` as an optional traceability anchor, but `SR` is no longer a DevFlow-processed work item.
+- Removed the **sub-track (子街区) split** entirely: there is one implementation flow. Legal profiles are now `standard` / `component-impact` / `hotfix` / `lightweight` (dropped `requirement-analysis`); the "no cross-sub-track switching" rules are gone.
+- `devflow-finalize` now performs **implementation closeout only**; the `analysis` closeout type, `AR Breakdown Candidates` delivery, and SR-specific promotion paths are removed (including in `promotion-checklist.md`, the closeout markdown template, and the HTML report template).
+- `devflow-component-design` is now triggered **only** by an AR reaching `component-impact`; the SR-triggered branch is removed. `devflow-completion-gate` drops its SR exclusion note.
+- Removed the `Owning Subsystem` canonical field, SR work-item-type rows, `Affected Components` / `AR Breakdown Candidates` / `Subsystem Scope` spec sections, and the SR rubric group (`S5-SR` / `S7-SR` / `S8-SR` / `Group SR`) from `devflow-specify`, `devflow-spec-review`, their reference contracts/templates, the shared work-item / progress / traceability templates, the reviewer persona, and the router profile/route map.
+
 ### Added — DevFlow 2.0 craft layer
 
 - **Craft quality lenses** — three new peer skills that encode senior-engineer judgment (with concrete tells and counter-examples, localized to embedded C/C++):
