@@ -24,10 +24,11 @@ OpenCode v1 uses natural language plus automatic skill discovery. The `commands/
 | Define what to build | [`/devflow-specify`](commands/devflow-specify.md) | Spec before design or code |
 | Plan how to build it | [`/devflow-design`](commands/devflow-design.md) | Design options before a chosen design |
 | Build one active task | [`/devflow-build`](commands/devflow-build.md) | RED -> GREEN -> REFACTOR with fresh evidence |
+| Check design / code / test on demand | [`/devflow-review`](commands/devflow-review.md) | Independent review re-entry, never self-review |
 | Close engineering work | [`/devflow-ship`](commands/devflow-ship.md) | Reviews and gates before closeout |
 | Fix a DTS / hotfix | [`/devflow-fix`](commands/devflow-fix.md) | Reproduce, root-cause, then make the minimal safe fix |
 
-Reviews are not user-invoked shortcuts. `devflow-router` dispatches independent reviewer subagents for spec, component-design, AR-design, test, and code reviews.
+Reviews are never self-review shortcuts. Whether triggered inside a phase command or on demand via [`/devflow-review`](commands/devflow-review.md), `devflow-router` always dispatches independent reviewer subagents for spec, component-design, AR-design, test, and code reviews.
 
 ---
 

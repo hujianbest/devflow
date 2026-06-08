@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added — on-demand review command
+
+- `commands/devflow-review.md` (`/devflow-review`) — an **on-demand review re-entry** that maps a "现在检查一下设计 / 代码 / 测试 / 规格" intent to the matching canonical review node(s) (`devflow-spec-review`, `devflow-component-design-review`, `devflow-ar-design-review`, `devflow-test-review`, `devflow-code-review`). It is a **re-entry, not a self-review shortcut**: every review is still dispatched by `devflow-router` to an independent `devflow-reviewer` subagent; the command never authors or modifies artifacts, never self-reviews, and never skips the sequential `test-review → code-review` gate order. Documented in `commands/README.md`, both READMEs, and the 2.0 design spec.
+
 ### Added — DevFlow 2.0 craft layer
 
 - **Craft quality lenses** — three new peer skills that encode senior-engineer judgment (with concrete tells and counter-examples, localized to embedded C/C++):

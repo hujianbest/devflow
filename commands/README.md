@@ -24,6 +24,7 @@ Slash command **不复制** SKILL.md 的内容，只声明本阶段会跨过哪�
 | [`/devflow-specify`](devflow-specify.md) | 规格阶段 | `devflow-specify` → `devflow-router` | `devflow-spec-review` |
 | [`/devflow-design`](devflow-design.md) | 设计阶段 | （组件影响时）`devflow-component-design` →（评审）→ `devflow-ar-design` →（评审）| `devflow-component-design-review`、`devflow-ar-design-review` |
 | [`/devflow-build`](devflow-build.md) | 构建阶段 | `devflow-tdd-implementation` →（评审）→（评审）| `devflow-test-review`、`devflow-code-review` |
+| [`/devflow-review`](devflow-review.md) | 评审再入口（按需检查） | `devflow-router`（按意图 / 工件选评审节点并派发）| 按需：`devflow-spec-review`、`devflow-component-design-review`、`devflow-ar-design-review`、`devflow-test-review`、`devflow-code-review` |
 | [`/devflow-ship`](devflow-ship.md) | 收尾阶段 | `devflow-completion-gate` → `devflow-finalize` | — |
 | [`/devflow-fix`](devflow-fix.md) | hotfix 子图 | `devflow-router`（升级 `hotfix`）→ `devflow-problem-fix` → 回到 `/devflow-build` → `/devflow-ship` | 继承 `devflow-test-review`、`devflow-code-review` |
 
@@ -47,3 +48,4 @@ Slash command **不复制** SKILL.md 的内容，只声明本阶段会跨过哪�
 - ℹ️ Craft 透镜（`devflow-design-craft` / `devflow-coding-craft` / `devflow-test-craft`）不设独立 command：它们由设计 / 构建 / 评审节点在工作流内部叠加，提升产物质量，不改变流程拓扑、不进 handoff、不产 verdict。
 - ❌ `/plan`：tasks 队列由 `devflow-tdd-implementation` 内部 preflight 管理，不另立 command。
 - ❌ 任何 meta-orchestrator command：`devflow-router` 是唯一编排权威。
+- ℹ️ `/devflow-review` 是评审 **再入口**，不是 **自审捷径**：它仍由 `devflow-router` 派发独立 `devflow-reviewer` 子代理，父会话 / 作者不自审，也不绕过顺序门禁链；它只让"现在检查一下设计 / 代码 / 测试 / 规格"这个意图唯一映射到 canonical 评审节点。

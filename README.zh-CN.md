@@ -24,10 +24,11 @@ OpenCode v1 通过自然语言和自动 skill discovery 使用 DevFlow。`comman
 | 定义要做什么 | [`/devflow-specify`](commands/devflow-specify.md) | 先规格，后设计或代码 |
 | 规划怎么做 | [`/devflow-design`](commands/devflow-design.md) | 先设计选项，再确定方案 |
 | 构建一个 active task | [`/devflow-build`](commands/devflow-build.md) | RED -> GREEN -> REFACTOR，并记录新鲜证据 |
+| 按需检查设计 / 代码 / 测试 | [`/devflow-review`](commands/devflow-review.md) | 独立评审再入口，永不自审 |
 | 收尾工程工作 | [`/devflow-ship`](commands/devflow-ship.md) | 先评审和门禁，再 closeout |
 | 修复 DTS / hotfix | [`/devflow-fix`](commands/devflow-fix.md) | 先复现和根因，再做最小安全修复 |
 
-评审不是用户直接调用的捷径。`devflow-router` 负责派发独立 reviewer subagent，覆盖 spec、component-design、AR-design、test 和 code review。
+评审不是自审捷径。无论是在阶段命令内触发，还是通过 [`/devflow-review`](commands/devflow-review.md) 按需触发，`devflow-router` 始终派发独立 reviewer subagent，覆盖 spec、component-design、AR-design、test 和 code review。
 
 ---
 
