@@ -2,6 +2,11 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Version](https://img.shields.io/badge/version-v1.0.0-blue.svg)
+![Platform](https://img.shields.io/badge/platform-OpenCode-green.svg)
+![Focus](https://img.shields.io/badge/focus-embedded%20C%2FC%2B%2B-orange.svg)
+
 **面向 AI 编码 agent 的 artifact-first SDD、门禁式 TDD、角色分离评审——并新增工程匠艺质量透镜——的工作流。**
 
 DevFlow 是一个开发阶段工作流，用来把团队已经接受的 AR / DTS / CHANGE work item 推进到规格澄清、设计、TDD 实现、独立评审、完成门禁和收尾。下一步永远从持久化工件恢复，而不是从聊天记忆猜。
@@ -14,7 +19,7 @@ DevFlow 的范围故意比 idea-to-product 工作流更窄。它不负责产品�
 
 ---
 
-## Command Intents
+## 命令意图
 
 OpenCode v1 通过自然语言和自动 skill discovery 使用 DevFlow。`commands/` 目录记录 slash-style 阶段意图，团队可以把它们接入自己的客户端；但每个 command 都只是 bias，不是 bypass：`using-devflow` 先应用 DevFlow 总纲和 skill discovery，仓库工件检查与 runtime 下一节点决策归 `devflow-router`。
 
@@ -36,28 +41,30 @@ OpenCode v1 通过自然语言和自动 skill discovery 使用 DevFlow。`comman
 
 ### OpenCode
 
-DevFlow v1.0 仅面向 OpenCode。你可以把 skill pack 放在组件仓库旁边，也可以把它 vendor 到实际存放 work item 的组件仓库中。
+DevFlow v1.0 仅面向 OpenCode。你可以把 skill pack 放在组件仓库旁边，也可以把它 vendor 到实际存放 work item 的组件仓库中。无需安装插件：OpenCode 会自动发现 `skills/` 下的每个 `SKILL.md`，而共同约定与行为契约都托管在 [`using-devflow`](skills/using-devflow/SKILL.md) 中，而不是某个被复制到根目录的文件里。
 
 #### 方案 A - 作为旁路 Skill Pack
 
 ```bash
 git clone https://github.com/hujianbest/devflow.git ~/devflow
 cd /path/to/your-component-repo
-ln -s ~/devflow/skills .opencode-skills
-cp ~/devflow/AGENTS.md ./AGENTS.md
+ln -s ~/devflow/skills .opencode-skills   # 或把 ~/devflow/skills 作为额外的 OpenCode skills root
 ```
 
-然后编辑复制过去的 `AGENTS.md` 中的 `## Project overrides`，写入你的组件路径、模板和编码规范。
+然后让 OpenCode 指向链接过去的 `skills/` 目录。
 
 #### 方案 B - Vendor 进组件仓库
 
 ```bash
 cd /path/to/your-component-repo
 git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git v1.0.0 --squash
-cp .devflow/AGENTS.md ./AGENTS.md
 ```
 
 然后让 OpenCode 指向 `.devflow/skills/`。
+
+#### 可选 - 项目覆盖（Project overrides）
+
+DevFlow 不附带根 `AGENTS.md`。如果你的组件仓库需要覆盖 DevFlow 默认的工件路径、模板、编码规范或 execution mode，可在组件仓库根目录自行创建一个带 `## Project overrides` 章节的 `AGENTS.md`；`using-devflow` 会读取它并允许它覆盖等价默认值。不创建时，则以 `using-devflow` 内置的默认值为准。
 
 更多配置细节见 [`docs/guides/opencode-setup.md`](docs/guides/opencode-setup.md)。
 
@@ -77,7 +84,7 @@ Continue AR12345 with DevFlow. Read features/AR12345-*/progress.md and route me 
 
 ---
 
-## See It Work
+## 实际运行效果
 
 ```text
 You:       Use DevFlow to clarify AR12345.
@@ -107,7 +114,7 @@ DevFlow:   派发 test review、code review、completion gate 和
 
 ---
 
-## Skill Catalog
+## Skill 目录
 
 DevFlow 包含一个 public entry meta-skill、13 个 canonical `devflow-*` runtime nodes，以及 3 个匠艺质量透镜 skill。三者职责不同（见 [`docs/devflow-2.0-design-spec.md`](docs/devflow-2.0-design-spec.md) §5.1）：
 
@@ -122,14 +129,14 @@ DevFlow 包含一个 public entry meta-skill、13 个 canonical `devflow-*` runt
 | [`using-devflow`](skills/using-devflow/SKILL.md) | public entry 总纲与 DevFlow skill discovery | 新会话或高层 DevFlow 意图 |
 | [`devflow-router`](skills/devflow-router/SKILL.md) | 基于证据的 runtime router 与恢复控制器 | 从工件续作，或消费 review / gate 结论 |
 
-### Define
+### 定义（Define）
 
 | Skill | 做什么 | 什么时候用 |
 |---|---|---|
 | [`devflow-specify`](skills/devflow-specify/SKILL.md) | 把 AR / DTS / CHANGE 意图转成可测试需求 | 编写或修订可评审规格 |
 | [`devflow-spec-review`](skills/devflow-spec-review/SKILL.md) | 从清晰度、完整性、可测试性评审规格 | spec 工件准备好独立评审 |
 
-### Plan
+### 规划（Plan）
 
 | Skill | 做什么 | 什么时候用 |
 |---|---|---|
@@ -138,7 +145,7 @@ DevFlow 包含一个 public entry meta-skill、13 个 canonical `devflow-*` runt
 | [`devflow-ar-design`](skills/devflow-ar-design/SKILL.md) | 产出带内嵌测试设计的 AR 实现设计 | 已批准需求进入 TDD 前需要代码层设计 |
 | [`devflow-ar-design-review`](skills/devflow-ar-design-review/SKILL.md) | 评审 AR 设计与测试设计 | AR 设计准备好独立评审 |
 
-### Build、Verify 与 Close
+### 构建、验证与收尾（Build / Verify / Close）
 
 | Skill | 做什么 | 什么时候用 |
 |---|---|---|
@@ -277,7 +284,7 @@ devflow/
 └── README.md
 ```
 
-`devflow-router`、`devflow-tdd-implementation`、`devflow-test-review`、`devflow-completion-gate` 等高风险 skill 带有 `evals/` 目录，枚举它们必须拒绝的误用场景。
+每个 skill 自带 `SKILL.md` 和本地 `references/` 目录；共同约定（产物布局、`progress.md` / handoff 字段、profile、canonical 节点表）只在 [`using-devflow`](skills/using-devflow/SKILL.md) 中定义一次，其他 skill 引用它而非复制样板。
 
 ---
 
