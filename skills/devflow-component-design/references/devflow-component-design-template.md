@@ -4,7 +4,7 @@
 
 - 本模板用于 `devflow-component-design` 产出 `features/<id>/component-design-draft.md`，并在 review / sign-off 后由 `devflow-finalize` promote 到 `docs/component-design.md`。
 - 正式交付件必须删除模板说明、示例业务内容和任何占位符；不得残留 `AI提示`、`TBD`、`{DATE}` 等模板痕迹。
-- 本文档完整继承旧 `component-design-doc-template.md` 的作业结构：修订记录、术语、概述、输入、组件详细设计、关键功能设计、评审纪要、成本评估均为必填骨架。
+- 本文档采用团队组件设计作业结构：修订记录、术语、概述、输入、组件详细设计、关键功能设计、评审纪要、成本评估均为必填骨架。
 - 本文档是 AR 实现设计的组件基线，下游 AR 必须引用功能编号、接口契约、软件单元、功能场景时序图和测试项。
 
 ## 1. 修订记录

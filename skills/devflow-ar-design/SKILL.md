@@ -134,7 +134,7 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 
 ### 8. 自检与 handoff
 
-进入 handoff 前自检：旧 AR 模板章节齐全；Design Options 已列候选方案 / trade-off / 推荐项 / 确认状态（或 Single obvious option 理由）；无 `AI提示`、示例业务内容、变量替换说明、`TBD` / `{DATE}` 等残留；动态行为 / 流程 / 类图等图形已替换为真实内容或明确 N/A 理由；功能点可追溯且可被测试设计覆盖；`modify` / `remove` 的 Existing Behavior / Baseline 已被设计和测试用例消费；MDC 五场景均已分析；接口描述含参数 / 返回值 / 错误码 / 并发约束；与组件设计一致且未修改组件接口；测试设计章节存在且每个用例回指 requirement row + 功能点；嵌入式风险覆盖矩阵完整；风险与未决问题已分类。任一失败 → 回步骤 5 / 6。自检通过 → 父会话派发独立 reviewer subagent 执行 `devflow-ar-design-review`。
+进入 handoff 前自检：团队 AR 模板章节齐全；Design Options 已列候选方案 / trade-off / 推荐项 / 确认状态（或 Single obvious option 理由）；无 `AI提示`、示例业务内容、变量替换说明、`TBD` / `{DATE}` 等残留；动态行为 / 流程 / 类图等图形已替换为真实内容或明确 N/A 理由；功能点可追溯且可被测试设计覆盖；`modify` / `remove` 的 Existing Behavior / Baseline 已被设计和测试用例消费；MDC 五场景均已分析；接口描述含参数 / 返回值 / 错误码 / 并发约束；与组件设计一致且未修改组件接口；测试设计章节存在且每个用例回指 requirement row + 功能点；嵌入式风险覆盖矩阵完整；风险与未决问题已分类。任一失败 → 回步骤 5 / 6。自检通过 → 父会话派发独立 reviewer subagent 执行 `devflow-ar-design-review`。
 
 ## 输出契约
 

@@ -106,7 +106,7 @@ description: 当团队已接受 AR / DTS / CHANGE 输入，需要澄清成可评
 
 按 Template-Constrained 写 `features/<id>/requirement.md`。默认使用 `references/requirement-template.md` 作为 requirement 模板；团队 `AGENTS.md` 声明等价模板或路径时优先覆盖。
 
-`requirement-template.md` 是 `devflow-specify` 的默认需求规格模板，保持旧 `mdc-specify/references/spec-template.md` 的定位：承载规格 / requirement 文档骨架。详细字段契约不在模板中重复维护，统一引用 `requirement-rows-contract.md` 和 `nfr-quality-attribute-scenarios.md`。
+`references/requirement-template.md` 是 `devflow-specify` 的默认需求规格模板：承载规格 / requirement 文档骨架。详细字段契约不在模板中重复维护，统一引用 `requirement-rows-contract.md` 和 `nfr-quality-attribute-scenarios.md`。
 
 通用默认章节由 `references/requirement-template.md` 定义：Identity、Background And Goal、Scope / Non-Scope、Requirement Rows、Acceptance Criteria、Embedded NFR（若适用）、Open Questions（阻塞 / 非阻塞分类）、Assumptions And Dependencies。
 
@@ -248,7 +248,7 @@ AR / DTS / CHANGE work item 额外项：
 
 | 文件 | 用途 |
 |---|---|
-| `references/requirement-template.md` | requirement.md 默认模板，继承旧 spec-template 的定位 |
+| `references/requirement-template.md` | requirement.md 默认模板 |
 | `references/requirement-rows-contract.md` | requirement rows 最小字段、EARS Statement Patterns、BDD Acceptance Rules、MoSCoW Priority、Source / Trace Anchor、Brainstorming Notes Normalization、Common Failure Modes |
 | `references/granularity-and-split.md` | INVEST `Small` + `Independent` 检查（G1-G6 + 嵌入式 GE1-GE2）、Split Rules、Mechanical vs Scope-Shaping Split、Cross-Work-Item Split |
 | `references/nfr-quality-attribute-scenarios.md` | ISO/IEC 25010 质量维度、QAS 五要素、嵌入式 NFR 改写示例（实时性 / 内存 / 并发 / 资源 / 错误处理 / 安全）、最小签入条件 |

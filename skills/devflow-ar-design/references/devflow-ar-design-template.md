@@ -5,7 +5,7 @@
 - 本模板用于 `devflow-ar-design` 产出 `features/<id>/ar-design-draft.md`，并在 closeout 后 promote 到 `docs/ar-designs/AR<id>-<slug>.md`。
 - 正式交付件必须删除模板说明、示例业务内容和任何占位符；不得残留 `AI提示`、`TBD`、`{DATE}`、变量替换规则等模板痕迹。
 - 测试设计必须是本文档章节，不得拆成独立 `test-design.md`。
-- 本模板完整继承旧 `ar-template.md` 的作业结构：AR 概述、动态行为、功能点分解、实现设计、MDC 场景设计、重构设计、测试设计、模板修订记录均为必填骨架。
+- 本模板采用团队 AR 设计作业结构：AR 概述、动态行为、功能点分解、实现设计、MDC 场景设计、重构设计、测试设计、模板修订记录均为必填骨架。
 
 ## 1. AR 概述（必要）
 

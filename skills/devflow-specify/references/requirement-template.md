@@ -4,7 +4,7 @@
 
 - 本模板是 `devflow-specify` 生成 `features/<Work Item Id>-<slug>/requirement.md` 的默认模板。
 - 若团队 `AGENTS.md` 声明了等价模板或路径，优先遵循团队约定。
-- 本模板延续旧 `mdc-specify/references/spec-template.md` 的定位：作为规格 / requirement 的文档骨架；devflow 中默认落点为 `features/<id>/requirement.md`。
+- 本模板是规格 / requirement 的文档骨架；devflow 中默认落点为 `features/<id>/requirement.md`。
 - 详细字段契约不在本模板重复维护：Requirement Rows、Interface Contract Candidates 以 `requirement-rows-contract.md` 为准；NFR 的 QAS 写法以 `nfr-quality-attribute-scenarios.md` 为准。
 
 ## 1. 身份信息

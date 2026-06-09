@@ -6,7 +6,7 @@
 
 | 维度 | 关键检查 |
 |---|---|
-| **AD1 Identity & Template Conformance** | AR ID、SR / IR、Owner、所属组件、模板版本与团队模板对齐；旧 AR 模板章节齐全且无模板提示 / 占位符残留 |
+| **AD1 Identity & Template Conformance** | AR ID、SR / IR、Owner、所属组件、模板版本与团队模板对齐；团队 AR 模板章节齐全且无模板提示 / 占位符残留 |
 | **AD2 Goal & Scope Clarity** | 设计目标、当前 AR 范围 / 非范围、与 requirement.md 的范围一致；Design Options 含候选方案、trade-off、推荐项和确认状态 |
 | **AD3 Affected Files & Control Flow** | 受影响文件 / 模块 / 函数 / 类清单准确；动态行为、流程图、类图和关键控制流可冷读 |
 | **AD4 Component Design Conformance** | 与 `docs/component-design.md` 的对 AR 设计的约束一致；未越界改写组件接口 / 依赖 / 状态机 |
