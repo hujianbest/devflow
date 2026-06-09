@@ -4,10 +4,11 @@ This guide explains how to use **DevFlow** with [OpenCode](https://opencode.ai).
 
 ## Overview
 
-OpenCode supports custom `/commands` but does not have a native plugin system or built-in slash-command marketplace. DevFlow integrates by combining three pieces:
+OpenCode supports custom `/commands` but does not have a native plugin system or built-in slash-command marketplace. DevFlow integrates by combining these pieces:
 
-- A strong root-level system prompt — the [`AGENTS.md`](../../AGENTS.md) at the repository root.
+- The [`using-devflow`](../../skills/using-devflow/SKILL.md) entry skill — DevFlow's behavior constitution and shared conventions, discovered automatically like any other skill (DevFlow does not ship a root `AGENTS.md`).
 - The built-in `skill` tool, which automatically discovers any `SKILL.md` under `skills/`.
+- An optional project-level `AGENTS.md` `## Project overrides` section that you create in your own component repository to override default artifact paths, templates, coding standards, or execution mode.
 - Consistent canonical node names so the agent picks the right skill from natural language and dispatches independent reviewer subagents (each reviewer subagent is seeded with the corresponding `devflow-*-review` skill as its system prompt).
 
 This is an **agent-driven** workflow: skills are selected automatically by intent, not invoked through manual slash commands. It mirrors how Claude Code skills behave in practice.
@@ -35,13 +36,7 @@ Use this when you want to keep DevFlow's source separate from your component rep
 
    …or configure your OpenCode workspace to add `~/devflow/skills` as an additional skills root.
 
-3. Copy the DevFlow contract into your component repository's root:
-
-   ```bash
-   cp ~/devflow/AGENTS.md ./AGENTS.md
-   ```
-
-   Edit the `## Project overrides` section at the bottom of the copied `AGENTS.md` to record your team's actual paths, templates, and coding standards.
+3. (Optional) If your team needs to override DevFlow's default artifact paths, templates, coding standards, or execution mode, create an `AGENTS.md` with a `## Project overrides` section in your component repository's root. `using-devflow` reads it and lets it override the equivalent defaults. Without it, the defaults baked into `using-devflow` apply.
 
 4. Confirm OpenCode discovers the skills by asking the agent:
 
@@ -58,10 +53,9 @@ Use this when you want DevFlow pinned at a known revision inside your component 
 ```bash
 cd /path/to/your-component-repo
 git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git v1.0.0 --squash
-cp .devflow/AGENTS.md ./AGENTS.md
 ```
 
-Then point OpenCode at `.devflow/skills/`.
+Then point OpenCode at `.devflow/skills/`. Optionally add a project `AGENTS.md` `## Project overrides` section as described in Option A step 3.
 
 ---
 
@@ -123,10 +117,10 @@ Reviewers are read-only on the artifact under review: they return `verdict + fin
 
 ## Agent expectations (critical)
 
-For DevFlow to work correctly on OpenCode, the agent MUST follow the rules in [`AGENTS.md`](../../AGENTS.md). Highlights:
+For DevFlow to work correctly on OpenCode, the agent MUST follow the behavior constitution in [`using-devflow`](../../skills/using-devflow/SKILL.md) (and any project `AGENTS.md` `## Project overrides`). Highlights:
 
 - Always start non-trivial work at `using-devflow`.
-- Never write `using-devflow` into `Next Action Or Recommended Skill`.
+- Never write `using-devflow` (or a `devflow-*-craft` lens) into `Next Action Or Recommended Skill`.
 - Never inline a review. Review subagents must be dispatched independently.
 - Never let `auto` Execution Mode bypass a review, gate, or approval.
 - Never silently downgrade a `Workflow Profile`.
@@ -139,7 +133,7 @@ If your agent skips any of the above, fix the agent — do not relax the rule.
 ## Limitations
 
 - **No native slash commands.** Skills are invoked automatically via natural language and the `skill` tool. If your team prefers explicit commands, you can still wrap them as OpenCode `/commands` that simply forward an instruction like "Use DevFlow to start spec review on the current work item", but runtime routing is still done by `devflow-router`.
-- **Skill invocation depends on model compliance.** A weak model may try to skip review or implement past a hard gate. The `AGENTS.md` rules and per-skill `## 反向理由化` tables exist precisely to push back on this.
+- **Skill invocation depends on model compliance.** A weak model may try to skip review or implement past a hard gate. The `using-devflow` behavior constitution and per-skill `## 反向理由化` tables exist precisely to push back on this.
 - **No marketplace install.** Use `git clone`, `git subtree`, or a workspace symlink.
 
 ---
@@ -172,7 +166,7 @@ The agent will:
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| Agent jumps straight to writing code | `AGENTS.md` not loaded, or model ignored entry rule | Confirm `AGENTS.md` is at the workspace root; restart the OpenCode session |
+| Agent jumps straight to writing code | `using-devflow` not loaded, or model ignored entry rule | Confirm `skills/` is on the OpenCode skills root and ask the agent to load `using-devflow`; restart the OpenCode session |
 | Agent writes `Next step: implement` instead of `Next Action Or Recommended Skill: devflow-tdd-implementation` | Free-text handoff slipped through | Reject the handoff; require canonical node name |
 | Agent "reviews" its own AR design inside `devflow-ar-design` | Inlined review | Discard the inlined review; ask the agent to dispatch `devflow-ar-design-review` as a subagent |
 | Agent silently skips `devflow-test-review` after TDD | Hard gate violation | Block; route to `devflow-test-review` before any `devflow-code-review` |
@@ -182,4 +176,4 @@ The agent will:
 
 ## Summary
 
-DevFlow on OpenCode = `AGENTS.md` (hard contract) + `skills/` (13 canonical nodes, with `evals/` enumerating misuse scenarios on the high-risk ones) + automatic `skill`-tool invocation driven by natural language. No plugins, no manual commands, full process discipline.
+DevFlow on OpenCode = `using-devflow` (behavior constitution + shared conventions) + `skills/` (13 canonical nodes plus 3 craft lenses) + automatic `skill`-tool invocation driven by natural language, with an optional project `AGENTS.md` `## Project overrides`. No plugins, no manual commands, full process discipline.
