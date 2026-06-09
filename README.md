@@ -2,6 +2,11 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Version](https://img.shields.io/badge/version-v1.0.0-blue.svg)
+![Platform](https://img.shields.io/badge/platform-OpenCode-green.svg)
+![Focus](https://img.shields.io/badge/focus-embedded%20C%2FC%2B%2B-orange.svg)
+
 **Artifact-first SDD, gated TDD, role-separated reviews — now with engineering-craft quality lenses — for AI coding agents.**
 
 DevFlow is a development-stage workflow for AI coding agents. It takes an accepted AR / DTS / CHANGE work item through specification, design, TDD implementation, independent review, completion gating, and closeout. The next step is recovered from durable artifacts, not chat memory.
@@ -36,28 +41,30 @@ Reviews are never self-review shortcuts. The one invariant is an **independent r
 
 ### OpenCode
 
-DevFlow v1.0 is OpenCode-only. You can keep the skill pack as a sibling repository or vendor it into the component repository where work items live.
+DevFlow v1.0 is OpenCode-only. You can keep the skill pack as a sibling repository or vendor it into the component repository where work items live. There is no plugin to install: OpenCode discovers every `SKILL.md` under `skills/` automatically, and the shared conventions and behavior contract live in [`using-devflow`](skills/using-devflow/SKILL.md), not in a copied root file.
 
 #### Option A - Sibling Skill Pack
 
 ```bash
 git clone https://github.com/hujianbest/devflow.git ~/devflow
 cd /path/to/your-component-repo
-ln -s ~/devflow/skills .opencode-skills
-cp ~/devflow/AGENTS.md ./AGENTS.md
+ln -s ~/devflow/skills .opencode-skills   # or add ~/devflow/skills as an extra OpenCode skills root
 ```
 
-Then edit the copied `AGENTS.md` `## Project overrides` section for your component paths, templates, and coding standards.
+Then point OpenCode at the linked `skills/` directory.
 
 #### Option B - Vendored
 
 ```bash
 cd /path/to/your-component-repo
 git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git v1.0.0 --squash
-cp .devflow/AGENTS.md ./AGENTS.md
 ```
 
 Then point OpenCode at `.devflow/skills/`.
+
+#### Optional - Project overrides
+
+DevFlow does not ship a root `AGENTS.md`. If your component repository needs to override DevFlow's default artifact paths, templates, coding standards, or execution mode, create your own `AGENTS.md` with a `## Project overrides` section in the component repository root; `using-devflow` reads it and lets it override the equivalent defaults. Without it, the defaults baked into `using-devflow` apply.
 
 More setup detail: [`docs/guides/opencode-setup.md`](docs/guides/opencode-setup.md).
 
@@ -203,7 +210,7 @@ Key design choices:
 - **Craft as lenses, not stages.** Quality lenses raise the bar inside existing nodes without adding flow stages or breaking artifact compatibility.
 - **Controlled subagents.** `devflow-router` is the only reviewer dispatcher; `devflow-tdd-implementation` is the only implementer dispatcher.
 - **No self-verification.** Authoring skills write artifacts and hand off; independent reviewers return verdicts and do not edit production artifacts.
-- **Local references.** Each skill owns its `references/` and, where needed, `evals/`; there is no shared `skills/docs/` dependency.
+- **Local references.** Each skill owns its `references/`; there is no shared `skills/docs/` dependency.
 
 ---
 
@@ -278,7 +285,7 @@ devflow/
 └── README.zh-CN.md
 ```
 
-High-risk skills such as `devflow-router`, `devflow-tdd-implementation`, `devflow-test-review`, and `devflow-completion-gate` carry `evals/` directories that enumerate misuse scenarios they must refuse.
+Each skill owns its `SKILL.md` plus a local `references/` directory; the shared conventions (artifact layout, `progress.md` / handoff fields, profiles, and the canonical node list) live once in [`using-devflow`](skills/using-devflow/SKILL.md) and every other skill references them instead of copying boilerplate.
 
 ---
 
