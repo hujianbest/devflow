@@ -1,9 +1,19 @@
 ---
 name: devflow-design-craft
-description: 教 agent 如何把组件设计与 AR 实现设计做好 / 审好——简单性优先、抽象克制、接口契约、SOLID/GRASP 的可判别 tell、嵌入式防御性设计、有质量的方案对比。适用于在 devflow-component-design 或 devflow-ar-design 内部起草 / 修订设计时，或在 devflow-component-design-review / devflow-ar-design-review 评审设计时，把「填章节」升级为「做出 / 认出好设计」。这是质量透镜，不是流程节点：不写 progress/handoff，不产生 review verdict，不替代独立设计评审。
+description: 旧版 DevFlow 2.0 设计 craft 兼容说明。仅在迁移旧引用或理解历史设计质量透镜时使用；新的第三层设计质量以 docs/devflow-internal-quality.md 为准，领域约束使用 automotive-embedded-development，不用于新流程叠加或 runtime handoff。
 ---
 
 # DevFlow 设计匠艺（质量透镜）
+
+## 兼容状态
+
+本 skill 已不再是 DevFlow 第三层“代码内在质量”的主模型。新的设计质量判据迁移到 `docs/devflow-internal-quality.md`；车载嵌入式 / SOA / 实时性等领域内容迁移到 `automotive-embedded-development`。
+
+新工作流不应主动叠加本 skill。若旧文档或旧工件引用本 skill，应按以下方式迁移：
+
+- 通用设计质量 → `docs/devflow-internal-quality.md`
+- 车载嵌入式领域约束 → `automotive-embedded-development`
+- runtime 下一步 → 仍由 `devflow-router` 输出 canonical `devflow-*` node
 
 ## 总览
 

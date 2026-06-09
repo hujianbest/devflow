@@ -5,7 +5,7 @@ description: 当 devflow-tdd-implementation 已完成且新写测试需要在代
 
 # devflow TDD 后测试有效性审查
 
-独立审查 `devflow-tdd-implementation` 已落地的测试用例是否真正有效：覆盖 AR 关键行为 / 边界 / 异常路径 / 嵌入式风险，断言能证明行为而不是仅证明代码被调用，可执行 / 稳定 / 可维护。
+独立审查 `devflow-tdd-implementation` 已落地的测试用例是否真正有效：覆盖 AR 关键行为 / 边界 / 异常路径 / 适用领域风险，断言能证明行为而不是仅证明代码被调用，可执行 / 稳定 / 可维护。
 
 本 skill **不**补写测试、**不**修改生产代码、**不**替开发负责人决定优先级。它产出 verdict + findings + 唯一下一步。
 
@@ -22,7 +22,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 不适用 → 改用：
 
 - 写 / 修测试 → `devflow-tdd-implementation`
-- 评审 C / C++ 代码质量 → `devflow-code-review`
+- 评审代码质量 → `devflow-code-review`
 - 阶段不清 / 证据冲突 → `devflow-router`
 
 ## 硬性门禁
@@ -47,18 +47,18 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 ## 方法原则
 
 - **Post-TDD Test Effectiveness Review**: 独立检查测试是否真正验证了行为，而不是只验证「代码被调用」
-- **Coverage Categories**: 行为覆盖 / 边界覆盖 / 异常覆盖 / 嵌入式风险覆盖
+- **Coverage Categories**: 行为覆盖 / 边界覆盖 / 异常覆盖 / 适用领域风险覆盖
 - **Mutation Mindset**: 默认怀疑——如果改 1 行实现，测试是否能抓到？不能则视为弱断言
 - **Fresh Evidence Verification**: RED / GREEN 证据必须本会话生成、可解释
 - **Mock Boundary Audit**: mock 是否限定在真正边界，是否 mock 了内部纯逻辑或私有函数
-- **Embedded Risk Coverage Check**: NFR 是否被 `embedded-risk` 用例覆盖
+- **Domain Risk Coverage Check**: 适用领域约束是否被测试用例或证据覆盖
 - **Behavior Delta Coverage Check**: `modify` / `remove` rows 是否有 regression / removal 测试证据，且能回指 Existing Behavior / Baseline
 - **Traceability Check**: 每个用例是否回指 requirement row + AR 设计 Test Design Case ID
 - **Separation Of Author / Reviewer**: reviewer 与 implementer 必须不同角色 / subagent
 
-## 质量透镜（Craft）
+## 第二层测试有效性与领域约束
 
-评审测试有效性时，以 `devflow-test-craft` 作为「好测试」的判别标尺（测试金字塔、测状态不测交互、DAMP over DRY、mock 克制、覆盖类型完整性），与本 skill 的有效性判据互补。透镜只提供判别标尺，verdict 仍由本评审节点唯一裁决；reviewer 不改测试。
+测试有效性属于第二层 TDD / 功能正确。评审时使用本 skill 的 fail-first、断言强度、行为覆盖、mock 边界等判据；适用时叠加领域约束 skill（如 `automotive-embedded-development`）检查领域风险是否被实际测试或证据覆盖。`devflow-test-craft` 不再作为第三层内在质量 skill。
 
 ## 工作流
 
@@ -81,7 +81,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 | TC1 Fresh RED / GREEN Validity | RED 是否真失败、GREEN 是否本会话产生、新鲜度锚点完整 |
 | TC2 Behavior & Acceptance Mapping | 测试是否覆盖 AR 关键行为；是否回指 requirement row；是否覆盖 Change Type |
 | TC3 Boundary & Exception Coverage | 边界 / null / 错误路径 / 异常路径覆盖 |
-| TC4 Embedded Risk Coverage | 内存 / 并发 / 实时性 / 资源 / 错误处理 / ABI 是否被 embedded-risk 用例覆盖 |
+| TC4 Domain Risk Coverage | 适用领域风险是否被用例或证据覆盖，并有明确 N/A 理由 |
 | TC5 Mock Boundary Discipline | mock 是否限定真正边界；不 mock 内部纯逻辑 / 私有函数 |
 | TC6 Assertion Strength | 断言能证明行为而不是仅证明代码路径被走过 |
 | TC7 Stability & Maintainability | 测试可独立运行 / 不依赖外部状态 / 命名清晰 / 无 flaky 信号 |
@@ -95,9 +95,9 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 
 | 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
 |---|---|---|---|
-| 7 维度均 ≥ 6、嵌入式风险矩阵被实测覆盖、断言强度足够、无 critical USER-INPUT | `通过` | `devflow-code-review` | `false` |
+| 7 维度均 ≥ 6、适用领域风险被实测覆盖或有明确 N/A 理由、断言强度足够、无 critical USER-INPUT | `通过` | `devflow-code-review` | `false` |
 | findings 可 1-2 轮定向修订 | `需修改` | `devflow-tdd-implementation` | `false` |
-| 测试过于薄弱 / 核心行为未覆盖 / 嵌入式风险大量未覆盖 / findings 无法定向回修 | `阻塞`（内容） | `devflow-tdd-implementation` | `false` |
+| 测试过于薄弱 / 核心行为未覆盖 / 适用领域风险大量未覆盖 / findings 无法定向回修 | `阻塞`（内容） | `devflow-tdd-implementation` | `false` |
 | route / stage / profile / 上游证据冲突 | `阻塞`（workflow） | `devflow-router` | `true` |
 
 ### 5. 写 review 记录并回传
@@ -115,7 +115,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 - 忽略无效 RED / GREEN（一跑就绿、无 fresh evidence）
 - 测试只覆盖 happy path 却给 `通过`
 - `modify` / `remove` 只测新结果，未审查 regression / removal 证据
-- 嵌入式 NFR 未被 embedded-risk 用例覆盖却给 `通过`
+- 适用领域风险未被用例或证据覆盖却给 `通过`
 - mock 越过真正边界却没标 finding
 - 评审中补写测试 / 改生产代码（reviewer 不是 author）
 - 返回多个候选下一步
@@ -126,12 +126,12 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 
 | 话术 | 反驳 |
 |---|---|
-| 「测试都跑通了，效力肯定够」 | 跑通 ≠ 有效。必须按 rubric 验：RED 真失败过、断言证明行为而非证明被调用、覆盖嵌入式风险、mock 边界正确 |
+| 「测试都跑通了，效力肯定够」 | 跑通 ≠ 有效。必须按 rubric 验：RED 真失败过、断言证明行为而非证明被调用、覆盖适用领域风险、mock 边界正确 |
 | 「RED 没真失败过，但 GREEN 通过了」 | 缺 RED 证据 → `需修改`。无失败-修-通过过程的测试不算 TDD 测试 |
 | 「断言只检查 return code，不检查 side effect」 | 断言必须能证明可观察行为；只 assert return code 容易被空实现骗过 → `需修改` |
 | 「mock 越过组件边界没事，反正只是测试」 | mock 边界必须在测试设计章节中已声明且不破组件边界。越界 → `需修改` |
 | 「顺手补两条测试用例」 | reviewer **不**补测试。返回 finding，让 `devflow-tdd-implementation` 修 |
-| 「NFR / 嵌入式风险用例少，但 happy path 都覆盖」 | 嵌入式风险维度任一无用例 → critical finding，verdict ≥ `需修改` |
+| 「NFR / 领域风险用例少，但 happy path 都覆盖」 | 适用领域风险缺用例或证据 → critical finding，verdict ≥ `需修改` |
 | 「修改旧行为的新结果测过了，旧行为不用再看」 | `modify` 必须审 regression 或批准破坏证据；`remove` 必须审旧入口删除后的可观察语义 |
 | 「下一步给两个候选让父会话选」 | 必须返回**唯一** `next_action_or_recommended_skill` |
 
@@ -140,7 +140,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 | 错误 | 修复 |
 |---|---|
 | 看到「全绿」就给 `通过` | 检查 RED 是否真失败、断言是否能 mutation-kill |
-| NFR-001（实时性）只在 happy path 验过 | 标 critical finding，verdict ≥ `需修改` |
+| NFR-001（领域风险）只在 happy path 验过 | 标 critical finding，verdict ≥ `需修改` |
 | 修改 / 删除既有行为没有 regression / removal 证据 | 标 important/critical finding，回 `devflow-tdd-implementation` |
 | 测试 mock 了模块内部纯逻辑 | 标 important finding，要求改 mock 边界 |
 
@@ -150,7 +150,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 - [ ] precheck 结果显式记录
 - [ ] 7 维度评分完整、findings 已分类
 - [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
-- [ ] 嵌入式风险覆盖矩阵已被实际测试落实情况已显式审查
+- [ ] 适用领域风险覆盖矩阵已被实际测试或证据落实情况显式审查
 - [ ] `modify` / `remove` 的 regression / removal evidence 已映射到 Existing Behavior / Baseline
 - [ ] 结构化摘要已回传父会话
 - [ ] 未顺手修改测试 / 生产代码
@@ -193,11 +193,11 @@ reroute_via_router: true | false
 
 ## 本地测试设计契约摘录
 
-本 skill 检查测试设计时，要求每个 case 包含：case id、requirement row / design anchor、behavior under test、preconditions、inputs or stimuli、expected output or observable effect、mock/stub/simulation boundary、verification command or evidence path、embedded risk covered。DevFlow 不使用单独的 `test-design.md`；测试设计位于 AR design 中。
+本 skill 检查测试设计时，要求每个 case 包含：case id、requirement row / design anchor、behavior under test、preconditions、inputs or stimuli、expected output or observable effect、mock/stub/simulation boundary、verification command or evidence path、applicable risk covered。DevFlow 不使用单独的 `test-design.md`；测试设计位于 AR design 中。
 
 ## 本地证据覆盖摘录
 
-检查测试时，把 evidence 映射到 AR design cases 与 embedded risks：unit、integration/simulation、build、static analysis 以及任何 regression evidence。每条 evidence 必须包含 command、environment/config、result、freshness anchor。
+检查测试时，把 evidence 映射到 AR design cases 与适用领域风险：unit、integration/simulation、build、static analysis 以及任何 regression evidence。每条 evidence 必须包含 command、environment/config、result、freshness anchor。
 
 ## DevFlow 约定
 
@@ -215,5 +215,6 @@ reroute_via_router: true | false
 | 文件 | 用途 |
 |---|---|
 | `references/test-review-rubric.md` | 7 维度 rubric + rule IDs（TC1-TC7） |
-| `references/team-test-review-rubric.md` | 团队 UT 审查准则完整继承版 |
+| `references/team-test-review-rubric.md` | 团队测试审查准则完整继承版 |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
 | Local Test Design Contract Excerpt | 测试设计章节契约（用例最小字段） |

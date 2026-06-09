@@ -1,5 +1,7 @@
 # devflow Embedded C / C++ Risk Checklist
 
+> 兼容说明：本文件是旧版 `devflow-code-review` 的嵌入式 C / C++ 速查清单，不再作为 DevFlow Core 默认判据。C 规则迁移到 `skills/c-coding-standards/SKILL.md`，C++ 规则迁移到 `skills/cpp-coding-standards/SKILL.md`，车载嵌入式领域约束迁移到 `skills/automotive-embedded-development/SKILL.md`。
+
 > 配套 `devflow-code-review/SKILL.md`。嵌入式 C / C++ 风险检视的速查清单，按维度展开常见 finding。
 
 ## 内存

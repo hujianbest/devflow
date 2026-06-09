@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Changed — DevFlow Core architecture
+
+- Reframed DevFlow around the three quality layers from `docs/devflow-philosophy.md`: SDD for intent correctness, TDD for functional correctness, and a rewritten internal-quality layer for design/code quality.
+- Added `docs/devflow-core-architecture.md` as the implementation architecture bridge from philosophy to skills, including core workflow, extension skills, platform adapters, and v1 artifact compatibility.
+- Added `docs/devflow-internal-quality.md` as the new third-layer model. The old `devflow-design-craft`, `devflow-coding-craft`, and `devflow-test-craft` are now compatibility/migration references, not the primary third-layer architecture.
+- Added first extension skills:
+  - `c-coding-standards`
+  - `cpp-coding-standards`
+  - `automotive-embedded-development`
+- Updated `using-devflow` and `devflow-router` so coding standards and domain constraints are discovered as non-canonical constraints. They never become `Current Stage` or `Next Action Or Recommended Skill`.
+
+### Migration — craft layer
+
+- `devflow-design-craft`: generic design quality moves to `docs/devflow-internal-quality.md`; automotive/SOA content moves to `automotive-embedded-development`.
+- `devflow-coding-craft`: generic code quality moves to `docs/devflow-internal-quality.md`; C rules move to `c-coding-standards`; C++ rules move to `cpp-coding-standards`.
+- `devflow-test-craft`: test effectiveness moves back to the second-layer TDD / `devflow-test-review` system and is no longer treated as third-layer internal quality.
+
 ### Added — flexible review command
 
 - `commands/devflow-review.md` (`/devflow-review`) — a **flexible review entry** that takes the user's request, picks the matching review skill(s) (`devflow-spec-review`, `devflow-component-design-review`, `devflow-ar-design-review`, `devflow-test-review`, `devflow-code-review`), and runs an **independent** review to produce review content. It has two run modes:

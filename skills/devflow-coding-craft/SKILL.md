@@ -1,9 +1,20 @@
 ---
 name: devflow-coding-craft
-description: 教 agent 如何把代码写好——薄垂直切片、简单性优先（Rule 0）、范围纪律、可读性与命名、保持可编译 / 可回退、嵌入式防御性编码。适用于在 devflow-tdd-implementation 的 GREEN / REFACTOR 步骤内部把「让测试变绿」升级为「写出干净、简单、可维护的实现」。这是质量透镜，不是流程节点：不写 progress/handoff，不产生 review verdict，不替代独立代码评审。
+description: 旧版 DevFlow 2.0 coding craft 兼容说明。仅在迁移旧引用或理解历史代码质量透镜时使用；新的第三层代码质量以 docs/devflow-internal-quality.md 为准，C/C++ 规则分别使用 c-coding-standards 和 cpp-coding-standards。
 ---
 
 # DevFlow 编码匠艺（质量透镜）
+
+## 兼容状态
+
+本 skill 已不再是 DevFlow 第三层“代码内在质量”的主模型。新的通用代码质量判据迁移到 `docs/devflow-internal-quality.md`；C 语言规则迁移到 `c-coding-standards`；C++ 语言规则迁移到 `cpp-coding-standards`；车载嵌入式领域约束迁移到 `automotive-embedded-development`。
+
+新工作流不应主动叠加本 skill。若旧文档或旧工件引用本 skill，应按以下方式迁移：
+
+- 通用代码质量 → `docs/devflow-internal-quality.md`
+- C 语言规范 → `c-coding-standards`
+- C++ 语言规范 → `cpp-coding-standards`
+- 车载领域约束 → `automotive-embedded-development`
 
 ## 总览
 

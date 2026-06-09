@@ -1,6 +1,6 @@
-# Team Code Review Checklist
+# Team Code Review Checklist (Legacy Example)
 
-> 配套 `devflow-code-review/SKILL.md`。本文件完整继承旧 MDC 项目通用代码检视检查清单，用于补充 `code-review-rubric.md` 的 CR1-CR8 评分维度。
+> 兼容说明：本文件继承旧 MDC / C++ 项目代码检视清单，只能作为项目显式启用时的 legacy example。DevFlow Core 的默认代码评审判据见 `code-review-rubric.md`、`docs/devflow-internal-quality.md`、`c-coding-standards`、`cpp-coding-standards` 和适用领域约束 skill。不要把本文件中的 C++、MDC、HI_* 类型或项目特定 mock 规则当作通用默认规则。
 
 ## 一、代码质量检查点
 

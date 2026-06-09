@@ -1,32 +1,34 @@
 ---
 name: using-devflow
-description: 发现并调用 DevFlow skills，并承载跨 skill 永远生效的行为宪法。适用于会话开始时，或需要判断当前任务应使用哪项 DevFlow skill / 该叠加哪个质量透镜时。这是约束 DevFlow skills 如何被发现和组合的元 skill；运行时证据路由归 devflow-router，质量提升归 devflow-*-craft 透镜。
+description: 发现并调用 DevFlow skills，并承载跨 skill 永远生效的行为宪法。适用于会话开始时，或需要判断当前任务应使用哪项 DevFlow flow node、编码规范 skill 或领域约束 skill 时；运行时证据路由归 devflow-router。
 ---
 
 # 使用 DevFlow
 
 ## 总览
 
-DevFlow Skills 是一组按开发阶段组织的工程工作流技能，每个 skill 编码了一套资深工程师会遵循的具体流程。本元 skill 帮你 **发现** 当前任务该用哪个 DevFlow skill、该叠加哪个质量透镜，并承载 **跨所有 skill 永远生效的行为宪法**。
+DevFlow Skills 是一组按三层质量模型组织的工程工作流技能：SDD 保证意图正确，TDD 保证功能正确，第三层代码内在质量保证设计和代码值得长期持有。本元 skill 帮你 **发现** 当前任务该用哪个 DevFlow flow node、是否需要叠加编码规范 skill / 领域约束 skill，并承载 **跨所有 skill 永远生效的行为宪法**。
 
 `using-devflow` 只承担入口发现与行为宪法。它**不做**运行时证据路由（归 `devflow-router`），**不产生** review/gate 结论，**不替**团队角色拍板。
 
-## DevFlow 的三层关系（必须分清）
+## DevFlow 的层次关系（必须分清）
 
-DevFlow 2.0 有三类协作但职责不同的 skill。混淆它们是最常见的失败：
+DevFlow 有核心流程、第三层内在质量扩展、平台适配三类能力。混淆它们是最常见的失败：
 
 | 层 | 谁 | 回答 | 关键约束 |
 |---|---|---|---|
-| **Meta（本 skill）** | `using-devflow` | 该用哪个 skill / 该叠加哪个透镜 + 行为宪法 | 不路由、不持运行时状态、永不写入 handoff |
+| **Meta（本 skill）** | `using-devflow` | 该用哪个 flow node / 该叠加哪些扩展 skill + 行为宪法 | 不路由、不持运行时状态、永不写入 handoff |
 | **Runtime Router** | `devflow-router` | 依据工件证据决定唯一 canonical 下一步、profile、reviewer 派发 | 运行时唯一路由权威；happy path 之外的恢复 / 冲突归它 |
-| **Flow 节点（canonical）** | `devflow-specify` … `devflow-finalize` | 把上游 object 转成下游 object，交独立评审 | 写 progress/handoff；可在工作流内部叠加 craft 透镜 |
-| **Craft 透镜（非 canonical）** | `devflow-design-craft` / `devflow-coding-craft` / `devflow-test-craft` | 怎么把设计 / 代码 / 测试**做好** | 由 flow 节点内部调用；**不**写 progress/handoff、**不**产 verdict、**不**改流程拓扑 |
+| **Flow 节点（canonical）** | `devflow-specify` … `devflow-finalize` | 把上游 object 转成下游 object，交独立评审 | 写 progress/handoff；只写 canonical next action |
+| **内在质量核心** | `docs/devflow-internal-quality.md` | 通用设计质量 / 代码质量判断 | 不写 progress/handoff、不产 verdict、不改流程拓扑 |
+| **编码规范 skill** | `c-coding-standards` / `cpp-coding-standards` | 语言级编码规范、工具链、静态分析约束 | 不写 progress/handoff、不产 verdict、不改流程拓扑 |
+| **领域约束 skill** | `automotive-embedded-development` | 领域风险、架构约束、证据要求及全流程投射 | 不写 progress/handoff、不产 verdict、不改流程拓扑 |
 
-> 一句话：**meta 发现，router 路由，flow 推进，craft 提质。** craft 与 meta 都永远不出现在 `next_action_or_recommended_skill`。
+> 一句话：**meta 发现，router 路由，flow 推进，第三层扩展提供质量约束。** meta、编码规范 skill、领域约束 skill 都永远不出现在 `next_action_or_recommended_skill`。
 
 ## 技能发现
 
-任务到达时，先识别开发阶段并加载对应 skill。下面是 discovery map，不是运行时状态机；任何需要读取工件状态来决定下一节点的场景，都进入 `devflow-router`。
+任务到达时，先识别开发阶段，再识别是否需要第三层扩展。下面是 discovery map，不是运行时状态机；任何需要读取工件状态来决定下一节点的场景，都进入 `devflow-router`。
 
 ```text
 任务到达
@@ -41,25 +43,25 @@ DevFlow 2.0 有三类协作但职责不同的 skill。混淆它们是最常见�
     |   -> devflow-router -> devflow-spec-review reviewer
     |
     |-- 编写或修订组件实现设计
-    |   -> devflow-component-design        ⟲ 叠加 devflow-design-craft
+    |   -> devflow-component-design        ⟲ 叠加内在质量核心 + 适用编码规范 / 领域约束
     |
     |-- 独立审查组件实现设计
     |   -> devflow-router -> devflow-component-design-review reviewer
     |
     |-- 编写或修订 AR 实现设计和测试设计
-    |   -> devflow-ar-design               ⟲ 叠加 devflow-design-craft + devflow-test-craft
+    |   -> devflow-ar-design               ⟲ 设计叠加内在质量核心；测试设计服务第二层 TDD
     |
     |-- 独立审查 AR 实现设计
     |   -> devflow-router -> devflow-ar-design-review reviewer
     |
     |-- 基于已批准设计做 TDD 实现
-    |   -> devflow-tdd-implementation      ⟲ 叠加 devflow-coding-craft + devflow-test-craft
+    |   -> devflow-tdd-implementation      ⟲ 叠加适用编码规范 / 领域约束
     |
     |-- 独立审查 TDD 后测试有效性
-    |   -> devflow-router -> devflow-test-review reviewer   ⟲ 用 devflow-test-craft 作判别标准
+    |   -> devflow-router -> devflow-test-review reviewer   ⟲ 第二层 TDD / 测试有效性判别
     |
-    |-- 独立审查 C / C++ 代码质量
-    |   -> devflow-router -> devflow-code-review reviewer   ⟲ 用 devflow-coding-craft 作判别标准
+    |-- 独立审查代码质量
+    |   -> devflow-router -> devflow-code-review reviewer   ⟲ 内在质量核心 + 适用编码规范 / 领域约束
     |
     |-- 判断完成证据是否足够
     |   -> devflow-router -> devflow-completion-gate
@@ -71,11 +73,21 @@ DevFlow 2.0 有三类协作但职责不同的 skill。混淆它们是最常见�
         -> devflow-router -> devflow-finalize
 ```
 
-`⟲ 叠加` = 该 flow 节点在其工作流内部调用对应 craft 透镜以提升产物质量；叠加透镜**不改变**流程拓扑、**不**写入 handoff。
+`⟲ 叠加` = flow 节点读取内在质量核心、编码规范 skill 或领域约束 skill 的判据。叠加内容不改变流程拓扑、不写入 handoff、不产 verdict。
+
+## 第三层扩展发现
+
+| 信号 | 叠加 skill |
+|---|---|
+| C 源码、头文件、C 单元测试、MISRA C、C 静态分析 | `c-coding-standards` |
+| C++ 源码、C++ 测试、RAII、对象生命周期、模板、ABI、AUTOSAR C++ | `cpp-coding-standards` |
+| 车载嵌入式、ASIL、实时性、SOA/MDC、资源预算、车载 evidence | `automotive-embedded-development` |
+
+扩展 skill 可以同时叠加。例如车载 C++ work item 通常叠加 `cpp-coding-standards` 与 `automotive-embedded-development`。
 
 ## DevFlow 行为宪法（Core Operating Behaviors）
 
-这些行为适用于所有 DevFlow skills（flow 与 craft），不可协商。它们就是「资深工程师的默认底色」。
+这些行为适用于所有 DevFlow skills（flow、编码规范、领域约束与平台适配），不可协商。它们就是「资深工程师的默认底色」。
 
 ### 1. 工件优先
 
@@ -105,7 +117,7 @@ DevFlow 是 artifact-first 工作流。决策依据来自磁盘工件：`feature
 
 ### 5. 强制保持简单
 
-你的自然倾向是过度复杂化，主动抵抗。完成实现前问：能更少代码吗？抽象配得上复杂度吗？Staff 工程师会不会说「为什么不直接……」？优先朴素、明显、可验证的方案。（设计 / 编码层的具体判断见 `devflow-design-craft` / `devflow-coding-craft`。）
+你的自然倾向是过度复杂化，主动抵抗。完成实现前问：能更少代码吗？抽象配得上复杂度吗？Staff 工程师会不会说「为什么不直接……」？优先朴素、明显、可验证的方案。（设计 / 编码层的具体判断见 `docs/devflow-internal-quality.md` 与适用的编码规范 / 领域约束 skill。）
 
 ### 6. 保持范围纪律
 
@@ -117,7 +129,7 @@ DevFlow 是 artifact-first 工作流。决策依据来自磁盘工件：`feature
 
 ### 8. 保持角色隔离
 
-Authoring leaf 不评审自己的输出。review 节点必须由 `devflow-router` 派发独立 reviewer subagent；`devflow-tdd-implementation` 才能派发 implementer subagent。craft 透镜**不**派发任何 subagent、**不**自封评审。
+Authoring leaf 不评审自己的输出。review 节点必须由 `devflow-router` 派发独立 reviewer subagent；`devflow-tdd-implementation` 才能派发 implementer subagent。编码规范 / 领域约束 skill **不**派发任何 subagent、**不**自封评审。
 
 ### 9. 不替团队角色拍板
 
@@ -129,45 +141,45 @@ DevFlow 不做业务、范围、优先级、架构边界或接口契约决策。
 2. 在入口 skill 中消费 review / gate verdict。
 3. 在入口 skill 中决定 Workflow Profile / Execution Mode / component-impact / hotfix 分支。
 4. 从父会话直接调用 review skill，而不是让 `devflow-router` 派发独立 reviewer。
-5. 把 `using-devflow` 或任何 `devflow-*-craft` 透镜写进 `Next Action Or Recommended Skill` 或 handoff 字段。
+5. 把 `using-devflow`、编码规范 skill 或领域约束 skill 写进 `Next Action Or Recommended Skill` 或 handoff 字段。
 6. 发现证据冲突时按聊天记忆推进。
 7. 因为用户说 `auto` 就跳过 review / gate / approval / evidence。
 8. component-impact 缺 `docs/component-design.md` 时仍进入 AR 设计或 TDD。
 9. 跳过验证，因为「看起来对」。
-10. 把 craft 透镜误当成新的流程门禁或流程阶段（它只提质，不裁决、不路由）。
+10. 把编码规范 / 领域约束 skill 误当成新的流程门禁或流程阶段（它们只提供约束，不裁决、不路由）。
 
 ## Skill 规则
 
 1. **开始工作前检查适用 skill。** Skills 编码了防止常见错误的流程与判断。
 2. **Skills 是 workflow / 判断，不是建议。** 按步骤执行，不跳 hard gate、review 或 verification。
-3. **入口只做 discovery。** `using-devflow` 识别该加载哪个 skill / 叠加哪个透镜；凡需按工件状态判断下一节点，交 `devflow-router`。
+3. **入口只做 discovery。** `using-devflow` 识别该进入哪个 flow node、叠加哪些编码规范 / 领域约束；凡需按工件状态判断下一节点，交 `devflow-router`。
 4. **Runtime routing 只属于 router。** profile、execution mode、canonical next node、reviewer dispatch、review / gate recovery 的唯一 runtime authority 是 `devflow-router`。
-5. **多个 skills 可以组合。** 一个 AR 可能依次经历 `devflow-specify → spec-review → ar-design → ar-design-review → tdd-implementation → test-review → code-review → completion-gate → finalize`；其间设计 / 编码 / 测试节点**叠加对应 craft 透镜**。能否从一节点进入下一 runtime 节点由 `devflow-router` 依证据决定。
+5. **多个 skills 可以组合。** 一个 AR 可能依次经历 `devflow-specify → spec-review → ar-design → ar-design-review → tdd-implementation → test-review → code-review → completion-gate → finalize`；其间按项目与工件叠加内在质量核心、编码规范和领域约束。能否从一节点进入下一 runtime 节点由 `devflow-router` 依证据决定。
 6. **不确定时进入 router。** 阶段、profile、工件新鲜度、verdict、任务队列、组件影响或 hotfix 信号不清时，加载 `devflow-router`。
-7. **写设计 / 写码 / 写测试时主动叠加 craft 透镜。** 不要只满足「章节齐全 / 测试通过」；用透镜把产物提升到「设计得好 / 代码干净 / 测试有效」。
+7. **写设计 / 写码 / 评审 / 门禁时主动叠加第三层扩展。** 不要只满足「章节齐全 / 测试通过」；用内在质量核心、编码规范和领域约束把产物提升到长期可持有。
 
 ## 生命周期序列
 
-完整 feature 或 work item 的典型 DevFlow sequence（不是每个任务都需要每个节点；router 按证据恢复和裁剪运行时路径；craft 透镜按需叠加）：
+完整 feature 或 work item 的典型 DevFlow sequence（不是每个任务都需要每个节点；router 按证据恢复和裁剪运行时路径；第三层扩展按需叠加）：
 
 ```text
 AR / CHANGE implementation:
 1. devflow-specify                  -> 澄清需求规格
 2. devflow-spec-review              -> 独立审查规格
-3. devflow-component-design         -> component-impact 时插入  ⟲ devflow-design-craft
+3. devflow-component-design         -> component-impact 时插入  ⟲ 内在质量核心 / 领域约束
 4. devflow-component-design-review  -> component-impact 时插入
-5. devflow-ar-design                -> AR 实现设计 + 测试设计   ⟲ devflow-design-craft + devflow-test-craft
+5. devflow-ar-design                -> AR 实现设计 + 测试设计   ⟲ 内在质量核心；测试设计服务第二层 TDD
 6. devflow-ar-design-review         -> 独立审查 AR 设计
-7. devflow-tdd-implementation       -> TDD 实现                ⟲ devflow-coding-craft + devflow-test-craft
-8. devflow-test-review              -> 独立审查测试有效性       ⟲ 以 devflow-test-craft 为判别标准
-9. devflow-code-review              -> 独立代码检视            ⟲ 以 devflow-coding-craft 为判别标准
+7. devflow-tdd-implementation       -> TDD 实现                ⟲ 编码规范 / 领域约束
+8. devflow-test-review              -> 独立审查测试有效性       ⟲ 第二层 TDD / 测试有效性判别
+9. devflow-code-review              -> 独立代码检视            ⟲ 内在质量核心 / 编码规范 / 领域约束
 10. devflow-completion-gate         -> 完成证据判断
 11. devflow-finalize                -> implementation closeout
 
 DTS / hotfix:
 1. devflow-router                   -> 识别 hotfix profile
 2. devflow-problem-fix              -> 复现、根因、最小安全修复边界
-3. devflow-ar-design 或 devflow-tdd-implementation   ⟲ 相应 craft 透镜
+3. devflow-ar-design 或 devflow-tdd-implementation   ⟲ 适用编码规范 / 领域约束
 4. devflow-test-review
 5. devflow-code-review
 6. devflow-completion-gate
@@ -186,15 +198,15 @@ DTS / hotfix:
 | Review | `devflow-component-design-review` | 独立审查组件实现设计 |
 | Design | `devflow-ar-design` | 编写 AR 实现设计，并嵌入测试设计章节 |
 | Review | `devflow-ar-design-review` | 独立审查 AR 实现设计和测试设计 |
-| Build | `devflow-tdd-implementation` | 基于已批准设计做 C/C++ TDD 实现 |
+| Build | `devflow-tdd-implementation` | 基于已批准设计做 TDD 实现 |
 | Review | `devflow-test-review` | 独立审查 TDD 后测试用例有效性 |
-| Review | `devflow-code-review` | 独立检查 C/C++ 质量、SOA 边界和嵌入式风险 |
+| Review | `devflow-code-review` | 独立检查代码质量、设计一致性和适用扩展约束 |
 | Gate | `devflow-completion-gate` | 判断 evidence bundle 是否满足完成条件 |
 | Fix | `devflow-problem-fix` | 处理缺陷复现、根因、hotfix 边界和回流 |
 | Close | `devflow-finalize` | 收口、同步长期记录并形成 handoff |
-| **Craft** | `devflow-design-craft` | 质量透镜：怎么把设计做好（简单性 / 抽象克制 / 接口契约 / 嵌入式防御） |
-| **Craft** | `devflow-coding-craft` | 质量透镜：怎么把代码写好（Rule 0 / 薄切片 / 范围纪律 / 可读性） |
-| **Craft** | `devflow-test-craft` | 质量透镜：怎么把测试写好（金字塔 / 测状态不测交互 / DAMP / mock 克制） |
+| Internal Quality | `docs/devflow-internal-quality.md` | 第三层内在质量核心：通用设计质量与代码质量 |
+| Coding Standards | `c-coding-standards` / `cpp-coding-standards` | 第三层编码规范扩展 |
+| Domain Constraints | `automotive-embedded-development` | 第三层领域约束扩展，覆盖全流程 |
 
 ## DevFlow 共同约定（Shared Conventions）
 
@@ -228,7 +240,7 @@ DTS / hotfix:
 
 ### `progress.md` canonical 字段
 
-`Work Item Type`（AR/DTS/CHANGE）、`Work Item ID`、`Owning Component`（必填）、`Workflow Profile`、`Execution Mode`、`Current Stage`（canonical 节点；**craft 透镜不写入**）、`Pending Reviews And Gates`、`Next Action Or Recommended Skill`（仅一个 canonical 节点）、`Blockers`、`Last Updated`。实现 profile 还需：`Task Plan Path`、`Task Board Path`、`Current Active Task`、`Implementer Dispatch Status`、`Implementer Context Pack`、`Implementation Report`。
+`Work Item Type`（AR/DTS/CHANGE）、`Work Item ID`、`Owning Component`（必填）、`Workflow Profile`、`Execution Mode`、`Current Stage`（canonical 节点；扩展 skill 不写入）、`Pending Reviews And Gates`、`Next Action Or Recommended Skill`（仅一个 canonical 节点）、`Blockers`、`Last Updated`。实现 profile 还需：`Task Plan Path`、`Task Board Path`、`Current Active Task`、`Implementer Dispatch Status`、`Implementer Context Pack`、`Implementation Report`。
 
 ### Handoff 字段
 
@@ -253,7 +265,7 @@ DTS / hotfix:
 
 13 个 canonical 工作节点（`Current Stage` / `next_action_or_recommended_skill` 只能取这些）：`devflow-router`、`devflow-specify`、`devflow-spec-review`、`devflow-component-design`、`devflow-component-design-review`、`devflow-ar-design`、`devflow-ar-design-review`、`devflow-tdd-implementation`、`devflow-test-review`、`devflow-code-review`、`devflow-completion-gate`、`devflow-finalize`、`devflow-problem-fix`。
 
-**非 canonical（不进 progress/handoff）**：`using-devflow`（meta）、`devflow-design-craft` / `devflow-coding-craft` / `devflow-test-craft`（质量透镜）。
+**非 canonical（不进 progress/handoff）**：`using-devflow`（meta）、`c-coding-standards`、`cpp-coding-standards`、`automotive-embedded-development`、平台适配文档、旧 craft 兼容说明。
 
 ### Promotion 规则
 
@@ -266,12 +278,12 @@ review 必须由 `devflow-router` 派发**独立 reviewer subagent**，不内联
 ## DevFlow 适配约束
 
 - `using-devflow` 是 public entry，永远不是合法 runtime next action。
-- `devflow-*-craft` 是质量透镜，同样永远不是合法 runtime next action。
-- `next_action_or_recommended_skill` 必须是上文「DevFlow 共同约定 → Canonical 节点清单」中的 canonical runtime node，不能是 `using-devflow`、craft 透镜或自由文本。
+- 编码规范 skill、领域约束 skill 和旧 craft 兼容说明永远不是合法 runtime next action。
+- `next_action_or_recommended_skill` 必须是上文「DevFlow 共同约定 → Canonical 节点清单」中的 canonical runtime node，不能是 `using-devflow`、扩展 skill 或自由文本。
 - Legal profiles：`standard` / `component-impact` / `hotfix` / `lightweight`；profile 判定由 `devflow-router` 执行。
 - Legal execution modes：`interactive` / `auto`；`auto` 不跳过任何 review / gate / approval / evidence。
 - DevFlow 处理 AR / DTS / CHANGE work item；profile 判定与节点路由由 `devflow-router` 执行。
-- 项目 `AGENTS.md` 与各 leaf skill 的 hard gates 不能被入口 discovery 或 craft 透镜削弱。
+- 项目 `AGENTS.md` 与各 leaf skill 的 hard gates 不能被入口 discovery、编码规范 skill 或领域约束 skill 削弱。
 
 ## 支撑参考
 
@@ -282,4 +294,5 @@ review 必须由 `devflow-router` 派发**独立 reviewer subagent**，不内联
 | `references/devflow-progress-template.md` | 通用 progress.md 模板（跨 skill 共享） |
 | `references/devflow-traceability-template.md` | 通用 traceability.md 模板（跨 skill 共享） |
 | `skills/devflow-router/SKILL.md` | 权威 runtime routing、恢复编排与 reviewer dispatch |
-| `docs/devflow-2.0-design-spec.md` | DevFlow 2.0 设计说明书（三层关系与匠艺注入的依据） |
+| `docs/devflow-core-architecture.md` | DevFlow Core 架构说明（三层质量模型、核心流程、扩展 skill 与平台适配边界） |
+| `docs/devflow-internal-quality.md` | 第三层代码内在质量新模型 |

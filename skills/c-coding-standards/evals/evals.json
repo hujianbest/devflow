@@ -1,0 +1,15 @@
+{
+  "skill": "c-coding-standards",
+  "scenarios": [
+    {
+      "id": "c-not-cpp-not-domain",
+      "prompt": "Review a C module that uses macros, raw pointers, malloc/free, and MISRA C checks.",
+      "expected": [
+        "applies C pointer, macro, memory, resource, and MISRA C rules",
+        "does not apply C++ RAII/template rules",
+        "does not make automotive domain decisions",
+        "does not produce a runtime next action"
+      ]
+    }
+  ]
+}

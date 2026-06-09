@@ -132,12 +132,12 @@ devflow 默认每个 work item 一次 finalize，只有在 task-board 中所有 
   - 工作项元数据（type / id / 组件 / profile / execution mode / 报告日期）+ closeout verdict badge + 1 句话 headline
   - 汇总卡片（已完成任务数、测试通过 / 总数、覆盖率摘要、review 通过 / 总数）
   - 评审与门禁时间线（所有 canonical review / gate 节点 + verdict + 记录路径 + 关键发现）
-  - 已完成任务表（来自 task-board.md，含 done / cancelled）；测试与构建证据表（unit / integration / static-analysis / build / coverage 命令、退出码、摘要、新鲜度锚点）；行为覆盖矩阵（每个 Test Design Case ID × Coverage Type × 状态）；嵌入式风险审计表（7 个维度 status）
+  - 已完成任务表（来自 task-board.md，含 done / cancelled）；测试与构建证据表（unit / integration / static-analysis / build / coverage 命令、退出码、摘要、新鲜度锚点）；行为覆盖矩阵（每个 Test Design Case ID × Coverage Type × 状态）；适用约束审计表（编码规范 / 领域约束）
   - 长期资产同步表（与 closeout.md `Long-Term Assets Sync` 一致；项目未启用的可选资产显式 `N/A（项目未启用）`）
   - Handoff（next_action_or_recommended_skill / 分支或候选清单 / 团队同步说明 / 未关闭风险）
 - **覆盖率字段填法**：
   - 若 `evidence/coverage/` 提供数值（line / branch / function 任一）→ 主卡片显示百分比，`SUMMARY_COVERAGE_DETAIL` 写「line X% / branch Y%」并附证据路径
-  - 若仅有行为覆盖（happy / boundary / exception / embedded-risk）→ 主卡片写「按行为覆盖」，detail 写「happy/boundary/exception/embedded-risk 全覆盖」或列出缺失类别
+  - 若仅有行为覆盖（happy / boundary / exception / applicable-risk）→ 主卡片写「按行为覆盖」，detail 写「happy/boundary/exception/applicable-risk 全覆盖」或列出缺失类别
   - 都没有 → 主卡片写「未提供」，detail 写「项目未要求覆盖率证据」，行为覆盖矩阵仍按 AR 设计 Test Design Case ID 渲染
 - **样式不可改**：模板的 `<style>` 与结构是团队级视觉规范，不要在单个工作项渲染里改色 / 改字体 / 改栅格；如需团队定制，在团队 `AGENTS.md` 中声明覆盖文件路径，由 router 读取。
 - **报告生成失败 → 回步骤 5**：HTML 不可解析 / 占位符未替换完 / 章节裁剪错误 → 视为 closeout pack 不完整，回到步骤 5 修订 closeout.md 后重渲。

@@ -1,5 +1,7 @@
 # DTS 工作项 README 模板
 
+> 兼容说明：DevFlow 的通用 work item README 模板以 `skills/using-devflow/references/devflow-work-item-readme-template.md` 为主。本文件仅作为 DTS / hotfix 的入口索引覆盖示例；新增字段或 schema 变更必须先更新共享模板。
+
 使用说明：
 
 - 默认保存路径：`features/DTS<id>-<slug>/README.md`。

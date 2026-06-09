@@ -51,20 +51,21 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 - **Requirements Traceability**: 设计章节回指 requirement.md 的 FR / NFR / IFR rows
 - **Behavior Delta Awareness**: 设计必须消费 requirement row 的 `Change Type` 与 `Existing Behavior / Baseline`；`modify` / `remove` 需要显式说明兼容、迁移、回归和删除语义
 - **SOLID / GRASP**: 职责清晰、低耦合、高内聚、可测试性
-- **C / C++ Defensive Design**: 内存、生命周期、错误处理、并发、实时性、资源释放、ABI / API 兼容
+- **Internal Quality Design**: 按 `docs/devflow-internal-quality.md` 检查设计质量、代码质量边界、接口契约、可维护性和演进成本
+- **Applicable Constraints Conformance**: 按适用编码规范 skill 与领域约束 skill 消费语言/领域约束；不在本节点内硬编码 C/C++ 或车载默认语境
 - **Component Design Conformance**: 与 `docs/component-design.md` 的对 AR 设计的约束保持一致；不重新论证组件级决策
 - **Design Options Before Draft**: 正式起草前先列 2-3 个代码层方案、trade-off、推荐项与确认状态
 - **Template-Constrained Design**: 文档结构由团队模板决定（`references/devflow-ar-design-template.md`，留空待团队补齐）
-- **Test Design Before Implementation**: 测试设计章节先于 TDD；用例覆盖 AR 关键行为、边界、异常路径、嵌入式风险
+- **Test Design Before Implementation**: 测试设计章节先于 TDD；用例覆盖 AR 关键行为、边界、异常路径和适用领域风险
 
-## 质量透镜（Craft）
+## 内在质量与扩展约束
 
-本节点产出 AR 实现设计与测试设计章节时，在工作流内部叠加两个质量透镜，把「章节填齐」提升为「设计得好、测试有效」：
+本节点产出 AR 实现设计与测试设计章节时，分别消费第三层内在质量和第二层 TDD 判据：
 
-- 步骤 3「方案选择 checkpoint」与步骤 5「起草代码层设计」→ 叠加 `devflow-design-craft`（简单性优先、抽象克制、接口契约与错误语义、SOLID/GRASP 可判别 tell、嵌入式防御性设计、有质量的方案对比）。
-- 步骤 6「起草测试设计章节」→ 叠加 `devflow-test-craft`（测试金字塔、测状态不测交互、覆盖类型、mock 克制）。
+- 步骤 3「方案选择 checkpoint」与步骤 5「起草代码层设计」→ 使用 `docs/devflow-internal-quality.md` 作为通用内在质量判据，并叠加适用的编码规范 / 领域约束 skill。
+- 步骤 6「起草测试设计章节」→ 服务第二层 TDD / test-review，确保测试能驱动功能正确；适用领域风险由领域约束 skill 投射。
 
-透镜只提升产物质量，**不改变**本节点的硬性门禁、模板约束、组件边界停下规则或独立评审流程；它不写 progress/handoff、不产生 verdict。
+这些约束只提升产物质量，**不改变**本节点的硬性门禁、模板约束、组件边界停下规则或独立评审流程；它们不写 progress/handoff、不产生 verdict。
 
 ## 工作流
 
@@ -101,13 +102,13 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 
 ### 5. 起草代码层设计
 
-按 Code-Level Design + SOLID / GRASP + C / C++ Defensive Design 写 `features/<id>/ar-design-draft.md`。具体结构必须遵循 `references/devflow-ar-design-template.md` 的团队章节，不再使用 devflow 简化骨架。至少完整覆盖：
+按 Code-Level Design + Internal Quality Design + Applicable Constraints Conformance 写 `features/<id>/ar-design-draft.md`。具体结构必须遵循 `references/devflow-ar-design-template.md` 的团队章节，不再使用 devflow 简化骨架。至少完整覆盖：
 
 - **1 AR 概述**：Work Item ID、AR 系统流水号、AR 描述、所属组件、关联 IR / SR、Owner、组件基线
 - **2 动态行为**：PlantUML 交互时序图，参与者使用真实组件 / 类 / 服务名，消息体现接口或方法调用
 - **3 功能点分解**：功能点 ID、Covers Requirement、Change Type、Existing Behavior / Baseline 摘要、描述、优先级、是否可独立测试；每个功能点必须可回指 requirement row
-- **4 实现设计**：Design Options（候选方案 / trade-off / 推荐项 / 确认状态）、功能实现思路、用例 / 流程图、正常 / 异常流程、持久化设计（如有）、接口描述、代码设计、MDC 场景设计
-- **4.7 MDC 场景设计**：并发、启动退出、休眠唤醒、可靠性、SELinux 五类场景均需分析；写“不涉及”时必须给出判定依据
+- **4 实现设计**：Design Options（候选方案 / trade-off / 推荐项 / 确认状态）、功能实现思路、用例 / 流程图、正常 / 异常流程、持久化设计（如有）、接口描述、代码设计、适用领域场景设计
+- **4.7 领域场景设计**：若适用 `automotive-embedded-development`，需覆盖 MDC 并发、启动退出、休眠唤醒、可靠性、SELinux 等场景；不适用时写明依据
 - **5 重构设计**：需要重构时说明范围、影响模块、验证方式和是否触发升级
 - **6 测试设计**：必含，见步骤 5
 - **7 模板修订记录**
@@ -118,15 +119,15 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 
 按 Test Design Before Implementation 把 requirement.md 中的 FR / NFR / IFR 行落成测试设计章节。测试设计是 AR 实现设计的**章节**，**不**作为独立 `test-design.md` 文件。最小字段契约见 `references/test-design-section-contract.md`。至少含：
 
-- 测试点汇总：Case ID、覆盖功能点、回指 requirement row ID、Change Type、测试层级（unit / integration / simulation）、覆盖类型（happy / boundary / exception / regression / removal / embedded-risk）、测试因子、组合方式、逻辑覆盖程度
+- 测试点汇总：Case ID、覆盖功能点、回指 requirement row ID、Change Type、测试层级（unit / integration / simulation）、覆盖类型（happy / boundary / exception / regression / removal / applicable-risk）、测试因子、组合方式、逻辑覆盖程度
 - 单元测试 / 接口测试 / 业务场景测试 / 异常场景测试：每个用例含前置条件、触发步骤、预期结果、观测点
 - `modify` row 至少包含证明新语义成立的用例，以及旧行为中必须保留部分的 regression 用例；破坏式变化必须回指已批准 baseline delta
 - `remove` row 至少包含旧入口 / 旧配置 / 旧输入被删除后的可观察语义用例，以及迁移 / 废弃路径（如适用）
 - Mock / Stub / 仿真说明：边界点 + 哪些依赖必须 mock、哪些必须真实运行
 - RED / GREEN / REFACTOR 证据要求：哪些命令 / 日志 / 静态分析结果必须保留
-- 嵌入式风险覆盖矩阵：内存 / 并发 / 实时性 / 资源 / 错误处理 / ABI 各维度覆盖了哪些用例
+- 适用风险覆盖矩阵：编码规范 / 领域约束声明的风险维度覆盖了哪些用例
 
-测试用例未回指 requirement row、`modify` / `remove` 未覆盖 baseline delta、或嵌入式 NFR 未被任何用例覆盖 → 回步骤 5 / 6 修订。
+测试用例未回指 requirement row、`modify` / `remove` 未覆盖 baseline delta、或适用领域风险未被任何用例 / 证据覆盖且无 N/A 理由 → 回步骤 5 / 6 修订。
 
 ### 7. 同步 traceability 与 progress
 
@@ -134,7 +135,7 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 
 ### 8. 自检与 handoff
 
-进入 handoff 前自检：团队 AR 模板章节齐全；Design Options 已列候选方案 / trade-off / 推荐项 / 确认状态（或 Single obvious option 理由）；无 `AI提示`、示例业务内容、变量替换说明、`TBD` / `{DATE}` 等残留；动态行为 / 流程 / 类图等图形已替换为真实内容或明确 N/A 理由；功能点可追溯且可被测试设计覆盖；`modify` / `remove` 的 Existing Behavior / Baseline 已被设计和测试用例消费；MDC 五场景均已分析；接口描述含参数 / 返回值 / 错误码 / 并发约束；与组件设计一致且未修改组件接口；测试设计章节存在且每个用例回指 requirement row + 功能点；嵌入式风险覆盖矩阵完整；风险与未决问题已分类。任一失败 → 回步骤 5 / 6。自检通过 → 父会话派发独立 reviewer subagent 执行 `devflow-ar-design-review`。
+进入 handoff 前自检：团队 AR 模板章节齐全；Design Options 已列候选方案 / trade-off / 推荐项 / 确认状态（或 Single obvious option 理由）；无 `AI提示`、示例业务内容、变量替换说明、`TBD` / `{DATE}` 等残留；动态行为 / 流程 / 类图等图形已替换为真实内容或明确 N/A 理由；功能点可追溯且可被测试设计覆盖；`modify` / `remove` 的 Existing Behavior / Baseline 已被设计和测试用例消费；适用领域场景均已分析；接口描述含参数 / 返回值 / 错误码 / 并发约束；与组件设计一致且未修改组件接口；测试设计章节存在且每个用例回指 requirement row + 功能点；适用风险覆盖矩阵完整；风险与未决问题已分类。任一失败 → 回步骤 5 / 6。自检通过 → 父会话派发独立 reviewer subagent 执行 `devflow-ar-design-review`。
 
 ## 输出契约
 
@@ -156,7 +157,7 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 - 测试设计被拆成独立 `test-design.md` 文件（devflow 硬约定：测试设计必须是 AR 实现设计的章节）
 - 测试用例不回指 requirement row
 - `modify` / `remove` 只测新目标行为，未测试旧行为保留、批准的破坏或删除后的可观察语义
-- 嵌入式 NFR 不被任何用例覆盖
+- 适用领域风险不被任何用例或证据覆盖
 - 模板未补齐却伪装完整
 - 因「以后再说」放过错误处理章节
 - 把开放问题藏在 prose 而无显式分类
@@ -171,7 +172,7 @@ AR 设计常见的偷懒话术与反驳。命中任意一条 → 停下。
 | 「测试设计太长，拆成独立 `test-design.md`」 | 强制 `阻塞`(content)。测试设计必须保留为 `ar-design-draft.md` 的章节，便于评审同步审 |
 | 「这个 AR 改了点接口，不大，照走 standard」 | 任何 SOA 接口 / 依赖 / 状态机变化 → 必须回 `devflow-router` 升级 `component-impact`，先做组件设计修订 |
 | 「Single obvious option 不写理由」 | 必须写明理由。裸跳过 → review `需修改` |
-| 「嵌入式风险都体现在代码里，不写矩阵」 | 测试设计必须包含 embedded risk 覆盖矩阵（内存 / 并发 / 实时性 / 资源 / 错误处理）；缺则 review `阻塞`(content) |
+| 「领域风险都体现在代码里，不写矩阵」 | 测试设计必须包含适用风险覆盖矩阵；缺则 review `阻塞`(content) |
 | 「mock 越过组件边界，反正只是测试」 | 拒绝。mock 边界必须在测试设计中声明，并不破组件 SOA 边界 |
 | 「设计差不多了，先开始 TDD 顺便补设计」 | 禁止边写边漏。AR 设计草稿 + 测试设计章节必须先经 `devflow-ar-design-review` `通过` |
 
@@ -181,18 +182,18 @@ AR 设计常见的偷懒话术与反驳。命中任意一条 → 停下。
 |---|---|
 | 把组件接口的修改作为 AR 设计的一部分 | 停下回 `devflow-router` 升级 component-impact |
 | 测试设计写成独立文件 | 重新作为 ar-design-draft.md 的章节 |
-| 测试用例只覆盖 happy path | 补充边界 / 异常 / 嵌入式风险用例 |
+| 测试用例只覆盖 happy path | 补充边界 / 异常 / 适用风险用例 |
 
 ## 验证清单
 
 - [ ] `features/<id>/ar-design-draft.md` 已落盘
 - [ ] 团队 AR 模板章节齐全，且无模板提示 / 示例业务内容 / 占位符残留
-- [ ] AR 概述 / 动态行为 / 功能点分解 / 实现设计 / MDC 五场景 / 重构设计 / 测试设计 / 修订记录章节齐全
+- [ ] AR 概述 / 动态行为 / 功能点分解 / 实现设计 / 适用领域场景 / 重构设计 / 测试设计 / 修订记录章节齐全
 - [ ] Design Options 已包含候选方案、trade-off、推荐项和确认状态；或写明 Single obvious option 理由
 - [ ] 功能点分解、接口描述、代码设计、流程图 / 时序图 / 类图内容可支撑 tasks 与 TDD
 - [ ] `modify` / `remove` rows 的 Existing Behavior / Baseline 已映射到设计约束和测试设计用例
 - [ ] 与组件设计一致性显式说明
-- [ ] 测试设计章节存在且每个用例回指 requirement row（含嵌入式风险覆盖矩阵）
+- [ ] 测试设计章节存在且每个用例回指 requirement row（含适用风险覆盖矩阵）
 - [ ] traceability.md 已补充 AR Design + Test Design Case
 - [ ] progress.md canonical 同步，下一步 `devflow-ar-design-review`
 - [ ] 父会话准备派发独立 reviewer subagent
@@ -207,7 +208,7 @@ AR 设计常见的偷懒话术与反驳。命中任意一条 → 停下。
 
 ### AR 设计最小内容
 
-覆盖 AR id、SR link、owning component、goal/scope、affected files/modules/interfaces、data/control flow、C/C++ implementation strategy、与 component design 的一致性、embedded test design、risks 和 open questions。
+覆盖 AR id、SR link、owning component、goal/scope、affected files/modules/interfaces、data/control flow、implementation strategy、与 component design 的一致性、test design、适用扩展约束、risks 和 open questions。
 
 DevFlow 不维护单独的 `test-design.md`；测试设计是 AR design 的一个章节。
 ## 支撑参考
@@ -216,3 +217,7 @@ DevFlow 不维护单独的 `test-design.md`；测试设计是 AR design 的一�
 |---|---|
 | `references/test-design-section-contract.md` | 测试设计章节最小契约 |
 | `references/devflow-ar-design-template.md` | 团队 AR 设计模板（待团队补齐） |
+| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../c-coding-standards/SKILL.md` | C 编码规范扩展（适用时读取） |
+| `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |

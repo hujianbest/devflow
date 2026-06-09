@@ -1,11 +1,11 @@
 ---
 name: devflow-code-review
-description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完成门禁前独立审查正确性、SOA 边界、内存、并发、实时性、错误处理、编码规范符合度和静态分析卫生度时使用；也用于派发评审子代理执行代码检视，或上一轮 code-review 要求修改后复审。不用于编写或修复代码、评估测试有效性，或阶段和路由混乱。
+description: 当 devflow-test-review 已通过且代码变更需要在完成门禁前独立审查正确性、设计一致性、内在质量、编码规范符合度、领域约束和静态分析卫生度时使用；也用于派发评审子代理执行代码检视或复审。不用于写代码、评估测试有效性或阶段路由。
 ---
 
-# devflow C / C++ 代码检视
+# devflow 代码检视
 
-独立审查 `devflow-tdd-implementation` 产出的 C / C++ 代码变化，判断正确性、设计一致性、SOA 边界、内存 / 并发 / 实时性 / 资源 / 错误处理风险、编码规范符合度、静态分析卫生度。
+独立审查 `devflow-tdd-implementation` 产出的代码变化，判断正确性、设计一致性、第三层内在质量、适用编码规范、适用领域约束和静态分析卫生度。
 
 本 skill **不**写 / 修代码、**不**改测试、**不**替模块架构师做架构决策。它产出 verdict + findings + 唯一下一步。
 
@@ -13,7 +13,7 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 
 适用：
 
-- `devflow-test-review` verdict = `通过`，需独立审 C / C++ 代码
+- `devflow-test-review` verdict = `通过`，需独立审查代码
 - reviewer subagent 被派发执行 code inspection
 - 用户明确要求「review 代码 / code review / 代码检视」
 
@@ -48,14 +48,15 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 - **Design Conformance Check**: 实现遵循 AR 设计 + 组件设计；偏离需有理由且可追溯
 - **Behavior Delta Conformance**: 对照 requirement rows 的 `Change Type` 与 Existing Behavior / Baseline；`modify` / `remove` 不得无意破坏保留行为或遗漏删除语义
 - **SOA Boundary Conformance**: 检查代码是否破坏 SOA 边界 / 引入未解释跨组件依赖
-- **C / C++ Defensive Implementation Review**: 内存、生命周期、并发、实时性、错误处理、资源回收、ABI / API 兼容
-- **Coding Standard Conformance**: MISRA / CERT / 团队编码规范 / 静态分析报告作为 review 输入
+- **Internal Quality Review**: 按 `docs/devflow-internal-quality.md` 检查设计质量、代码质量、可维护性、接口契约、可读性和演进成本
+- **Coding Standards Conformance**: 适用时读取 `c-coding-standards`、`cpp-coding-standards` 或项目声明的其他编码规范 skill
+- **Domain Constraint Conformance**: 适用时读取 `automotive-embedded-development` 或项目声明的其他领域约束 skill
 - **Refactor Note Audit**: 检查 implementation-log.md 中 Refactor Note 的完整性、cleanup 是否守住 Two Hats、是否触发 escalation 边界
 - **Separation Of Author / Reviewer**: reviewer 不改代码
 
-## 质量透镜（Craft）
+## 第三层扩展约束
 
-评审代码质量时，以 `devflow-coding-craft` 作为「好代码」的判别标尺之一（简单性、抽象克制、范围纪律、可读性与命名、嵌入式防御性编码），与本 skill 的 8 维度嵌入式 rubric 互补——前者抓「写得好不好」，后者抓「会不会崩」。透镜只提供判别标尺，verdict 仍由本评审节点唯一裁决；reviewer 不改代码。
+评审代码质量时，先使用 `docs/devflow-internal-quality.md` 作为通用内在质量判据；再按 router / 项目配置叠加适用的编码规范和领域约束。扩展 skill 只提供判据，verdict 仍由本评审节点唯一裁决；reviewer 不改代码。
 
 ## 工作流
 
@@ -72,22 +73,22 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 
 ### 2. 多维评分
 
-按 Fagan Code Inspection 对 8 个维度（详见 `references/code-review-rubric.md`）做 0-10 评分。任一关键维度 < 6 不得 `通过`；CR3 / CR4 / CR5 / CR6 嵌入式核心维度 < 7 也不得 `通过`。
+按 Fagan Code Inspection 对 8 个维度（详见 `references/code-review-rubric.md`）做 0-10 评分。任一关键维度 < 6 不得 `通过`；适用编码规范 / 领域约束中标为 critical 的维度不得有未解释风险。
 
 | 维度 | 关注 |
 |---|---|
 | CR1 Correctness | 实现是否真正完成 AR 行为；`modify` / `remove` 是否符合 baseline delta；逻辑无 off-by-one / 边界遗漏 |
 | CR2 Design Conformance | 与 AR 设计一致；偏离有理由且可追溯 |
 | CR3 SOA Boundary Conformance | 不破坏 SOA 边界；不引入未解释跨组件依赖 |
-| CR4 Memory & Resource Lifecycle | 内存模型符合组件设计；资源句柄 / 文件 / 缓冲区配对释放 |
-| CR5 Concurrency & Real-time | 中断上下文限制、锁策略、临界区、实时性 |
-| CR6 Error Handling & Defensive Design | 输入校验、错误码、降级路径、ABI / API 兼容 |
-| CR7 Coding Standard & Static Analysis | MISRA / CERT / 团队规范、编译告警、静态分析 critical 项 |
+| CR4 Resource & Lifecycle | 资源、对象或状态生命周期符合设计；失败路径可审查 |
+| CR5 Concurrency & Timing | 并发、时序或异步路径符合设计与适用领域约束 |
+| CR6 Error Handling & Defensive Design | 输入校验、错误语义、降级路径、接口兼容 |
+| CR7 Coding Standards & Static Analysis | 适用编码规范、编译告警、静态分析 critical 项 |
 | CR8 Refactor Note & Architectural Health | Refactor Note 完整、cleanup 守 Two Hats、未触发 escalation 边界 |
 
 ### 3. 正式 checklist 审查
 
-按 Checklist-Based Review 跑 Group CR1-CR8 子规则（详见 `references/code-review-rubric.md`），嵌入式风险维度参照 `references/embedded-cpp-risk-checklist.md` 速查清单。每条 finding 带 `severity` / `classification`（USER-INPUT / LLM-FIXABLE / TEAM-EXPERT） / `rule_id` / `anchor` / 描述 / 建议修复。
+按 Checklist-Based Review 跑 Group CR1-CR8 子规则（详见 `references/code-review-rubric.md`），并叠加 Applicable Constraints 中的编码规范 / 领域约束检查。每条 finding 带 `severity` / `classification`（USER-INPUT / LLM-FIXABLE / TEAM-EXPERT） / `rule_id` / `anchor` / 描述 / 建议修复。
 
 ### 4. 形成 verdict
 
@@ -95,9 +96,9 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 
 | 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
 |---|---|---|---|
-| 8 维度均 ≥ 6、CR3 / CR4 / CR5 / CR6 ≥ 7、无 critical USER-INPUT 或未解释 critical 静态分析项 | `通过` | `devflow-completion-gate` | `false` |
+| 8 维度均 ≥ 6、适用编码规范 / 领域约束无未解释 critical 项、无 critical USER-INPUT 或未解释 critical 静态分析项 | `通过` | `devflow-completion-gate` | `false` |
 | findings 可 1-2 轮定向修订（含 Refactor Note 字段补全、Boy Scout 遗漏、in-task 范围内可识别但被遗漏的风险、可在 task 内回退的过度抽象） | `需修改` | `devflow-tdd-implementation` | `false` |
-| 核心逻辑错误 / 内存或并发安全漏洞 / SOA 边界破坏可在 task 内回修 | `阻塞`（内容） | `devflow-tdd-implementation` | `false` |
+| 核心逻辑错误 / 适用编码规范或领域约束中的 critical 风险可在 task 内回修 | `阻塞`（内容） | `devflow-tdd-implementation` | `false` |
 | 代码实质修改组件边界 / SOA 接口 / 跨 ≥3 模块结构性变更 / Escalation-bypass / route / stage / profile / 上游证据冲突 | `阻塞`（workflow） | `devflow-router` | `true` |
 
 ### 5. 写 review 记录并回传
@@ -123,25 +124,25 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 
 ## 反向理由化（Common Rationalizations）
 
-C / C++ 代码检视常见的偷懒话术与反驳。命中任意一条 → 停下。
+代码检视常见的偷懒话术与反驳。命中任意一条 → 停下。
 
 | 话术 | 反驳 |
 |---|---|
-| 「测试都通过了，代码肯定 OK」 | 测试通过只代表测试通过；不代表代码正确、内存安全、并发安全或边界尊重。必须按 8 维度评分 |
+| 「测试都通过了，代码肯定 OK」 | 测试通过只代表测试通过；不代表代码正确、内在质量合格或扩展约束满足。必须按 8 维度评分 |
 | 「这一行 / 这个变量名我顺手改一下，比写 finding 快」 | reviewer 禁止改代码 / 改测试 / 改设计。返回 finding |
 | 「实现偏离了 AR 设计但结果一样，给 `通过`」 | 偏离必须在 `implementation-log.md` 写明且可追溯；裸偏离 → `需修改` |
 | 「需求说改了旧行为，能跑通新测试就行」 | 必须核对 `Change Type` 与 Existing Behavior / Baseline；未批准的旧行为破坏或删除遗漏 → `需修改` / `阻塞` |
 | 「只是改了点 SOA 服务签名 / 错误码语义，不影响下游」 | 强制 `阻塞`(workflow)，`reroute_via_router=true`，回 router 走 component-impact 路径 |
 | 「static-analysis critical 是误报，忽略掉」 | 每条 critical 必须显式抑制 + 写理由；否则 `需修改` |
 | 「Refactor 很小，没写 Refactor Note」 | 缺 Refactor Note → CR8 直接 `需修改`；无 note 等于不可审 |
-| 「中断上下文 / 并发不在本 AR 范围」 | 只要代码触及相关数据路径就要评分 CR5；沉默不算 `通过` |
+| 「这个语言 / 领域规则不在本 AR 范围」 | 只要 Applicable Constraints 标记适用，就必须检查；沉默不算 `通过` |
 | 「下一步给两个候选让父会话选」 | 必须返回**唯一** `next_action_or_recommended_skill` |
 
 ## 常见错误
 
 | 错误 | 修复 |
 |---|---|
-| 看到测试全绿就给 `通过` | 检查内存 / 并发 / 实时性 / 错误处理风险，未解释项 ≥ critical → verdict ≥ `需修改` |
+| 看到测试全绿就给 `通过` | 仍需检查内在质量、编码规范、领域约束和静态分析 |
 | 实现把内部状态暴露为公共接口仍给 `通过` | important / critical finding，要求收回边界 |
 | Refactor Note 缺失却给 `通过` | precheck 应判 blocked-content |
 | `modify` / `remove` 未核对 baseline delta | 对照 requirement.md + AR 设计 + evidence 补审，缺证据则回 `devflow-tdd-implementation` |
@@ -154,7 +155,7 @@ C / C++ 代码检视常见的偷懒话术与反驳。命中任意一条 → 停�
 - [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
 - [ ] Refactor Note 已被显式审查
 - [ ] `modify` / `remove` 的 baseline delta 与实现、测试证据一致
-- [ ] critical 静态分析 / 编译告警的处理已显式核对
+- [ ] critical 静态分析 / 编译告警 / 扩展约束 finding 的处理已显式核对
 - [ ] SOA 边界与 AR 设计一致性已显式审查
 - [ ] 结构化摘要已回传父会话
 - [ ] 未顺手修改代码
@@ -209,11 +210,14 @@ reroute_via_router: true | false
 
 ### Review 边界
 
-评审正确性、SOA boundary、memory/resource lifetime、concurrency、realtime behavior、error handling、coding standard、static-analysis hygiene 与 evidence。组件边界变化路由到 `devflow-router`。
+评审正确性、设计一致性、第三层内在质量、适用编码规范、适用领域约束、static-analysis hygiene 与 evidence。组件边界变化路由到 `devflow-router`。
 ## 支撑参考
 
 | 文件 | 用途 |
 |---|---|
 | `references/code-review-rubric.md` | 8 维度 rubric + rule IDs |
-| `references/team-code-review-checklist.md` | 团队通用代码检视完整检查清单（继承 MDC checklist） |
-| `references/embedded-cpp-risk-checklist.md` | 嵌入式 C / C++ 风险检视速查（内存 / 并发 / 实时性 / 资源 / 错误处理 / ABI） |
+| `references/team-code-review-checklist.md` | 旧团队代码检视清单示例（仅项目显式启用时读取） |
+| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../c-coding-standards/SKILL.md` | C 语言编码规范扩展（适用时读取） |
+| `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |

@@ -1,9 +1,19 @@
 ---
 name: devflow-test-craft
-description: 教 agent 如何把测试写好 / 审好——测试金字塔与 test sizes、测状态不测交互、DAMP over DRY、mock 克制（real>fake>stub>mock）、AAA、一断言一概念、描述性命名、嵌入式测试补充。适用于在 devflow-tdd-implementation 落地测试时，或 devflow-test-review 审查测试有效性时，把「测试通过」升级为「测试有效且可维护」。这是质量透镜，不是流程节点：不写 progress/handoff，不产生 review verdict。
+description: 旧版 DevFlow 2.0 test craft 兼容说明。仅在迁移旧引用或理解历史测试质量透镜时使用；测试有效性现在归第二层 TDD / devflow-test-review 体系，不属于第三层代码内在质量扩展。
 ---
 
 # DevFlow 测试匠艺（质量透镜）
+
+## 兼容状态
+
+本 skill 已不再属于 DevFlow 第三层“代码内在质量”。测试有效性、fail-first、测试金字塔、mock 边界和断言强度都服务于第二层 TDD / 功能正确，应迁入 `devflow-tdd-implementation`、`devflow-test-review` 及其 references。
+
+新工作流不应主动叠加本 skill。若旧文档或旧工件引用本 skill，应按以下方式迁移：
+
+- fail-first / RED-GREEN-REFACTOR → `devflow-tdd-implementation`
+- 测试有效性裁决 → `devflow-test-review`
+- 领域风险测试覆盖 → 适用领域约束 skill，如 `automotive-embedded-development`
 
 ## 总览
 

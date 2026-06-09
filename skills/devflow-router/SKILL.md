@@ -5,11 +5,11 @@ description: 当用户要求继续或推进且必须根据工件证据决定标�
 
 # DevFlow Router
 
-DevFlow workflow family 的 **runtime authority**。基于工件证据决定：Workflow Profile、Execution Mode、canonical `devflow-*` 节点、是否进入 component-impact 或 hotfix 支线、review subagent 派发，以及 review / gate 后的恢复编排。
+DevFlow workflow family 的 **runtime authority**。基于工件证据决定：Workflow Profile、Execution Mode、canonical `devflow-*` 节点、是否进入 component-impact 或 hotfix 支线、需要叠加哪些编码规范 / 领域约束 skill、review subagent 派发，以及 review / gate 后的恢复编排。
 
 `using-devflow` 负责 public entry、总指导原则与 skill discovery；本 skill 负责 runtime routing 与恢复。
 
-DevFlow 处理 AR / DTS / CHANGE work item，默认以单 AR / 单 DTS 为 work item 边界；AR 设计通过后维护 work item 内部的 `tasks.md` / `task-board.md` 执行索引。本 skill 不替模块架构师、开发负责人、开发人员拍板任何专业判断；只负责把工件证据转化为唯一下一步。
+DevFlow 处理 AR / DTS / CHANGE work item，默认以单 AR / 单 DTS 为 work item 边界；AR 设计通过后维护 work item 内部的 `tasks.md` / `task-board.md` 执行索引。本 skill 不替模块架构师、开发负责人、开发人员拍板任何专业判断；只负责把工件证据转化为唯一下一步，并记录适用的第三层扩展约束。
 
 ## 适用场景
 
@@ -20,6 +20,7 @@ DevFlow 处理 AR / DTS / CHANGE work item，默认以单 AR / 单 DTS 为 work 
 - route / stage / profile 不清，或工件证据冲突
 - 需在实现 profile（`standard` / `component-impact` / `hotfix` / `lightweight`）之间做判定
 - 需判断是否进入 `devflow-component-design`（AR component-impact 触发）或 `devflow-problem-fix`（hotfix）
+- 需识别当前 work item 应叠加 `c-coding-standards`、`cpp-coding-standards`、`automotive-embedded-development` 等非 canonical 扩展 skill
 - 需派发 reviewer subagent 执行 spec / component-design / ar-design / test-review / code-review
 - reviewer subagent 返回 `reroute_via_router=true`
 
@@ -47,7 +48,7 @@ DevFlow 处理 AR / DTS / CHANGE work item，默认以单 AR / 单 DTS 为 work 
 - Backend Output Object: 唯一下一步 + 必要的 reviewer 派发说明 + 状态字段同步
 - Transformation: 把工件证据转化为唯一 canonical 节点
 - Boundaries: 不写设计 / 不写代码 / 不替 reviewer 给出 verdict
-- Invariants: profile / execution mode 一旦决定，不允许 leaf 节点自改；canonical 节点名严格使用 `devflow-*` 前缀
+- Invariants: profile / execution mode 一旦决定，不允许 leaf 节点自改；canonical 节点名严格使用 `devflow-*` 前缀；编码规范 / 领域约束 skill 永远不作为 runtime next action
 
 ## 方法原则
 
@@ -57,6 +58,7 @@ DevFlow 处理 AR / DTS / CHANGE work item，默认以单 AR / 单 DTS 为 work 
 - **Role-Separated Review Dispatch**: review 必须派发独立 reviewer subagent，不内联，不让 author 自审
 - **Fresh Implementer Dispatch**: implementation 可由 `devflow-tdd-implementation` 派发新的 implementer subagent；router 只消费其状态，不消费其代码上下文
 - **Read-On-Presence**: 项目当前未启用的可选资产（如 `docs/runbooks/`）缺失不阻塞路由
+- **Extension Constraint Discovery**: 路由可识别语言 / 领域约束并传给目标节点消费，但不改变 canonical next node 字段。
 
 ## 工作流
 
@@ -107,6 +109,18 @@ DevFlow 处理 AR / DTS / CHANGE work item，默认以单 AR / 单 DTS 为 work 
 ### 6. 决定 Execution Mode
 
 与 Profile 正交。归一化顺序：用户显式要求 → `AGENTS.md` 默认 → 已有值 → 默认 `interactive`。`auto` 不删除 review / gate / approval，也不让 leaf 节点静默降级。
+
+### 6.5 识别第三层扩展约束
+
+按工件证据和项目配置识别需要叠加的非 canonical 扩展 skill：
+
+| 证据 | 扩展 skill |
+|---|---|
+| C 源码 / 头文件 / C 测试 / MISRA C / C 静态分析 | `c-coding-standards` |
+| C++ 源码 / C++ 测试 / RAII / 模板 / ABI / AUTOSAR C++ | `cpp-coding-standards` |
+| 车载嵌入式 / ASIL / 实时性 / SOA/MDC / 资源预算 / 车载证据 | `automotive-embedded-development` |
+
+扩展 skill 只作为 `Applicable Constraints` / supporting context 传给目标 node 或 reviewer。不得把它们写入 `Current Stage` 或 `Next Action Or Recommended Skill`。
 
 ### 7. 归一化显式 handoff
 
@@ -168,6 +182,7 @@ review 节点不在父会话内联执行。构造最小 review request（`target
 - `Workflow Profile`
 - `Execution Mode`
 - `Target Skill`（唯一 canonical `devflow-*` 节点）
+- `Applicable Constraints`（可选，非 canonical：如 `c-coding-standards`、`cpp-coding-standards`、`automotive-embedded-development`）
 - `Why`（1-2 条决定性证据）
 - `reroute_via_router`：`false`（已唯一映射）或 `true`（无法唯一映射，等待父会话）
 
@@ -180,6 +195,7 @@ runtime canonical 字段统一：`devflow-router`、`reroute_via_router`，不�
 - 没经过 router 就跨节点切换
 - 因命令名 / 用户点名跳过 route / profile 判断
 - 把 `using-devflow` 写进 runtime handoff
+- 把 `c-coding-standards`、`cpp-coding-standards` 或 `automotive-embedded-development` 写成 runtime next action
 - 在 route 阶段做大范围代码探索
 - 忽略证据冲突沿用旧印象推进
 - 把 `auto` 解读为「不写 review record / 不要 approval」
@@ -199,6 +215,7 @@ routing 阶段最常见的偷懒话术与反驳。命中任意一条 → 停下�
 | 「证据有点冲突，但选个看起来更顺的节点」 | 证据冲突时取保守策略：更上游节点 / 更高 profile；无法唯一映射 → `reroute_via_router=true` 停下 |
 | 「review 在父会话里顺带做一下更快」 | 内联 review 被禁止。review 必须派发独立 reviewer subagent，使用对应 `devflow-*-review` skill 作为 system prompt |
 | 「把 `using-devflow` 写进 next_action 让它再分流一次」 | 禁止。`using-devflow` 永远不出现在 runtime handoff |
+| 「这次是 C++ 代码，所以 next_action 写 `cpp-coding-standards`」 | 禁止。编码规范 skill 是约束，不是 runtime node；next_action 仍必须是 canonical `devflow-*` |
 
 ## 常见错误
 
@@ -215,6 +232,7 @@ routing 阶段最常见的偷懒话术与反驳。命中任意一条 → 停下�
 - [ ] 已归一化 Execution Mode 且未违反 policy
 - [ ] 已验证显式 handoff 合法性
 - [ ] 推荐节点在当前 profile 合法集合内
+- [ ] 适用编码规范 / 领域约束已作为非 canonical constraint 记录，而不是 next action
 - [ ] review 节点已派发独立 reviewer subagent
 - [ ] hard stop 命中时已显式停下且写明原因
 - [ ] 非 hard stop 时在同一轮继续执行
@@ -229,6 +247,7 @@ routing 阶段最常见的偷懒话术与反驳。命中任意一条 → 停下�
 - `devflow-router` 是 profile、execution mode、canonical next node、reviewer dispatch、review / gate recovery 的 runtime authority。
 - Legal profiles: standard, component-impact, hotfix, lightweight.
 - 如果 leaf handoff 与 artifact evidence 冲突，忽略 handoff，按 evidence 路由。
+- Applicable constraints 可包含 `c-coding-standards`、`cpp-coding-standards`、`automotive-embedded-development`，但这些值永远不进入 `Current Stage` / `Next Action Or Recommended Skill`。
 
 ### 任务路由字段
 

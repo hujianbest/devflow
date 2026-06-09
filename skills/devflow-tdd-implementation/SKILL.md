@@ -1,6 +1,6 @@
 ---
 name: devflow-tdd-implementation
-description: 当 devflow-ar-design-review 已通过，需要把已批准的 AR 设计映射成任务队列并通过 C/C++ TDD 实现时使用；也用于继续 Current Active Task，或按 devflow-test-review、devflow-code-review 的需修改结论回修实现，或接收 devflow-problem-fix 交接的复现与修复边界。不用于编写 AR 设计、修改组件设计、测试有效性评审、代码评审，或路由恢复。
+description: 当 devflow-ar-design-review 已通过，需要把已批准的 AR 设计映射成任务队列并通过 TDD 实现时使用；也用于继续 Current Active Task，按 review 结论回修实现，或接收 devflow-problem-fix 交接。不用于编写设计、测试有效性评审、代码评审或路由恢复。
 ---
 
 # devflow TDD 实现
@@ -41,7 +41,7 @@ description: 当 devflow-ar-design-review 已通过，需要把已批准的 AR �
 
 - Primary Object: task-scoped implementation slice（task 范围内实现切片）
 - Frontend Input Object: 已批准的 `ar-design-draft.md`、`ar-design-review.md`、`requirement.md`、`traceability.md`、可选既有 `tasks.md` / `task-board.md`、component design、当前代码、`AGENTS.md`、`progress.md`。
-- Backend Output Object: `tasks.md`、`task-board.md`、C/C++ 代码变更、测试代码变更、`implementation-log.md`、fresh evidence、traceability 更新、progress 更新。
+- Backend Output Object: `tasks.md`、`task-board.md`、代码变更、测试代码变更、`implementation-log.md`、fresh evidence、traceability 更新、progress 更新。
 - Boundaries: 不改组件边界、不改 AR 范围、不自审。
 
 ## 方法原则
@@ -50,7 +50,7 @@ description: 当 devflow-ar-design-review 已通过，需要把已批准的 AR �
 - **Design-Case Mapping**: 每个 task 回指 requirement rows、AR design anchors、Test Design Case IDs。
 - **Behavior Delta Mapping**: task 必须继承 requirement row 的 `Change Type`；`modify` / `remove` task 的 tests 和 evidence 必须覆盖旧行为基线、回归或删除语义。
 - **Single Active Task**: 只能有一个 task 处于 active 或 in progress。
-- **Embedded TDD**: RED -> GREEN -> REFACTOR。
+- **TDD Discipline**: RED -> GREEN -> REFACTOR。
 - **Two Hats**: implementation 与 refactoring 必须分开。
 - **Fresh Evidence**: RED / GREEN / REFACTOR evidence 必须由当前会话生成。
 - **Fresh Implementer Context**: controller 只给 implementer subagent 当前 task context pack，不给整段会话历史。
@@ -99,14 +99,14 @@ implementer subagent 返回以下状态之一：
 
 implementer 的 self-review 有价值，但永远不能替代 `devflow-test-review` 或 `devflow-code-review`。
 
-## 质量透镜（Craft）
+## 第二层 TDD 与第三层扩展约束
 
-实现 Current Active Task 时，在工作流内部叠加两个质量透镜：
+实现 Current Active Task 时，在工作流内部叠加第二层 TDD 判据与第三层扩展约束：
 
-- 步骤 6「从测试设计落地测试」与步骤 7「RED」→ 叠加 `devflow-test-craft`（决定写什么用例、怎么断言：测状态不测交互、DAMP over DRY、mock 克制、覆盖类型）。
-- 步骤 8「GREEN」与步骤 9「REFACTOR」→ 叠加 `devflow-coding-craft`（Rule 0 简单性、薄垂直切片、范围纪律、可读性与命名、嵌入式防御性编码）。
+- 步骤 6「从测试设计落地测试」与步骤 7「RED」→ 遵循第二层 TDD / 测试有效性规则，确保测试先失败且验证真实行为。
+- 步骤 8「GREEN」与步骤 9「REFACTOR」→ 叠加 `docs/devflow-internal-quality.md`、适用编码规范 skill（如 `c-coding-standards` / `cpp-coding-standards`）与领域约束 skill（如 `automotive-embedded-development`）。
 
-透镜只提升测试与代码质量，**不放宽** fail-first RED、单 active task、Two Hats 或 fresh evidence 纪律，也不替代独立 `devflow-test-review` / `devflow-code-review`；它不写 progress/handoff、不产生 verdict。
+扩展约束不放宽 fail-first RED、单 active task、Two Hats 或 fresh evidence 纪律，也不替代独立 `devflow-test-review` / `devflow-code-review`；它们不写 progress/handoff、不产生 verdict。
 
 ## 工作流
 
@@ -167,7 +167,7 @@ Task queue preflight 检查：
 
 ### 10. 静态与动态证据
 
-运行 build、static analysis 和相关 regression checks。遵循 `references/embedded-evidence-checklist.md`。未解释的 critical 问题阻塞 handoff。
+运行 build、static analysis 和相关 regression checks。命令来自项目配置、测试设计、适用编码规范 skill 和领域约束 skill。未解释的 critical 问题阻塞 handoff。
 
 ### 11. Implementation Log 与 Traceability
 
@@ -183,7 +183,7 @@ Task queue preflight 检查：
 
 - `features/<id>/tasks.md` 与 `task-board.md` 已创建或已校验。
 - 使用 subagent mode 时，已为 `Current Active Task` 记录 Implementer Context Pack。
-- `Current Active Task` 对应的 C/C++ 代码与测试代码。
+- `Current Active Task` 对应的代码与测试代码。
 - `implementation-log.md` 含 handoff block。
 - `evidence/{unit,integration,static-analysis,build}/` 下有 fresh evidence。
 - traceability 与 progress 已更新。
@@ -251,5 +251,8 @@ TDD 实现阶段最常见的偷懒话术与反驳。命中任意一条 → 停�
 | `references/task-plan-template.md` | task queue plan 模板 |
 | `references/task-board-template.md` | task-board 状态投影模板 |
 | `references/red-green-refactor-discipline.md` | RED / GREEN / REFACTOR 纪律 |
-| `references/embedded-evidence-checklist.md` | 证据采集检查清单 |
+| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../c-coding-standards/SKILL.md` | C 编码规范扩展（适用时读取） |
+| `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
 | 本地测试设计契约摘录 | 测试设计字段契约 |

@@ -23,12 +23,7 @@ This command orchestrates the **DevFlow review (评审)** phase. 它既能 **独
      - 检查代码 → `devflow-code-review`
   2. `devflow-router` — **仅 in-flow 模式需要**：恢复工件状态、消费 verdict、推进门禁、形成 handoff
 - Reviewer dispatched: 独立 `devflow-reviewer` 子代理（system prompt = `agents/devflow-reviewer.md`）。standalone 由本命令直接派发；in-flow 由 `devflow-router` 派发。
-- Craft 透镜（评审子代理内部叠加，不是流程节点、不进 handoff、不产 verdict）：评审 skill 在各自 `SKILL.md` 的 `## 质量透镜（Craft）` 节声明要叠加的 craft，reviewer 据此读取为判别标尺：
-  - `devflow-code-review` → `devflow-coding-craft`
-  - `devflow-test-review` → `devflow-test-craft`
-  - `devflow-component-design-review` → `devflow-design-craft`
-  - `devflow-ar-design-review` → `devflow-design-craft`（代码层设计）+ `devflow-test-craft`（测试设计章节）
-  - `devflow-spec-review` 无 craft 透镜
+- 第三层扩展约束（评审子代理内部读取，不是流程节点、不进 handoff、不产 verdict）：评审 skill 按各自 `SKILL.md` 声明读取 `docs/devflow-internal-quality.md`、适用编码规范 skill（如 `c-coding-standards` / `cpp-coding-standards`）和适用领域约束 skill（如 `automotive-embedded-development`）。测试有效性仍归 `devflow-test-review` 的第二层 TDD 判据。
 - 本命令 **不 authoring、不改任何工件**。
 
 ## When to use

@@ -5,6 +5,8 @@
 > 它是 DevFlow 一切设计的**北极星**。任何具体的实现方案、架构、技能（skill）与流程，都应当回溯并服从于本文；当实现与理念冲突时，以理念为准。
 >
 > 本文与具体工具、编程语言、领域无关，意在长期存活。实现细节不属于本文。
+>
+> 实现架构见 [`devflow-core-architecture.md`](devflow-core-architecture.md)；第三层代码内在质量的新模型见 [`devflow-internal-quality.md`](devflow-internal-quality.md)。
 
 ---
 

@@ -9,7 +9,7 @@
 | **TC1 Fresh RED / GREEN Validity** | RED 真失败、GREEN 本会话产生、新鲜度锚点（commit/build ID）完整 |
 | **TC2 Behavior & Acceptance Mapping** | 每个用例回指 requirement row + Test Design Case ID + Change Type；核心 row 至少一个用例覆盖；`modify` / `remove` 覆盖 regression / removal 语义 |
 | **TC3 Boundary & Exception Coverage** | 边界 / null / 错误路径 / 异常路径覆盖 |
-| **TC4 Embedded Risk Coverage** | 内存 / 并发 / 实时性 / 资源 / 错误处理 / ABI 被 `embedded-risk` 用例覆盖 |
+| **TC4 Applicable Risk Coverage** | 适用领域风险被 `applicable-risk` 用例或证据覆盖 |
 | **TC5 Mock Boundary Discipline** | mock 限定真正边界；不 mock 内部纯逻辑；不引入「测试专用方法」 |
 | **TC6 Assertion Strength** | 断言能证明行为，不只是证明代码被调用；可被 mutation 抓到 |
 | **TC7 Stability & Maintainability** | 测试可独立运行 / 不依赖外部状态 / 命名清晰 / 无 flaky 信号 |
@@ -40,7 +40,7 @@
 - `TC3.2` 错误路径（参数错、资源失败、依赖失败）覆盖
 - `TC3.3` 异常状态恢复路径覆盖
 
-### Group TC4 - Embedded Risk（嵌入式风险）（嵌入式风险）（嵌入式风险）
+### Group TC4 - Applicable Risk（适用风险）
 
 - `TC4.1` 内存（边界、池化、栈）有专属用例
 - `TC4.2` 并发（中断上下文、临界区、竞态）有专属用例
@@ -48,7 +48,7 @@
 - `TC4.4` 资源生命周期（句柄、文件、缓冲区）配对验证
 - `TC4.5` 错误处理（输入校验、降级、恢复）有专属用例
 - `TC4.6` ABI / API 兼容性（如 AR 触及）有专属用例
-- `TC4.7` 嵌入式风险覆盖矩阵的所有触发维度均有实测用例
+- `TC4.7` 适用风险覆盖矩阵的所有触发维度均有实测用例或明确 N/A 理由
 
 ### Group TC5 - Mock Boundary（Mock 边界）（Mock 边界）（Mock 边界）
 
@@ -79,7 +79,7 @@
 
 ## Severity 分级
 
-- `critical`：阻塞 code review（无效 RED / GREEN、关键 requirement row 无覆盖、modify/remove 无 regression/removal 证据、嵌入式风险全维度未覆盖、mock 越界严重）
+- `critical`：阻塞 code review（无效 RED / GREEN、关键 requirement row 无覆盖、modify/remove 无 regression/removal 证据、适用风险全维度未覆盖、mock 越界严重）
 - `important`：approval 前应修（断言过弱、边界覆盖不全、单个嵌入式维度未覆盖）
 - `minor`：建议改进（命名、轻微稳定性问题）
 
@@ -102,7 +102,7 @@
 ## Classification 分类 分类 分类
 
 - `USER-INPUT`：业务接受度判定 / 阈值是否合理 → 上抛需求负责人 / 开发负责人
-- `LLM-FIXABLE`：补用例、改断言、调整 mock 边界、补嵌入式风险用例 → 由 `devflow-tdd-implementation` 回修
+- `LLM-FIXABLE`：补用例、改断言、调整 mock 边界、补适用风险用例 → 由 `devflow-tdd-implementation` 回修
 - `TEAM-EXPERT`：实时性测试方法 / 仿真配置 / 内存模型断言 → 上抛资深嵌入式工程师
 
 ## Verdict 决策

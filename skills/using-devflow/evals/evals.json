@@ -1,0 +1,15 @@
+{
+  "skill": "using-devflow",
+  "scenarios": [
+    {
+      "id": "discover-cpp-automotive-constraints",
+      "prompt": "Use DevFlow for an automotive embedded C++ AR that changes a service contract.",
+      "expected": [
+        "routes runtime decisions through devflow-router",
+        "identifies cpp-coding-standards as an applicable constraint",
+        "identifies automotive-embedded-development as an applicable constraint",
+        "does not write extension skills as next_action_or_recommended_skill"
+      ]
+    }
+  ]
+}

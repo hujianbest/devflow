@@ -53,10 +53,10 @@ description: 当团队已接受 AR / DTS / CHANGE 输入，需要澄清成可评
 - **EARS（Easy Approach to Requirements Syntax — Mavin 等, 2009）**: 需求 Statement 使用结构化句式（常驻 / 事件触发 / 状态约束 / 异常 / 可选），让 reviewer 可冷读判断；详见 `references/requirement-rows-contract.md` 的 Statement Patterns 节
 - **BDD Acceptance（Dan North, 2006）**: Acceptance 用 Given / When / Then 表达；AR row 要可测试（直接落 RED 用例）；详见 `references/requirement-rows-contract.md` 的 Acceptance Criteria Rules 节
 - **MoSCoW Priority（DSDM, 1994）或团队等价**: row 级 Priority；多条 Must 冲突时回需求负责人；devflow 不维护跨工作项 backlog
-- **INVEST Granularity（Bill Wake, 2003）**: 单条 row 的 `Small` + `Independent` 检查（G1-G6 + 嵌入式 GE1-GE2）；详见 `references/granularity-and-split.md`
+- **INVEST Granularity（Bill Wake, 2003）**: 单条 row 的 `Small` + `Independent` 检查（G1-G6 + 适用领域扩展规则）；详见 `references/granularity-and-split.md`
 - **NFR Quality Attribute Scenarios（ISO/IEC 25010 + Bass / Clements / Kazman）**: 每条核心 NFR 用五要素（Stimulus Source / Stimulus / Environment / Response / Response Measure）表达，给出可判定阈值；详见 `references/nfr-quality-attribute-scenarios.md`
 - **Brainstorming Notes Normalization**: 头脑风暴 / 会议散点输入先做事实 vs 假设、业务意图 vs 实现细节、当前 vs 后续三轮归一化，再写 row；详见 `references/requirement-rows-contract.md` 同名节
-- **Embedded Domain Awareness**: 嵌入式语境中识别可能影响 AR 设计的内存 / 实时性 / 资源约束（写为 NFR 不写实现），并指向 `docs/component-design.md` 的相关章节
+- **Applicable Domain Awareness**: 识别适用领域约束 skill 中声明的 NFR / 架构约束（写为需求约束，不写实现），并指向 `docs/component-design.md` 或领域资产的相关章节
 - **Interface Contract Candidate Capture**: 对外接口 / SOA 服务 / 协议 / 错误码先形成语义级候选契约，供组件设计或 AR 设计消费；不在 spec 阶段写语言级签名或内部数据结构
 - **Behavior Delta Classification**: 每条核心 row 显式标注 `Change Type = new / modify / remove`；`modify` / `remove` 必须写 `Existing Behavior / Baseline`，把对既有可观察行为的破坏风险前移到规格阶段
 - **Team Role Discipline**: 业务方向 / 优先级 / 验收阈值留给需求负责人 / 模块架构师；本节点只澄清，不拍板
@@ -87,7 +87,7 @@ description: 当团队已接受 AR / DTS / CHANGE 输入，需要澄清成可评
 3. 边界、异常路径、失败处理
 4. 既有行为基线：本 row 是新增、修改还是删除；若修改 / 删除，澄清旧行为、旧错误码 / 阈值 / 状态路径、既有消费者、兼容或迁移语义
 5. 接口、依赖、兼容性、跨组件影响；若涉及接口，澄清 provider / consumer / operation / inputs / outputs / error semantics
-6. 嵌入式相关 NFR（实时性 / 内存 / 资源 / 错误处理）
+6. 适用领域 NFR（如车载实时性 / 资源 / 可靠性；不适用时不强加）
 7. 待澄清术语与 assumption
 
 每轮结束前总结已锁定与待确认；只剩 1-2 个阻塞事实时合并问。若需要 ≥3 轮且全部依赖业务判断 → 阻塞，回需求负责人；devflow 不替业务方拍板。
@@ -108,7 +108,7 @@ description: 当团队已接受 AR / DTS / CHANGE 输入，需要澄清成可评
 
 `references/requirement-template.md` 是 `devflow-specify` 的默认需求规格模板：承载规格 / requirement 文档骨架。详细字段契约不在模板中重复维护，统一引用 `requirement-rows-contract.md` 和 `nfr-quality-attribute-scenarios.md`。
 
-通用默认章节由 `references/requirement-template.md` 定义：Identity、Background And Goal、Scope / Non-Scope、Requirement Rows、Acceptance Criteria、Embedded NFR（若适用）、Open Questions（阻塞 / 非阻塞分类）、Assumptions And Dependencies。
+通用默认章节由 `references/requirement-template.md` 定义：Identity、Background And Goal、Scope / Non-Scope、Requirement Rows、Acceptance Criteria、Applicable NFR（若适用）、Open Questions（阻塞 / 非阻塞分类）、Assumptions And Dependencies。
 
 额外必填章节（AR / DTS / CHANGE，由 `references/requirement-template.md` 提供骨架）：Component Impact Assessment、Interface Contract Candidates（当存在 `IFR` row 或 `Component Impact = interface` 时）。这些章节的详细字段契约以 `references/requirement-rows-contract.md` 为准，避免模板和契约文件重复维护。
 
@@ -187,7 +187,7 @@ handoff 摘要（按 Local DevFlow Conventions 字段）：`work_item_id`、`own
 |---|---|
 | 「用户描述很清楚，直接当 requirement 写下来」 | 必须按 EARS / BDD / MoSCoW 拆 row。原文≠规格，哪怕看起来再清楚 |
 | 「这条 NFR 写'尽快' / '足够快'就行」 | 必须 QAS 五要素 + 可判定阈值；写不出 → 阻塞，回需求负责人补阈值 |
-| 「接口签名我都想好了，写在规格里更省事」 | spec 阶段只能写**语义级** Interface Contract Candidate（provider / consumer / operation / inputs / outputs / error semantics）；C++ 函数签名 / 私有数据结构留给 design |
+| 「接口签名我都想好了，写在规格里更省事」 | spec 阶段只能写**语义级** Interface Contract Candidate（provider / consumer / operation / inputs / outputs / error semantics）；语言级函数签名 / 私有数据结构留给 design |
 | 「Open Questions 有 3 条，我自己猜个答案补上」 | 阻塞类 Open Questions 必须回需求负责人 / 模块架构师；devflow 不替团队角色拍板 |
 | 「row 太多了，挑核心的写就行」 | 缺 Acceptance / 缺 Priority 的核心 row 一律不得提交评审 |
 | 「Component Impact 看着就是不影响接口，跳过章节」 | 必须显式判断并在 Component Impact Assessment 里写明；隐式判断是 mid-AR 重路由的最大成因 |
@@ -201,7 +201,7 @@ handoff 摘要（按 Local DevFlow Conventions 字段）：`work_item_id`、`own
 | 直接抄输入文档作为 requirement.md | 重新拆成 rows + 显式 Acceptance |
 | 含糊的 NFR（"足够快"） | 改成可判定阈值或回需求负责人补阈值 |
 | 误把组件设计修订写进 requirement.md | 仅在 Component Impact Assessment 标注，由 router 决定是否进入 `devflow-component-design` |
-| 把接口候选写成 C++ 函数签名 | 改成语义级契约：provider / consumer / operation / inputs / outputs / error semantics |
+| 把接口候选写成语言级函数签名 | 改成语义级契约：provider / consumer / operation / inputs / outputs / error semantics |
 
 ## 验证清单
 
@@ -242,7 +242,7 @@ AR / DTS / CHANGE work item 额外项：
 - Requirement Rows with ID, statement, acceptance, source, component impact
 - Requirement Rows with Change Type and Existing Behavior / Baseline for modify/remove rows
 - Acceptance Criteria
-- Embedded NFR when relevant
+- Applicable NFR when relevant
 - Open Questions 按 blocking / non-blocking 分类
 - Assumptions And Dependencies
 - AR / DTS / CHANGE 增加 Component Impact Assessment；接口受影响时增加 Interface Contract Candidates
@@ -252,8 +252,9 @@ AR / DTS / CHANGE work item 额外项：
 |---|---|
 | `references/requirement-template.md` | requirement.md 默认模板 |
 | `references/requirement-rows-contract.md` | requirement rows 最小字段、EARS Statement Patterns、BDD Acceptance Rules、MoSCoW Priority、Source / Trace Anchor、Brainstorming Notes Normalization、Common Failure Modes |
-| `references/granularity-and-split.md` | INVEST `Small` + `Independent` 检查（G1-G6 + 嵌入式 GE1-GE2）、Split Rules、Mechanical vs Scope-Shaping Split、Cross-Work-Item Split |
-| `references/nfr-quality-attribute-scenarios.md` | ISO/IEC 25010 质量维度、QAS 五要素、嵌入式 NFR 改写示例（实时性 / 内存 / 并发 / 资源 / 错误处理 / 安全）、最小签入条件 |
+| `references/granularity-and-split.md` | INVEST `Small` + `Independent` 检查（G1-G6 + 适用领域扩展规则）、Split Rules、Mechanical vs Scope-Shaping Split、Cross-Work-Item Split |
+| `references/nfr-quality-attribute-scenarios.md` | ISO/IEC 25010 质量维度、QAS 五要素、适用 NFR 改写示例、最小签入条件 |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
 | `../using-devflow/references/devflow-work-item-readme-template.md` | 通用 work item README 模板（共享） |
 | `../using-devflow/references/devflow-progress-template.md` | 通用 progress.md 模板（共享） |
 | `../using-devflow/references/devflow-traceability-template.md` | 通用 traceability.md 模板（共享） |

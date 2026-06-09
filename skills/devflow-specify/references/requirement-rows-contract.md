@@ -1,6 +1,6 @@
 # devflow Requirement Rows Contract
 
-> 配套 `devflow-specify/SKILL.md`。规定 `features/<id>/requirement.md` 的需求条目最小字段、嵌入式 NFR 写法和分类。
+> 配套 `devflow-specify/SKILL.md`。规定 `features/<id>/requirement.md` 的需求条目最小字段、适用 NFR 写法和分类。
 
 ## 类别（六分类）
 
@@ -99,7 +99,7 @@ DTS 规格不必填写所有类别；至少应有 FR（或 IFR / CON）描述被
 通用规则：
 
 - 每条核心 `FR` 至少一个**正向**验收标准
-- 关键失败路径、边界输入、并发冲突、超时 / 延迟 / 嵌入式风险，至少补一条对应验收口径
+- 关键失败路径、边界输入、并发冲突、超时 / 延迟 / 适用领域风险，至少补一条对应验收口径
 - 验收能形成明确通过 / 不通过判断；不写「用户体验良好」「处理足够快」等无阈值表达
 - 一个验收标准只验证一个主要行为；同一条标准同时覆盖多个独立行为 → 回粒度检查
 
@@ -144,7 +144,7 @@ DTS 规格不必填写所有类别；至少应有 FR（或 IFR / CON）描述被
 |---|---|---|
 | 已确认的业务行为 | `FR` | 夹带接口名 / 服务名 / 数据结构的「伪需求」 |
 | 可判定的质量门槛 | `NFR`（含 QAS，详见 `nfr-quality-attribute-scenarios.md`） | 「体验更好」「性能高一点」无阈值口号 |
-| 嵌入式硬性限制（目标平台 / 内核 / ABI / 编译条件） | `CON` | 没有来源锚点的猜测性限制 |
+| 领域或平台硬性限制（目标平台 / 内核 / ABI / 编译条件） | `CON` | 没有来源锚点的猜测性限制 |
 | 外部接口 / 协议 / 跨系统契约 | `IFR` | 内部接口（应归入设计阶段） |
 | 团队假设、待确认说法 | `ASM` 或 Open Questions | 被伪装成已确认需求 |
 | 当前轮不做但真实存在 | `EXC` 或拆出新 work item | 只埋在 prose 里的「以后再做」 |
@@ -159,9 +159,9 @@ DTS 规格不必填写所有类别；至少应有 FR（或 IFR / CON）描述被
 
 如果做不到这三步，还没到正式 requirement rows 的时机，回步骤 3 继续 Socratic Elicitation。
 
-## 嵌入式 NFR 写法
+## 适用 NFR 写法
 
-NFR 若涉及嵌入式特性，必须写成可判定条件。每条核心 NFR 应能用 QAS 五要素表达，详见 `nfr-quality-attribute-scenarios.md`。常见维度速查：
+NFR 若涉及领域或平台特性，必须写成可判定条件。每条核心 NFR 应能用 QAS 五要素表达，详见 `nfr-quality-attribute-scenarios.md`。常见维度速查：
 
 | 维度 | 写法示例（描述层，不写实现） |
 |---|---|

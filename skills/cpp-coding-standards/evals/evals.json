@@ -1,0 +1,15 @@
+{
+  "skill": "cpp-coding-standards",
+  "scenarios": [
+    {
+      "id": "cpp-not-c-not-domain",
+      "prompt": "Review a C++ implementation that uses RAII, move semantics, templates, and ABI-sensitive public types.",
+      "expected": [
+        "applies C++ lifetime, RAII, template, exception, and ABI rules",
+        "does not apply C macro-specific rules as the primary standard",
+        "does not make automotive domain decisions",
+        "does not produce a runtime next action"
+      ]
+    }
+  ]
+}

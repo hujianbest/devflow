@@ -6,7 +6,7 @@
 
 1. requirement.md 存在；spec-review verdict = `通过`
 2. AR 实现设计存在并通过 ar-design-review；测试设计章节完整
-3. C / C++ 代码改动可定位（diff 可读）
+3. 代码改动可定位（diff 可读），并标明适用编码规范 skill（如有）
 4. 实现交接块 + Refactor Note 完整（Hat Discipline / In-task Cleanups / Architectural Conformance / Documented Debt / Escalation Triggers / Static Analysis Evidence）
 5. test-review verdict = `通过`
 6. code-review verdict = `通过`
@@ -14,7 +14,7 @@
 8. evidence/{unit,static-analysis,build}/ 含本轮 fresh evidence
 9. traceability.md 全链路（IR / SR / AR / 设计 / 代码 / 测试 / 验证）已填到本节点对应行
 10. `modify` / `remove` requirement rows 的 Existing Behavior / Baseline 已被 regression / removal evidence 覆盖
-11. 嵌入式风险（内存 / 并发 / 实时性 / 资源 / 错误处理 / ABI / SOA 边界）无未解释 critical 项
+11. 适用编码规范 / 领域约束无未解释 critical 项
 12. critical 静态分析 / 编译告警 / 编码规范违反已闭环（修 / 解释 / 抑制并附理由）
 
 ## Task 级 DoD
@@ -51,7 +51,7 @@
 
 - 不必有完整 requirement.md，但必须有 reproduction.md + root-cause.md + fix-design.md
 - AR 实现设计可被 fix-design.md 替代（仍需含测试设计章节或与现有 AR 设计的差异说明）
-- 其余项目（test-review / code-review / fresh evidence / 嵌入式风险审计 / 静态分析）**全部保留**
+- 其余项目（test-review / code-review / fresh evidence / 适用约束审计 / 静态分析）**全部保留**
 
 紧急不等于绕过；hotfix 压缩文档量，不压缩证据。
 
@@ -65,21 +65,18 @@
 - ar-design-draft.md 可极简，但仍需含测试设计章节
 - evidence 可只保留本轮真实跑过的最少必要文件
 
-不允许压缩：test-review / code-review verdict、fresh evidence、嵌入式风险 audit。
+不允许压缩：test-review / code-review verdict、fresh evidence、适用约束 audit。
 
-## 嵌入式风险审计字段
+## 适用约束审计字段
 
-`completion.md` 的 Quality Risk Audit 段必须显式列出以下维度的状态：
+`completion.md` 的 Quality Risk Audit 段必须显式列出所有适用编码规范 / 领域约束的状态。不适用的扩展写 `N/A` 并说明理由。
 
-| 维度 | 状态选项 |
+| 约束项 | 来源 | 状态选项 |
 |---|---|
-| 内存（边界 / 池化 / 栈 / 生命周期） | `clean` / `documented-debt` / `critical-open` |
-| 并发（中断 / 锁 / 临界区 / 竞态） | 同上 |
-| 实时性（latency / deadline / 调度） | 同上 |
-| 资源生命周期（句柄 / 文件 / 缓冲区） | 同上 |
-| 错误处理（输入校验 / 错误码 / 降级） | 同上 |
-| ABI / API 兼容 | 同上 |
-| SOA 边界 / 跨组件依赖 | 同上 |
+| 内在质量核心 | `docs/devflow-internal-quality.md` | `clean` / `documented-debt` / `critical-open` / `N/A` |
+| C 编码规范 | `c-coding-standards`（适用时） | 同上 |
+| C++ 编码规范 | `cpp-coding-standards`（适用时） | 同上 |
+| 领域约束 | 如 `automotive-embedded-development`（适用时） | 同上 |
 
 `critical-open` 任一维度命中 → completion `阻塞`。
 

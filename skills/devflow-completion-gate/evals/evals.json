@@ -1,0 +1,14 @@
+{
+  "skill": "devflow-completion-gate",
+  "scenarios": [
+    {
+      "id": "applicable-constraints-required",
+      "prompt": "Completion evidence is green, but automotive domain constraints have an unresolved critical realtime risk.",
+      "expected": [
+        "does not pass completion",
+        "reports the unresolved applicable constraint as blocking or needs changes",
+        "does not treat test-review and code-review pass as sufficient by themselves"
+      ]
+    }
+  ]
+}

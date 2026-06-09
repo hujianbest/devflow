@@ -73,7 +73,7 @@ description: 当 devflow-specify 产出的 AR / DTS / CHANGE requirement.md 草�
 | S1 Identity & Traceability | Work Item Type / ID、所属组件唯一、上游单据锚点齐全 |
 | S2 Scope & Non-Scope Clarity | 范围与非范围显式且不冲突 |
 | S3 Requirement Row Quality | 核心 row 含 ID / Statement / Acceptance / Source / Change Type；`modify` / `remove` 含 Existing Behavior / Baseline；Component Impact 必填 |
-| S4 Embedded NFR Quality | 实时性 / 内存 / 并发 / 资源 / 错误处理 NFR 含可判定阈值 |
+| S4 Applicable NFR Quality | 适用 NFR 含可判定阈值；领域 / 平台 / 编码规范约束有明确来源 |
 | S5 Component Impact Assessment + Interface Contract Candidates | 是否影响组件接口 / 依赖 / 状态机已显式判断；涉及接口时是否给出可供设计消费的语义级接口候选契约 |
 | S6 Open Questions Closure | 阻塞 / 非阻塞分类、阻塞项已闭合或显式 USER-INPUT |
 
@@ -197,7 +197,7 @@ reroute_via_router: true | false
 
 ### Spec Review 输入
 
-检查 `requirement.md` 的必需章节、Requirement Rows、Component Impact Assessment、接口受影响时的 Interface Contract Candidates、Embedded NFR、open questions 和 trace links。通过评审时只能映射到一个 next node。
+检查 `requirement.md` 的必需章节、Requirement Rows、Component Impact Assessment、接口受影响时的 Interface Contract Candidates、适用 NFR、open questions 和 trace links。通过评审时只能映射到一个 next node。
 ## 支撑参考
 
 | 文件 | 用途 |

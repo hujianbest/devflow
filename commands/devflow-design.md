@@ -14,9 +14,10 @@ This command orchestrates the **DevFlow design (设计)** phase.
 - Reviewers dispatched (via `devflow-router`, system prompt = `agents/devflow-reviewer.md`):
   - `devflow-component-design-review`（仅当组件设计存在）
   - `devflow-ar-design-review`
-- Craft 透镜（节点内部叠加，不是流程节点、不进 handoff、不产 verdict）：
-  - `devflow-component-design` / `devflow-ar-design` 起草时叠加 `devflow-design-craft`
-  - `devflow-ar-design` 写测试设计章节时叠加 `devflow-test-craft`
+- 第三层扩展约束（节点内部读取，不是流程节点、不进 handoff、不产 verdict）：
+  - `devflow-component-design` / `devflow-ar-design` 起草时读取 `docs/devflow-internal-quality.md`
+  - 适用时读取编码规范 skill（如 `c-coding-standards` / `cpp-coding-standards`）和领域约束 skill（如 `automotive-embedded-development`）
+  - 测试设计章节服务第二层 TDD / `devflow-test-review`，不再通过 `devflow-test-craft` 表示第三层质量
 
 ## When to use
 

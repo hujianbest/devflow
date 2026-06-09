@@ -1,5 +1,5 @@
 ---
-description: TDD implementation followed by sequential test-effectiveness review and C/C++ code review
+description: TDD implementation followed by sequential test-effectiveness review and code review
 ---
 
 This command orchestrates the **DevFlow build (构建)** phase.
@@ -9,15 +9,15 @@ This command orchestrates the **DevFlow build (构建)** phase.
 - Skills involved (in推进顺序):
   1. `devflow-tdd-implementation` — task queue preflight + 派发 `devflow-implementer` 子代理执行 RED-GREEN-REFACTOR
   2. `devflow-router` — 派发测试有效性评审
-  3. `devflow-router` — 派发 C/C++ 代码检视
+  3. `devflow-router` — 派发代码检视
 - Reviewers dispatched (via `devflow-router`, system prompt = `agents/devflow-reviewer.md`):
   - `devflow-test-review`（`target_skill = devflow-test-review`）
   - `devflow-code-review`（`target_skill = devflow-code-review`）
 - Implementer dispatched (via `devflow-tdd-implementation`, system prompt = `agents/devflow-implementer.md`):
   - 每次 next-ready task 一次新派发；接收 Implementer Context Pack
-- Craft 透镜（节点内部叠加，不是流程节点、不进 handoff、不产 verdict）：
-  - `devflow-tdd-implementation` 落测试时叠加 `devflow-test-craft`，写实现 / 重构时叠加 `devflow-coding-craft`
-  - `devflow-test-review` / `devflow-code-review` 以 `devflow-test-craft` / `devflow-coding-craft` 作判别标尺
+- 第二层 TDD 与第三层扩展约束（节点内部读取，不是流程节点、不进 handoff、不产 verdict）：
+  - `devflow-tdd-implementation` 落测试时遵循第二层 TDD / 测试有效性规则
+  - 写实现 / 重构 / code-review 时读取 `docs/devflow-internal-quality.md`、适用编码规范 skill 和适用领域约束 skill
 
 ## When to use
 

@@ -32,7 +32,7 @@ expected_return_contract  本文件 Output contract
 
 ## Procedure
 
-1. 读取 `skills/<target_skill>/SKILL.md`，**完整执行** 其 `工作流` 章节；不简化、不改判据。若该 review skill 含 `## 质量透镜（Craft）` 节（`devflow-code-review`→`devflow-coding-craft`、`devflow-test-review`→`devflow-test-craft`、`devflow-component-design-review`→`devflow-design-craft`、`devflow-ar-design-review`→`devflow-design-craft`+`devflow-test-craft`；`devflow-spec-review` 无），把该节声明的 craft skill 作为「好设计 / 好代码 / 好测试」的判别标尺读取并据此给 findings；craft 是只读判别标准，不改变本评审的 verdict 规则，你也不修改任何工件
+1. 读取 `skills/<target_skill>/SKILL.md`，**完整执行** 其 `工作流` 章节；不简化、不改判据。若该 review skill 声明第三层扩展约束，读取 `docs/devflow-internal-quality.md`、适用编码规范 skill（如 `c-coding-standards` / `cpp-coding-standards`）和适用领域约束 skill（如 `automotive-embedded-development`）作为只读判别标准；这些扩展不改变本评审的 verdict 规则，你也不修改任何工件
 2. 读取 `primary_artifact` 与必要的 `supporting_context`（仅本评审需要的部分，不做无关代码 / 文档探索）
 3. 按 SKILL.md 的判据逐条核对，每条都给出 evidence 引用（文件路径 + 锚点 / 行号 / 章节号）
 4. 写评审记录到 `features/<id>/reviews/<target_skill>-<YYYYMMDD-HHMMSS>.md`（standalone 无 work item 时：除非调用方指定 `expected_record_path`，否则可省略落盘，结构化 verdict 直接随返回交调用方）
@@ -60,9 +60,9 @@ expected_return_contract  本文件 Output contract
   - **未通过 → 严禁** next = `devflow-code-review`
 
 - **`target_skill = devflow-code-review`**
-  - C/C++ 检视范围按 SKILL.md：正确性、SOA 边界、内存、并发、实时性、错误处理、编码规范符合度、静态分析卫生度
+  - 代码检视范围按 SKILL.md：正确性、设计一致性、内在质量、适用编码规范、适用领域约束、静态分析卫生度
   - **未通过 → 严禁** next = `devflow-completion-gate`
-  - 项目启用 MISRA / CERT 子集 → 必须按 `agents_md_anchor` 指向的项目策略检查
+  - 项目启用编码规范或领域约束扩展 → 必须按 `agents_md_anchor` / Review Request Pack 指向的项目策略检查
 
 ## Output contract
 

@@ -6,9 +6,9 @@ Thanks for your interest in DevFlow. This document describes how to contribute t
 
 DevFlow v1.0 is intentionally narrow:
 
-- It targets the **development stage**: from accepted SR / AR / DTS / CHANGE through specification, design, TDD, review, completion gate, and closeout.
-- It is biased toward **embedded C / C++** teams. The workflow shape is portable, but reviewer rubrics emphasise memory / concurrency / real-time / resource / error-handling concerns.
-- It targets the **OpenCode** integration. Other agent runtimes (Claude Code, Cursor, Gemini, Copilot, Windsurf, Kiro) are not in scope for v1.0; PRs that add them are welcome but should not change the existing OpenCode contract.
+- It targets the **development stage**: from accepted AR / DTS / CHANGE through specification, design, TDD, review, completion gate, and closeout.
+- It is organized around a **general DevFlow Core** plus extension skills. Language rules live in coding-standards skills such as `c-coding-standards` and `cpp-coding-standards`; domain constraints live in skills such as `automotive-embedded-development`.
+- OpenCode is the first supported adapter. Other agent runtimes may be added as platform adapters, but must not change the core quality model or canonical runtime nodes.
 - It does **not** cover product discovery, system / integration / acceptance testing, release operations, or runtime incident response. These belong to other `*-flow` families.
 
 If you are unsure whether your change fits, open an issue first.
@@ -23,13 +23,13 @@ Every `skills/devflow-*/SKILL.md` should be:
 - **Role-separated** — author, reviewer, gate, and finalizer are distinct skills. No skill self-verifies its own output.
 - **Independently installable** — references live under each skill's own `references/`. Avoid creating a shared `skills/docs/` or `skills/templates/` that other skills must load.
 
-The full anatomy spec is in [`docs/principles/02 skill-anatomy.md`](docs/principles/02%20skill-anatomy.md).
+The current architecture spec is in [`docs/devflow-core-architecture.md`](docs/devflow-core-architecture.md), and the rewritten third quality layer is in [`docs/devflow-internal-quality.md`](docs/devflow-internal-quality.md).
 
 ## Required skill sections
 
 A `SKILL.md` MUST contain (in order):
 
-1. YAML frontmatter with `name` (= directory name, `devflow-*` prefix) and `description` (a classifier — *not* a workflow summary).
+1. YAML frontmatter with `name` (= directory name) and `description` (a classifier — *not* a workflow summary). Canonical flow nodes keep the `devflow-*` prefix; extension skills use their own descriptive names, e.g. `c-coding-standards`.
 2. `# Title` + a 1–2 line statement of "what this skill does and what it does not".
 3. `## 适用场景` — when to use, when to redirect.
 4. `## 硬性门禁` — non-negotiable stop conditions (Hard Gates).
@@ -50,10 +50,10 @@ References belong in `references/` under each skill, not at the repository top l
 
 The `description` is a **classifier**, not a flow summary. It only answers "should this skill be loaded for the current request?".
 
-- ✅ Good: `Use when independently reviewing a C/C++ code change produced by devflow-tdd-implementation against an approved AR design. Not for writing tests, modifying production code, or test effectiveness review.`
+- ✅ Good: `Use when independently reviewing code changes produced by devflow-tdd-implementation against an approved AR design. Not for writing tests, modifying production code, or test effectiveness review.`
 - ❌ Bad: `Use when reviewing code — read the diff, score it, write findings, hand off.`
 
-Front-load triggering keywords (`spec review`, `AR implementation design`, `component design`, `test review`, `C/C++ code review`) so OpenCode's automatic skill discovery can match them.
+Front-load triggering keywords (`spec review`, `AR implementation design`, `component design`, `test review`, `code review`, `C`, `C++`, `automotive embedded`) so automatic skill discovery can match them.
 
 ## Anti-rationalization
 
@@ -76,16 +76,16 @@ Reviewer behaviour is encoded entirely in the `devflow-*-review` / `devflow-test
 
 ## Skill `evals/`
 
-High-risk skills (currently `devflow-router`, `devflow-tdd-implementation`, `devflow-test-review`, `devflow-completion-gate`) carry an `evals/` directory that enumerates the misuse scenarios the skill MUST refuse, in the format defined by [`docs/principles/06 evals-format.md`](docs/principles/06%20evals-format.md):
+High-risk skills should carry an `evals/` directory that enumerates misuse scenarios the skill MUST refuse. Until a formal schema doc is restored, keep evals simple and reviewable:
 
 ```
-skills/devflow-<name>/evals/
+skills/<name>/evals/
   README.md
   evals.json
   fixtures/
 ```
 
-When you change a hard gate, profile rule, or a key workflow step on one of these skills, update the matching `evals.json` scenario or add a new one in the same PR. Scenarios are reviewed against the skill body to ensure the skill actually refuses what the eval asserts.
+When you change a hard gate, profile rule, key workflow step, or extension discovery rule, update the matching `evals.json` scenario or add a new one in the same PR. Scenarios are reviewed against the skill body to ensure the skill actually refuses what the eval asserts.
 
 ## Pull request expectations
 
@@ -96,7 +96,7 @@ When you change a hard gate, profile rule, or a key workflow step on one of thes
 
 ## Repository hygiene
 
-- File naming: skill directories are `devflow-<noun>`. Reference files are `kebab-case.md`. Persona files are `devflow-<role>-reviewer.md` (or equivalent).
+- File naming: canonical runtime skill directories are `devflow-<noun>`. Coding standards use `<language>-coding-standards` (for example `c-coding-standards`, `cpp-coding-standards`). Domain constraints use `<domain>-development` or another concrete domain name (for example `automotive-embedded-development`). Reference files are `kebab-case.md`.
 - Don't add `.cursor/`, `.opencode/`, `.claude/` editor-specific directories at the repository root unless they are part of a deliberate integration release.
 - Don't introduce a `skills/docs/` or `skills/templates/` shared folder. References live per-skill.
 

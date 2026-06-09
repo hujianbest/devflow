@@ -30,7 +30,7 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 - reviewer 不替开发负责人 / 模块架构师拍板
 - reviewer 不返回多个候选下一步
 - AR 设计若改写组件接口 / 依赖 / 状态机 → 强制 `阻塞`(workflow)，下一步 `devflow-router` 升级 component-impact
-- 测试设计章节缺失或不含嵌入式风险覆盖矩阵 → 强制 `阻塞`(内容)
+- 测试设计章节缺失或不含适用风险覆盖矩阵 → 强制 `阻塞`(内容)
 - 测试设计若被拆成独立 `test-design.md` 文件 → 强制 `阻塞`(内容)
 
 ## 对象契约
@@ -46,17 +46,20 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 
 - **Code-Level Design Review**: 检查数据结构、控制流、接口签名草案、关键路径
 - **Component Design Conformance Check**: 检查与 `docs/component-design.md` 的一致性；不重新审组件级决策
-- **C / C++ Defensive Design Review**: 检查内存、生命周期、错误处理、并发、实时性、资源、ABI
-- **Test Design Adequacy Review**: 检查测试设计章节的用例覆盖 / 边界 / 异常 / 嵌入式风险 / mock 边界 / RED-GREEN 证据要求
-- **Traceability Check**: 检查每个用例回指 requirement row、嵌入式 NFR 至少一个 embedded-risk 用例
+- **Internal Quality Review**: 按 `docs/devflow-internal-quality.md` 检查代码层设计质量、接口契约、可维护性和演进成本
+- **Applicable Constraint Review**: 按适用编码规范 / 领域约束检查语言和领域风险
+- **Test Design Adequacy Review**: 检查测试设计章节的用例覆盖 / 边界 / 异常 / 适用风险 / mock 边界 / RED-GREEN 证据要求
+- **Traceability Check**: 检查每个用例回指 requirement row，适用领域风险至少有一个用例或 N/A 理由
 - **Template Conformance Check**: 检查团队 AR 设计模板的章节齐全（或显式占位）
 
-## 质量透镜（Craft）
+## 内在质量与扩展约束
 
-评审 AR 实现设计与测试设计章节时，叠加两个判别标尺，与本 skill 的 conformance / traceability rubric 互补：
+评审 AR 实现设计与测试设计章节时，叠加第三层内在质量和适用扩展约束，与本 skill 的 conformance / traceability rubric 互补：
 
-- 以 `devflow-design-craft` 作为「好设计」标尺（简单性优先、抽象克制、接口契约与错误语义、SOLID/GRASP 可判别 tell、嵌入式防御性设计）判别代码层设计。
-- 以 `devflow-test-craft` 作为「好测试」标尺（测试金字塔、测状态不测交互、覆盖类型、mock 克制）判别测试设计章节的有效性。
+- 以 `docs/devflow-internal-quality.md` 作为通用设计质量与代码质量标尺。
+- 以适用编码规范 skill 作为语言级判据。
+- 以适用领域约束 skill 作为领域风险判据。
+- 测试设计有效性仍属于第二层 TDD / test-review 体系，不再使用 `devflow-test-craft` 作为第三层标尺。
 
 透镜只提供判别标尺，verdict 仍由本评审节点唯一裁决；reviewer 不改设计 / 不改测试。
 
@@ -86,8 +89,8 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 | AD2 Goal & Scope Clarity | 设计目标 / 范围 / 非范围清晰 |
 | AD3 Affected Files & Control Flow | 受影响文件 / 模块 / 控制流冷读得懂 |
 | AD4 Component Design Conformance | 与组件设计一致；不修改组件接口 / 依赖 / 状态机 |
-| AD5 C / C++ Defensive Design | 错误处理、内存、并发、实时性、资源、ABI |
-| AD6 Test Design Adequacy | 测试用例完整、回指 requirement row、覆盖 Change Type；`modify` / `remove` 覆盖旧行为基线与回归 / 删除语义；嵌入式风险覆盖矩阵 |
+| AD5 Internal Quality & Constraints | 通用内在质量、适用编码规范、适用领域约束 |
+| AD6 Test Design Adequacy | 测试用例完整、回指 requirement row、覆盖 Change Type；`modify` / `remove` 覆盖旧行为基线与回归 / 删除语义；适用风险覆盖矩阵 |
 | AD7 Mock / RED-GREEN Plan | mock 边界合理；RED / GREEN 证据要求清晰 |
 | AD8 Open Questions Closure | 阻塞 / 非阻塞分类；阻塞项已闭合或上抛 |
 
@@ -103,7 +106,7 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 |---|---|---|---|---|
 | 8 维度均 ≥ 6、组件边界未被改写、测试设计章节充分、无 critical USER-INPUT | `通过` | `devflow-tdd-implementation` | `false` | `true`（开发负责人确认进入任务执行索引） |
 | findings 可 1-2 轮定向修订 | `需修改` | `devflow-ar-design` | `false` | `false` |
-| 测试设计章节缺失 / 测试设计被拆独立文件 / 嵌入式风险覆盖矩阵缺失 / 设计严重不清 | `阻塞`（内容） | `devflow-ar-design` | `false` | `false` |
+| 测试设计章节缺失 / 测试设计被拆独立文件 / 适用风险覆盖矩阵缺失 / 设计严重不清 | `阻塞`（内容） | `devflow-ar-design` | `false` | `false` |
 | AR 设计修改组件接口 / 依赖 / 状态机 / 上游证据冲突 | `阻塞`（workflow） | `devflow-router` | `true` | `false` |
 
 ### 6. 写 review 记录并回传
@@ -117,7 +120,7 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 ## 风险信号
 
 - 通过的 AR 设计悄悄修改了组件接口
-- 测试设计章节缺嵌入式风险覆盖矩阵却给 `通过`
+- 测试设计章节缺适用风险覆盖矩阵却给 `通过`
 - 测试设计被拆成独立 `test-design.md` 文件
 - 测试用例不回指 requirement row
 - `modify` / `remove` 的测试设计未覆盖 Existing Behavior / Baseline、回归行为或删除后的可观察语义
@@ -155,7 +158,7 @@ AR 设计评审常见的偷懒话术与反驳。命中任意一条 → 停下。
 - [ ] 8 维度评分完整、findings 已分类
 - [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
 - [ ] `通过` 时 `needs_human_confirmation=true`
-- [ ] 测试设计章节充分性已显式审查（含 Change Type 覆盖、modify/remove baseline 覆盖、嵌入式风险覆盖矩阵）
+- [ ] 测试设计章节充分性已显式审查（含 Change Type 覆盖、modify/remove baseline 覆盖、适用风险覆盖矩阵）
 - [ ] 结构化摘要已回传父会话
 
 ## 内嵌评审记录模板
@@ -196,7 +199,7 @@ reroute_via_router: true | false
 
 ## 本地测试设计契约摘录
 
-本 skill 检查测试设计时，要求每个 case 包含：case id、requirement row / design anchor、Change Type、behavior under test、preconditions、inputs or stimuli、expected output or observable effect、mock/stub/simulation boundary、verification command or evidence path、embedded risk covered。`modify` / `remove` case 必须能回指 requirement row 的 Existing Behavior / Baseline。DevFlow 不使用单独的 `test-design.md`；测试设计位于 AR design 中。
+本 skill 检查测试设计时，要求每个 case 包含：case id、requirement row / design anchor、Change Type、behavior under test、preconditions、inputs or stimuli、expected output or observable effect、mock/stub/simulation boundary、verification command or evidence path、applicable risk covered。`modify` / `remove` case 必须能回指 requirement row 的 Existing Behavior / Baseline。DevFlow 不使用单独的 `test-design.md`；测试设计位于 AR design 中。
 
 ## DevFlow 约定
 
@@ -215,3 +218,7 @@ reroute_via_router: true | false
 |---|---|
 | `references/ar-design-review-rubric.md` | 8 维度 rubric + rule IDs |
 | Local Test Design Contract Excerpt | 测试设计章节最小契约 |
+| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../c-coding-standards/SKILL.md` | C 编码规范扩展（适用时读取） |
+| `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |

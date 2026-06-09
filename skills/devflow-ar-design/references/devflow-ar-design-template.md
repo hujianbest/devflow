@@ -5,7 +5,7 @@
 - 本模板用于 `devflow-ar-design` 产出 `features/<id>/ar-design-draft.md`，并在 closeout 后 promote 到 `docs/ar-designs/AR<id>-<slug>.md`。
 - 正式交付件必须删除模板说明、示例业务内容和任何占位符；不得残留 `AI提示`、`TBD`、`{DATE}`、变量替换规则等模板痕迹。
 - 测试设计必须是本文档章节，不得拆成独立 `test-design.md`。
-- 本模板采用团队 AR 设计作业结构：AR 概述、动态行为、功能点分解、实现设计、MDC 场景设计、重构设计、测试设计、模板修订记录均为必填骨架。
+- 本模板采用团队 AR 设计作业结构：AR 概述、动态行为、功能点分解、实现设计、适用领域场景设计、重构设计、测试设计、模板修订记录均为必填骨架。MDC / SELinux 等车载领域内容仅在启用 `automotive-embedded-development` 时填写。
 
 ## 1. AR 概述（必要）
 
@@ -158,9 +158,9 @@ stop
 @enduml
 ```
 
-### 4.7 MDC 场景设计（必要）
+### 4.7 适用领域场景设计（按领域约束启用）
 
-每个场景均需填写。回答“不涉及”时必须给出判定依据。
+默认 DevFlow Core 不强制 MDC / SELinux 场景。若 work item 启用 `automotive-embedded-development`，则按下列车载领域场景填写；回答“不涉及”时必须给出判定依据。
 
 #### 4.7.1 并发场景分析
 
@@ -240,7 +240,7 @@ stop
 
 | Case ID | Covers Requirement | 覆盖功能点 | Test Level | Coverage Type | 测试因子 | 组合方式 | 逻辑覆盖程度 |
 |---|---|---|---|---|---|---|---|
-| TC-001 |  |  | unit / integration / simulation | happy / boundary / exception / embedded-risk |  | Pairwise / 全遍历 / 指定组合 | 语句 / 判定 / 路径 |
+| TC-001 |  |  | unit / integration / simulation | happy / boundary / exception / applicable-risk |  | Pairwise / 全遍历 / 指定组合 | 语句 / 判定 / 路径 |
 
 **测试因子组合说明**：
 
@@ -285,9 +285,9 @@ stop
 |---|---|---|---|
 |  |  |  |  |
 
-### 6.6 嵌入式风险覆盖矩阵
+### 6.6 适用风险覆盖矩阵
 
-| 嵌入式风险维度 | 覆盖该维度的 Case ID | 说明 |
+| 适用风险维度 | 覆盖该维度的 Case ID | 说明 |
 |---|---|---|
 | 内存（边界、池化、栈溢出） |  |  |
 | 并发（中断上下文、临界区、竞态） |  |  |

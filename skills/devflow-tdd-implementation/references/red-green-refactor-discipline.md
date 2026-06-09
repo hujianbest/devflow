@@ -63,7 +63,7 @@
    - Introduce Explaining Variable
 2. **每次 cleanup 后跑一次完整测试**，保持全绿
 3. **静态分析重新评估**：编译告警、MISRA / CERT / 团队编码规范违反项是否减少 / 持平
-4. **不引入新抽象**：除非 AR 设计的 C/C++ 实现策略明确声明
+4. **不引入新抽象**：除非 AR 设计的实现策略或适用编码规范明确声明
 5. **保留 REFACTOR 证据**（如发生 cleanup）：
    - cleanup 列表（Fowler vocabulary 命名 + 影响文件）
    - 完整测试通过命令与结果

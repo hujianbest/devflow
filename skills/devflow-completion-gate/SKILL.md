@@ -5,7 +5,7 @@ description: 当 devflow-code-review 已通过且团队需要在 devflow-finaliz
 
 # devflow 完成门禁
 
-判断当前 AR / DTS / CHANGE 实现 work item 是否满足 devflow Definition of Done：所有上游 review / gate 通过、证据齐全、追溯完整、嵌入式风险无未解释的 critical 项。**不**自宣完成、**不**自我验收、**不**做新实现。
+判断当前 AR / DTS / CHANGE 实现 work item 是否满足 devflow Definition of Done：所有上游 review / gate 通过、证据齐全、追溯完整、适用编码规范 / 领域约束无未解释的 critical 项。**不**自宣完成、**不**自我验收、**不**做新实现。
 
 devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tasks.md` / `task-board.md` 感知 task 进度。本 skill 先判断当前 active task 是否满足 DoD；若还有唯一 next-ready task，回到 `devflow-tdd-implementation`，只有所有 task 都完成后才进入 `devflow-finalize`（implementation closeout）。
 
@@ -32,7 +32,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 - 本轮没运行验证命令，不得宣称完成
 - 缺实现交接块 / Refactor Note / test-review / code-review 记录，不得 `通过`
 - profile 必需的上游证据矩阵不全，不得 `通过`
-- 嵌入式 critical 风险（内存 / 并发 / 实时性 / 错误处理）无解释 → 不得 `通过`
+- 适用编码规范 / 领域约束 critical 风险无解释 → 不得 `通过`
 - critical 静态分析 / 编译告警 / 编码规范违反无解释 → 不得 `通过`
 - AR 实现设计未被同步到 `docs/ar-designs/AR<id>-<slug>.md`（由 `devflow-finalize` 完成同步即可，但 `通过` 时必须显式标注「待 finalize 同步」）
 - 不得把"task 完成"等同于"workflow 可结束"——本 skill 通过后必须先检查 task-board，只有无剩余 ready / pending task 时才进入 `devflow-finalize`
@@ -49,10 +49,10 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 ## 方法原则
 
 - **Definition of Done (devflow 版)**: 见 `references/definition-of-done.md`
-- **Evidence Bundle Pattern**: 完成判断要求完整证据束（reviews + gates + 实现交接块 + 嵌入式风险审计）
+- **Evidence Bundle Pattern**: 完成判断要求完整证据束（reviews + gates + 实现交接块 + 适用约束审计）
 - **Profile-Aware Rigor**: standard / component-impact / hotfix / lightweight 的证据矩阵不同；lightweight 不降低质量底线，只缩小验证范围
 - **Fresh Evidence Verification**: 命令必须本会话执行，不依赖旧输出
-- **Embedded Risk Audit**: critical 嵌入式风险须显式 audit
+- **Applicable Constraint Audit**: critical 编码规范 / 领域约束风险须显式 audit
 - **Behavior Delta Evidence Audit**: `modify` / `remove` rows 必须有 regression / removal evidence，并能回指 Existing Behavior / Baseline
 - **Task Queue Discipline**: completion 先关闭 Current Active Task，再依据 task-board 选择唯一 next-ready task；冲突回 router
 
@@ -60,7 +60,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 ### 1. 明确完成宣告范围
 
-按 Definition of Done（详见 `references/definition-of-done.md`）写出本轮准备宣告什么：AR 行为完整 / DTS 修复完成 / 嵌入式风险无未解释项。
+按 Definition of Done（详见 `references/definition-of-done.md`）写出本轮准备宣告什么：AR 行为完整 / DTS 修复完成 / 适用编码规范和领域约束无未解释项。
 
 ### 2. 对齐上游结论与 profile 证据矩阵
 
@@ -96,9 +96,9 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 逐项核对退出码、失败数、输出是否支持完成宣告、结果是否属于当前最新代码。任一关键命令失败 → `需修改` 或 `阻塞`。
 
-### 5. 嵌入式风险审计
+### 5. 适用约束审计
 
-按 Embedded Risk Audit 综合 implementation-log.md 的 Refactor Note、code-review record、静态分析报告，对内存 / 并发 / 实时性 / 资源 / 错误处理 / ABI / SOA 边界各维度给出 `clean` / `documented-debt` / `critical-open` 状态（详见 `references/definition-of-done.md`）。任一 `critical-open` → `阻塞`。
+综合 implementation-log.md 的 Refactor Note、code-review record、静态分析报告、适用编码规范 skill 与领域约束 skill，对相关维度给出 `clean` / `documented-debt` / `critical-open` 状态（详见 `references/definition-of-done.md`）。任一 `critical-open` → `阻塞`。
 
 ### 5.5 行为增量证据审计
 
@@ -114,9 +114,9 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 | 条件 | conclusion | `next_action_or_recommended_skill` | reroute_via_router |
 |---|---|---|---|
-| 上游证据齐全、本轮验证命令全绿、嵌入式风险审计 clean、当前 task 可标记 done，且存在唯一 next-ready task | `通过` | `devflow-tdd-implementation` | `false` |
-| 上游证据齐全、本轮验证命令全绿、嵌入式风险审计 clean、所有 tasks 均 done，AR 设计可由 finalize 同步到 docs/ | `通过` | `devflow-finalize` | `false` |
-| 验证命令有失败 / 嵌入式风险有未解释 critical / Refactor Note 字段缺 → 可定向回修 | `需修改` | `devflow-tdd-implementation` | `false` |
+| 上游证据齐全、本轮验证命令全绿、适用约束审计 clean、当前 task 可标记 done，且存在唯一 next-ready task | `通过` | `devflow-tdd-implementation` | `false` |
+| 上游证据齐全、本轮验证命令全绿、适用约束审计 clean、所有 tasks 均 done，AR 设计可由 finalize 同步到 docs/ | `通过` | `devflow-finalize` | `false` |
+| 验证命令有失败 / 适用约束有未解释 critical / Refactor Note 字段缺 → 可定向回修 | `需修改` | `devflow-tdd-implementation` | `false` |
 | 强制验证步骤因环境 / 工具链问题未完成（且 `AGENTS.md` / DoD 无降级许可） | `阻塞` | `devflow-completion-gate` | `false` |
 | profile / route / 上游 verdict 冲突 / 实质修改组件边界 | `阻塞`（workflow） | `devflow-router` | `true` |
 
@@ -137,7 +137,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 - 把主观感觉当证据
 - 认为 review 通过就等于运行成功
 - 不读实现交接块 + Refactor Note 就宣告完成
-- 嵌入式 critical 风险无显式 audit
+- 适用编码规范 / 领域约束 critical 风险无显式 audit
 - `modify` / `remove` 缺 regression / removal evidence 却宣告完成
 - 单 task 完成后直接 finalize，未检查 task-board
 - 把缺失的 docs/ar-designs/ 同步当作 `阻塞`（应在通过时显式标注「待 finalize 同步」）
@@ -161,7 +161,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 | 错误 | 修复 |
 |---|---|
-| code review 通过就直接给 `通过` | 仍需本轮验证命令 fresh evidence + 嵌入式风险 audit |
+| code review 通过就直接给 `通过` | 仍需本轮验证命令 fresh evidence + 适用约束 audit |
 | 静态分析 critical 项被「先放着」 | 标 critical finding，verdict ≥ `需修改` |
 | profile = component-impact 但 component-design-review 缺记录 | `阻塞`(workflow)，回 router |
 
@@ -170,7 +170,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 - [ ] completion record 已落盘到 `features/<id>/completion.md`
 - [ ] 上游证据矩阵显式列出（含 N/A）
 - [ ] 本轮验证命令、退出码、结果摘要、新鲜度锚点已记录
-- [ ] 嵌入式风险审计显式给出
+- [ ] 适用编码规范 / 领域约束审计显式给出
 - [ ] `modify` / `remove` 的 regression / removal evidence 已纳入 completion evidence bundle
 - [ ] verdict 唯一、下一步唯一、`reroute_via_router` 正确
 - [ ] 通过时已检查 task-board：有唯一 next-ready task 则下一步 `devflow-tdd-implementation`，无剩余 task 才下一步 `devflow-finalize`
@@ -195,3 +195,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 | `references/definition-of-done.md` | devflow Definition of Done 各 profile 表 |
 | `references/devflow-completion-record-template.md` | completion record 模板 |
 | `references/verification-record-template.md` | 通用验证记录模板（命令、结果、新鲜度锚点、验证结论） |
+| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../c-coding-standards/SKILL.md` | C 编码规范扩展（适用时读取） |
+| `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |

@@ -46,12 +46,12 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 - **Clean Architecture Boundary Discipline**: 检查依赖方向稳定性、实现细节是否倒灌
 - **Interface Segregation Check**: SOA 接口是否最小知识、是否聚合多个无关用途
 - **Template Conformance Check**: 是否符合团队组件设计模板（含模板未补齐时的占位声明）
-- **Embedded Risk Review**: 检查并发、实时性、资源生命周期、错误处理、ABI / API 兼容性
+- **Applicable Constraint Review**: 适用时检查编码规范 skill 与领域约束 skill 声明的风险；本节点不内置某一语言或领域作为默认语境
 - **Cross-Component Impact Audit**: 跨组件影响是否被显式列出且与下游组件的协调路径明确
 
-## 质量透镜（Craft）
+## 内在质量与扩展约束
 
-评审组件设计质量时，以 `devflow-design-craft` 作为「好设计」的判别标尺（简单性优先、抽象克制、SOA 接口契约与错误语义、SOLID/GRASP 可判别 tell、嵌入式防御性设计），与本 skill 的组件边界 / 接口隔离 / 跨组件影响 rubric 互补——前者抓「设计得好不好」，后者抓「边界对不对」。透镜只提供判别标尺，verdict 仍由本评审节点唯一裁决；reviewer 不改设计。
+评审组件设计质量时，以 `docs/devflow-internal-quality.md` 作为通用设计质量判据，并按 router / 项目配置叠加适用编码规范与领域约束。扩展 skill 只提供判据，verdict 仍由本评审节点唯一裁决；reviewer 不改设计。
 
 ## 工作流
 
@@ -201,3 +201,5 @@ reroute_via_router: true | false
 | 文件 | 用途 |
 |---|---|
 | `references/component-design-review-rubric.md` | 7 维度 rubric + rule IDs |
+| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |

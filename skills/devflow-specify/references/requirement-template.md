@@ -52,7 +52,7 @@
 |---|---|---|---|
 | AC-001 |  |  |  |
 
-## 6. 嵌入式 NFR（如适用）
+## 6. 适用 NFR（如适用）
 
 核心 NFR 应使用 QAS 五要素表达，详见 `references/nfr-quality-attribute-scenarios.md`。本节只保留记录落点，具体字段以该参考文件为准。
 

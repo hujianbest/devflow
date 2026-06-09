@@ -1,15 +1,15 @@
-# OpenCode Setup
+# OpenCode Adapter Setup
 
-This guide explains how to use **DevFlow** with [OpenCode](https://opencode.ai). DevFlow v1.0 is OpenCode-only.
+This guide explains how to use **DevFlow Core** through the [OpenCode](https://opencode.ai) adapter. OpenCode is the first supported runtime adapter; it is not part of the DevFlow quality core.
 
 ## Overview
 
 OpenCode supports custom `/commands` but does not have a native plugin system or built-in slash-command marketplace. DevFlow integrates by combining these pieces:
 
-- The [`using-devflow`](../../skills/using-devflow/SKILL.md) entry skill — DevFlow's behavior constitution and shared conventions, discovered automatically like any other skill (DevFlow does not ship a root `AGENTS.md`).
+- The [`using-devflow`](../../skills/using-devflow/SKILL.md) entry skill — DevFlow's behavior constitution, three-layer discovery, shared conventions, and extension-skill discovery.
 - The built-in `skill` tool, which automatically discovers any `SKILL.md` under `skills/`.
 - An optional project-level `AGENTS.md` `## Project overrides` section that you create in your own component repository to override default artifact paths, templates, coding standards, or execution mode.
-- Consistent canonical node names so the agent picks the right skill from natural language and dispatches independent reviewer subagents (each reviewer subagent is seeded with the corresponding `devflow-*-review` skill as its system prompt).
+- Consistent canonical node names so the agent picks the right flow node from natural language and dispatches independent reviewer subagents. Coding standards and domain constraint skills are supporting constraints, not runtime next actions.
 
 This is an **agent-driven** workflow: skills are selected automatically by intent, not invoked through manual slash commands. It mirrors how Claude Code skills behave in practice.
 
@@ -44,7 +44,7 @@ Use this when you want to keep DevFlow's source separate from your component rep
    List the DevFlow skills you can see, and tell me which one you would load if I asked to clarify a new AR.
    ```
 
-   The agent should return the 13 canonical nodes and pick `using-devflow`.
+   The agent should return the 13 canonical nodes, the non-canonical extension skills (`c-coding-standards`, `cpp-coding-standards`, `automotive-embedded-development`), and pick `using-devflow`.
 
 ### Option B — Vendored
 
@@ -69,7 +69,7 @@ Every skill lives at:
 skills/<skill-name>/SKILL.md
 ```
 
-OpenCode reads each file's YAML frontmatter `description` (a classifier) and uses it to decide whether to load the skill for the current request. DevFlow's `description` strings deliberately front-load triggering keywords (`spec review`, `AR implementation design`, `component design`, `test review`, `C/C++ code review`, …) so OpenCode's matcher works on natural-language requests.
+OpenCode reads each file's YAML frontmatter `description` (a classifier) and uses it to decide whether to load the skill for the current request. DevFlow descriptions front-load triggering keywords for flow nodes (`spec review`, `AR implementation design`, `component design`, `test review`, `code review`) and extension skills (`C`, `C++`, `automotive embedded`, `ASIL`, `SOA/MDC`, etc.).
 
 ### 2. Automatic invocation
 
@@ -101,6 +101,16 @@ CLOSE      devflow-finalize
 HOTFIX     devflow-problem-fix
 ```
 
+Internal quality extensions are discovered alongside the flow:
+
+```text
+C code      c-coding-standards
+C++ code    cpp-coding-standards
+Automotive  automotive-embedded-development
+```
+
+These extension skills never appear in `Next Action Or Recommended Skill`.
+
 ### 4. Reviewer subagents
 
 Reviews are dispatched as **independent subagents** by `devflow-router`. The reviewer subagent is seeded with the corresponding skill body as its system prompt:
@@ -120,7 +130,7 @@ Reviewers are read-only on the artifact under review: they return `verdict + fin
 For DevFlow to work correctly on OpenCode, the agent MUST follow the behavior constitution in [`using-devflow`](../../skills/using-devflow/SKILL.md) (and any project `AGENTS.md` `## Project overrides`). Highlights:
 
 - Always start non-trivial work at `using-devflow`.
-- Never write `using-devflow` (or a `devflow-*-craft` lens) into `Next Action Or Recommended Skill`.
+- Never write `using-devflow`, a coding-standards skill, or a domain-constraint skill into `Next Action Or Recommended Skill`.
 - Never inline a review. Review subagents must be dispatched independently.
 - Never let `auto` Execution Mode bypass a review, gate, or approval.
 - Never silently downgrade a `Workflow Profile`.
@@ -176,4 +186,4 @@ The agent will:
 
 ## Summary
 
-DevFlow on OpenCode = `using-devflow` (behavior constitution + shared conventions) + `skills/` (13 canonical nodes plus 3 craft lenses) + automatic `skill`-tool invocation driven by natural language, with an optional project `AGENTS.md` `## Project overrides`. No plugins, no manual commands, full process discipline.
+DevFlow on OpenCode = `using-devflow` (behavior constitution + shared conventions + extension discovery) + `skills/` (13 canonical nodes plus non-canonical extension skills) + automatic `skill`-tool invocation driven by natural language, with an optional project `AGENTS.md` `## Project overrides`. No plugins, no manual commands, full process discipline.

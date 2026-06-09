@@ -10,8 +10,8 @@
 | **AD2 Goal & Scope Clarity** | 设计目标、当前 AR 范围 / 非范围、与 requirement.md 的范围一致；Design Options 含候选方案、trade-off、推荐项和确认状态 |
 | **AD3 Affected Files & Control Flow** | 受影响文件 / 模块 / 函数 / 类清单准确；动态行为、流程图、类图和关键控制流可冷读 |
 | **AD4 Component Design Conformance** | 与 `docs/component-design.md` 的对 AR 设计的约束一致；未越界改写组件接口 / 依赖 / 状态机 |
-| **AD5 C / C++ Defensive Design** | 错误处理、内存、并发（中断上下文 / 锁）、实时性、资源生命周期、ABI / API 兼容；MDC 五场景均有分析 |
-| **AD6 Test Design Adequacy** | 测试用例完整、每个用例回指 requirement row 与 Change Type；`modify` / `remove` 覆盖 Existing Behavior / Baseline、回归 / 删除语义；嵌入式风险覆盖矩阵完整 |
+| **AD5 Internal Quality And Applicable Constraints** | 通用内在质量、适用编码规范、适用领域约束；适用场景均有分析或 N/A 理由 |
+| **AD6 Test Design Adequacy** | 测试用例完整、每个用例回指 requirement row 与 Change Type；`modify` / `remove` 覆盖 Existing Behavior / Baseline、回归 / 删除语义；适用风险覆盖矩阵完整 |
 | **AD7 Mock / RED-GREEN Plan** | mock 边界合理；RED / GREEN / REFACTOR 证据要求清晰；evidence 落点齐全 |
 | **AD8 Open Questions Closure** | 阻塞 / 非阻塞分类；阻塞项已闭合或上抛 |
 
@@ -22,7 +22,7 @@
 ### Group AD1 - Identity & Template（身份与模板）（身份与模板）（身份与模板）
 
 - `AD1.1` AR ID / SR / IR / Owner 完整
-- `AD1.2` 团队 AR 模板章节齐全：AR 概述、动态行为、功能点分解、实现设计、MDC 五场景、重构设计、测试设计、修订记录
+- `AD1.2` 团队 AR 模板章节齐全：AR 概述、动态行为、功能点分解、实现设计、适用领域场景、重构设计、测试设计、修订记录
 - `AD1.3` 与 traceability.md 一致
 - `AD1.4` 正式输出无 `AI提示`、示例业务内容、变量替换说明、`TBD` / `{DATE}` 等占位符残留
 
@@ -55,7 +55,7 @@
 - `AD5.4` 实时性（截止时间、调度、节拍）
 - `AD5.5` 资源生命周期（句柄、文件、缓冲区）配对
 - `AD5.6` ABI / API 兼容（跨版本、跨平台）
-- `AD5.7` MDC 五场景（并发、启动退出、休眠唤醒、可靠性、SELinux）均有分析；写“不涉及”时有判定依据
+- `AD5.7` 适用领域场景均有分析；未启用领域约束时有 N/A 理由。启用 `automotive-embedded-development` 时覆盖 MDC 并发、启动退出、休眠唤醒、可靠性、SELinux 等场景
 - `AD5.8` 正常流程和异常流程均有处理策略，不只有 happy path
 
 ### Group AD6 - Test Design（测试设计）（测试设计）（测试设计）
@@ -63,8 +63,8 @@
 - `AD6.1` 测试用例最小字段齐全（见 `SKILL.md` 的 Local Test Design Contract Excerpt）
 - `AD6.2` 每个用例回指 requirement row
 - `AD6.3` 每个用例标明被覆盖 requirement row 的 Change Type
-- `AD6.4` NFR 含 `embedded-risk` 用例
-- `AD6.5` 嵌入式风险覆盖矩阵完整（内存 / 并发 / 实时性 / 资源 / 错误处理 / ABI）
+- `AD6.4` NFR 含 `applicable-risk` 用例或明确 N/A 理由
+- `AD6.5` 适用风险覆盖矩阵完整
 - `AD6.6` 测试设计为本设计的章节，**不**作为独立文件
 - `AD6.7` 测试设计覆盖功能点，含 UT / 接口 / 业务场景 / 异常场景；逻辑覆盖程度明确
 - `AD6.8` 每条核心 requirement row 至少被一个用例覆盖；`modify` / `remove` row 额外覆盖 regression / removal 语义和 Existing Behavior / Baseline
@@ -85,7 +85,7 @@
 
 ## Severity 分级
 
-- `critical`：阻塞 TDD 实施（缺测试设计、嵌入式风险矩阵缺失、AR 设计触及组件边界、缺关键控制流）
+- `critical`：阻塞 TDD 实施（缺测试设计、适用风险矩阵缺失、AR 设计触及组件边界、缺关键控制流）
 - `important`：approval 前应修（错误处理章节缺、mock 边界模糊、RED/GREEN 证据要求模糊、modify/remove baseline 未映射到测试）
 - `minor`：建议改进（措辞、章节顺序）
 
@@ -101,5 +101,5 @@
 |---|---|---|
 | 8 维度均 ≥ 6、Design Options 已确认、组件边界未被改写、测试设计章节充分、无 critical USER-INPUT | `通过` | `true`（开发负责人确认） |
 | 评分某项 < 6 但 findings 可 1-2 轮定向修订 | `需修改` | `false` |
-| 测试设计缺失 / 嵌入式风险矩阵缺失 / 设计严重不清 / critical TEAM-EXPERT 阻塞 | `阻塞`（内容） | `false` |
+| 测试设计缺失 / 适用风险矩阵缺失 / 设计严重不清 / critical TEAM-EXPERT 阻塞 | `阻塞`（内容） | `false` |
 | AR 设计修改组件边界 / 上游证据冲突 | `阻塞`（workflow） + `reroute_via_router=true` | `false` |

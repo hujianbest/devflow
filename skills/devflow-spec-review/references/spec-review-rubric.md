@@ -9,7 +9,7 @@
 | **S1 Identity & Traceability** | Work Item Type / ID 唯一；Owning Component 必填且唯一；上游单据锚点齐全可解析 | AR 多组件混写；上游锚点无版本号 |
 | **S2 Scope & Non-Scope Clarity** | 范围内 / 范围外显式；当前轮目标可被设计者 / 需求负责人冷读 | 仅有"做这个 AR"一句话；非范围隐藏在正文 |
 | **S3 Requirement Row Quality** | 每条核心 row 含 ID / Statement（EARS 句式）/ Acceptance（BDD Given/When/Then）/ Priority / Source / Change Type；`modify` / `remove` 含 Existing Behavior / Baseline；必填 Component Impact。详见 `references/requirement-rows-contract.md` | 缺 Acceptance；缺 Change Type；`modify` / `remove` 缺旧行为基线；Source 是口头会议；Statement 不是 EARS 句式；Acceptance 不是 BDD 格式 |
-| **S4 Embedded NFR Quality** | 核心 NFR 已归类到 ISO/IEC 25010 维度并含 QAS 五要素（Stimulus Source / Stimulus / Environment / Response / Response Measure）；Response Measure 含可判定阈值；Acceptance 与 QAS 一致。详见 `references/nfr-quality-attribute-scenarios.md` | "性能要好"、"低内存"；Response Measure 无阈值；QAS 与 Acceptance 矛盾；一条 NFR 覆盖多个 25010 维度 |
+| **S4 Applicable NFR Quality** | 核心 NFR 已归类到 ISO/IEC 25010 或适用领域维度，并含 QAS 五要素（Stimulus Source / Stimulus / Environment / Response / Response Measure）；Response Measure 含可判定阈值；Acceptance 与 QAS 一致。详见 `references/nfr-quality-attribute-scenarios.md` | "性能要好"、"资源要少"；Response Measure 无阈值；QAS 与 Acceptance 矛盾；一条 NFR 覆盖多个质量维度 |
 | **S5 Component Impact Assessment** | 是否影响组件接口 / 依赖 / 状态机已显式判断；涉及接口时 Interface Contract Candidates 足够设计消费 | 章节缺失；判断与 row 中 Component Impact 字段冲突；影响接口但无接口候选契约 |
 | **S6 Open Questions Closure** | 阻塞 / 非阻塞分类；阻塞项闭合或显式 USER-INPUT | 阻塞项隐藏在正文 |
 
@@ -23,7 +23,7 @@
 | Q2 | Acceptance 使用 BDD Given/When/Then 格式且可判定，不依赖隐含上下文（详见 `references/requirement-rows-contract.md` Acceptance Criteria Rules） |
 | Q3 | 需求间无冲突或重复 |
 | Q4 | Priority（MoSCoW 或团队等价）已逐条标注 |
-| Q5 | 嵌入式相关 NFR 已显式落到 NFR 行（不是只散落正文）；含 QAS 五要素（详见 `references/nfr-quality-attribute-scenarios.md`） |
+| Q5 | 适用 NFR 已显式落到 NFR 行（不是只散落正文）；含 QAS 五要素（详见 `references/nfr-quality-attribute-scenarios.md`） |
 | Q6 | NFR 的 ISO/IEC 25010 维度归类正确，一条 NFR 不混多维度 |
 
 ## Group A：Anti-Patterns
@@ -78,7 +78,7 @@
 
 - `USER-INPUT`：缺业务事实 / 外部决策 / 优先级冲突 / NFR 阈值缺失 → 上抛需求负责人 / 模块架构师
 - `LLM-FIXABLE`：缺 wording / 章节 / 重复整理 / 设计语言混入 → 开发人员定向回修
-- `TEAM-EXPERT`：组件边界、SOA 接口 / 并发 / 实时性专业判断 → 上抛模块架构师 / 资深嵌入式工程师
+- `TEAM-EXPERT`：组件边界、接口 / 并发 / 实时性等专业判断 → 上抛模块架构师 / 对应领域专家
 
 无法在不新增事实前提下修复的 → 不能标 LLM-FIXABLE。
 

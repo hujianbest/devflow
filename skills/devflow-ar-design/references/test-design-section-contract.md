@@ -1,6 +1,6 @@
 # devflow AR Test Design Section Contract
 
-> 配套 `devflow-ar-design/SKILL.md`。规定 AR 实现设计中**测试设计章节**的最小字段、嵌入式风险覆盖矩阵和与 requirement.md 的双向锚点。
+> 配套 `devflow-ar-design/SKILL.md`。规定 AR 实现设计中**测试设计章节**的最小字段、适用风险覆盖矩阵和与 requirement.md 的双向锚点。
 
 devflow 不维护独立 `test-design.md`；测试设计是 AR 实现设计的章节（devflow 硬约定）。
 
@@ -12,7 +12,7 @@ devflow 不维护独立 `test-design.md`；测试设计是 AR 实现设计的章
 | `Covers Requirement` | 必填 | 回指 requirement.md 的 row ID（如 `FR-002`、`NFR-001`、`IFR-003`） |
 | `Change Type` | 必填 | 回写被覆盖 requirement row 的 `new` / `modify` / `remove` |
 | `Test Level` | 必填 | `unit` / `integration` / `simulation` |
-| `Coverage Type` | 必填 | `happy` / `boundary` / `exception` / `regression` / `removal` / `embedded-risk` |
+| `Coverage Type` | 必填 | `happy` / `boundary` / `exception` / `regression` / `removal` / `applicable-risk` |
 | `Preconditions` | 必填 | 触发用例的状态 / 输入 |
 | `Steps / Trigger` | 必填 | 用例如何触发 |
 | `Expected Result` | 必填 | 可被 RED 步骤验证的失败条件 + GREEN 步骤验证的通过条件 |
@@ -20,13 +20,13 @@ devflow 不维护独立 `test-design.md`；测试设计是 AR 实现设计的章
 | `RED / GREEN Evidence Plan` | 必填 | 哪些命令、日志、静态分析结果在 TDD 时必须保留 |
 | `Notes` | 可选 | 已知风险、潜在不稳定因素 |
 
-每个核心 requirement row 至少被一个用例覆盖；NFR 必须有 `embedded-risk` 类型用例。`modify` row 必须至少有一个覆盖新语义的用例，并覆盖旧行为中要求保留的 regression 条件；`remove` row 必须至少有一个 `removal` 用例，证明旧入口 / 旧输入 / 旧配置删除后的可观察语义。
+每个核心 requirement row 至少被一个用例覆盖；适用 NFR 必须有 `applicable-risk` 类型用例或明确 N/A 理由。`modify` row 必须至少有一个覆盖新语义的用例，并覆盖旧行为中要求保留的 regression 条件；`remove` row 必须至少有一个 `removal` 用例，证明旧入口 / 旧输入 / 旧配置删除后的可观察语义。
 
-## 嵌入式风险覆盖矩阵
+## 适用风险覆盖矩阵
 
 测试设计章节必须显式给出风险覆盖矩阵：
 
-| 嵌入式风险维度 | 覆盖该维度的 Case ID |
+| 适用风险维度 | 覆盖该维度的 Case ID |
 |---|---|
 | 内存（边界、池化、栈溢出） |  |
 | 并发（中断上下文、临界区、竞态） |  |
@@ -60,7 +60,7 @@ devflow 不维护独立 `test-design.md`；测试设计是 AR 实现设计的章
 - 每个测试用例必须回写对应 row 的 `Change Type`
 - `modify` / `remove` 用例必须可追溯到 requirement row 的 `Existing Behavior / Baseline`
 - requirement.md 的核心 row 在 review 时反向核对至少一个用例覆盖
-- 嵌入式 NFR 必须有 `embedded-risk` 用例覆盖
+- 适用 NFR 必须有 `applicable-risk` 用例覆盖或明确 N/A 理由
 - 缺锚点 → spec-review / ar-design-review 视为 critical finding
 
 ## 反例
@@ -85,7 +85,7 @@ devflow 不维护独立 `test-design.md`；测试设计是 AR 实现设计的章
 ```text
 ✅ TC-007: 覆盖 NFR-001（实时性 ≤ 5 ms）
    Test Level: integration
-   Coverage Type: embedded-risk
+   Coverage Type: applicable-risk
    Preconditions: 目标平台 X、时钟节拍 Y
    Steps: 1000 次连续调用 Service.SetMode，记录 95th percentile 延迟
    Expected: 95th percentile ≤ 5 ms

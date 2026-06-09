@@ -54,13 +54,13 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 - **Clean Architecture Boundary Discipline**: 保持依赖方向稳定；不让实现细节倒灌到上层
 - **Interface Segregation**: 组件对外接口尽量内聚、最小知识
 - **Design Options Before Draft**: 正式起草前先列 2-3 个组件级方案、trade-off、推荐项与模块架构师确认状态
-- **C / C++ Defensive Design**: 组件级内存模型、并发模型、错误处理 / 资源生命周期约束
+- **Internal Quality Design**: 按 `docs/devflow-internal-quality.md` 检查组件设计质量、边界稳定性、接口契约和演进成本
 - **Template-Constrained Design**: 设计文档结构由团队模板决定（`references/devflow-component-design-template.md`，留空待团队补齐）
-- **Embedded Risk Awareness**: 实时性 / 中断上下文 / ABI 兼容 / 编译条件作为一等约束
+- **Applicable Constraint Awareness**: 适用时叠加编码规范 skill 与领域约束 skill；本节点不把 C/C++ 或车载嵌入式作为默认语境
 
-## 质量透镜（Craft）
+## 内在质量与扩展约束
 
-本节点起草 / 修订组件实现设计时，在步骤 3「方案选择 checkpoint」与步骤 5「起草 / 修订设计」内部叠加 `devflow-design-craft`（简单性优先、抽象克制、SOA 接口契约与错误语义、SOLID/GRASP 可判别 tell、嵌入式防御性设计、有质量的组件级方案对比）。透镜只提升设计质量，**不改变**组件边界停下规则、模板约束或独立评审；它不写 progress/handoff、不产生 verdict。
+本节点起草 / 修订组件实现设计时，在步骤 3「方案选择 checkpoint」与步骤 5「起草 / 修订设计」内部叠加 `docs/devflow-internal-quality.md`，并按项目 / router 识别结果叠加适用编码规范与领域约束。扩展约束只提升设计质量，**不改变**组件边界停下规则、模板约束或独立评审；它们不写 progress/handoff、不产生 verdict。
 
 ## 工作流
 
@@ -86,7 +86,7 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 - SOA 接口 / Topic / API / 软件单元接口影响
 - 行为增量：哪些受影响 rows 是 `new` / `modify` / `remove`，旧行为基线如何兼容、迁移或废弃
 - 依赖方向、状态机、运行时机制影响
-- 并发 / 实时性 / 资源 / 错误处理 / ABI 风险
+- 适用编码规范 / 领域约束风险（如并发、实时性、资源、错误处理、ABI）
 - 跨组件协调点与是否需要其他组件 work item
 - 成本与取舍：复杂度、兼容性、迁移风险、可回滚性、长期维护影响
 
@@ -100,9 +100,9 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 
 ### 5. 起草 / 修订设计
 
-按 SOA Component Boundary Analysis + Clean Architecture + Interface Segregation + C/C++ Defensive Design 写 `features/<id>/component-design-draft.md`。具体结构必须遵循 `references/devflow-component-design-template.md` 的团队章节，不再使用 devflow 简化骨架。至少完整覆盖：
+按 SOA Component Boundary Analysis + Clean Architecture + Interface Segregation + Internal Quality Design 写 `features/<id>/component-design-draft.md`。具体结构必须遵循 `references/devflow-component-design-template.md` 的团队章节，不再使用 devflow 简化骨架。至少完整覆盖：
 
-- **1 修订记录**、**2 术语**、**3 概述**：组件名、所属系统、职责 / 非职责、ASIL、Owner、参考资料
+- **1 修订记录**、**2 术语**、**3 概述**：组件名、所属系统、职责 / 非职责、Owner、参考资料；适用领域约束时补充 ASIL 等领域字段
 - **4 输入**：组件上下文视图（PlantUML）与组件全量功能列表；功能编号作为后续 AR 的基线引用
 - **5 组件详细设计**：Design Options（候选方案 / trade-off / 推荐项 / 确认状态）、开发视图、代码结构模型、领域模型（如有）、实现模型、数据设计、构建依赖、运行视图、通信 / 数据流 / 并发机制
 - **6 组件或子组件关键功能设计**：接口定义、功能列表详设、软件单元设计、需求描述列表、测试设计
@@ -110,7 +110,7 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 - **6.2 功能列表详设**：每个关键功能 / 场景必须有 PlantUML 时序图；时序图必须细化到软件单元 / 类 / 方法调用级别，不能停留在组件级粗交互
 - **6.3 软件单元设计**：核心类列表、文件映射、函数类型、函数名称、函数功能、输入 / 输出、错误处理，粒度需足以支撑 AR 设计和编码
 - **6.5 测试设计**：测试项 ID、期望结果、观测点和对应功能编号
-- **7 详细设计方案评审纪要**、**8 软件成本项设计评估（ASPICE）**：CPU、MEMORY、RAM / Disk、AI Core 等资源上限预估
+- **7 详细设计方案评审纪要**、**8 成本 / 资源评估（按项目与领域适用）**：需要资源预算时记录 CPU、MEMORY、RAM / Disk、AI Core 等资源上限预估；不适用时写明理由
 
 任一必含章节缺失、Design Options 缺推荐项 / 确认状态、接口未声明并发约束、关键功能时序图未到类 / 方法级、软件单元未到函数级、测试设计缺观测点、成本评估未填写、或模板占位符未清理 → 不能进入评审。
 
@@ -126,7 +126,7 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 
 ### 8. 自检与 handoff
 
-进入 handoff 前自检：团队组件模板章节齐全；Design Options 已列候选方案 / trade-off / 推荐项 / 模块架构师确认状态（或 Single obvious option 理由）；无 `AI提示`、示例业务内容、变量替换说明、`TBD` / `{DATE}` 等残留；组件职责 / 非职责清晰；全量功能列表可作为 AR 基线；SOA 接口含参数、返回值 / 错误码、时序约束、兼容性和并发约束；`modify` / `remove` 的旧行为基线、兼容 / 迁移 / 废弃策略已消费；依赖方向无环；状态机覆盖核心生命周期；并发 / 实时性 / 资源 / 错误处理已落到具体章节；每个关键功能 / 场景的时序图细化到软件单元 / 类 / 方法调用级；软件单元设计细化到函数级；测试设计有明确观测点；软件成本项已填写；「对 AR 实现设计的约束」可被下游消费；跨组件影响已显式列出。任一失败 → 回步骤 5 / 6。自检通过 → 父会话派发独立 reviewer subagent 执行 `devflow-component-design-review`。
+进入 handoff 前自检：团队组件模板章节齐全；Design Options 已列候选方案 / trade-off / 推荐项 / 模块架构师确认状态（或 Single obvious option 理由）；无 `AI提示`、示例业务内容、变量替换说明、`TBD` / `{DATE}` 等残留；组件职责 / 非职责清晰；全量功能列表可作为 AR 基线；SOA 接口含参数、返回值 / 错误码、时序约束、兼容性和并发约束；`modify` / `remove` 的旧行为基线、兼容 / 迁移 / 废弃策略已消费；依赖方向无环；状态机覆盖核心生命周期；适用编码规范 / 领域约束已落到具体章节或写明 N/A；每个关键功能 / 场景的时序图细化到软件单元 / 类 / 方法调用级；软件单元设计细化到函数级；测试设计有明确观测点；适用成本 / 资源项已填写；「对 AR 实现设计的约束」可被下游消费；跨组件影响已显式列出。任一失败 → 回步骤 5 / 6。自检通过 → 父会话派发独立 reviewer subagent 执行 `devflow-component-design-review`。
 
 ## 输出契约
 
@@ -209,3 +209,5 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 | 文件 | 用途 |
 |---|---|
 | `references/devflow-component-design-template.md` | 团队组件设计模板（待团队补齐） |
+| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |

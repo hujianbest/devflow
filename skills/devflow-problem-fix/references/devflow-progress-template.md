@@ -1,5 +1,7 @@
 # DTS 进度模板
 
+> 兼容说明：DevFlow 的通用 `progress.md` 模板以 `skills/using-devflow/references/devflow-progress-template.md` 为主。本文件仅作为 DTS / hotfix 的最小字段覆盖示例；新增字段或 schema 变更必须先更新共享模板。
+
 使用说明：
 
 - 默认保存路径：`features/DTS<id>-<slug>/progress.md`。

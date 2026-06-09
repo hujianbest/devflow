@@ -56,7 +56,7 @@ description: 当 DTS、紧急缺陷或已上线问题在任何代码修改前需
 - **Reproduce First**: 必须先复现或显式无法复现
 - **Contract Sanity Check**: 校对当前行为是否真的违反既有 spec / 设计 / API 契约
 - **Blameless Post-Mortem Mindset**: 关注机制 / 系统性原因，不归咎个人
-- **Embedded Risk Awareness**: 内存 / 并发 / 实时性 / 资源 / 错误处理在根因分析中作为一等输入
+- **Applicable Constraint Awareness**: 根因分析必须消费适用的编码规范 skill 与领域约束 skill；车载嵌入式 work item 叠加 `automotive-embedded-development`
 
 ## 工作流
 
@@ -68,6 +68,17 @@ description: 当 DTS、紧急缺陷或已上线问题在任何代码修改前需
 
 ### 2. 初始化或对齐 work item 目录
 
+若 `features/DTS<id>-<slug>/` 不存在，按共享 DevFlow 工件模型初始化最小目录骨架：
+
+- `README.md`
+- `progress.md`
+- `traceability.md`
+- `evidence/`
+
+优先使用 `using-devflow/references/` 下的共享模板；本 skill 本地模板只作为 DTS-specific 兼容覆盖，后续应收敛到共享模板。若已有目录，先读取现有 `README.md`、`progress.md`、`traceability.md`，不得覆盖用户已有记录。
+
+必填字段缺失时停止并回 `devflow-router` 或需求负责人：Work Item ID、Work Item Type = `DTS`、Owning Component、当前 profile。
+
 
 ### 3. 构建复现路径
 
@@ -75,11 +86,11 @@ description: 当 DTS、紧急缺陷或已上线问题在任何代码修改前需
 
 ### 4. 根因分析
 
-按 Root Cause Analysis (5 Whys) + Embedded Risk Awareness 写 `features/DTS<id>-<slug>/root-cause.md`，至少含 5 Whys 链、根因维度（编码错误 / 设计缺陷 / 接口契约不一致 / 内存 / 并发 / 实时性 / 配置 / ABI / ...）、信心程度（`demonstrated` / `probable`）、横向影响（是否在其他相似路径上也存在）。信心仅 `probable` 且修复边界扩散 → 不能 handoff，回步骤 3 补复现或上抛模块架构师。
+按 Root Cause Analysis (5 Whys) + Applicable Constraint Awareness 写 `features/DTS<id>-<slug>/root-cause.md`，至少含 5 Whys 链、根因维度（编码错误 / 设计缺陷 / 接口契约不一致 / 适用编码规范风险 / 适用领域约束风险 / 配置 / ...）、信心程度（`demonstrated` / `probable`）、横向影响（是否在其他相似路径上也存在）。信心仅 `probable` 且修复边界扩散 → 不能 handoff，回步骤 3 补复现或上抛模块架构师。
 
 ### 5. 最小安全修复边界
 
-按 Minimum Safe Fix Boundary 写 `features/DTS<id>-<slug>/fix-design.md`，至少含改什么（文件 / 函数 / 配置）、不改什么（显式列出避免顺手扩散）、影响什么（用户可见行为 / 公共接口 / 数据契约 / 跨组件）、是否需要补 AR 实现设计或修订组件实现设计、测试设计要点（复现脚本作为 RED 用例 + 额外边界 / 异常用例）、嵌入式风险审计（内存 / 并发 / 实时性 / 资源 / 错误处理 / ABI 各维度）。
+按 Minimum Safe Fix Boundary 写 `features/DTS<id>-<slug>/fix-design.md`，至少含改什么（文件 / 函数 / 配置）、不改什么（显式列出避免顺手扩散）、影响什么（用户可见行为 / 公共接口 / 数据契约 / 跨组件）、是否需要补 AR 实现设计或修订组件实现设计、测试设计要点（复现脚本作为 RED 用例 + 额外边界 / 异常用例）、适用编码规范 / 领域约束审计。
 
 ### 5A. 修复边界确认点
 
@@ -174,7 +185,7 @@ description: 当 DTS、紧急缺陷或已上线问题在任何代码修改前需
 - [ ] `features/DTS<id>-<slug>/` 目录骨架已建立
 - [ ] reproduction.md 已落盘（含期望 / 实际 / 步骤 / 证据 / 稳定性）
 - [ ] root-cause.md 已落盘（含 5 Whys / 维度 / 信心 / 横向影响）
-- [ ] fix-design.md 已落盘（含改什么 / 不改什么 / 影响什么 / 嵌入式风险）
+- [ ] fix-design.md 已落盘（含改什么 / 不改什么 / 影响什么 / 适用编码规范 / 领域约束）
 - [ ] 修复边界扩散信号已显式处理（确认或回 router）
 - [ ] traceability.md 已补 DTS 相关行
 - [ ] progress.md canonical 同步，下一步唯一指向回流节点
@@ -200,5 +211,7 @@ Default DTS directory is features/DTS<id>-<slug>/. Create or update README.md, p
 | 文件 | 用途 |
 |---|---|
 | `references/repro-and-rca-templates.md` | reproduction.md / root-cause.md / fix-design.md 模板 |
-| `references/devflow-work-item-readme-template.md` | DTS work item README 模板 |
-| `references/devflow-progress-template.md` | progress.md 模板 |
+| `../using-devflow/references/devflow-work-item-readme-template.md` | 共享 work item README 模板 |
+| `../using-devflow/references/devflow-progress-template.md` | 共享 progress.md 模板 |
+| `../using-devflow/references/devflow-traceability-template.md` | 共享 traceability.md 模板 |
+| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
