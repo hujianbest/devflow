@@ -12,7 +12,7 @@ devflow 默认每个 work item 一次 finalize，只有在 task-board 中所有 
 - **Implementation closeout**（AR / DTS / CHANGE）
   - 触发：`devflow-completion-gate` verdict = `通过`
   - 同步：`docs/ar-specs/AR<id>-<slug>.md`（AR 工作项必填，从 `features/<id>/requirement.md` 升级）+ `docs/ar-designs/AR<id>-<slug>.md`（AR 工作项必填，从 `features/<id>/ar-design-draft.md` 升级）+ `docs/component-design.md`（component-impact 时必填）+ 项目已启用的可选子资产 + release 锚点（按团队约定）
-  - evidence：要求 implementation handoff、test-check、code-review、completion 全套证据
+  - evidence：要求 implementation handoff、test-review、code-review、completion 全套证据
 
 本 skill **不**做新实现、**不**替 completion gate 判断完成、**不**修改其他组件、**不**创造新需求方向。
 

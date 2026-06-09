@@ -32,7 +32,7 @@
 | 测试证据 | `evidence/unit/`、`evidence/integration/` | present |
 | 静态分析证据 | `evidence/static-analysis/` | present / N/A |
 | 构建证据 | `evidence/build/` | present |
-| 测试有效性评审 | `reviews/test-check.md` | 通过 |
+| 测试有效性评审 | `reviews/test-review.md` | 通过 |
 | 代码检视 | `reviews/code-review.md` | 通过 |
 
 ## 完成声明

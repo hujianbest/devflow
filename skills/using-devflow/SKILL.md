@@ -218,7 +218,7 @@ DTS / hotfix:
     AR<id>-<slug>/ DTS<id>-<slug>/ CHANGE<id>-<slug>/
 ```
 
-`features/<id>/` 下按需包含：`README.md`、`progress.md`、`requirement.md`、`component-design-draft.md`、`ar-design-draft.md`、`tasks.md`、`task-board.md`、`traceability.md`、`implementation-log.md`、`reviews/`（spec-review / component-design-review / ar-design-review / test-check / code-review）、`evidence/`（unit / integration / static-analysis / build）、`completion.md`、`closeout.md`。
+`features/<id>/` 下按需包含：`README.md`、`progress.md`、`requirement.md`、`component-design-draft.md`、`ar-design-draft.md`、`tasks.md`、`task-board.md`、`traceability.md`、`implementation-log.md`、`reviews/`（spec-review / component-design-review / ar-design-review / test-review / code-review）、`evidence/`（unit / integration / static-analysis / build）、`completion.md`、`closeout.md`。
 
 ### Read-on-presence 规则
 

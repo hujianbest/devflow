@@ -1,6 +1,6 @@
 ---
 name: devflow-test-review
-description: 当 devflow-tdd-implementation 已完成且新写测试需要在代码检视前独立审查覆盖度、有效性、可维护性时使用；也用于派发评审子代理执行 TDD 后测试有效性审查，或上一轮 test-check 要求修改后复审。不用于编写或修复测试、评审生产代码，或阶段和路由混乱。
+description: 当 devflow-tdd-implementation 已完成且新写测试需要在代码检视前独立审查覆盖度、有效性、可维护性时使用；也用于派发评审子代理执行 TDD 后测试有效性审查，或上一轮 test-review 要求修改后复审。不用于编写或修复测试、评审生产代码，或阶段和路由混乱。
 ---
 
 # devflow TDD 后测试有效性审查
@@ -9,14 +9,14 @@ description: 当 devflow-tdd-implementation 已完成且新写测试需要在代
 
 本 skill **不**补写测试、**不**修改生产代码、**不**替开发负责人决定优先级。它产出 verdict + findings + 唯一下一步。
 
-devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，必须经过独立 test-check record。」本 skill 是这条纪律的工程化执行。
+devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，必须经过独立 test-review record。」本 skill 是这条纪律的工程化执行。
 
 ## 适用场景
 
 适用：
 
 - `devflow-tdd-implementation` 已写回 fresh evidence + 实现交接块，需独立审查测试有效性
-- reviewer subagent 被派发执行 test-check
+- reviewer subagent 被派发执行 test-review
 - 用户明确要求「review 测试 / test check / 测试有效性审查」
 
 不适用 → 改用：
@@ -39,7 +39,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 
 - Primary Object: implemented test quality finding set + verdict（已实现测试质量发现项与结论）
 - Frontend Input Object: 测试代码（本轮新增 / 修改）、`features/<id>/implementation-log.md`（含 Current Active Task + 实现交接块）、`features/<id>/tasks.md`、`features/<id>/task-board.md`、`features/<id>/evidence/{unit,integration,static-analysis,build}/`、`features/<id>/ar-design-draft.md`（含测试设计章节）、`features/<id>/requirement.md`、`docs/component-design.md`、`AGENTS.md`
-- Backend Output Object: `features/<id>/reviews/test-check.md` + 结构化 reviewer 返回摘要
+- Backend Output Object: `features/<id>/reviews/test-review.md` + 结构化 reviewer 返回摘要
 - Object Transformation: 把已落地测试用例审查成有效性 / 覆盖性 / 可维护性结论
 - Object Boundaries: 不修改测试 / 不写代码 / 不替团队角色拍板
 - Object Invariants: verdict ∈ {`通过`, `需修改`, `阻塞`}
@@ -74,7 +74,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 
 ### 2. 多维评分
 
-按 Structured Walkthrough 对 7 个维度（详见 `references/test-check-rubric.md`）做 0-10 评分；任一关键维度 < 6 不得 `通过`。
+按 Structured Walkthrough 对 7 个维度（详见 `references/test-review-rubric.md`）做 0-10 评分；任一关键维度 < 6 不得 `通过`。
 
 | 维度 | 关注 |
 |---|---|
@@ -105,7 +105,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 
 ## 输出契约
 
-- Review record：`features/<id>/reviews/test-check.md`
+- Review record：`features/<id>/reviews/test-review.md`
 - 结构化 reviewer 返回摘要：record_path、conclusion、key_findings、finding_breakdown、`next_action_or_recommended_skill`、needs_human_confirmation（默认 `false`）、reroute_via_router
 
 ## 风险信号
@@ -203,9 +203,9 @@ reroute_via_router: true | false
 
 本 skill 遵循 `using-devflow` 的「DevFlow 共同约定」章节（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。
 
-### Test Check 记录
+### Test Review 记录
 
-除非 `AGENTS.md` 覆盖路径，否则写入 `features/<id>/reviews/test-check.md`。
+除非 `AGENTS.md` 覆盖路径，否则写入 `features/<id>/reviews/test-review.md`。
 
 ### Review 边界
 
@@ -214,6 +214,6 @@ reroute_via_router: true | false
 
 | 文件 | 用途 |
 |---|---|
-| `references/test-check-rubric.md` | 7 维度 rubric + rule IDs（TC1-TC7） |
+| `references/test-review-rubric.md` | 7 维度 rubric + rule IDs（TC1-TC7） |
 | `references/team-test-review-rubric.md` | 团队 UT 审查准则完整继承版 |
 | Local Test Design Contract Excerpt | 测试设计章节契约（用例最小字段） |

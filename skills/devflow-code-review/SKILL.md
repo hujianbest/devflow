@@ -36,7 +36,7 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 ## 对象契约
 
 - Primary Object: code quality finding set + verdict（代码质量发现项与结论）
-- Frontend Input Object: 代码 diff、测试代码、`features/<id>/implementation-log.md`（含 Current Active Task + 实现交接块 + Refactor Note）、`features/<id>/tasks.md`、`features/<id>/task-board.md`、`features/<id>/reviews/test-check.md`（应 `通过`）、`features/<id>/evidence/`、`features/<id>/ar-design-draft.md`、`docs/component-design.md`；项目已启用可选子资产时一并读取 `docs/interfaces.md` / `docs/dependencies.md` / `docs/runtime-behavior.md`（未启用直接跳过、不阻塞）；`AGENTS.md`（编码规范、静态分析配置）
+- Frontend Input Object: 代码 diff、测试代码、`features/<id>/implementation-log.md`（含 Current Active Task + 实现交接块 + Refactor Note）、`features/<id>/tasks.md`、`features/<id>/task-board.md`、`features/<id>/reviews/test-review.md`（应 `通过`）、`features/<id>/evidence/`、`features/<id>/ar-design-draft.md`、`docs/component-design.md`；项目已启用可选子资产时一并读取 `docs/interfaces.md` / `docs/dependencies.md` / `docs/runtime-behavior.md`（未启用直接跳过、不阻塞）；`AGENTS.md`（编码规范、静态分析配置）
 - Backend Output Object: `features/<id>/reviews/code-review.md` + 结构化 reviewer 返回摘要
 - Object Transformation: 把代码变化审查成发现项 + 唯一 verdict + 唯一下一步
 - Object Boundaries: 不修改代码 / 不替团队角色拍板 / 不重审组件级决策
@@ -61,12 +61,12 @@ description: 当 devflow-test-review 已通过且 C/C++ 代码变更需要在完
 
 ### 1. 建立证据基线
 
-按 Evidence-Based + Read-On-Presence 读取代码 diff、测试代码、implementation-log.md（含 Current Active Task + 实现交接块 + Refactor Note）、tasks.md、task-board.md、reviews/test-check.md（应 `通过`）、`features/<id>/evidence/`、ar-design-draft.md、`docs/component-design.md`；项目已启用的可选子资产 `docs/interfaces.md` / `docs/dependencies.md` / `docs/runtime-behavior.md` 也一并读取，未启用直接跳过、不阻塞；`AGENTS.md`（编码规范 / 静态分析配置）。Refactor Note 是 CR8 的核心输入。
+按 Evidence-Based + Read-On-Presence 读取代码 diff、测试代码、implementation-log.md（含 Current Active Task + 实现交接块 + Refactor Note）、tasks.md、task-board.md、reviews/test-review.md（应 `通过`）、`features/<id>/evidence/`、ar-design-draft.md、`docs/component-design.md`；项目已启用的可选子资产 `docs/interfaces.md` / `docs/dependencies.md` / `docs/runtime-behavior.md` 也一并读取，未启用直接跳过、不阻塞；`AGENTS.md`（编码规范 / 静态分析配置）。Refactor Note 是 CR8 的核心输入。
 
 ### 1.5 Precheck
 
 - 缺实现交接块 / 核心代码范围不可定位 / Refactor Note 缺失 → blocked-content，下一步 `devflow-tdd-implementation`
-- test-check 未通过 / route / stage / profile 冲突 → blocked-workflow，`reroute_via_router=true`，下一步 `devflow-router`
+- test-review 未通过 / route / stage / profile 冲突 → blocked-workflow，`reroute_via_router=true`，下一步 `devflow-router`
 - Refactor Note 中 Escalation Triggers 非 `none` 但实现节点仍指向 `devflow-test-review` → blocked-workflow，`reroute_via_router=true`
 - 否则进入步骤 2
 

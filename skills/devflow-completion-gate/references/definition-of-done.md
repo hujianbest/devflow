@@ -8,7 +8,7 @@
 2. AR 实现设计存在并通过 ar-design-review；测试设计章节完整
 3. C / C++ 代码改动可定位（diff 可读）
 4. 实现交接块 + Refactor Note 完整（Hat Discipline / In-task Cleanups / Architectural Conformance / Documented Debt / Escalation Triggers / Static Analysis Evidence）
-5. test-check verdict = `通过`
+5. test-review verdict = `通过`
 6. code-review verdict = `通过`
 7. 本轮验证命令全部成功执行；退出码、摘要、新鲜度锚点齐全
 8. evidence/{unit,static-analysis,build}/ 含本轮 fresh evidence
@@ -24,7 +24,7 @@
 1. `tasks.md` 中该 task 的 Acceptance / Files / Verify / Definition of Done 均已落实
 2. task 引用的 Test Design Case ID 均已有 RED / GREEN / REFACTOR（如适用）证据
 3. task 覆盖 `modify` / `remove` rows 时，regression / removal evidence 能回指 Existing Behavior / Baseline
-4. test-check 与 code-review 针对当前 task 的结论均为 `通过`
+4. test-review 与 code-review 针对当前 task 的结论均为 `通过`
 5. traceability.md 已补 Task ID / Code File / Test Code File / Verification Evidence
 6. task-board 可把该 task 从 `in_progress` 更新为 `done`
 
@@ -51,7 +51,7 @@
 
 - 不必有完整 requirement.md，但必须有 reproduction.md + root-cause.md + fix-design.md
 - AR 实现设计可被 fix-design.md 替代（仍需含测试设计章节或与现有 AR 设计的差异说明）
-- 其余项目（test-check / code-review / fresh evidence / 嵌入式风险审计 / 静态分析）**全部保留**
+- 其余项目（test-review / code-review / fresh evidence / 嵌入式风险审计 / 静态分析）**全部保留**
 
 紧急不等于绕过；hotfix 压缩文档量，不压缩证据。
 
@@ -65,7 +65,7 @@
 - ar-design-draft.md 可极简，但仍需含测试设计章节
 - evidence 可只保留本轮真实跑过的最少必要文件
 
-不允许压缩：test-check / code-review verdict、fresh evidence、嵌入式风险 audit。
+不允许压缩：test-review / code-review verdict、fresh evidence、嵌入式风险 audit。
 
 ## 嵌入式风险审计字段
 

@@ -49,7 +49,7 @@
 | spec-review | `reviews/spec-review.md` |  |  | AR / DTS / CHANGE |
 | component-design-review | `reviews/component-design-review.md` |  |  | AR(component-impact) |
 | ar-design-review | `reviews/ar-design-review.md` |  |  | AR / DTS / CHANGE |
-| test-check | `reviews/test-check.md` |  |  | AR / DTS / CHANGE |
+| test-review | `reviews/test-review.md` |  |  | AR / DTS / CHANGE |
 | code-review | `reviews/code-review.md` |  |  | AR / DTS / CHANGE |
 | completion-gate | `completion.md` |  |  | AR / DTS / CHANGE |
 

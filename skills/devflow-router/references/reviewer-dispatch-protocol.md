@@ -25,7 +25,7 @@ devflow 的 review 节点（spec-review / component-design-review / ar-design-re
   - component-design-review（AR component-impact）：`features/<id>/requirement.md` + `features/<id>/component-design-draft.md` + 当前 `docs/component-design.md`
   - ar-design-review（**仅** AR / DTS / CHANGE）：`features/<id>/requirement.md` + `features/<id>/ar-design-draft.md` + `docs/component-design.md`
   - test-review（**仅** AR / DTS / CHANGE）：`features/<id>/ar-design-draft.md`（含测试设计章节）+ `features/<id>/evidence/unit/`、`features/<id>/evidence/integration/` + `features/<id>/implementation-log.md`
-  - code-review（**仅** AR / DTS / CHANGE）：上述全部 + 代码 diff + `features/<id>/reviews/test-check.md`
+  - code-review（**仅** AR / DTS / CHANGE）：上述全部 + 代码 diff + `features/<id>/reviews/test-review.md`
 - `agents_md_anchor`：项目 `AGENTS.md` 中相关约定路径（编码规范、静态分析配置、模板覆盖路径）
 - `expected_record_path`：默认见目标 skill 的 `SKILL.md` / Local DevFlow Conventions，项目覆写优先
 

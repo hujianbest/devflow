@@ -21,7 +21,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 不适用 → 改用：
 
-- 缺 code review / test-check 记录 → 上游补
+- 缺 code review / test-review 记录 → 上游补
 - 需状态收口 / closeout → `devflow-finalize`
 - 需新实现 → `devflow-tdd-implementation`
 - 阶段不清 → `devflow-router`
@@ -30,7 +30,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 - 没有针对最新代码的验证证据，不得宣称完成
 - 本轮没运行验证命令，不得宣称完成
-- 缺实现交接块 / Refactor Note / test-check / code-review 记录，不得 `通过`
+- 缺实现交接块 / Refactor Note / test-review / code-review 记录，不得 `通过`
 - profile 必需的上游证据矩阵不全，不得 `通过`
 - 嵌入式 critical 风险（内存 / 并发 / 实时性 / 错误处理）无解释 → 不得 `通过`
 - critical 静态分析 / 编译告警 / 编码规范违反无解释 → 不得 `通过`
@@ -40,7 +40,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 ## 对象契约
 
 - Primary Object: completion evidence bundle + verdict
-- Frontend Input Object: `features/<id>/requirement.md`、`features/<id>/reviews/spec-review.md`、`features/<id>/reviews/component-design-review.md`（component-impact 时必有）、`features/<id>/reviews/ar-design-review.md`、`features/<id>/reviews/test-check.md`、`features/<id>/reviews/code-review.md`、`features/<id>/implementation-log.md`（含实现交接块 + Refactor Note）、`features/<id>/evidence/{unit,integration,static-analysis,build}/`、`features/<id>/traceability.md`、`features/<id>/progress.md`、`docs/component-design.md`、`AGENTS.md`
+- Frontend Input Object: `features/<id>/requirement.md`、`features/<id>/reviews/spec-review.md`、`features/<id>/reviews/component-design-review.md`（component-impact 时必有）、`features/<id>/reviews/ar-design-review.md`、`features/<id>/reviews/test-review.md`、`features/<id>/reviews/code-review.md`、`features/<id>/implementation-log.md`（含实现交接块 + Refactor Note）、`features/<id>/evidence/{unit,integration,static-analysis,build}/`、`features/<id>/traceability.md`、`features/<id>/progress.md`、`docs/component-design.md`、`AGENTS.md`
 - Backend Output Object: `features/<id>/completion.md` + 结构化 reviewer 返回摘要 + `progress.md` 同步
 - Object Transformation: 把多源证据判定为能否完成；产出 evidence bundle
 - Object Boundaries: 不写代码 / 不补测试 / 不修改设计 / 不替团队角色拍板
@@ -68,9 +68,9 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 | Profile | 必需的上游记录 |
 |---|---|
-| `standard` | spec-review、ar-design-review、test-check、code-review、实现交接块 + Refactor Note、evidence/{unit,static-analysis,build}/ |
+| `standard` | spec-review、ar-design-review、test-review、code-review、实现交接块 + Refactor Note、evidence/{unit,static-analysis,build}/ |
 | `component-impact` | 上面全部 + component-design-review |
-| `hotfix` | reproduction.md、root-cause.md、fix-design.md、test-check、code-review、实现交接块 + Refactor Note、evidence/{unit,static-analysis,build}/ |
+| `hotfix` | reproduction.md、root-cause.md、fix-design.md、test-review、code-review、实现交接块 + Refactor Note、evidence/{unit,static-analysis,build}/ |
 | `lightweight` | 同 `standard`（文档量可压缩，证据不可压缩） |
 
 任一缺记录 → `阻塞`。
@@ -187,7 +187,7 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 
 ### Completion 证据
 
-检查已批准设计、已完成当前 task、test-check verdict、code-review verdict、unit/integration/build/static-analysis evidence、traceability 和 task-board state。若存在唯一 next-ready task，路由到 `devflow-tdd-implementation`；若无剩余工作，路由到 `devflow-finalize`；状态不明确则路由到 `devflow-router`。
+检查已批准设计、已完成当前 task、test-review verdict、code-review verdict、unit/integration/build/static-analysis evidence、traceability 和 task-board state。若存在唯一 next-ready task，路由到 `devflow-tdd-implementation`；若无剩余工作，路由到 `devflow-finalize`；状态不明确则路由到 `devflow-router`。
 ## 支撑参考
 
 | 文件 | 用途 |

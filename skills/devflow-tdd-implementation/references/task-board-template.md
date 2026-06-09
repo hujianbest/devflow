@@ -32,7 +32,7 @@
 - `pending`: 前置依赖或 ready 条件尚未满足
 - `ready`: 可被 router 锁定为下一任务
 - `in_progress`: 已被锁定为当前唯一活跃任务
-- `done`: 当前任务已完成 TDD、test-check、code-review、completion-gate 的 task-level 质量链
+- `done`: 当前任务已完成 TDD、test-review、code-review、completion-gate 的 task-level 质量链
 - `blocked`: 任务当前无法推进，需要外部条件或上游修订
 - `cancelled`: 任务已失效、被改范围覆盖或不再执行
 

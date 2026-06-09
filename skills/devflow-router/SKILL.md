@@ -1,6 +1,6 @@
 ---
 name: devflow-router
-description: 当用户要求继续或推进且必须根据工件证据决定标准 devflow 节点时使用；也用于评审或门禁后恢复编排、路由 / 阶段 / 工作流档位不清或证据冲突、判断是否进入 component-impact 或 hotfix 档位，以及派发规格、组件设计、AR 设计、测试检查、代码检视的独立评审子代理。不用于新会话入口发现或叶子节点内部的写作、评审、实现。
+description: 当用户要求继续或推进且必须根据工件证据决定标准 devflow 节点时使用；也用于评审或门禁后恢复编排、路由 / 阶段 / 工作流档位不清或证据冲突、判断是否进入 component-impact 或 hotfix 档位，以及派发规格、组件设计、AR 设计、测试评审、代码检视的独立评审子代理。不用于新会话入口发现或叶子节点内部的写作、评审、实现。
 ---
 
 # DevFlow Router
@@ -20,7 +20,7 @@ DevFlow 处理 AR / DTS / CHANGE work item，默认以单 AR / 单 DTS 为 work 
 - route / stage / profile 不清，或工件证据冲突
 - 需在实现 profile（`standard` / `component-impact` / `hotfix` / `lightweight`）之间做判定
 - 需判断是否进入 `devflow-component-design`（AR component-impact 触发）或 `devflow-problem-fix`（hotfix）
-- 需派发 reviewer subagent 执行 spec / component-design / ar-design / test-check / code-review
+- 需派发 reviewer subagent 执行 spec / component-design / ar-design / test-review / code-review
 - reviewer subagent 返回 `reroute_via_router=true`
 
 不适用 → 改用：

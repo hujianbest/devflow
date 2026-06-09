@@ -29,7 +29,7 @@
 | AR 设计评审 | `reviews/ar-design-review.md` | 通过 |
 | 任务队列前置检查 | `tasks.md` / `task-board.md` | passed |
 | 任务看板 | `task-board.md` | all done / cancelled |
-| 测试有效性评审 | `reviews/test-check.md` | 通过 |
+| 测试有效性评审 | `reviews/test-review.md` | 通过 |
 | 代码检视 | `reviews/code-review.md` | 通过 |
 | 完成门禁 | `completion.md` | 通过 |
 

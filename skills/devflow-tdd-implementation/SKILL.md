@@ -218,7 +218,7 @@ TDD 实现阶段最常见的偷懒话术与反驳。命中任意一条 → 停�
 | 「`NEEDS_CONTEXT` 直接上抛 `devflow-router`」 | 错。`NEEDS_CONTEXT` 留在本节点，用更收敛的 Context Pack 重派；只有 routing / profile / scope blocker 才上抛 router |
 | 「Refactor Note 没什么好写的，跳过」 | 缺 Refactor Note → `devflow-code-review` CR8 直接 `需修改`；不存在「没什么好写」的合法情形 |
 | 「自审一下，跳过 `devflow-test-review`」 | 禁止 self-review。TDD 完成后必须经独立 `devflow-test-review` |
-| 「测试通过了，可以宣布 task 完成」 | 跑通 ≠ 有效。Current Active Task 完成必须含 fresh evidence + 后续 test-check |
+| 「测试通过了，可以宣布 task 完成」 | 跑通 ≠ 有效。Current Active Task 完成必须含 fresh evidence + 后续 test-review |
 | 「同时推进 2 条 task 比较快」 | 必须**单 active task**。多 in_progress → 立刻收回到一条 |
 
 ## 验证清单
