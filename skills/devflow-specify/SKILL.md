@@ -158,6 +158,8 @@ AR / DTS / CHANGE 额外自检：
   - `Next Action Or Recommended Skill` = `devflow-spec-review`
 - `features/<Work Item Id>-<slug>/README.md` 中 Requirement 行更新
 
+初始化 `README.md`、`progress.md`、`traceability.md` 时，直接读取共享模板 `../using-devflow/references/devflow-work-item-readme-template.md`、`../using-devflow/references/devflow-progress-template.md`、`../using-devflow/references/devflow-traceability-template.md`；不要在 `devflow-specify/references/` 下查找这三份共享模板。
+
 handoff 摘要（按 Local DevFlow Conventions 字段）：`work_item_id`、`owning_component`、`workflow_profile`、`artifact_paths`、`traceability_links`、`blockers`（如有 USER-INPUT 阻塞项）、`next_action_or_recommended_skill = devflow-spec-review`。
 
 未达评审门槛时不伪造 handoff；明确仍缺什么。
@@ -252,6 +254,6 @@ AR / DTS / CHANGE work item 额外项：
 | `references/requirement-rows-contract.md` | requirement rows 最小字段、EARS Statement Patterns、BDD Acceptance Rules、MoSCoW Priority、Source / Trace Anchor、Brainstorming Notes Normalization、Common Failure Modes |
 | `references/granularity-and-split.md` | INVEST `Small` + `Independent` 检查（G1-G6 + 嵌入式 GE1-GE2）、Split Rules、Mechanical vs Scope-Shaping Split、Cross-Work-Item Split |
 | `references/nfr-quality-attribute-scenarios.md` | ISO/IEC 25010 质量维度、QAS 五要素、嵌入式 NFR 改写示例（实时性 / 内存 / 并发 / 资源 / 错误处理 / 安全）、最小签入条件 |
-| `skills/using-devflow/references/devflow-work-item-readme-template.md` | 通用 work item README 模板（共享） |
-| `skills/using-devflow/references/devflow-progress-template.md` | 通用 progress.md 模板（共享） |
-| `skills/using-devflow/references/devflow-traceability-template.md` | 通用 traceability.md 模板（共享） |
+| `../using-devflow/references/devflow-work-item-readme-template.md` | 通用 work item README 模板（共享） |
+| `../using-devflow/references/devflow-progress-template.md` | 通用 progress.md 模板（共享） |
+| `../using-devflow/references/devflow-traceability-template.md` | 通用 traceability.md 模板（共享） |
