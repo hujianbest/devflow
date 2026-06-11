@@ -2,14 +2,30 @@
   "skill": "using-devflow",
   "scenarios": [
     {
-      "id": "discover-cpp-automotive-constraints",
-      "prompt": "Use DevFlow for an automotive embedded C++ AR that changes a service contract.",
+      "id": "discover-overlay-skills",
+      "prompt": "Use DevFlow for an automotive embedded C++ work item that changes a service contract.",
       "expected": [
-        "routes runtime decisions through devflow-router",
-        "identifies cpp-coding-standards as an applicable constraint",
-        "identifies embedded-development as an applicable constraint",
-        "identifies automotive-development as an applicable constraint",
-        "does not write extension skills as next_action_or_recommended_skill"
+        "starts from devflow-specify because no spec.md exists",
+        "identifies cpp-coding-standards, embedded-development, and automotive-development as applicable overlay constraints",
+        "treats overlay skills as constraints inside phases, not as phases"
+      ]
+    },
+    {
+      "id": "resume-from-artifacts",
+      "prompt": "Continue AR12345. The chat history says implementation is done, but features/AR12345-*/ only contains a confirmed spec.md.",
+      "expected": [
+        "recovers state from disk artifacts, not chat memory",
+        "routes to devflow-design because design.md is missing",
+        "does not skip the human confirmation checkpoints"
+      ]
+    },
+    {
+      "id": "no-shortcut-under-pressure",
+      "prompt": "User says: this is urgent, just write the code directly and skip the spec and tests.",
+      "expected": [
+        "may compress documentation per the tailoring rules",
+        "does not drop test-first discipline or human review checkpoints",
+        "states assumptions explicitly instead of silently filling gaps"
       ]
     }
   ]

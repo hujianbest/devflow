@@ -2,14 +2,30 @@
   "skill": "embedded-development",
   "scenarios": [
     {
-      "id": "inherits-embedded-risk-checklist",
-      "prompt": "Review an embedded driver change with interrupt context, static buffers, DMA resource lifecycle, realtime deadline, and static-analysis evidence.",
+      "id": "isr-discipline",
+      "prompt": "Review a driver change where the ISR calls a logging function that takes a mutex, and a shared flag is 'protected' by volatile.",
       "expected": [
-        "checks memory and buffer ownership",
-        "checks interrupt/concurrency restrictions",
-        "checks realtime and resource lifecycle evidence",
-        "does not apply automotive ASIL/MDC/DTC rules by default",
-        "does not produce a runtime next action"
+        "flags blocking call inside interrupt context as critical",
+        "rejects volatile as a synchronization mechanism",
+        "recommends the minimal-ISR pattern (collect, enqueue, notify)"
+      ]
+    },
+    {
+      "id": "nfr-needs-target-evidence",
+      "prompt": "A latency NFR (p95 <= 5ms on target) is claimed as verified because host unit tests pass.",
+      "expected": [
+        "rejects host-only evidence for a target-environment Response Measure",
+        "requires measurement in the declared environment (target/HIL or justified simulation)",
+        "treats missing evidence without an N/A reason as critical"
+      ]
+    },
+    {
+      "id": "constraints-front-loaded",
+      "prompt": "The agent proposes leaving memory budget and interrupt-context questions 'for code review to catch'.",
+      "expected": [
+        "requires embedded constraints to be set in spec (QAS thresholds) and design (strategy)",
+        "does not defer them to review stage",
+        "does not apply automotive ASIL/DTC rules by default"
       ]
     }
   ]

@@ -2,14 +2,30 @@
   "skill": "automotive-development",
   "scenarios": [
     {
-      "id": "automotive-separate-from-embedded",
-      "prompt": "Use DevFlow for an automotive service AR with ASIL, DTC, SOA/MDC, sleep/wake, and SELinux constraints.",
+      "id": "asil-not-self-decided",
+      "prompt": "The agent assumes a small feature is QM because 'it is just a config read', with no safety analysis source.",
       "expected": [
-        "checks ASIL and safety ownership",
-        "checks automotive SOA/MDC and DTC constraints",
-        "checks vehicle lifecycle and SELinux constraints",
-        "does not duplicate generic embedded memory/interrupt rules",
-        "does not produce a runtime next action"
+        "refuses to infer ASIL applicability from feature size",
+        "raises a blocking open question to the functional-safety owner",
+        "does not silently downgrade safety-related behavior"
+      ]
+    },
+    {
+      "id": "interface-change-has-consumers",
+      "prompt": "A service error code is changed and the agent claims 'downstream probably does not depend on it'.",
+      "expected": [
+        "treats observable SOA semantics changes as modify with a baseline",
+        "requires listing known consumers and a compatibility strategy",
+        "routes the change through the spec (IFR) discipline"
+      ]
+    },
+    {
+      "id": "lifecycle-and-selinux",
+      "prompt": "A new daemon is added without sleep/wake handling and with a permissive SELinux domain 'to be tightened later'.",
+      "expected": [
+        "requires explicit startup/shutdown/sleep/wake behavior in the design",
+        "rejects permissive-now-tighten-later as a policy strategy",
+        "does not duplicate generic embedded memory/interrupt rules"
       ]
     }
   ]

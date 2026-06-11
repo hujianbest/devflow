@@ -1,95 +1,134 @@
 ---
 name: c-coding-standards
-description: 当 DevFlow work item 涉及 C 语言代码、C 测试、C 工具链、MISRA C、指针/内存/宏/资源生命周期或 C 静态分析规则时使用。作为第三层代码内在质量的编码规范扩展；不用于车载领域约束、C++ 规范、运行时路由或写 progress/handoff。
+description: 在编写、修改或评审 C 代码（源文件、头文件、C 单元测试）时使用。提供指针所有权、内存与资源、缓冲区、整数、宏、头文件、错误返回的具体规则与正反例。C++ 规则见 cpp-coding-standards。
 ---
 
 # C Coding Standards
 
 ## 总览
 
-`c-coding-standards` 是 DevFlow 第三层“代码内在质量”的 C 语言扩展。它定义 C 代码如何写得清晰、可靠、可审查，并为设计、实现、代码评审和完成门禁提供语言级约束。
+C 给了你足够的绳子。本技能在 `devflow-clean-code` 的通用标准之上叠加 C 的语言规则——每条规则针对一类真实事故（越界、悬垂、泄漏、未定义行为）。项目声明了 MISRA C / CERT C 子集时以项目为准，本文是未声明时的默认底线。
 
-本 skill 不替代 `devflow-code-review`，不写代码，不产 verdict，不写 `progress.md` / handoff，也不是 canonical runtime node。
+## 指针与所有权
 
-## 适用场景
+每个跨函数边界的指针必须能回答：**谁拥有它、它活多久、能否为 NULL**。约定写进签名和头文件注释：
 
-适用：
+```c
+/* 返回的指针由调用方负责 free */
+char *config_dump_alloc(const config_t *cfg);
 
-- work item 涉及 C 源码、头文件、C 单元测试或 C 构建 / 静态分析。
-- `devflow-tdd-implementation` 需要 C 语言实现约束。
-- `devflow-code-review` 需要 C 语言级 review rubric。
-- `devflow-completion-gate` 需要核对 C 工具链、告警、静态分析和证据。
+/* 返回内部静态存储的指针：只读、下次调用前有效、不得 free */
+const char *err_to_str(int err);
 
-不适用：
+/* item 的所有权转移给队列：入队成功后调用方不得再访问 */
+int queue_push_owned(queue_t *q, item_t *item);
 
-- C++ 语言规则 → `cpp-coding-standards`
-- 嵌入式领域约束 → `embedded-development`
-- 车载领域约束 → `automotive-development`
-- runtime 下一步 → `devflow-router`
-- 测试有效性裁决 → `devflow-test-review`
+/* buf 由调用方提供并保证在调用期间有效（借用） */
+int frame_parse(const uint8_t *buf, size_t len, frame_t *out);
+```
 
-## 硬性门禁
+规则：
 
-- 不把 C 规则写入 `Next Action Or Recommended Skill`。
-- 不替 reviewer 给 verdict。
-- 不替项目决定 MISRA C 子集；项目未声明时，只提出需确认项。
-- 不把嵌入式实时性、中断、硬件资源或车载 ASIL、SOA/MDC 等领域规则写在本 skill 内。
-- C 代码若引入未解释的内存越界、未初始化访问、资源泄漏、宏副作用或未处理错误返回，不得作为“语言层 clean”交付。
+- 公共 API 的指针参数必须有 NULL 语义：要么文档写明"不得为 NULL"并在入口校验，要么定义 NULL 时的行为
+- 释放后立即置空局部惯用法可用，但**真正的防线是所有权唯一**：一块内存只有一个 owner 负责释放，其余都是借用
+- 不返回局部变量地址；不把栈上 buffer 的指针存进生命周期更长的结构
+- 函数内部对 `void *` 的强转必须紧邻校验（魔数/类型 tag），跨模块传 `void *ctx` 时注册方与回调方必须是同一约定的两端
 
-## 对象契约
+## 内存与资源
 
-- Primary Object: C language quality constraints
-- Frontend Input Object: C 源码 / 头文件 / 测试代码 / 构建命令 / 静态分析输出 / 项目编码规范
-- Backend Output Object: C 语言约束清单、review 增补项、verification 增补项
-- Boundaries: 不写代码、不改工件、不产 verdict、不做领域判断
-- Invariants: C 与 C++ 分开管理；本 skill 只处理 C
+- 每个 `malloc`/`open`/`lock` 出现时，先写它的释放路径再写中间逻辑。多资源获取用集中清理出口（goto cleanup 模式，完整示例见 `devflow-clean-code` 的重构目录 §8）：获取顺序与释放顺序相反，失败跳到对应标签。
+- `malloc` 返回必须检查；分配大小用 `sizeof(*p)` 而不是 `sizeof(type)`（类型改名时不会悄悄错）：
 
-## 方法原则
+```c
+mode_entry_t *e = malloc(sizeof(*e));        /* ✅ */
+mode_entry_t *e = malloc(sizeof(mode_entry_t *));  /* ❌ 经典事故：分配了指针大小 */
+```
 
-- **Pointer Discipline**: 指针所有权、生命周期、空指针语义、别名关系必须可审查。
-- **Memory And Resource Lifecycle**: 分配/释放、打开/关闭、锁/解锁必须成对，失败路径同样成立。
-- **Macro Restraint**: 宏只用于必要场景，避免多次求值、副作用、类型不透明和调试困难。
-- **Header Hygiene**: 头文件暴露最小接口，include guard / forward declaration / 依赖方向清晰。
-- **Error Return Discipline**: 每个可能失败的调用返回值必须处理或显式说明为什么安全忽略。
-- **Static Analysis First**: MISRA C、CERT C 或项目规则的告警必须有修复、抑制或解释。
+- 结构体含指针成员时提供成对的 `xxx_create`/`xxx_destroy`，destroy 负责全部深层释放且可安全接受 NULL
+- 嵌入式语境：动态分配是否允许、允许在哪个阶段（仅初始化期 vs 运行期）由设计声明（见 `embedded-development`）；运行期热路径默认禁用
 
-## 工作流叠加点
+## 缓冲区与字符串
 
-本 skill 可被以下节点叠加读取：
+- 所有写入 buffer 的接口同时传 buffer 与容量；内部用容量做上界，绝不信任"调用方肯定给够了"
+- 字符串拼装一律 `snprintf`，并检查返回值是否 ≥ 容量（截断检测）：
 
-- `devflow-ar-design` / `devflow-component-design`：设计阶段声明 C 接口、错误码、资源生命周期和可测试边界。
-- `devflow-tdd-implementation`：实现阶段约束 C 代码写法、测试 harness 和静态分析命令。
-- `devflow-code-review`：评审阶段检查 C 语言风险。
-- `devflow-completion-gate`：门禁阶段核对 C 构建、告警和静态分析证据。
+```c
+/* ❌ strcpy/strcat/sprintf 进入新代码 = critical */
+sprintf(path, "%s/%s", dir, name);
 
-## C Review 增补项
+/* ✅ */
+int n = snprintf(path, sizeof(path), "%s/%s", dir, name);
+if (n < 0 || (size_t)n >= sizeof(path)) return ERR_NAME_TOO_LONG;
+```
 
-| 维度 | 检查点 |
-|---|---|
-| 指针 | NULL 语义、所有权、别名、越界、悬垂指针 |
-| 内存 | 初始化、释放、失败路径、栈/堆边界 |
-| 宏 | 多次求值、副作用、括号、类型安全、可调试性 |
-| 头文件 | 最小暴露、循环依赖、include guard、extern 可见性 |
-| 错误处理 | 返回码、errno/项目错误码、调用方恢复路径 |
-| 静态分析 | MISRA C / CERT C / 编译告警的处理状态 |
+- `memcpy` 的 len 来自外部输入时，先校验 len ≤ 目标容量再拷贝；协议解析中"先读长度字段再按它拷贝"是最高危路径，必须有显式上界检查
+- 数组遍历的循环边界用 `sizeof(arr)/sizeof(arr[0])`（或项目的 ARRAY_SIZE 宏），不要手写常数
 
-## 反向理由化（Common Rationalizations）
+## 整数
 
-| 话术 | 反驳 |
-|---|---|
-| 「这个指针调用链很短，不会为空」 | C 代码要把前置条件写清；边界输入必须防御或证明不可达 |
-| 「宏这样写大家都懂」 | 宏副作用和多次求值很难审查；能用函数或 enum 就不要用复杂宏 |
-| 「释放失败路径太啰嗦」 | C 的失败路径就是正确性；资源泄漏不是风格问题 |
-| 「静态分析是历史问题」 | 历史问题也要分类；本次新增或触碰的告警必须解释 |
+- 边界/长度/索引用 `size_t`；协议与寄存器字段用定宽类型（`uint8_t`/`uint32_t`），不用裸 `int`/`long` 承载有格式要求的数据
+- 有符号/无符号混合比较是事故源：`if (len - 1 > 0)` 在 `len==0` 且 len 为无符号时恒真。减法前先确认不下溢：`if (len > 0 && idx < len - 1)` 或改写为加法 `idx + 1 < len`
+- 乘法可能溢出的分配：`malloc(n * size)` 在 n 来自外部时先检查 `n <= MAX / size`，或用 `calloc`
+- 位运算的操作数显式无符号：`1u << bit`；移位量必须小于位宽
 
-## 验证清单
+## 宏
 
-- [ ] C 与 C++ 规则未混合。
-- [ ] 指针、内存、资源生命周期已被设计 / 实现 / review 覆盖。
-- [ ] 宏使用有明确必要性且无副作用风险。
-- [ ] 头文件接口最小且依赖方向清晰。
-- [ ] C 编译告警和静态分析输出已记录并解释。
+能不用宏就不用：常量用 `enum` 或 `static const`，短函数用 `static inline`。必须用宏时：
 
-## DevFlow 约定
+```c
+/* ❌ 多次求值：max(x++, y) 让 x 加了两次 */
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-本 skill 是第三层代码内在质量的编码规范扩展。它不写 `progress.md`、handoff 或 review verdict，不改变 canonical runtime nodes。需要 runtime routing 时回 `devflow-router`。
+/* ✅ 改用 static inline——有类型检查、可下断点、无求值陷阱 */
+static inline int32_t max_i32(int32_t a, int32_t b) { return a > b ? a : b; }
+```
+
+- 仍需宏的场景（token 拼接、编译期开关、泛型容器）：参数全部加括号、整体加括号、多语句体包 `do { ... } while (0)`
+- 条件编译块尽量小且互斥分支都能编译；`#if 0` 不是注释手段（删）
+
+## 头文件
+
+- 头文件是模块的契约：只放公共 API、公共类型、必要常量。内部函数 `static` 留在 .c；内部结构体用不透明指针隐藏：
+
+```c
+/* public.h —— 调用方只见句柄，结构体布局可自由演进 */
+typedef struct mode_service mode_service_t;
+mode_service_t *mode_service_create(const mode_config_t *cfg);
+
+/* internal .c 里才有 struct mode_service { ... }; */
+```
+
+- 每个头文件自包含（include 它需要的一切）、有 include guard、能被单独编译
+- 头文件里不定义变量、不放 `static` 函数实现（`static inline` 的小函数除外）
+- include 顺序：自己的头文件最先（强制自包含检验），然后系统头、第三方、项目内
+
+## 错误返回
+
+- 模块统一一种错误约定（负 errno 风格 / 项目错误码枚举 / 0=成功），不混用；出参 + 返回码分离：数据走出参，状态走返回值
+- 调用方检查每个可失败调用（`devflow-clean-code` §错误处理）；本技能补充 C 特有项：
+  - `snprintf`/`read`/`write` 的部分成功（短写）要处理
+  - 注册回调的返回值约定写进回调 typedef 的注释
+  - 失败路径上的出参状态写进契约（"失败时 *out 不被修改"是最友好的约定，实现也要真的遵守）
+
+## const 与作用域
+
+- 指针参数不修改指向内容 → `const T *`；查表数据 → `static const`（进只读段，嵌入式省 RAM）
+- 一切能 `static` 的文件内符号都 `static`（链接期命名空间卫生）
+- 变量在首次使用处声明并初始化；未初始化变量 + 复杂分支 = 未定义行为温床
+
+## 工具链
+
+- 新代码零警告基线：至少 `-Wall -Wextra`，项目允许时 `-Werror`；新增告警按 critical 处理
+- 静态分析（clang-tidy / cppcheck / MISRA 检查器按项目配置）：新增项必须修复或带理由+范围抑制；"历史上就有"不豁免本次触碰的文件
+- 测试与评审中重点盯：本文每节对应的事故类（越界、泄漏、悬垂、截断、溢出、宏陷阱）
+
+## 自检清单
+
+- [ ] 每个跨边界指针的所有权/生命周期/NULL 语义在签名或注释中可读
+- [ ] 多资源函数用集中清理出口；malloc 用 `sizeof(*p)`；create/destroy 成对
+- [ ] 无 strcpy/strcat/sprintf 新增；外部长度参与的拷贝有上界检查
+- [ ] 无有符号/无符号混合比较告警；定宽类型用于协议/寄存器
+- [ ] 新增宏有必要性；函数宏满足括号 + do-while(0)，或已改 static inline
+- [ ] 头文件自包含、最小暴露、内部结构不透明
+- [ ] 错误约定全模块一致；失败路径出参状态符合契约
+- [ ] 编译零新增警告；静态分析新增项闭环

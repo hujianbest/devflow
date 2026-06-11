@@ -1,162 +1,82 @@
 # DevFlow Core Architecture
 
-> 本文定义 DevFlow 从核心理念到可执行 skill 体系的架构映射。任何 skill、command、agent 或平台适配层的修改，都应能回溯到 `docs/devflow-philosophy.md` 的三层质量模型与 human-on-the-loop 协作姿态。
+> 本文定义 DevFlow 从核心理念到 skill 体系的架构映射。任何 skill、command、agent 的修改都应能回溯到 [`devflow-philosophy.md`](devflow-philosophy.md) 的三层质量模型与 human-on-the-loop 协作姿态。
 
 ## 1. 架构目标
 
-DevFlow Core 是一个面向 AI coding agent 的通用开发阶段工作流。它的核心不绑定 OpenCode、C、C++、嵌入式或车载领域；这些能力通过独立扩展 skill 或平台适配层进入。
+DevFlow 的目标一句话：**SDD 范式下生成 Clean Code 的代码，而不是仅仅能运行的代码。**
 
-DevFlow Core 负责：
+为此架构遵循两条设计原则：
 
-- 把已接受的 AR / DTS / CHANGE work item 推进到规格、设计、TDD 实现、独立评审、完成门禁和收尾。
-- 让下一步可从磁盘工件恢复，而不是依赖聊天记忆。
-- 保持 author / reviewer / gate / finalizer 角色分离。
-- 保留 v1 的 13 个 canonical `devflow-*` runtime nodes 与 `features/<id>/progress.md` 关键字段兼容。
+1. **流程最小化**：流程只保留产生质量的部分——阶段产物、人审把关点、TDD 纪律、独立评审。不维护流程状态机、节点路由器或多字段状态文件；进度从工件本身恢复。
+2. **内容最大化**：每个 skill 的主体是可操作的工程判断（规则 + 正反例 + 自检清单），而不是流程样板。skill 写法遵循 progressive disclosure：frontmatter 描述触发条件，SKILL.md 承载核心判断，references/ 承载详表与模板。
 
-DevFlow Core 不负责：
+## 2. 三层质量模型到 Skill 的映射
 
-- 产品发现、发布运维、系统 / 集成 / 验收测试、线上事故管理。
-- 具体编程语言的编码规范。
-- 具体工程领域的风险维度和证据矩阵。
-- 某个 agent runtime 的安装、命令或插件机制。
-
-## 2. 三层质量模型
-
-DevFlow 的实现架构直接映射 `docs/devflow-philosophy.md` 的三层质量模型：
-
-| 层 | 目标 | DevFlow 中的主要承载 |
+| 层 | 目标 | 承载 |
 |---|---|---|
-| 第一层 SDD | 意图正确，做对的事 | `devflow-specify`、`devflow-spec-review`、traceability |
-| 第二层 TDD | 功能正确，证明做对 | `devflow-ar-design` 的测试设计章节、`devflow-tdd-implementation`、`devflow-test-review` |
-| 第三层代码内在质量 | 代码本身设计得好、写得好、值得长期持有 | `devflow-clean-design`、`devflow-clean-code`、`devflow-clean-code` 下的编码规范 skills、领域约束 skills、`devflow-code-review` |
+| 第一层 SDD | 意图正确：做对的事 | `devflow-specify`（EARS / BDD 验收 / QAS / Change Type 基线 / 粒度） |
+| 第二层 TDD | 功能正确：证明做对 | `devflow-design` 的测试设计章节 + `devflow-tdd`（RED→GREEN→REFACTOR + 测试质量） |
+| 第三层 Clean Code | 内在质量：写得好、值得长期持有 | `devflow-design`（结构/契约/错误模型）+ `devflow-clean-code`（命名/函数/控制流/重构）+ 语言/领域扩展 |
 
-第三层不是新的流程阶段。它是一组质量约束和判断标准，会投射到规格、设计、实现、评审、门禁和收尾中。
+第三层不是流程阶段，而是贯穿设计、实现、评审的质量标准。`devflow-review` 在每层出口处提供独立检验，人做最终把关。
 
-## 3. 核心工作流
-
-DevFlow Core 的 runtime topology 继续使用现有 canonical nodes：
+## 3. Skill 体系
 
 ```text
-devflow-router
-devflow-specify
-devflow-spec-review
-devflow-component-design
-devflow-component-design-review
-devflow-ar-design
-devflow-ar-design-review
-devflow-tdd-implementation
-devflow-test-review
-devflow-code-review
-devflow-completion-gate
-devflow-finalize
-devflow-problem-fix
+skills/
+  using-devflow/             # 入口：三层模型、工作流、工件约定、行为准则
+  devflow-specify/           # 第一层：可测试的规格
+  devflow-design/            # 设计：职责边界、接口契约、错误模型、测试设计
+  devflow-tdd/               # 第二层：测试先行实现
+  devflow-clean-code/        # 第三层：整洁代码标准与重构目录
+  devflow-review/            # 独立评审：四类 rubric（spec/design/test/code）
+  devflow-fix/               # 缺陷修复：复现 → 根因 → 最小修复
+  c-coding-standards/        # 语言扩展：C 规则与惯用法
+  cpp-coding-standards/      # 语言扩展：C++ 规则与惯用法
+  embedded-development/      # 领域扩展：嵌入式约束
+  automotive-development/    # 领域扩展：车载约束
 ```
 
-这些节点是 `Current Stage` 与 `Next Action Or Recommended Skill` 的唯一合法 runtime 值。`using-devflow`、编码规范 skills、领域约束 skills、平台适配文档和旧 craft skills 都不能写入 runtime handoff。
+两类 skill：
 
-```mermaid
-flowchart TD
-  philosophy["DevFlow Philosophy"] --> sdd["Layer 1: SDD"]
-  philosophy --> tdd["Layer 2: TDD"]
-  philosophy --> internalQuality["Layer 3: Internal Quality"]
-  philosophy --> workflow["Canonical Workflow"]
+- **阶段 skill**（specify / design / tdd / review / fix）：有工作流、有产物、有人审把关点。
+- **叠加 skill**（clean-code、语言、领域）：提供贯穿各阶段的质量约束与判据，被阶段 skill 引用，自身不是阶段。
 
-  workflow --> router["devflow-router"]
-  workflow --> nodes["13 canonical devflow nodes"]
+依赖方向：阶段 skill 可以引用叠加 skill 与 `using-devflow` 的约定；叠加 skill 之间按「通用 → 语言 → 领域」单向引用（如 `cpp-coding-standards` 建立在 `devflow-clean-code` 之上）；不存在反向依赖。
 
-  internalQuality --> cleanDesign["devflow-clean-design"]
-  internalQuality --> cleanCode["devflow-clean-code"]
-  internalQuality --> domainSkills["Domain Constraint Skills"]
+## 4. 工作流与工件
 
-  cleanCode --> cSkill["c-coding-standards"]
-  cleanCode --> cppSkill["cpp-coding-standards"]
-  domainSkills --> embeddedSkill["embedded-development"]
-  domainSkills --> automotiveSkill["automotive-development"]
-
-  cleanDesign -.->|"design constraints"| nodes
-  cleanCode -.->|"code constraints"| nodes
-  domainSkills -.->|"domain constraints"| nodes
+```text
+specify → [人审] → design → [人审] → tdd（叠加 clean-code/语言/领域）→ review → [人审] → done
+缺陷旁路：fix（复现→根因→边界）→ tdd → review
 ```
 
-## 4. 扩展 Skill 边界
+工件模型（`features/<id>-<slug>/`）：
 
-### 4.1 编码规范 Skills
+| 工件 | 产出者 | 内容 |
+|---|---|---|
+| `spec.md` | devflow-specify | 范围、需求条目、验收标准、接口候选契约 |
+| `design.md` | devflow-design | 模块职责、接口契约、错误模型、方案取舍、测试设计 |
+| `tasks.md` | devflow-tdd | 任务清单与状态（用例 → 任务映射） |
+| `fix.md` | devflow-fix | 复现、根因、修复边界（缺陷工作项） |
+| `reviews/` | devflow-review | 评审记录（findings + verdict + 抽查记录） |
 
-编码规范 skill 属于第三层代码内在质量的语言扩展。它们回答“在这门语言里，什么样的代码才是可维护、可靠、可审查的？”
+进度恢复规则在 `using-devflow` 中定义：按工件存在性与确认状态判断下一步，工件优先于聊天记忆。
 
-第一批编码规范 skills：
+## 5. 角色分离
 
-- `c-coding-standards`
-- `cpp-coding-standards`
+- 作者不自审：评审由 `devflow-review` 派发独立 subagent（角色定义 `agents/devflow-reviewer.md`）执行。
+- 评审者不动手修：评审产出 findings 与 verdict，修改由作者执行。
+- 人做最终把关：规格确认、设计确认、评审 verdict 闭环都需要人。
+- DevFlow 不替团队角色拍板业务方向、优先级、验收阈值、架构边界。
 
-职责：
+## 6. 平台适配
 
-- 描述语言级编码规范、工具链、静态分析、格式化和测试约定。
-- 为 design / implementation / code-review / completion-gate 提供语言级判断。
-- 不承载嵌入式、车载、前端、后端等领域约束。
-- 不写 `progress.md`、handoff 或 review verdict。
+`commands/` 提供 slash-style 阶段入口（thin pointer，不复制 skill 内容）；`docs/guides/opencode-setup.md` 描述 OpenCode 接入。其他 runtime（Claude Code、Cursor 等）只需让其 skill 发现机制指向 `skills/`。平台适配不改变三层质量模型与工作流。
 
-### 4.2 领域约束 Skills
+项目级覆盖：组件仓库根目录的 `AGENTS.md` `## Project overrides` 可覆盖工件路径与模板；不创建时使用 `using-devflow` 内置默认值。
 
-领域约束 skill 属于第三层代码内在质量的领域扩展。它们回答“在这个工程领域里，什么质量约束必须贯穿规格、设计、实现和验证？”
+## 7. 与 1.x 的关系
 
-第一批领域约束 skills：
-
-- `embedded-development`
-- `automotive-development`
-
-职责：
-
-- `embedded-development` 声明通用嵌入式风险维度、架构约束、证据要求、术语和模板增补。
-- `automotive-development` 声明车载专属约束，如 ASIL、车载 SOA/MDC、DTC、SELinux 和整车生命周期。
-- 把领域质量约束前置投射到 `devflow-specify`、设计节点、TDD 实现、test/code review、completion gate、finalize 和 problem-fix。
-- 不重复 C / C++ 编码规范。
-- 不写 `progress.md`、handoff 或 review verdict。
-
-### 4.3 平台适配层
-
-平台适配层描述某个 runtime 如何发现 skills、调用 subagents、承载 command intent 和读取项目覆盖配置。
-
-当前适配层：
-
-- OpenCode adapter: `docs/guides/opencode-setup.md` 与 `commands/`
-
-未来适配层可以覆盖 Cursor、Claude Code、Gemini、Copilot、Windsurf 或其他 runtime。平台适配层不改变 DevFlow 三层质量模型和 canonical runtime nodes。
-
-## 5. Discovery 与 Routing
-
-`using-devflow` 负责 family-level discovery：
-
-- 识别用户意图属于哪个 DevFlow flow node。
-- 识别是否需要编码规范 skill。
-- 识别是否需要领域约束 skill。
-- 应用跨 DevFlow 的行为宪法和 shared conventions。
-
-`devflow-router` 负责 runtime routing：
-
-- 基于工件证据决定唯一 canonical next node。
-- 判定 profile、execution mode、review / gate 恢复路径。
-- 消费 review / gate verdict。
-- 在路由输出中记录需要叠加的 coding/domain constraints，但不把它们写成 runtime next action。
-
-## 6. v1 兼容策略
-
-保持兼容：
-
-- 13 个 canonical `devflow-*` node 名称。
-- `features/<id>/progress.md` 的关键字段。
-- `features/<id>/reviews/`、`evidence/`、`completion.md`、`closeout.md` 的工件模型。
-- `standard`、`component-impact`、`hotfix`、`lightweight` profile 名称。
-
-重新解释：
-
-- `component-impact` 是现有 v1 profile 名称，可视为 broader architecture-impact 在当前组件仓库语境中的实现。
-- 旧 `devflow-*-craft` 不再是第三层主架构。其可复用内容迁入 `devflow-clean-design`、`devflow-clean-code`、编码规范 skills、领域约束 skills 或第二层 TDD / test-review 体系；旧 craft skills 应从仓库中移除，不能作为主动入口或兼容入口。
-
-## 7. 约束原则
-
-- Core flow nodes 只保留通用 workflow 职责：读什么、写什么、何时停止、何时交独立评审。
-- 编程语言规则不得留在 core flow node 中作为默认假设。
-- 领域风险规则不得留在 core flow node 中作为默认假设。
-- 第三层约束可以影响全流程，但不能新增 runtime stage，也不能绕过 review / gate。
-- 用户或项目配置可以选择具体 coding/domain skills；未启用的扩展不得阻塞通用 DevFlow 路径。
+1.x 的 13 个 canonical 流程节点、`devflow-router`、`progress.md` 多字段状态、profile/execution-mode 机制在 2.0 中移除——审计结论是它们让流程样板占据了约半数内容，挤压了真正指导设计与编码的部分。1.x 的高价值内容（EARS/QAS/粒度启发式、TDD 纪律、评审 rule 思想）全部保留并强化为带正反例的形式。

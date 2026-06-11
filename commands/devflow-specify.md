@@ -1,54 +1,10 @@
 ---
-description: Authoring + independent review of the AR/DTS/CHANGE requirement spec
+description: DevFlow 规格阶段——把需求澄清成可测试的规格，先规格后设计与代码
 ---
 
-This command orchestrates the **DevFlow specify (规格)** phase.
+执行 DevFlow 规格阶段。
 
-## Phase scope
-
-- Skills involved (in推进顺序):
-  1. `devflow-specify` — 写或修 `features/<id>/requirement.md`
-  2. `devflow-router` — 派发评审子代理 + 消费 verdict + 决定下一步
-- Reviewers dispatched (via `devflow-router`, system prompt = `agents/devflow-reviewer.md`):
-  - `devflow-spec-review`，`target_skill = devflow-spec-review`
-
-## When to use
-
-- AR / DTS / CHANGE 进入实现设计前的规格澄清
-- 上一轮 spec review 返回 `REQUEST_CHANGES`，需要回修后重审
-
-不适用：
-
-- 仍在做产品发现 / 决定要不要做这个 AR → 交回需求负责人
-- 规格已通过，准备进入设计 → 改用 `/devflow-design`
-- 紧急修复 → 改用 `/devflow-fix`
-
-## Hard contract（节选自 AGENTS.md，不可绕开）
-
-- 作者不自审：`devflow-specify` 完成后 **不允许** 在父会话内联自审；评审交由独立 `devflow-reviewer` 子代理执行
-- 规格未通过 spec-review 不得进入 `devflow-component-design` / `devflow-ar-design` / `devflow-tdd-implementation`
-- `auto` execution mode 不豁免 spec-review
-
-## Workflow（不复制 SKILL.md，只编排）
-
-1. 读 `features/<id>/progress.md`：
-   - 不存在 / 工件证据不稳定 → 退回 `/devflow` 走 `using-devflow → devflow-router`
-   - 存在且当前节点就是 `devflow-specify` → 继续本阶段
-2. 进入 `devflow-specify`，严格遵循其 SKILL.md `工作流` 章节，产出或修订 `requirement.md`，写齐 traceability、约束、可设计性所需的信息
-3. authoring 完成 → 形成 handoff：`current_node = devflow-specify`，`next_action_or_recommended_skill = devflow-spec-review`，`reroute_via_router = true`
-4. 控制交回 `devflow-router`：
-   - 构造 Review Request Pack（`target_skill = devflow-spec-review`、`primary_artifact = features/<id>/requirement.md`、`agents_md_anchor`、`expected_return_contract`）
-   - 派发独立子代理（system prompt = `agents/devflow-reviewer.md`）
-5. 消费 reviewer verdict：
-   - `APPROVE` / `APPROVE_WITH_FOLLOWUPS` → `next_action_or_recommended_skill` 由 router 决定（一般是 `devflow-ar-design`，必要时升级 `component-impact` 走 `devflow-component-design`）
-   - `REQUEST_CHANGES` → 回 `devflow-specify` 修订
-   - `REJECT` → 停下，交团队角色（需求负责人）裁决；写 `Blockers`
-   - `reroute_via_router = true` → 由 router 重新评估
-
-## Anti-rationalization quick refs
-
-| 误判 | 反向行动 |
-|---|---|
-| "规格我看一遍就行，跳过 spec-review" | 禁止；评审必须由独立子代理执行，作者不自审 |
-| "auto 模式可以跳过评审" | `auto` 只移除人工确认，不豁免评审 |
-| "规格不清的地方我替需求负责人定" | 禁止；写进 `Blockers`，交需求负责人 |
+1. 读取 `skills/devflow-specify/SKILL.md` 并按其工作流执行：澄清 → 需求条目（EARS + Given/When/Then + Change Type）→ NFR QAS → 粒度检查 → 自检。
+2. 产出 `features/<id>-<slug>/spec.md`。
+3. 业务方向、优先级、验收阈值的缺口列为 Open Questions 交回用户，不替用户拍板。
+4. 完成后建议用户：人工审查或用 `/devflow-review` 对 spec 做独立预审；规格确认前不进入设计。

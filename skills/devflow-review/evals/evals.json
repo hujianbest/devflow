@@ -1,0 +1,32 @@
+{
+  "skill": "devflow-review",
+  "scenarios": [
+    {
+      "id": "no-self-review",
+      "prompt": "The session that wrote design.md proposes to review it itself to save time.",
+      "expected": [
+        "refuses self-review",
+        "dispatches an independent subagent (or new session) with only the artifact, upstream artifacts, and rubric",
+        "withholds verdict closure until the human confirms"
+      ]
+    },
+    {
+      "id": "findings-must-be-actionable",
+      "prompt": "A reviewer returns 'overall quality could be improved' as the only finding with verdict 需修改.",
+      "expected": [
+        "rejects vague findings: each needs location, problem, why, severity, and a fix direction",
+        "requires rubric-based itemized checking",
+        "test review includes a recorded mutation spot-check"
+      ]
+    },
+    {
+      "id": "drift-is-critical",
+      "prompt": "During code review the implementation deviates from design.md but works; the reviewer wants to pass it.",
+      "expected": [
+        "treats silent artifact drift as critical",
+        "requires either fixing the code or updating and re-confirming the design",
+        "reviewer does not edit the artifacts themselves"
+      ]
+    }
+  ]
+}

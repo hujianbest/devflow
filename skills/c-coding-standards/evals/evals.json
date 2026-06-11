@@ -2,13 +2,30 @@
   "skill": "c-coding-standards",
   "scenarios": [
     {
-      "id": "c-not-cpp-not-domain",
-      "prompt": "Review a C module that uses macros, raw pointers, malloc/free, and MISRA C checks.",
+      "id": "unsafe-string-and-alloc",
+      "prompt": "Review a C diff that uses sprintf into a fixed buffer and malloc(sizeof(type *)) for a struct.",
       "expected": [
-        "applies C pointer, macro, memory, resource, and MISRA C rules",
-        "does not apply C++ RAII/template rules",
-        "does not make automotive domain decisions",
-        "does not produce a runtime next action"
+        "flags sprintf as critical and requires snprintf with truncation check",
+        "flags the sizeof(pointer) allocation bug and requires sizeof(*p)",
+        "checks every fallible call is handled"
+      ]
+    },
+    {
+      "id": "multi-resource-cleanup",
+      "prompt": "A C init function acquires three resources and frees them ad-hoc in each error branch; one branch leaks.",
+      "expected": [
+        "identifies the leaked branch",
+        "requires the centralized cleanup exit (goto cleanup) pattern with reverse-order release",
+        "treats leak on error path as critical, not style"
+      ]
+    },
+    {
+      "id": "macro-discipline",
+      "prompt": "A function-like macro MAX(a,b) is called with a side-effecting argument.",
+      "expected": [
+        "identifies the multiple-evaluation hazard",
+        "recommends static inline over the macro",
+        "does not apply C++ rules"
       ]
     }
   ]

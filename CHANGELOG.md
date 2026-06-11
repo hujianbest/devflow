@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### 2.0 — Rewrite: minimal process, maximal substance
+
+调研了 skill 编写的业界实践（Anthropic Agent Skills 指南、superpowers 等）并审计了 1.x 全部内容后的结论：约半数篇幅是流程样板（对象契约、handoff 字段、canonical 节点、profile/execution-mode），而声称是核心的第三层（clean-design/clean-code/语言规范）反而最薄、几乎没有可模仿的正反例。2.0 据此重写：**流程最小化、内容最大化**，目标对齐理念文档的一句话——SDD 范式下生成 Clean Code 的代码，而不是仅仅能运行的代码。
+
+#### Changed — 架构
+
+- 13 个 canonical 流程节点 + router + meta 收敛为 **6 个阶段技能 + 5 个叠加技能**：
+  - 阶段：`using-devflow`（入口）、`devflow-specify`、`devflow-design`、`devflow-tdd`、`devflow-review`、`devflow-fix`。
+  - 叠加：`devflow-clean-code`、`c-coding-standards`、`cpp-coding-standards`、`embedded-development`、`automotive-development`。
+- 工件模型简化为 `features/<id>/`: `spec.md`、`design.md`、`tasks.md`、`reviews/`（缺陷为 `fix.md`）；进度恢复按工件存在性与确认状态判断（恢复表在 `using-devflow`）。
+- 全部技能改为「规则 + 正反例代码 + 合理化反驳 + 自检清单」的写法；frontmatter description 改为纯触发条件（CSO 实践）。
+
+#### Added — 高价值内容
+
+- `devflow-design`（新）：一句话职责测试、按变化理由划分模块、耦合的可操作判断表、抽象纪律（rule of three、单实现接口）、接口契约六项、错误模型三件事、数据所有权、方案取舍、测试设计表。
+- `devflow-clean-code`（重写）：命名规则表、函数拆分步骤、卫语句、错误处理写法、注释 why-not-what、重复与死代码，全部带 before/after；新增 `references/refactoring-catalog.md`（10 种异味的识别特征 + 手法 + 示例）。
+- `devflow-tdd`（重写自 tdd-implementation）：Iron Law、RED/GREEN/REFACTOR 各步带好坏代码对比、mutation 自检、合理化反驳表；新增 `references/test-quality.md`（断言强度升级表、命名、fixture、mock 边界）。
+- `c-coding-standards` / `cpp-coding-standards`（重写）：从检查点清单变为具体规则与正反例（指针所有权注释约定、goto cleanup、snprintf 截断检测、宏陷阱→static inline、RAII、所有权签名表、规则零/五、`[[nodiscard]]`、pImpl 等）。
+- `devflow-review`（合并 5 个 review 节点）：统一评审协议（独立上下文、findings 三级、人最终把关）+ 四份 rubric（spec/design/test/code），rubric 以「这东西哪里会骗我」组织。
+- `embedded-development` / `automotive-development`（重写）：从"对 13 个节点的投射"改为按维度给出「规格/设计定什么、实现红线、验证证据」。
+
+#### Removed
+
+- `devflow-router`、`devflow-spec-review`、`devflow-component-design(-review)`、`devflow-ar-design(-review)`、`devflow-tdd-implementation`、`devflow-test-review`、`devflow-code-review`、`devflow-completion-gate`、`devflow-finalize`、`devflow-problem-fix`、`devflow-clean-design`（内容并入 `devflow-design`）。
+- `progress.md` 多字段状态、handoff YAML、Workflow Profile、Execution Mode、canonical 节点机制、HTML closeout 报告、`agents/devflow-implementer.md`、`/devflow-ship`。
+- `docs/devflow-internal-quality.md`（第三层不再是参考模型，而是实打实的技能内容）。
+- 1.x 的高价值内容全部保留并强化：EARS/BDD/QAS/Change Type 基线/粒度启发式（specify）、Two Hats/TDD 纪律（tdd）、评审 rule 思想（review rubrics）、复现/根因模板（fix）。
+
 ### Changed — DevFlow Core architecture
 
 - Reframed DevFlow around the three quality layers from `docs/devflow-philosophy.md`: SDD for intent correctness, TDD for functional correctness, and a rewritten internal-quality layer for design/code quality.

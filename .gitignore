@@ -2,3 +2,4 @@
 /.agents/
 /tmp/
 /skills/*-workspace/
+__pycache__/

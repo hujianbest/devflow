@@ -1,150 +1,60 @@
 ---
 name: automotive-development
-description: 当 DevFlow work item 属于车载软件开发，涉及 ASIL、功能安全、车载 SOA/MDC、DTC/诊断、整车启动/休眠/唤醒、SELinux、车载接口兼容或跨 ECU/域控协同时使用。作为第三层代码内在质量的领域约束扩展；不用于通用嵌入式风险、C/C++ 语言规范、运行时路由或写 progress/handoff。
+description: 在车载软件工作项（ECU、域控、车载服务、整车平台）的规格、设计、实现或评审中使用，涉及功能安全/ASIL、车载 SOA 服务、DTC/诊断、整车启动/休眠/唤醒、SELinux 或跨 ECU 协同时。通用嵌入式约束见 embedded-development。
 ---
 
 # Automotive Development
 
 ## 总览
 
-`automotive-development` 是 DevFlow 第三层“代码内在质量”的车载领域约束扩展。它只承载车载专属约束：功能安全、ASIL、车载 SOA/MDC、DTC/诊断、整车生命周期、SELinux、跨 ECU / 域控协同等。
+车载约束的共同点：**很多决策不属于本组件，而属于整车级角色**（功能安全负责人、模块架构师、系统工程师）。所以本技能的核心纪律有两条：一是把车载维度前置到规格和设计；二是**识别哪些决策必须上抛**——agent 不替功能安全和整车架构拍板。通用嵌入式风险（内存/中断/实时性）见 `embedded-development`，本技能只承载车载专属维度。
 
-通用嵌入式约束由 `embedded-development` 承载；C / C++ 语言规范由 `c-coding-standards` / `cpp-coding-standards` 承载。本 skill 不产 review verdict，不写 `progress.md` / handoff，也不是 canonical runtime node。
+## 功能安全 / ASIL
 
-## 适用场景
+- **规格阶段**：确认工作项涉及的 safety goal 与 ASIL 等级（来源：安全分析文档/功能安全负责人，不自行判断）；ASIL 不明 = blocking Open Question。
+- **设计阶段**：安全机制（监控、冗余、降级到安全状态）是设计输入；fail-safe / fail-operational 策略与降级路径显式写出；安全相关与 QM 代码的隔离边界清楚。
+- **红线**：不悄悄改变安全相关行为（看门狗喂狗时机、安全状态进入条件、监控阈值）；这些全是 `modify` + 上抛确认。
 
-适用：
+## 整车生命周期
 
-- work item 属于车载软件、ECU、域控、车载服务或整车平台。
-- 需求涉及 ASIL / safety goal / fail-safe / fail-operational / DTC / diagnostic / vehicle state。
-- 需求涉及车载 SOA 服务、MDC 场景、启动退出、休眠唤醒、SELinux、跨 ECU 或跨域协同。
-- review / gate 需要车载领域证据矩阵。
+- 组件必须显式回答四个状态的行为：**启动**（依赖的服务还没起来时怎么办）、**正常退出**（收到退出信号后多久内完成清理）、**休眠**（哪些状态要持久化、唤醒后怎么恢复）、**异常恢复**（进程被重启后与外界状态的一致性）。
+- 设计评审检查点：启动顺序依赖有无环、有无对"某服务一定已就绪"的隐式假设；休眠/唤醒路径有无测试。
+- 电源状态与网络管理状态的转换约束来自整车规范，引用具体章节作为 Source，不凭记忆编写。
 
-不适用：
+## 车载 SOA 服务
 
-- 通用嵌入式内存、实时性、中断、硬件资源约束 → `embedded-development`
-- C 语言规范 → `c-coding-standards`
-- C++ 语言规范 → `cpp-coding-standards`
-- runtime 下一步 → `devflow-router`
+- 服务接口（service/method/event/field）的语义、错误码、版本策略属于组件间契约：变更走 `devflow-specify` 的 IFR + 基线纪律，列出已知消费者与兼容策略。
+- 设计阶段写清：服务不可用时调用方的行为（超时、重试、降级）；事件丢失/重复/乱序的语义；大载荷的所有权与拷贝策略。
+- 红线：不绕过 SOA 接口直接访问其他组件的内部状态；不引入未声明的跨组件依赖。
 
-## 硬性门禁
+## 诊断 / DTC
 
-- 不把本 skill 写入 `Next Action Or Recommended Skill`。
-- 不替功能安全负责人、模块架构师、系统工程师或开发负责人拍板 ASIL、safety goal 或车载接口契约。
-- 不重复通用嵌入式规则；通用嵌入式风险交给 `embedded-development`。
-- 不重复 C / C++ 语言规则；语言风险交给对应 coding-standards skill。
-- 车载约束必须前置到规格和设计，不允许只在 code review 阶段才发现。
+- 哪些故障要报 DTC、故障码定义、成熟度策略（确认/恢复条件）是领域决策：规格阶段确认，缺失时上抛 owner，不自行发明故障码。
+- 设计阶段：故障检测点、上报路径、恢复路径显式；可观测性（关键状态转换有诊断日志/事件）作为设计输出。
+- 红线：吞掉本应上报 DTC 的故障（"打个日志就行"）；诊断日志中暴露敏感数据。
 
-## 对象契约
+## SELinux / 权限
 
-- Primary Object: automotive domain constraints
-- Frontend Input Object: work item 规格、设计、component docs、runtime behavior、接口/依赖资产、测试证据、问题报告
-- Backend Output Object: 车载领域约束清单、全流程增补检查点、review/gate 增补项
-- Boundaries: 不写代码、不改工件、不产 verdict、不做语言规范或通用嵌入式规范
-- Invariants: 本 skill 提供车载领域约束，runtime routing 仍由 `devflow-router` 决定
+- 涉及新进程、新文件路径、新 socket/binder 访问时：列出主体、客体、所需操作，对照现有策略评估是否需要新规则；策略变更有 owner 审批。
+- 红线：用放宽策略（permissive、宽 allow 规则）代替最小权限分析；"先 allow 跑通再说"。
 
-## 领域维度
+## 跨 ECU / 跨域协同
 
-| 维度 | 关注点 |
+- 影响其他 ECU/域控的变更（信号矩阵、网络负载、时序假设）：列出下游 owner 与协调状态，纳入规格的接口候选契约。
+- 不假设对端版本同步升级：版本共存窗口内的兼容行为写进设计。
+
+## 测试与证据策略
+
+- 车载维度的用例落在 SIL/HIL/整车测试层级；测试设计中写明每个车载风险维度的覆盖层级或 N/A 理由。
+- mock 整车环境（电源状态、网络管理、诊断栈）时，mock 行为必须与整车规范一致——用错误的整车状态模型测试比不测更危险。
+- 评审时（`devflow-review`）：本文件各节红线即检查项；安全相关行为变更无上抛记录 → critical。
+
+## 合理化反驳
+
+| 话术 | 现实 |
 |---|---|
-| Functional Safety / ASIL | safety goal、ASIL 等级、fail-safe、降级策略、确认 owner |
-| Vehicle Lifecycle | 启动、退出、休眠、唤醒、电源状态、网络状态 |
-| Automotive SOA / MDC | 服务契约、消费者、错误码、版本策略、MDC 五类场景 |
-| Diagnostics / DTC | DTC、日志、故障注入、可观测性、恢复路径 |
-| SELinux / Security Policy | 主客体、标签、allow/neverallow、最小权限 |
-| Cross-ECU / Domain Coordination | 下游 owner、跨 ECU / 域控影响、协调状态 |
-
-## 全流程投射
-
-### `devflow-specify`
-
-- 捕获 ASIL / safety、车载生命周期、SOA/MDC、DTC/诊断、SELinux、跨 ECU 协调等约束。
-- 缺 safety / ASIL / 接口消费者 / 诊断阈值时标 USER-INPUT / TEAM-EXPERT。
-- 车载接口变更必须进入 Component Impact Assessment。
-
-### `devflow-spec-review`
-
-- 检查车载 QAS 是否有可判定阈值。
-- 检查 ASIL、SOA/MDC、DTC、SELinux、整车生命周期是否显式判断适用或 N/A。
-- 检查车载决策是否有 owner，不允许 agent 自行降级。
-
-### `devflow-component-design`
-
-- 组件职责、车载 SOA 服务、依赖方向、状态机和运行机制必须匹配车载架构约束。
-- 启用车载约束时，应覆盖 MDC 场景：并发、启动退出、休眠唤醒、可靠性、SELinux。
-- 跨组件 / 跨 ECU / 跨域控影响必须列出 owner 和协调状态。
-
-### `devflow-component-design-review`
-
-- 检查组件边界和车载接口契约是否足以支持下游 AR 设计。
-- 检查 ASIL / SOA / MDC / DTC / SELinux 约束是否可审查。
-
-### `devflow-ar-design`
-
-- 功能点分解必须覆盖适用车载场景。
-- 测试设计章节应包含车载领域风险用例或明确 N/A 理由。
-- 实现设计必须消费组件级车载约束，不得重新定义车载接口。
-
-### `devflow-ar-design-review`
-
-- 检查 AR 设计是否越过组件 / SOA / 车载接口边界。
-- 检查测试设计是否覆盖车载领域风险。
-- 检查 ASIL、MDC、DTC、SELinux、跨 ECU 影响是否可追溯。
-
-### `devflow-tdd-implementation`
-
-- Implementer Context Pack 必须包含适用车载约束摘要。
-- 实现不得私自改变车载接口、DTC、ASIL 相关行为、MDC 场景或跨 ECU 契约。
-
-### `devflow-test-review`
-
-- 车载领域风险用例是否实际落地，而不是只在测试设计中列名。
-- HIL / SIL / simulation / integration 替代证据是否足以支撑车载约束。
-- mock / stub 是否没有掩盖车载接口和整车状态边界。
-
-### `devflow-code-review`
-
-- 代码是否遵守车载架构边界和接口契约。
-- 是否引入未解释的车载生命周期、诊断、SELinux 或 SOA/MDC 风险。
-- 通用嵌入式和 C/C++ 语言级规则由对应 skills 判断。
-
-### `devflow-completion-gate`
-
-- 车载领域证据矩阵是否齐全。
-- 未解释的 ASIL / SOA / MDC / DTC / SELinux critical 风险是否为零。
-- 车载约束相关 follow-up 是否被记录为可接受债务或阻塞项。
-
-### `devflow-finalize`
-
-- 长期资产是否同步车载领域约束变化。
-- `docs/component-design.md`、`docs/interfaces.md`、`docs/dependencies.md`、`docs/runtime-behavior.md` 是否按项目启用状态同步。
-- closeout report 是否列出车载领域风险审计结果。
-
-### `devflow-problem-fix`
-
-- reproduction 是否记录车载运行环境、版本、配置、日志和稳定性。
-- root cause 是否分类到车载领域维度。
-- fix boundary 是否明确不扩散到未批准的车载接口、诊断、安全或跨 ECU 变更。
-
-## 反向理由化（Common Rationalizations）
-
-| 话术 | 反驳 |
-|---|---|
-| 「ASIL 不确定但功能很小」 | safety 适用性由团队角色确认，agent 不自行降级 |
-| 「只是改一个错误码，下游应该没影响」 | 车载接口可观察语义变化必须列出消费者和兼容策略 |
-| 「MDC 场景后面再补」 | 车载场景必须前置到设计，否则实现后才发现通常太晚 |
-| 「SELinux 不会变」 | 不变也需要依据；涉及权限访问时必须写明主体、客体和规则基线 |
-| 「诊断日志够了，不需要 DTC」 | DTC / 诊断策略属于车载领域决策，缺失时上抛 owner |
-
-## 验证清单
-
-- [ ] 已明确本 work item 是否启用车载领域约束。
-- [ ] 规格阶段已捕获适用 ASIL / SOA / MDC / DTC / SELinux / lifecycle 约束。
-- [ ] 设计阶段已消费车载约束且未重定义未授权车载边界。
-- [ ] TDD evidence 覆盖车载领域风险或提供明确 N/A 理由。
-- [ ] test-review / code-review / completion-gate 均消费车载约束。
-- [ ] finalize 同步长期资产时保留车载约束变化。
-
-## DevFlow 约定
-
-本 skill 是第三层代码内在质量的领域约束扩展。它不写 `progress.md`、handoff 或 review verdict，不改变 canonical runtime nodes。需要 runtime routing 时回 `devflow-router`。
+| 「功能很小，ASIL 应该不涉及」 | safety 适用性由功能安全负责人确认，不由功能大小推断 |
+| 「改个错误码，下游应该没人依赖」 | 车载接口的可观察语义都有消费者；列出消费者和兼容策略 |
+| 「休眠唤醒场景后面再补」 | 生命周期行为是设计输入；后补通常意味着重新设计持久化 |
+| 「SELinux 先放宽，量产前收紧」 | "临时"宽策略会跟着发布走；最小权限从第一天开始 |
+| 「诊断日志够了，不用报 DTC」 | DTC 策略是领域决策；缺失时上抛，不自行降级 |

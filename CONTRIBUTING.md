@@ -1,104 +1,70 @@
 # Contributing to DevFlow
 
-Thanks for your interest in DevFlow. This document describes how to contribute to the skill family, what makes a good change, and how to keep skills mutually consistent.
+Thanks for your interest in DevFlow. This document describes how to contribute to the skill suite, what makes a good change, and how to keep skills mutually consistent.
 
-## Scope of v1.0
+## Scope
 
-DevFlow v1.0 is intentionally narrow:
+DevFlow is intentionally narrow:
 
-- It targets the **development stage**: from accepted AR / DTS / CHANGE through specification, design, TDD, review, completion gate, and closeout.
-- It is organized around a **general DevFlow Core** plus extension skills. Language rules live in coding-standards skills such as `c-coding-standards` and `cpp-coding-standards`; domain constraints live in skills such as `embedded-development` and `automotive-development`.
-- OpenCode is the first supported adapter. Other agent runtimes may be added as platform adapters, but must not change the core quality model or canonical runtime nodes.
-- It does **not** cover product discovery, system / integration / acceptance testing, release operations, or runtime incident response. These belong to other `*-flow` families.
+- It targets the **development stage**: from an accepted requirement through specification, design, TDD implementation, and independent review.
+- It is organized as **phase skills** (`devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-review`, `devflow-fix`, plus the `using-devflow` entry) and **overlay skills** (`devflow-clean-code`, `c-coding-standards`, `cpp-coding-standards`, `embedded-development`, `automotive-development`).
+- It does **not** cover product discovery, system / integration / acceptance testing, release operations, or runtime incident response.
 
-If you are unsure whether your change fits, open an issue first.
+The architecture spec is [`docs/devflow-core-architecture.md`](docs/devflow-core-architecture.md); the philosophy (north star) is [`docs/devflow-philosophy.md`](docs/devflow-philosophy.md). When an implementation choice conflicts with the philosophy, the philosophy wins.
 
 ## What a good DevFlow skill looks like
 
-Every `skills/devflow-*/SKILL.md` should be:
+DevFlow 2.0 follows two principles. Every change should be judged against them:
 
-- **Specific** — actionable steps, not vague advice. Each workflow step says *what to read*, *what to write*, and *when to stop*.
-- **Verifiable** — the `## 验证清单` (Verification) section enumerates exit conditions in terms of artifacts on disk and review verdicts, not "it looks right".
-- **Artifact-first** — the next step must be recoverable from `features/<id>/` files (`progress.md`, `reviews/`, `evidence/`), not from chat memory.
-- **Role-separated** — author, reviewer, gate, and finalizer are distinct skills. No skill self-verifies its own output.
-- **Independently installable** — references live under each skill's own `references/`. Avoid creating a shared `skills/docs/` or `skills/templates/` that other skills must load.
+1. **Minimal process** — keep only process that produces quality (phase artifacts, human checkpoints, TDD discipline, independent review). Do not add status files, routing layers, handoff schemas, or role machinery.
+2. **Maximal substance** — the body of a skill is actionable engineering judgment. Prefer a concrete rule with a before/after code example over an abstract principle. "高内聚低耦合" alone is not a contribution; an operational check for it is.
 
-The current architecture spec is in [`docs/devflow-core-architecture.md`](docs/devflow-core-architecture.md), and the rewritten third quality layer is in [`docs/devflow-internal-quality.md`](docs/devflow-internal-quality.md).
+Concretely, a skill should be:
 
-## Required skill sections
+- **Specific** — rules a model can act on, with examples; not vague advice.
+- **Example-driven** — good/bad contrast pairs for anything non-obvious. C/C++ examples are the house style; mark the principle as language-neutral when it is.
+- **Verifiable** — a closing checklist with conditions checkable from artifacts and code, not "looks right".
+- **Lean** — SKILL.md under ~400 lines; details and templates go to `references/` with clear pointers (progressive disclosure).
+- **Independently installable** — references live under each skill's own `references/`; no shared folders other skills must load.
 
-A `SKILL.md` MUST contain (in order):
+## Skill structure
 
-1. YAML frontmatter with `name` (= directory name) and `description` (a classifier — *not* a workflow summary). Canonical flow nodes keep the `devflow-*` prefix; extension skills use their own descriptive names, e.g. `c-coding-standards`.
-2. `# Title` + a 1–2 line statement of "what this skill does and what it does not".
-3. `## 适用场景` — when to use, when to redirect.
-4. `## 硬性门禁` — non-negotiable stop conditions (Hard Gates).
-5. `## 对象契约` — Object Contract (Primary / Frontend Input / Backend Output / Transformation / Boundaries / Invariants).
-6. `## 方法原则` — Methodology, with each method tied to a workflow step.
-7. `## 工作流` — numbered steps, prose-style, each with method / input / output / stop rule.
-8. `## 输出契约` — what is written, where, with which trace links and evidence.
-9. `## 风险信号` — runtime stop signs.
-10. `## 反向理由化（Common Rationalizations）` — common LLM-style excuses + counter-arguments.
-11. `## 常见错误` — error → fix table.
-12. `## 验证清单` — exit conditions.
-13. `## 本地 DevFlow 约定` — artifact layout, progress fields, handoff fields, plus skill-specific local rules.
-14. `## 支撑参考` — table of `references/*.md` files.
+A `SKILL.md` starts with YAML frontmatter:
 
-References belong in `references/` under each skill, not at the repository top level.
+- `name` — must equal the directory name.
+- `description` — **triggering conditions only** (when to load this skill), not a workflow summary. Front-load concrete trigger keywords; include negative triggers ("不用于…") when adjacent skills overlap.
 
-## Writing the `description` field
+The body has no mandatory section schema. Recommended shape: overview (core principle in a few sentences) → the substantive judgment sections (with examples) → rationalization rebuttals (3–8 rows, tied to this skill's real decision points) → verification checklist → references table. Write in Chinese (the suite's working language); keep code identifiers and quoted terms in English.
 
-The `description` is a **classifier**, not a flow summary. It only answers "should this skill be loaded for the current request?".
+## Cross-skill consistency
 
-- ✅ Good: `Use when independently reviewing code changes produced by devflow-tdd-implementation against an approved AR design. Not for writing tests, modifying production code, or test effectiveness review.`
-- ❌ Bad: `Use when reviewing code — read the diff, score it, write findings, hand off.`
+- The three-layer model and workflow live in `using-devflow`; other skills reference it instead of restating it.
+- Boundaries between skills: specification carries no implementation detail; design decisions are not re-made in TDD; language rules live in coding-standards skills, domain risks in domain skills. When you move a rule, update both sides in the same PR.
+- Review criteria live in `skills/devflow-review/references/*-rubric.md` and must stay consistent with the author-side skill they check.
 
-Front-load triggering keywords (`spec review`, `AR implementation design`, `component design`, `test review`, `code review`, `C`, `C++`, `embedded`, `automotive`) so automatic skill discovery can match them.
+## Validation
 
-## Anti-rationalization
+Run before submitting:
 
-Each leaf skill carries a `## 反向理由化（Common Rationalizations）` table. The point is not to be polite — it is to give the agent a pre-written rebuttal for the most common LLM excuses (e.g., *"I'll add the test design after TDD"*, *"the design is obvious so I can skip the Design Options checkpoint"*). Keep the table short (3–6 rows) and tightly scoped to the skill's actual decision points.
-
-## Profile and routing changes
-
-`devflow-router` is the runtime authority for Workflow Profile, Execution Mode, the canonical next node, reviewer dispatch, and review / gate recovery. Changes to:
-
-- the legal profile set (`standard`, `component-impact`, `hotfix`, `lightweight`),
-- routing membership (which skills each profile may route to),
-- escalation rules,
-- handoff / progress field schema,
-
-MUST be proposed against `devflow-router/SKILL.md` and `devflow-router/references/profile-and-route-map.md` first, with each affected leaf updated in the same PR.
-
-## Reviewer dispatch
-
-Reviewer behaviour is encoded entirely in the `devflow-*-review` / `devflow-test-review` / `devflow-code-review` SKILL files. When `devflow-router` reaches a review node, it dispatches an independent subagent seeded with the corresponding skill body as its system prompt — the skill IS the reviewer prompt. Do not introduce a separate persona layer that paraphrases the skill.
-
-## Skill `evals/`
-
-High-risk skills should carry an `evals/` directory that enumerates misuse scenarios the skill MUST refuse. Until a formal schema doc is restored, keep evals simple and reviewable:
-
-```
-skills/<name>/evals/
-  README.md
-  evals.json
-  fixtures/
+```bash
+python3 scripts/validate_devflow.py
+python3 -m pytest tests/
 ```
 
-When you change a hard gate, profile rule, key workflow step, or extension discovery rule, update the matching `evals.json` scenario or add a new one in the same PR. Scenarios are reviewed against the skill body to ensure the skill actually refuses what the eval asserts.
+The validator checks markdown links, skill frontmatter, the expected skill set, and that legacy 1.x mechanisms (router, canonical nodes, progress/handoff schemas) do not resurface in active text.
 
 ## Pull request expectations
 
-- One logical change per PR. Don't batch unrelated edits (a brand rename + a router refactor + a new skill).
+- One logical change per PR.
 - Update both `README.md` and `README.zh-CN.md` when you change user-facing surface area.
 - Update `CHANGELOG.md` under the `Unreleased` heading.
-- If you change canonical field names (`Workflow Profile`, `Current Active Task`, etc.), grep the entire repo and update every skill that reads or writes them.
+- New rules should cite the failure they prevent (a real bad output, a known LLM rationalization, a class of bugs). Rules without a failure story are candidates for rejection.
 
 ## Repository hygiene
 
-- File naming: canonical runtime skill directories are `devflow-<noun>`. Coding standards use `<language>-coding-standards` (for example `c-coding-standards`, `cpp-coding-standards`). Domain constraints use `<domain>-development` or another concrete domain name (for example `embedded-development`, `automotive-development`). Reference files are `kebab-case.md`.
-- Don't add `.cursor/`, `.opencode/`, `.claude/` editor-specific directories at the repository root unless they are part of a deliberate integration release.
-- Don't introduce a `skills/docs/` or `skills/templates/` shared folder. References live per-skill.
+- Skill directories: phase skills are `devflow-<verb/noun>`; coding standards are `<language>-coding-standards`; domain constraints are `<domain>-development`. Reference files are `kebab-case.md`.
+- Packaged skills must not reference repo-level `docs/` files (they must be deployable standalone).
+- Don't add editor-specific directories at the repository root unless part of a deliberate integration release.
 
 ## License
 

@@ -2,13 +2,30 @@
   "skill": "cpp-coding-standards",
   "scenarios": [
     {
-      "id": "cpp-not-c-not-domain",
-      "prompt": "Review a C++ implementation that uses RAII, move semantics, templates, and ABI-sensitive public types.",
+      "id": "manual-resource-management",
+      "prompt": "Review a C++ diff using raw new/delete and manual mutex lock/unlock with early returns in between.",
       "expected": [
-        "applies C++ lifetime, RAII, template, exception, and ABI rules",
-        "does not apply C macro-specific rules as the primary standard",
-        "does not make automotive domain decisions",
-        "does not produce a runtime next action"
+        "flags the leak/deadlock risk on early-return paths",
+        "requires RAII (containers, make_unique, lock_guard)",
+        "checks rule-of-zero/rule-of-five completeness on touched classes"
+      ]
+    },
+    {
+      "id": "ownership-in-signatures",
+      "prompt": "A function takes const std::shared_ptr<T>& just to read T, and a class stores a raw pointer to an object owned elsewhere.",
+      "expected": [
+        "requires borrowing to be expressed as const T& / T* instead of shared_ptr",
+        "requires a lifetime contract (or weak_ptr) for the stored observer pointer",
+        "questions shared ownership when no second owner exists"
+      ]
+    },
+    {
+      "id": "speculative-template",
+      "prompt": "The agent templates a class over its only instantiated type 'for future flexibility'.",
+      "expected": [
+        "rejects templating without a real second type",
+        "cites template cost (errors, compile time) versus benefit",
+        "does not apply C macro rules as primary standard"
       ]
     }
   ]

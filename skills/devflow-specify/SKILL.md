@@ -1,261 +1,155 @@
 ---
 name: devflow-specify
-description: 当团队已接受 AR / DTS / CHANGE 输入，需要澄清成可评审的实现需求规格时使用；在进入 devflow-ar-design 或 devflow-tdd-implementation 前澄清 AR 范围、所属组件、上游追溯与验收标准。不用于产品发现、需求负责人决策、AR 实现设计、组件实现设计写作，或紧急修复的复现与根因分析。
+description: 在开始一个新的开发工作项（功能、变更、需要正式规格的缺陷）时使用，把一句话需求或散乱输入澄清成可测试的规格；也在规格评审被打回需要修订时使用。不用于产品方向决策或实现设计。
 ---
 
-# devflow 需求规格澄清（AR / DTS / CHANGE 实现）
+# DevFlow 规格（第一层 SDD）
 
-把团队已经接受的实现类需求输入澄清成可被 `devflow-spec-review` 评审的需求规格对象。本 skill 服务 AR / DTS / CHANGE work item：澄清单个 AR（或需要 AR-级规格的 DTS / CHANGE），下一步进入 `devflow-ar-design` 或 `devflow-component-design`（component-impact）。
+## 总览
 
-本 skill 不做产品发现、不创造需求方向、不替需求负责人决定优先级；当输入不清且涉及方向 / 范围 / 验收标准时，只整理待决问题列表，回需求负责人。
+规格是模型与人之间的第一份契约。它存在的唯一目的：**让"要做什么"清晰到不需要猜**。判断一份规格好不好只有一个标准——**每条需求都可测试**：能直接落成一个失败的测试用例（RED），并且两个不同的人读完会写出相同的测试。
 
-## 适用场景
+写规格时你在对抗的失败模式：需求含糊 → 模型靠猜补全 → 做出来的不是用户要的东西。所以规格阶段的纪律是：**澄清而不臆造**。你可以追问、可以提出方案让人选择，但不能替人决定业务规则、优先级和验收阈值。
 
-适用：
-
-- **AR / DTS / CHANGE**：已有 AR / DTS / 变更请求，但需求规格尚不足以进入 AR 实现设计；AR 范围、所属组件、上游 SR / IR 追溯关系、验收标准仍需澄清
-- `devflow-spec-review` 返回 `需修改` / `阻塞`，需按 findings 修订规格
-- 用户说"先把这个 AR 的需求理清楚"
-
-不适用 → 改用：
-
-- 仍在判断该需求是否值得做 → 不属于 df，回需求负责人
-- 已有可设计规格，要写 AR 实现设计 → `devflow-ar-design`
-- 已有可设计规格，要写组件实现设计 → `devflow-component-design`
-- 紧急缺陷的复现 / 根因 → `devflow-problem-fix`
-- 阶段不清 / 证据冲突 → `devflow-router`
-
-## 硬性门禁
-
-- 需求规格通过 `devflow-spec-review` 之前，不得进入 `devflow-component-design`、`devflow-ar-design`
-- 不得替需求负责人 / 模块架构师创造业务规则、优先级或验收阈值
-- AR / DTS / CHANGE 必须有唯一所属组件；不唯一时阻塞，回需求负责人
-- 上游 IR / SR / AR 追溯关系冲突 → 阻塞，回需求负责人
-- 不把待决问题只藏在正文里，必须显式列在「Open Questions」章节
-- AR / DTS / CHANGE 若出现 `IFR` 或 `Component Impact = interface`，必须维护 `Interface Contract Candidates`；不得只写“影响接口”而不给设计可消费的契约边界
-- 未经 `using-devflow` 入口发现或 `devflow-router` runtime recovery → 先回 router
-
-## 对象契约
-
-- Primary Object: requirement specification model（一个 work item 的需求规格）
-- Frontend Input Object: 已接受的 IR / SR / AR / DTS / 变更请求 + 团队既有输入文档 + 当前组件仓库的 `docs/component-design.md`（如存在）
-- Backend Output Object: `features/<id>/requirement.md` 草稿 + `features/<id>/traceability.md` 骨架 + `features/<id>/progress.md` canonical 字段同步
-- Object Transformation: 把团队已接受的输入澄清为可设计的需求规格对象（含范围 / 非范围 / 验收 / 待决问题 / 追溯）
-  - AR / DTS / CHANGE 额外产出：Component Impact Assessment、Interface Contract Candidates（当涉及接口）
-- Object Boundaries: 不写实现设计 / 不写代码 / 不修改既有组件实现设计 / 不重新决定要不要做这个需求
-- Object Invariants: Work Item ID、所属组件、上游追溯（IR / SR）、当前轮范围在 spec-review 通过前保持稳定
-
-## 方法原则
-
-- **Requirements Traceability**: 显式建立上游 IR / SR -> AR 链路；DTS 修改若涉及功能需求时建立 DTS -> AR -> SR 反向锚点
-- **Scope / Non-Scope / Acceptance Criteria**: 规格按"做什么 / 不做什么 / 怎样算完成"组织
-- **Socratic Elicitation**: Capture → Challenge → Clarify 三段式提问，先收敛范围 / 角色 / 成功标准，再收敛边界细节
-- **EARS（Easy Approach to Requirements Syntax — Mavin 等, 2009）**: 需求 Statement 使用结构化句式（常驻 / 事件触发 / 状态约束 / 异常 / 可选），让 reviewer 可冷读判断；详见 `references/requirement-rows-contract.md` 的 Statement Patterns 节
-- **BDD Acceptance（Dan North, 2006）**: Acceptance 用 Given / When / Then 表达；AR row 要可测试（直接落 RED 用例）；详见 `references/requirement-rows-contract.md` 的 Acceptance Criteria Rules 节
-- **MoSCoW Priority（DSDM, 1994）或团队等价**: row 级 Priority；多条 Must 冲突时回需求负责人；devflow 不维护跨工作项 backlog
-- **INVEST Granularity（Bill Wake, 2003）**: 单条 row 的 `Small` + `Independent` 检查（G1-G6 + 适用领域扩展规则）；详见 `references/granularity-and-split.md`
-- **NFR Quality Attribute Scenarios（ISO/IEC 25010 + Bass / Clements / Kazman）**: 每条核心 NFR 用五要素（Stimulus Source / Stimulus / Environment / Response / Response Measure）表达，给出可判定阈值；详见 `references/nfr-quality-attribute-scenarios.md`
-- **Brainstorming Notes Normalization**: 头脑风暴 / 会议散点输入先做事实 vs 假设、业务意图 vs 实现细节、当前 vs 后续三轮归一化，再写 row；详见 `references/requirement-rows-contract.md` 同名节
-- **Applicable Domain Awareness**: 识别适用领域约束 skill 中声明的 NFR / 架构约束（写为需求约束，不写实现），并指向 `docs/component-design.md` 或领域资产的相关章节
-- **Interface Contract Candidate Capture**: 对外接口 / SOA 服务 / 协议 / 错误码先形成语义级候选契约，供组件设计或 AR 设计消费；不在 spec 阶段写语言级签名或内部数据结构
-- **Behavior Delta Classification**: 每条核心 row 显式标注 `Change Type = new / modify / remove`；`modify` / `remove` 必须写 `Existing Behavior / Baseline`，把对既有可观察行为的破坏风险前移到规格阶段
-- **Team Role Discipline**: 业务方向 / 优先级 / 验收阈值留给需求负责人 / 模块架构师；本节点只澄清，不拍板
+产出：`features/<id>-<slug>/spec.md`（模板见 `references/requirement-template.md`）。
 
 ## 工作流
 
-### 1. 对齐最少必要上下文 + 确认 work item 类型
+### 1. 收集上下文
 
-按 Read-On-Presence 读取澄清规格所需的最少材料：用户请求 / 上游单据（IR / SR / AR / DTS）摘要、团队 `AGENTS.md` 路径映射、`features/<id>/progress.md`（若存在）、当前组件仓库的 `docs/component-design.md` / `docs/ar-designs/`（若存在）。
+读取：用户的原始请求、上游单据（如有）、相关的长期文档（组件设计、接口文档）、项目 `AGENTS.md`。判断工作项类型：新功能（AR）、变更（CHANGE）、缺陷（DTS，通常先经 `devflow-fix` 产出根因再回到这里）。
 
-显式确认本 work item 类型：
+### 2. 澄清（Capture → Challenge → Clarify）
 
-- `AR` / `CHANGE` → 按 router 分配的 `standard` / `component-impact` / `lightweight` profile 推进
-- `DTS`（需要 AR-级规格）→ 通常已先经 `devflow-problem-fix` 产出 reproduction / root-cause / fix-design
+按以下顺序提问，已清晰的跳过，不重复追问：
 
-工件冲突或不确定 work item 类型 → 回 `devflow-router`。
-
-### 2. 初始化或对齐 work item 目录
-
-校验必填字段：`AR` / `DTS` / `CHANGE` 必须有 `Work Item ID`、`Owning Component`。缺必填字段 → 阻塞，回需求负责人。
-
-### 3. 澄清需求（Capture → Challenge → Clarify）
-
-按 Socratic Elicitation 三段式提问，覆盖以下面（已覆盖的跳过、不重复追问）：
-
-1. 用户、目标、成功标准、非目标
+1. 目标与成功标准：做完后什么变得不同？怎么验证做到了？
 2. 核心行为与触发条件
-3. 边界、异常路径、失败处理
-4. 既有行为基线：本 row 是新增、修改还是删除；若修改 / 删除，澄清旧行为、旧错误码 / 阈值 / 状态路径、既有消费者、兼容或迁移语义
-5. 接口、依赖、兼容性、跨组件影响；若涉及接口，澄清 provider / consumer / operation / inputs / outputs / error semantics
-6. 适用领域 NFR（如车载实时性 / 资源 / 可靠性；不适用时不强加）
-7. 待澄清术语与 assumption
+3. 边界、异常路径、失败时的预期行为
+4. 既有行为基线：这是新增、修改还是删除既有行为？修改/删除时旧行为是什么？
+5. 接口与兼容性：谁调用、谁被调用、错误语义、对既有调用方的影响
+6. 非功能约束：实时性、内存、并发、安全（不适用就不强加）
 
-每轮结束前总结已锁定与待确认；只剩 1-2 个阻塞事实时合并问。若需要 ≥3 轮且全部依赖业务判断 → 阻塞，回需求负责人；devflow 不替业务方拍板。
+每轮结束总结「已锁定」与「待确认」。只剩 1-2 个问题时合并问。**业务方向、优先级、验收阈值答不上来时，列入 Open Questions 交回提出人，不自己编。**
 
-### 4. 整理 requirement rows
+### 3. 写需求条目
 
-按 Scope / Non-Scope / Acceptance Criteria + EARS Statement Patterns + BDD Acceptance Rules + MoSCoW Priority + Behavior Delta Classification 把澄清结果结构化。每条核心 row 至少含 `ID`（FR / NFR / CON / IFR / ASM / EXC）、`Statement`（EARS 句式）、`Acceptance`（BDD Given/When/Then）、`Priority`、`Source / Trace Anchor`、`Change Type`（`new` / `modify` / `remove`）、`Existing Behavior / Baseline`（`modify` / `remove` 必填，`new` 可为 `N/A`）、`Component Impact`。最小字段契约 + 句式表 + Brainstorming Notes Normalization 详见 `references/requirement-rows-contract.md`。
+每条核心需求是一个结构化条目，不是一段散文。
 
-`Change Type` 按对既有可观察行为的影响分类，不按“这是不是新需求”分类。触及既有接口语义、错误码、状态机、运行时行为、NFR 阈值、默认值或兼容承诺的 row，不能仅因新增能力而标为 `new`；应拆 row，或按更高风险标为 `modify` / `remove`。`modify` / `remove` 的 Acceptance 必须覆盖保留行为、批准的破坏行为、删除后的可观察语义或迁移 / 废弃结果。
+**分类前缀**：
 
-核心 NFR 必须能写成 QAS 五要素：Stimulus Source / Stimulus / Environment / Response / Response Measure（含阈值或可判定准则）。详见 `references/nfr-quality-attribute-scenarios.md`。如果某条 NFR 写不出 QAS → 该 NFR 描述还不够具体，回步骤 3 找需求负责人 / 模块架构师补阈值。
+| 前缀 | 含义 |
+|---|---|
+| `FR-` | 功能需求：可观察的系统行为 |
+| `NFR-` | 质量需求：实时性、内存、并发、安全等（必须有阈值） |
+| `CON-` | 硬性约束：目标平台、编译条件、ABI 兼容等 |
+| `IFR-` | 接口需求：对外服务契约、协议、错误码 |
+| `ASM-` | 假设：失效会改变规格的事实 |
+| `EXC-` | 显式排除项：本轮不做的事 |
 
-按 INVEST 检查每条 row 的 `Small` + `Independent`：命中 G1-G6 / GE1-GE2 任一信号 → 按 Split Rules 拆分；详见 `references/granularity-and-split.md`。任一核心 row 缺 Acceptance / 缺 Priority / NFR 缺 QAS 阈值 → 回步骤 3。
+**条目字段**：`ID`、`Statement`（EARS 句式）、`Acceptance`（Given/When/Then）、`Priority`、`Source`（上游单据/文档锚点，不接受"口头要求"）、`Change Type`（new/modify/remove）、`Existing Behavior`（modify/remove 必填）。
 
-### 5. 草拟规格文档
+**Statement 用 EARS 句式**，让条目可冷读判断：
 
-按 Template-Constrained 写 `features/<id>/requirement.md`。默认使用 `references/requirement-template.md` 作为 requirement 模板；团队 `AGENTS.md` 声明等价模板或路径时优先覆盖。
+| 模式 | 句式 |
+|---|---|
+| 常驻行为 | `<主体> 必须 <持续成立的能力或约束>` |
+| 事件触发 | `当 <触发条件> 时，<主体> 必须 <可观察结果>` |
+| 状态约束 | `在 <状态/前置条件> 下，<主体> 必须 <行为结果>` |
+| 异常路径 | `如果 <异常条件>，<主体> 必须 <保护/反馈/恢复行为>` |
+| 可选配置 | `在启用 <配置> 时，<主体> 必须 <行为结果>` |
 
-`references/requirement-template.md` 是 `devflow-specify` 的默认需求规格模板：承载规格 / requirement 文档骨架。详细字段契约不在模板中重复维护，统一引用 `requirement-rows-contract.md` 和 `nfr-quality-attribute-scenarios.md`。
+主体写「本组件/该模块」，不写无主体的「系统应该」。Statement 里不出现实现细节（函数签名、数据结构、库名、并发原语）——那些属于设计。
 
-通用默认章节由 `references/requirement-template.md` 定义：Identity、Background And Goal、Scope / Non-Scope、Requirement Rows、Acceptance Criteria、Applicable NFR（若适用）、Open Questions（阻塞 / 非阻塞分类）、Assumptions And Dependencies。
+**Acceptance 用 Given/When/Then**，规则：
 
-额外必填章节（AR / DTS / CHANGE，由 `references/requirement-template.md` 提供骨架）：Component Impact Assessment、Interface Contract Candidates（当存在 `IFR` row 或 `Component Impact = interface` 时）。这些章节的详细字段契约以 `references/requirement-rows-contract.md` 为准，避免模板和契约文件重复维护。
+- 每条 FR 至少一个正向验收 + 关键失败路径各一条
+- 必须能形成明确的通过/不通过判断；禁止「体验良好」「足够快」
+- 一条验收只验证一个行为
+- 验收要能直接落成 RED 测试用例——这是规格与 TDD 的接口
 
-接口候选契约的边界：它应足够让 `devflow-component-design` / `devflow-ar-design` 消费，但不得在 spec 阶段锁死内部函数签名、私有数据结构、重试次数、线程模型或具体库选择。这些设计选择进入后续 design 节点。
+**Change Type 按对既有可观察行为的影响分类**（不是按"是不是新工作项"）：
 
-### 6. 同步 traceability 与 progress
+| 类型 | 判定 | 要求 |
+|---|---|---|
+| `new` | 新增能力且不改变任何既有接口语义、错误码、状态机、阈值 | 基线写 `N/A` |
+| `modify` | 改变既有行为、错误语义、默认值、阈值、兼容承诺 | 必须写旧行为基线；Acceptance 覆盖保留的行为与批准的破坏 |
+| `remove` | 移除/禁用/废弃既有能力或兼容承诺 | 必须写被移除行为、已知消费者、删除后的可观察语义 |
 
-按 Requirements Traceability，把上游 IR / SR / AR 锚点填入 `features/<id>/traceability.md`：AR / DTS / CHANGE 的 traceability 含上游 IR / SR / AR、Requirement Row、Change Type、Existing Behavior / Baseline、Component Design Section、AR Design Section、Code / Test / Verification 占位。
+一条需求同时含 new 与 modify 信号 → 拆条；不能拆 → 按更高风险归类。碰了旧路径却标 `new` 是规格阶段最危险的伪装，它会让回归风险消失在评审视野里。
 
-在 `features/<id>/progress.md` 写入 canonical 字段：`Current Stage = devflow-specify`、`Workflow Profile`（router 分配的实现 profile）、`Pending Reviews And Gates = spec-review`、`Next Action Or Recommended Skill = devflow-spec-review`、`Last Updated`。不允许自由文本下一步。
+### 4. NFR 写成 QAS
 
-### 7. 评审前自检
+每条核心 NFR 必须能写成 Quality Attribute Scenario 五要素：**Stimulus Source / Stimulus / Environment / Response / Response Measure**。Response Measure 必须有阈值或可判定准则。写不出来 = 还不够具体 → 回澄清或列 Open Question。完整格式与六个领域示例见 `references/nfr-quality-attribute-scenarios.md`。
 
-通用自检：
+### 5. 粒度检查
 
-- 业务背景 / 目标 / 用户清晰
-- 范围 / 非范围显式
-- 核心 FR / NFR 含 ID / Statement（EARS）/ Acceptance（BDD）/ Priority（MoSCoW 或团队等价）/ Source
-- 核心 FR / NFR / IFR / CON 含 `Change Type`；`modify` / `remove` 含 `Existing Behavior / Baseline`，且 Acceptance 覆盖回归 / 删除语义
-- 核心 NFR 已归类到 ISO/IEC 25010 维度并含 QAS 五要素；Response Measure 有阈值；Acceptance 与 QAS 一致（详见 `references/nfr-quality-attribute-scenarios.md` 最小签入条件）
-- 单条 row 已通过 INVEST `Small` + `Independent` 检查（无未处理的 G1-G6 / GE1-GE2 oversized 信号；详见 `references/granularity-and-split.md`）
-- Brainstorming Notes 已按归一化表落到正确 row 类别，未把猜测当事实
-- Open Questions 已分类（阻塞 / 非阻塞），阻塞项已闭合或显式回需求负责人
-- traceability.md 至少含上游追溯行
+单条 FR 出现以下信号必须拆分：多角色打包、CRUD 打包成"管理功能"、需要 ≥4 个独立场景才能说清、混写多个状态下的不同规则、即时结果和延时/异步结果绑在一条。拆分后每条子需求重写自己的 Acceptance，不允许写「同父需求」。详见 `references/granularity-and-split.md`。
 
-AR / DTS / CHANGE 额外自检：
+### 6. 自检并交人审
 
-- Component Impact Assessment 章节存在并已显式判断
-- 若存在 `IFR` 或 `Component Impact = interface`，Interface Contract Candidates 章节存在，且每条候选含 provider / consumer / operation / inputs / outputs / error semantics / compatibility / open questions
-- AR row 的 Acceptance 可直接落成 RED 用例
+自检清单见文末。通过后把 spec.md 交给人审查（可先用 `devflow-review` 的 spec rubric 做独立预审）。**规格未获人确认前不进入设计。**
 
-任一失败 → 回步骤 4 / 5。
+## 正反例
 
-### 8. Handoff
+反例——这些都不是规格：
 
+```text
+❌ FR-001: 系统应该处理用户请求            （无主体、无触发、无结果，不可测试）
+❌ NFR-001: 性能要好                       （无阈值，落不成测试）
+❌ FR-002: 增加一个环形缓冲区处理协议解析    （混入实现决策；环形缓冲区是设计的事）
+❌ FR-003: 无效 mode 返回 ERR_UNSUPPORTED   （实际修改了既有错误码语义却未标 modify、未写旧行为）
+```
 
-## 输出契约
+正例——可冷读、可测试、变更风险显式：
 
-完成时产出：
+```markdown
+### FR-001 模式切换
+- Statement: 当组件 X 收到 SetMode 请求且 mode ∈ {NORMAL, SAFE} 时，
+  必须在下一控制周期内将运行模式更新为请求值，并发出 ModeChanged 事件。
+- Acceptance:
+  - Given 当前 mode=SAFE；When 调用 SetMode(NORMAL)；
+    Then 下一控制周期内 ModeChanged.event=NORMAL，返回 OK。
+  - Given 当前 mode=SAFE；When 调用 SetMode(INVALID)；
+    Then 返回 ERR_INVALID_ARG，mode 仍为 SAFE，不发出 ModeChanged。
+- Priority: Must
+- Source: SR-1234 §3.2
+- Change Type: modify
+- Existing Behavior: 旧实现对非法 mode 返回 ERR_UNSUPPORTED_MODE；
+  本条将错误码改为 ERR_INVALID_ARG（已获需求负责人批准）。
+```
 
-- `features/<Work Item Id>-<slug>/requirement.md`（团队 `AGENTS.md` 覆盖路径优先；按 work item 类型含相应额外章节）
-- `features/<Work Item Id>-<slug>/traceability.md`（按 work item 类型初始化对应列）
-- `features/<Work Item Id>-<slug>/progress.md` 已同步：
-  - `Current Stage` = `devflow-specify`
-  - `Workflow Profile` = router 分配的实现 profile（`standard` / `component-impact` / `lightweight`）
-  - `Pending Reviews And Gates` 含 `spec-review`
-  - `Next Action Or Recommended Skill` = `devflow-spec-review`
-- `features/<Work Item Id>-<slug>/README.md` 中 Requirement 行更新
+## 接口候选契约
 
-初始化 `README.md`、`progress.md`、`traceability.md` 时，直接读取共享模板 `../using-devflow/references/devflow-work-item-readme-template.md`、`../using-devflow/references/devflow-progress-template.md`、`../using-devflow/references/devflow-traceability-template.md`；不要在 `devflow-specify/references/` 下查找这三份共享模板。
+当需求涉及对外接口（IFR 条目存在或接口语义被修改）时，spec 必须给出**语义级**接口候选契约：provider / consumer / 操作语义 / 输入输出（含单位与范围）/ 错误语义 / 同步异步与时序预期 / 兼容策略。**不写**语言级函数签名、私有数据结构、重试次数、线程模型——那些是设计决策。说不清 provider 或错误语义时写 Open Question，不猜。
 
-handoff 摘要（按 Local DevFlow Conventions 字段）：`work_item_id`、`owning_component`、`workflow_profile`、`artifact_paths`、`traceability_links`、`blockers`（如有 USER-INPUT 阻塞项）、`next_action_or_recommended_skill = devflow-spec-review`。
+## Open Questions
 
-未达评审门槛时不伪造 handoff；明确仍缺什么。
+每个开放问题标注：`blocking`（阻塞规格确认）或 `non-blocking`、负责人、它阻塞了什么决策。blocking 问题闭合前规格不能确认。把待决问题藏在正文里而不列出来，等于把猜测走私进规格。
 
 ## 风险信号
 
-- 把用户输入的自然语言需求直接当 requirement rows
-- 越过模块架构师，自行决定组件归属
-- 把"以后再做"只留在 prose 而无 Open Questions / 非范围
-- 缺 Acceptance 却声称需求清晰
-- 把实现细节（接口签名、表结构、数据结构）写进 Statement
-- 把修改 / 删除既有行为伪装成普通新增 row，未写 `Change Type` 或旧行为基线
-- `modify` / `remove` 缺回归验收、兼容语义、删除后的可观察语义或迁移 / 废弃路径
-- AR 影响 SOA 接口却不在 Component Impact Assessment 中标注
-- AR / DTS / CHANGE 影响接口却缺 Interface Contract Candidates
-- 在 Interface Contract Candidates 中写死内部函数签名 / 私有数据结构 / 线程模型
-- 把 USER-INPUT 阻塞项当 LLM-FIXABLE 自我硬补
-- 不更新 progress.md 就声称交接
+- 把用户原文逐句改写成条目就当规格写完了（原文 ≠ 规格，必须经过澄清与结构化）
+- 验收标准只是把 Statement 换个说法重复一遍，没有新增判定口径
+- NFR 写「尽快」「合理」并打算"实现时再定"
+- 碰了既有接口/状态机/错误码却全部标 `new`
+- 自己猜了 Open Question 的答案并补进规格
+- 在 Statement 或 Acceptance 里指定数据结构、函数名、库选择
 
-## 反向理由化（Common Rationalizations）
+## 自检清单
 
-需求澄清阶段最常见的偷懒话术与反驳。命中任意一条 → 停下，按反驳动作执行。
+- [ ] 每条 FR/IFR：EARS 句式 Statement + 可落成 RED 用例的 Acceptance + Source
+- [ ] 每条核心 NFR：QAS 五要素 + 含阈值的 Response Measure
+- [ ] 每条 FR/NFR/IFR/CON 有 Change Type；modify/remove 有旧行为基线与回归验收
+- [ ] 范围与非范围显式；本轮不做的事在 EXC 或新工作项里，不埋在正文
+- [ ] 涉及接口时有语义级接口候选契约
+- [ ] Open Questions 已分类；blocking 项已闭合或显式交回负责人
+- [ ] 通篇没有实现细节（签名、数据结构、库、并发原语）
 
-| 话术 | 反驳 |
-|---|---|
-| 「用户描述很清楚，直接当 requirement 写下来」 | 必须按 EARS / BDD / MoSCoW 拆 row。原文≠规格，哪怕看起来再清楚 |
-| 「这条 NFR 写'尽快' / '足够快'就行」 | 必须 QAS 五要素 + 可判定阈值；写不出 → 阻塞，回需求负责人补阈值 |
-| 「接口签名我都想好了，写在规格里更省事」 | spec 阶段只能写**语义级** Interface Contract Candidate（provider / consumer / operation / inputs / outputs / error semantics）；语言级函数签名 / 私有数据结构留给 design |
-| 「Open Questions 有 3 条，我自己猜个答案补上」 | 阻塞类 Open Questions 必须回需求负责人 / 模块架构师；devflow 不替团队角色拍板 |
-| 「row 太多了，挑核心的写就行」 | 缺 Acceptance / 缺 Priority 的核心 row 一律不得提交评审 |
-| 「Component Impact 看着就是不影响接口，跳过章节」 | 必须显式判断并在 Component Impact Assessment 里写明；隐式判断是 mid-AR 重路由的最大成因 |
-| 「这个只是新增功能，虽然碰了旧路径，也标 `new` 就行」 | `Change Type` 按既有可观察行为是否改变分类；碰旧接口 / 状态 / 错误码 / 运行时语义时必须拆 row 或标 `modify` |
-| 「旧行为大家都知道，不用写 baseline」 | `modify` / `remove` 缺 `Existing Behavior / Baseline` 时 reviewer 无法判断破坏是否被批准；写不出就列 Open Question |
-
-## 常见错误
-
-| 错误 | 修复 |
-|---|---|
-| 直接抄输入文档作为 requirement.md | 重新拆成 rows + 显式 Acceptance |
-| 含糊的 NFR（"足够快"） | 改成可判定阈值或回需求负责人补阈值 |
-| 误把组件设计修订写进 requirement.md | 仅在 Component Impact Assessment 标注，由 router 决定是否进入 `devflow-component-design` |
-| 把接口候选写成语言级函数签名 | 改成语义级契约：provider / consumer / operation / inputs / outputs / error semantics |
-
-## 验证清单
-
-通用：
-
-- [ ] `features/<id>/requirement.md` 已落盘
-- [ ] 业务背景、目标、范围、非范围、Acceptance Criteria 已写清
-- [ ] 核心 FR / NFR 具备 ID / Statement（EARS 句式）/ Acceptance（BDD Given/When/Then）/ Priority（MoSCoW 或团队等价）/ Source
-- [ ] 核心 FR / NFR / IFR / CON 具备 `Change Type`；`modify` / `remove` 具备 `Existing Behavior / Baseline`
-- [ ] `modify` / `remove` row 的 Acceptance 覆盖保留行为、批准的破坏行为、删除后的可观察语义或迁移 / 废弃结果
-- [ ] 核心 NFR 已归类到 ISO/IEC 25010 维度并含 QAS 五要素；Response Measure 有阈值；Acceptance 与 QAS 一致
-- [ ] 单条 row 通过 INVEST `Small` + `Independent` 检查；命中 G1-G6 / GE1-GE2 已按 Split Rules 处理或显式标注
-- [ ] Brainstorming Notes 已按归一化表落到正确 row 类别
-- [ ] Open Questions 已分类为阻塞 / 非阻塞，阻塞项已闭合或回需求负责人
-- [ ] progress.md 已按 canonical schema 同步，含 `Workflow Profile`，下一步为 `devflow-spec-review`
-- [ ] feature README 中 Requirement 行已更新
-
-AR / DTS / CHANGE work item 额外项：
-
-- [ ] Component Impact Assessment 已显式判断
-- [ ] 涉及接口时，Interface Contract Candidates 已给出 provider / consumer / operation / inputs / outputs / error semantics / compatibility / open questions
-- [ ] traceability.md 含 IR / SR / AR、Requirement Row、Change Type、Existing Behavior / Baseline 行
-- [ ] `Owning Component` 已记录
-
-## DevFlow 约定
-
-本 skill 遵循 `using-devflow` 的「DevFlow 共同约定」章节（产物布局 / progress 字段 / handoff 字段 / profile / 节点表）；项目 `AGENTS.md` 可覆盖等价路径与模板。
-
-### Work Item 骨架
-
-默认过程目录为 `features/AR<id>-<slug>/`、`features/DTS<id>-<slug>/`、`features/CHANGE<id>-<slug>/`。
-
-### requirement.md 最小内容
-
-- Identity: type, id, owner, component, upstream IR/SR/AR links, profile
-- Background And Goal
-- Scope / Non-Scope
-- Requirement Rows with ID, statement, acceptance, source, component impact
-- Requirement Rows with Change Type and Existing Behavior / Baseline for modify/remove rows
-- Acceptance Criteria
-- Applicable NFR when relevant
-- Open Questions 按 blocking / non-blocking 分类
-- Assumptions And Dependencies
-- AR / DTS / CHANGE 增加 Component Impact Assessment；接口受影响时增加 Interface Contract Candidates
 ## 支撑参考
 
 | 文件 | 用途 |
 |---|---|
-| `references/requirement-template.md` | requirement.md 默认模板 |
-| `references/requirement-rows-contract.md` | requirement rows 最小字段、EARS Statement Patterns、BDD Acceptance Rules、MoSCoW Priority、Source / Trace Anchor、Brainstorming Notes Normalization、Common Failure Modes |
-| `references/granularity-and-split.md` | INVEST `Small` + `Independent` 检查（G1-G6 + 适用领域扩展规则）、Split Rules、Mechanical vs Scope-Shaping Split、Cross-Work-Item Split |
-| `references/nfr-quality-attribute-scenarios.md` | ISO/IEC 25010 质量维度、QAS 五要素、适用 NFR 改写示例、最小签入条件 |
-| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
-| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |
-| `../using-devflow/references/devflow-work-item-readme-template.md` | 通用 work item README 模板（共享） |
-| `../using-devflow/references/devflow-progress-template.md` | 通用 progress.md 模板（共享） |
-| `../using-devflow/references/devflow-traceability-template.md` | 通用 traceability.md 模板（共享） |
+| `references/requirement-template.md` | spec.md 模板 |
+| `references/nfr-quality-attribute-scenarios.md` | QAS 五要素格式 + 实时性/内存/并发/资源/错误/安全六个完整示例 |
+| `references/granularity-and-split.md` | 过大条目的检测信号与拆分规则 |
