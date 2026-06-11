@@ -7,7 +7,8 @@
       "expected": [
         "keeps RED/GREEN/REFACTOR as second-layer TDD discipline",
         "uses cpp-coding-standards only as implementation constraints",
-        "uses automotive-embedded-development only as domain constraints",
+        "uses embedded-development for generic embedded constraints",
+        "uses automotive-development for automotive-specific constraints",
         "does not invoke devflow-test-craft as a third-layer quality skill"
       ]
     }

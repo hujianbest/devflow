@@ -4,7 +4,7 @@
 
 ## 1. 架构目标
 
-DevFlow Core 是一个面向 AI coding agent 的通用开发阶段工作流。它的核心不绑定 OpenCode、C、C++ 或车载嵌入式领域；这些能力通过独立扩展 skill 或平台适配层进入。
+DevFlow Core 是一个面向 AI coding agent 的通用开发阶段工作流。它的核心不绑定 OpenCode、C、C++、嵌入式或车载领域；这些能力通过独立扩展 skill 或平台适配层进入。
 
 DevFlow Core 负责：
 
@@ -28,7 +28,7 @@ DevFlow 的实现架构直接映射 `docs/devflow-philosophy.md` 的三层质量
 |---|---|---|
 | 第一层 SDD | 意图正确，做对的事 | `devflow-specify`、`devflow-spec-review`、traceability |
 | 第二层 TDD | 功能正确，证明做对 | `devflow-ar-design` 的测试设计章节、`devflow-tdd-implementation`、`devflow-test-review` |
-| 第三层代码内在质量 | 代码本身设计得好、写得好、值得长期持有 | 内在质量核心、编码规范 skills、领域约束 skills、`devflow-code-review` |
+| 第三层代码内在质量 | 代码本身设计得好、写得好、值得长期持有 | `devflow-clean-design`、`devflow-clean-code`、`devflow-clean-code` 下的编码规范 skills、领域约束 skills、`devflow-code-review` |
 
 第三层不是新的流程阶段。它是一组质量约束和判断标准，会投射到规格、设计、实现、评审、门禁和收尾中。
 
@@ -64,16 +64,17 @@ flowchart TD
   workflow --> router["devflow-router"]
   workflow --> nodes["13 canonical devflow nodes"]
 
-  internalQuality --> coreQuality["Internal Quality Core"]
-  internalQuality --> codingSkills["Coding Standards Skills"]
+  internalQuality --> cleanDesign["devflow-clean-design"]
+  internalQuality --> cleanCode["devflow-clean-code"]
   internalQuality --> domainSkills["Domain Constraint Skills"]
 
-  codingSkills --> cSkill["c-coding-standards"]
-  codingSkills --> cppSkill["cpp-coding-standards"]
-  domainSkills --> automotiveSkill["automotive-embedded-development"]
+  cleanCode --> cSkill["c-coding-standards"]
+  cleanCode --> cppSkill["cpp-coding-standards"]
+  domainSkills --> embeddedSkill["embedded-development"]
+  domainSkills --> automotiveSkill["automotive-development"]
 
-  coreQuality -.->|"quality constraints"| nodes
-  codingSkills -.->|"language constraints"| nodes
+  cleanDesign -.->|"design constraints"| nodes
+  cleanCode -.->|"code constraints"| nodes
   domainSkills -.->|"domain constraints"| nodes
 ```
 
@@ -92,20 +93,22 @@ flowchart TD
 
 - 描述语言级编码规范、工具链、静态分析、格式化和测试约定。
 - 为 design / implementation / code-review / completion-gate 提供语言级判断。
-- 不承载车载、前端、后端等领域约束。
+- 不承载嵌入式、车载、前端、后端等领域约束。
 - 不写 `progress.md`、handoff 或 review verdict。
 
 ### 4.2 领域约束 Skills
 
 领域约束 skill 属于第三层代码内在质量的领域扩展。它们回答“在这个工程领域里，什么质量约束必须贯穿规格、设计、实现和验证？”
 
-第一批领域约束 skill：
+第一批领域约束 skills：
 
-- `automotive-embedded-development`
+- `embedded-development`
+- `automotive-development`
 
 职责：
 
-- 声明领域风险维度、架构约束、证据要求、术语和模板增补。
+- `embedded-development` 声明通用嵌入式风险维度、架构约束、证据要求、术语和模板增补。
+- `automotive-development` 声明车载专属约束，如 ASIL、车载 SOA/MDC、DTC、SELinux 和整车生命周期。
 - 把领域质量约束前置投射到 `devflow-specify`、设计节点、TDD 实现、test/code review、completion gate、finalize 和 problem-fix。
 - 不重复 C / C++ 编码规范。
 - 不写 `progress.md`、handoff 或 review verdict。
@@ -148,7 +151,7 @@ flowchart TD
 重新解释：
 
 - `component-impact` 是现有 v1 profile 名称，可视为 broader architecture-impact 在当前组件仓库语境中的实现。
-- 旧 `devflow-*-craft` 不再是第三层主架构。其可复用内容迁入新的内在质量核心、编码规范 skills、领域约束 skills 或第二层 TDD / test-review 体系。
+- 旧 `devflow-*-craft` 不再是第三层主架构。其可复用内容迁入 `devflow-clean-design`、`devflow-clean-code`、编码规范 skills、领域约束 skills 或第二层 TDD / test-review 体系；旧 craft skills 应从仓库中移除，不能作为主动入口或兼容入口。
 
 ## 7. 约束原则
 

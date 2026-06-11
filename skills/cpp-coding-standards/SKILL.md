@@ -23,7 +23,8 @@ description: 当 DevFlow work item 涉及 C++ 代码、C++ 测试、RAII、对�
 不适用：
 
 - C 语言规则 → `c-coding-standards`
-- 车载嵌入式领域约束 → `automotive-embedded-development`
+- 嵌入式领域约束 → `embedded-development`
+- 车载领域约束 → `automotive-development`
 - runtime 下一步 → `devflow-router`
 - 测试有效性裁决 → `devflow-test-review`
 
@@ -32,7 +33,7 @@ description: 当 DevFlow work item 涉及 C++ 代码、C++ 测试、RAII、对�
 - 不把 C++ 规则写入 `Next Action Or Recommended Skill`。
 - 不替 reviewer 给 verdict。
 - 不替项目决定 AUTOSAR C++、C++ Core Guidelines 或异常策略；项目未声明时，只提出需确认项。
-- 不把车载实时性、ASIL、SOA/MDC 等领域规则写在本 skill 内。
+- 不把嵌入式实时性、中断、硬件资源或车载 ASIL、SOA/MDC 等领域规则写在本 skill 内。
 - C++ 代码若引入未解释的对象生命周期错误、资源泄漏、异常安全破坏、ABI 破坏或过度模板抽象，不得作为“语言层 clean”交付。
 
 ## 对象契约

@@ -44,7 +44,7 @@ Use this when you want to keep DevFlow's source separate from your component rep
    List the DevFlow skills you can see, and tell me which one you would load if I asked to clarify a new AR.
    ```
 
-   The agent should return the 13 canonical nodes, the non-canonical extension skills (`c-coding-standards`, `cpp-coding-standards`, `automotive-embedded-development`), and pick `using-devflow`.
+   The agent should return the 13 canonical nodes, the non-canonical extension skills (`c-coding-standards`, `cpp-coding-standards`, `embedded-development`, `automotive-development`), and pick `using-devflow`.
 
 ### Option B — Vendored
 
@@ -69,7 +69,7 @@ Every skill lives at:
 skills/<skill-name>/SKILL.md
 ```
 
-OpenCode reads each file's YAML frontmatter `description` (a classifier) and uses it to decide whether to load the skill for the current request. DevFlow descriptions front-load triggering keywords for flow nodes (`spec review`, `AR implementation design`, `component design`, `test review`, `code review`) and extension skills (`C`, `C++`, `automotive embedded`, `ASIL`, `SOA/MDC`, etc.).
+OpenCode reads each file's YAML frontmatter `description` (a classifier) and uses it to decide whether to load the skill for the current request. DevFlow descriptions front-load triggering keywords for flow nodes (`spec review`, `AR implementation design`, `component design`, `test review`, `code review`) and extension skills (`C`, `C++`, `embedded`, `automotive`, `ASIL`, `SOA/MDC`, etc.).
 
 ### 2. Automatic invocation
 
@@ -104,9 +104,10 @@ HOTFIX     devflow-problem-fix
 Internal quality extensions are discovered alongside the flow:
 
 ```text
-C code      c-coding-standards
-C++ code    cpp-coding-standards
-Automotive  automotive-embedded-development
+C code       c-coding-standards
+C++ code     cpp-coding-standards
+Embedded     embedded-development
+Automotive   automotive-development
 ```
 
 These extension skills never appear in `Next Action Or Recommended Skill`.

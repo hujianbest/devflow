@@ -10,18 +10,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 - Reframed DevFlow around the three quality layers from `docs/devflow-philosophy.md`: SDD for intent correctness, TDD for functional correctness, and a rewritten internal-quality layer for design/code quality.
 - Added `docs/devflow-core-architecture.md` as the implementation architecture bridge from philosophy to skills, including core workflow, extension skills, platform adapters, and v1 artifact compatibility.
-- Added `docs/devflow-internal-quality.md` as the new third-layer model. The old `devflow-design-craft`, `devflow-coding-craft`, and `devflow-test-craft` are now compatibility/migration references, not the primary third-layer architecture.
+- Added `docs/devflow-internal-quality.md` as the new third-layer reference model. The operational third-layer skills are now `devflow-clean-design` and `devflow-clean-code`.
+- Removed the old `devflow-design-craft`, `devflow-coding-craft`, and `devflow-test-craft` skill files from the active skill set.
 - Added first extension skills:
   - `c-coding-standards`
   - `cpp-coding-standards`
-  - `automotive-embedded-development`
+  - `embedded-development`
+  - `automotive-development`
 - Updated `using-devflow` and `devflow-router` so coding standards and domain constraints are discovered as non-canonical constraints. They never become `Current Stage` or `Next Action Or Recommended Skill`.
 
-### Migration — craft layer
+### Migration — craft layer removal
 
-- `devflow-design-craft`: generic design quality moves to `docs/devflow-internal-quality.md`; automotive/SOA content moves to `automotive-embedded-development`.
-- `devflow-coding-craft`: generic code quality moves to `docs/devflow-internal-quality.md`; C rules move to `c-coding-standards`; C++ rules move to `cpp-coding-standards`.
-- `devflow-test-craft`: test effectiveness moves back to the second-layer TDD / `devflow-test-review` system and is no longer treated as third-layer internal quality.
+- `devflow-design-craft`: generic design quality moves to `devflow-clean-design`; generic embedded content moves to `embedded-development`; automotive-specific content moves to `automotive-development`.
+- `devflow-coding-craft`: generic code quality moves to `devflow-clean-code`; C rules move to `c-coding-standards`; C++ rules move to `cpp-coding-standards`.
+- `devflow-test-craft`: removed; test effectiveness moves back to the second-layer TDD / `devflow-test-review` system and is no longer treated as third-layer internal quality.
 
 ### Added — flexible review command
 

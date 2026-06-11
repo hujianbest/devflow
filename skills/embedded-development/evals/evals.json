@@ -1,0 +1,16 @@
+{
+  "skill": "embedded-development",
+  "scenarios": [
+    {
+      "id": "inherits-embedded-risk-checklist",
+      "prompt": "Review an embedded driver change with interrupt context, static buffers, DMA resource lifecycle, realtime deadline, and static-analysis evidence.",
+      "expected": [
+        "checks memory and buffer ownership",
+        "checks interrupt/concurrency restrictions",
+        "checks realtime and resource lifecycle evidence",
+        "does not apply automotive ASIL/MDC/DTC rules by default",
+        "does not produce a runtime next action"
+      ]
+    }
+  ]
+}

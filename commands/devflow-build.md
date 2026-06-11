@@ -17,7 +17,7 @@ This command orchestrates the **DevFlow build (构建)** phase.
   - 每次 next-ready task 一次新派发；接收 Implementer Context Pack
 - 第二层 TDD 与第三层扩展约束（节点内部读取，不是流程节点、不进 handoff、不产 verdict）：
   - `devflow-tdd-implementation` 落测试时遵循第二层 TDD / 测试有效性规则
-  - 写实现 / 重构 / code-review 时读取 `docs/devflow-internal-quality.md`、适用编码规范 skill 和适用领域约束 skill
+  - 写实现 / 重构 / code-review 时读取 `devflow-clean-code`、适用编码规范 skill 和适用领域约束 skill
 
 ## When to use
 

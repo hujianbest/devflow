@@ -195,7 +195,8 @@ devflow 默认以单个 AR / 单个 DTS 为 work item 边界，内部通过 `tas
 | `references/definition-of-done.md` | devflow Definition of Done 各 profile 表 |
 | `references/devflow-completion-record-template.md` | completion record 模板 |
 | `references/verification-record-template.md` | 通用验证记录模板（命令、结果、新鲜度锚点、验证结论） |
-| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../devflow-clean-code/SKILL.md` | 第三层编码内在质量统筹 skill（适用于实现质量审计） |
 | `../c-coding-standards/SKILL.md` | C 编码规范扩展（适用时读取） |
 | `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |

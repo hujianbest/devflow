@@ -73,10 +73,10 @@
 
 | 约束项 | 来源 | 状态选项 |
 |---|---|
-| 内在质量核心 | `docs/devflow-internal-quality.md` | `clean` / `documented-debt` / `critical-open` / `N/A` |
+| Clean code | `devflow-clean-code` | `clean` / `documented-debt` / `critical-open` / `N/A` |
 | C 编码规范 | `c-coding-standards`（适用时） | 同上 |
 | C++ 编码规范 | `cpp-coding-standards`（适用时） | 同上 |
-| 领域约束 | 如 `automotive-embedded-development`（适用时） | 同上 |
+| 领域约束 | 如 `embedded-development`（适用时） | 同上 |
 
 `critical-open` 任一维度命中 → completion `阻塞`。
 

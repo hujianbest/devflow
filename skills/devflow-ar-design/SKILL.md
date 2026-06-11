@@ -51,7 +51,7 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 - **Requirements Traceability**: 设计章节回指 requirement.md 的 FR / NFR / IFR rows
 - **Behavior Delta Awareness**: 设计必须消费 requirement row 的 `Change Type` 与 `Existing Behavior / Baseline`；`modify` / `remove` 需要显式说明兼容、迁移、回归和删除语义
 - **SOLID / GRASP**: 职责清晰、低耦合、高内聚、可测试性
-- **Internal Quality Design**: 按 `docs/devflow-internal-quality.md` 检查设计质量、代码质量边界、接口契约、可维护性和演进成本
+- **Clean Design**: 按 `devflow-clean-design` 检查设计质量、代码质量边界、接口契约、可维护性和演进成本
 - **Applicable Constraints Conformance**: 按适用编码规范 skill 与领域约束 skill 消费语言/领域约束；不在本节点内硬编码 C/C++ 或车载默认语境
 - **Component Design Conformance**: 与 `docs/component-design.md` 的对 AR 设计的约束保持一致；不重新论证组件级决策
 - **Design Options Before Draft**: 正式起草前先列 2-3 个代码层方案、trade-off、推荐项与确认状态
@@ -62,7 +62,7 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 
 本节点产出 AR 实现设计与测试设计章节时，分别消费第三层内在质量和第二层 TDD 判据：
 
-- 步骤 3「方案选择 checkpoint」与步骤 5「起草代码层设计」→ 使用 `docs/devflow-internal-quality.md` 作为通用内在质量判据，并叠加适用的编码规范 / 领域约束 skill。
+- 步骤 3「方案选择 checkpoint」与步骤 5「起草代码层设计」→ 使用 `devflow-clean-design` 作为设计内在质量判据，并叠加适用的编码规范 / 领域约束 skill。
 - 步骤 6「起草测试设计章节」→ 服务第二层 TDD / test-review，确保测试能驱动功能正确；适用领域风险由领域约束 skill 投射。
 
 这些约束只提升产物质量，**不改变**本节点的硬性门禁、模板约束、组件边界停下规则或独立评审流程；它们不写 progress/handoff、不产生 verdict。
@@ -108,7 +108,7 @@ description: 当规格已通过且 AR，或需要 AR 级设计的 DTS，需要�
 - **2 动态行为**：PlantUML 交互时序图，参与者使用真实组件 / 类 / 服务名，消息体现接口或方法调用
 - **3 功能点分解**：功能点 ID、Covers Requirement、Change Type、Existing Behavior / Baseline 摘要、描述、优先级、是否可独立测试；每个功能点必须可回指 requirement row
 - **4 实现设计**：Design Options（候选方案 / trade-off / 推荐项 / 确认状态）、功能实现思路、用例 / 流程图、正常 / 异常流程、持久化设计（如有）、接口描述、代码设计、适用领域场景设计
-- **4.7 领域场景设计**：若适用 `automotive-embedded-development`，需覆盖 MDC 并发、启动退出、休眠唤醒、可靠性、SELinux 等场景；不适用时写明依据
+- **4.7 领域场景设计**：若适用 `automotive-development`，需覆盖 MDC 并发、启动退出、休眠唤醒、可靠性、SELinux 等车载场景；若仅适用 `embedded-development`，覆盖对应嵌入式风险场景；不适用时写明依据
 - **5 重构设计**：需要重构时说明范围、影响模块、验证方式和是否触发升级
 - **6 测试设计**：必含，见步骤 5
 - **7 模板修订记录**
@@ -217,7 +217,8 @@ DevFlow 不维护单独的 `test-design.md`；测试设计是 AR design 的一�
 |---|---|
 | `references/test-design-section-contract.md` | 测试设计章节最小契约 |
 | `references/devflow-ar-design-template.md` | 团队 AR 设计模板（待团队补齐） |
-| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../devflow-clean-design/SKILL.md` | 第三层设计内在质量统筹 skill |
 | `../c-coding-standards/SKILL.md` | C 编码规范扩展（适用时读取） |
 | `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |

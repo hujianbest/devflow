@@ -5,7 +5,7 @@
 - 本模板用于 `devflow-ar-design` 产出 `features/<id>/ar-design-draft.md`，并在 closeout 后 promote 到 `docs/ar-designs/AR<id>-<slug>.md`。
 - 正式交付件必须删除模板说明、示例业务内容和任何占位符；不得残留 `AI提示`、`TBD`、`{DATE}`、变量替换规则等模板痕迹。
 - 测试设计必须是本文档章节，不得拆成独立 `test-design.md`。
-- 本模板采用团队 AR 设计作业结构：AR 概述、动态行为、功能点分解、实现设计、适用领域场景设计、重构设计、测试设计、模板修订记录均为必填骨架。MDC / SELinux 等车载领域内容仅在启用 `automotive-embedded-development` 时填写。
+- 本模板采用团队 AR 设计作业结构：AR 概述、动态行为、功能点分解、实现设计、适用领域场景设计、重构设计、测试设计、模板修订记录均为必填骨架。MDC / SELinux 等车载领域内容仅在启用 `automotive-development` 时填写；通用嵌入式风险内容由 `embedded-development` 提供。
 
 ## 1. AR 概述（必要）
 
@@ -160,7 +160,7 @@ stop
 
 ### 4.7 适用领域场景设计（按领域约束启用）
 
-默认 DevFlow Core 不强制 MDC / SELinux 场景。若 work item 启用 `automotive-embedded-development`，则按下列车载领域场景填写；回答“不涉及”时必须给出判定依据。
+默认 DevFlow Core 不强制 MDC / SELinux 场景。若 work item 启用 `automotive-development`，则按下列车载领域场景填写；若只启用 `embedded-development`，填写通用嵌入式风险场景或明确 N/A。回答“不涉及”时必须给出判定依据。
 
 #### 4.7.1 并发场景分析
 

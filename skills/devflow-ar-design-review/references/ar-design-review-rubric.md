@@ -55,7 +55,7 @@
 - `AD5.4` 实时性（截止时间、调度、节拍）
 - `AD5.5` 资源生命周期（句柄、文件、缓冲区）配对
 - `AD5.6` ABI / API 兼容（跨版本、跨平台）
-- `AD5.7` 适用领域场景均有分析；未启用领域约束时有 N/A 理由。启用 `automotive-embedded-development` 时覆盖 MDC 并发、启动退出、休眠唤醒、可靠性、SELinux 等场景
+- `AD5.7` 适用领域场景均有分析；未启用领域约束时有 N/A 理由。启用 `automotive-development` 时覆盖 MDC 并发、启动退出、休眠唤醒、可靠性、SELinux 等车载场景；启用 `embedded-development` 时覆盖通用嵌入式风险场景
 - `AD5.8` 正常流程和异常流程均有处理策略，不只有 happy path
 
 ### Group AD6 - Test Design（测试设计）（测试设计）（测试设计）

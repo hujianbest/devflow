@@ -58,7 +58,7 @@ devflow-soul 要求：「TDD 中写出的测试用例不能天然视为有效，
 
 ## 第二层测试有效性与领域约束
 
-测试有效性属于第二层 TDD / 功能正确。评审时使用本 skill 的 fail-first、断言强度、行为覆盖、mock 边界等判据；适用时叠加领域约束 skill（如 `automotive-embedded-development`）检查领域风险是否被实际测试或证据覆盖。`devflow-test-craft` 不再作为第三层内在质量 skill。
+测试有效性属于第二层 TDD / 功能正确。评审时使用本 skill 的 fail-first、断言强度、行为覆盖、mock 边界等判据；适用时叠加领域约束 skill（如 `embedded-development` / `automotive-development`）检查领域风险是否被实际测试或证据覆盖。
 
 ## 工作流
 
@@ -216,5 +216,6 @@ reroute_via_router: true | false
 |---|---|
 | `references/test-review-rubric.md` | 7 维度 rubric + rule IDs（TC1-TC7） |
 | `references/team-test-review-rubric.md` | 团队测试审查准则完整继承版 |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |
 | Local Test Design Contract Excerpt | 测试设计章节契约（用例最小字段） |

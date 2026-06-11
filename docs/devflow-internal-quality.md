@@ -1,6 +1,6 @@
 # DevFlow Internal Quality
 
-> 本文定义 DevFlow 第三层“代码内在质量”的新模型。它取代原 `devflow-design-craft` / `devflow-coding-craft` / `devflow-test-craft` 作为第三层主叙事。
+> 本文定义 DevFlow 第三层“代码内在质量”的架构参考模型。运行时可消费的第三层统筹 skill 是 `devflow-clean-design` 与 `devflow-clean-code`；本文不是 runtime node，也不写 handoff。
 
 ## 1. 第三层回答什么
 
@@ -32,13 +32,18 @@
 - 具体领域风险矩阵。这属于领域约束 skills。
 - runtime 下一节点。这属于 `devflow-router`。
 
-## 3. 内在质量核心
+## 3. 内在质量统筹 Skills
 
-内在质量核心是通用的，不绑定语言和领域。
+第三层由两个统筹 skill 承载：
+
+- `devflow-clean-design`：设计内在质量统筹。
+- `devflow-clean-code`：编码内在质量统筹。
+
+二者都是非 canonical skill，不绑定语言和领域，不写 `progress.md` / handoff，不产 verdict。
 
 ### 3.1 设计质量
 
-通用设计质量包括：
+`devflow-clean-design` 统筹：
 
 - **简单性优先**：满足当前 requirement 的最少结构。
 - **抽象纪律**：抽象必须由真实重复、真实变化轴或明确稳定接口支撑。
@@ -49,7 +54,7 @@
 
 ### 3.2 代码质量
 
-通用代码质量包括：
+`devflow-clean-code` 统筹：
 
 - **可读性**：命名表达意图，控制流直白，注释解释非显然约束。
 - **局部性**：变更集中在当前 task / 当前设计允许的范围内。
@@ -60,7 +65,7 @@
 
 ## 4. 编码规范 Skills
 
-编码规范 skills 是第三层的语言扩展。它们把通用内在质量落到具体语言。
+编码规范 skills 是 `devflow-clean-code` 下的语言扩展。它们把通用 clean-code 约束落到具体语言。
 
 第一批：
 
@@ -76,7 +81,7 @@
 
 编码规范 skill 不应规定：
 
-- 车载、前端、后端等领域风险。
+- 嵌入式、车载、前端、后端等领域风险。
 - runtime next action。
 - DevFlow artifact layout。
 
@@ -86,7 +91,8 @@
 
 第一批：
 
-- `automotive-embedded-development`
+- `embedded-development`
+- `automotive-development`
 
 领域约束 skill 可以规定：
 
@@ -108,7 +114,7 @@
 
 - fail-first RED / GREEN / REFACTOR 属于 `devflow-tdd-implementation`。
 - 测试有效性、断言强度、mock 边界、测试金字塔属于 `devflow-test-review` 和 TDD 支撑材料。
-- `devflow-test-craft` 的有效内容迁入第二层，不再作为第三层 skill。
+- `devflow-test-craft` 被移除；测试有效性内容迁入第二层，不再作为第三层 skill。
 
 第三层仍可以影响测试设计，但只从“代码是否更可维护、更低耦合、更易审查”的角度提出约束，不裁决测试是否有效。
 
@@ -124,25 +130,26 @@ Core flow nodes 保持通用 workflow 职责：
 
 第三层扩展不改变这些节点的拓扑。它们只提供额外约束：
 
-- 内在质量核心提供通用设计/代码判断。
-- 编码规范 skills 提供语言判断。
+- `devflow-clean-design` 提供通用设计质量判断。
+- `devflow-clean-code` 提供通用代码质量判断，并统筹编码规范 skills。
+- 编码规范 skills 提供语言判断，归属于 `devflow-clean-code` 的扩展。
 - 领域约束 skills 提供领域判断。
 
 ## 8. 旧 Craft Skills 迁移规则
 
-旧 skills 处理方式：
+旧 craft 内容处理方式：
 
-- `devflow-design-craft`：通用设计质量迁入本文；嵌入式 / SOA 内容迁入 `automotive-embedded-development`。
-- `devflow-coding-craft`：通用代码质量迁入本文；C 内容迁入 `c-coding-standards`；C++ 内容迁入 `cpp-coding-standards`。
-- `devflow-test-craft`：迁入第二层 TDD / test-review 体系。
+- `devflow-design-craft`：删除；通用设计质量迁入 `devflow-clean-design`；领域内容迁入对应领域约束 skill。
+- `devflow-coding-craft`：删除；通用代码质量迁入 `devflow-clean-code`；C 内容迁入 `c-coding-standards`；C++ 内容迁入 `cpp-coding-standards`。
+- `devflow-test-craft`：删除；测试有效性迁入第二层 TDD / test-review 体系。
 
-旧 craft skills 在兼容期可以保留为指向新体系的说明页，但不能再作为 DevFlow 第三层的主模型。
+旧 craft skills 不再保留为运行或兼容入口；新体系直接使用 clean design / clean code。
 
 ## 9. 最小验收
 
 第三层重写完成时，应满足：
 
 - Core docs 不再把 `devflow-*-craft` 描述为第三层主架构。
-- 每个 core flow/review/gate node 都能说明如何叠加内在质量核心、编码规范 skill 和领域约束 skill。
-- C / C++ / 车载嵌入式规则不再作为 core 默认规则散落在 flow nodes 中。
-- Test craft 内容迁入第二层，并且 `devflow-test-review` 仍能裁决测试有效性。
+- 每个 core flow/review/gate node 都能说明如何叠加 `devflow-clean-design` / `devflow-clean-code`、编码规范 skill 和领域约束 skill。
+- C / C++ / 嵌入式 / 车载规则不再作为 core 默认规则散落在 flow nodes 中。
+- `devflow-test-craft` 已移除，并且 `devflow-test-review` 仍能裁决测试有效性。

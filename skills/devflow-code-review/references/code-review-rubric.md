@@ -91,7 +91,7 @@
 
 ## 项目检查清单补充
 
-评审时优先核对 `docs/devflow-internal-quality.md`、适用编码规范 skill 和适用领域约束 skill。若项目显式启用旧团队代码检视清单，可参考 `team-code-review-checklist.md`；该文件不是 DevFlow Core 默认判据。
+评审时优先核对 `devflow-clean-code`、适用编码规范 skill 和适用领域约束 skill。下表是通用速查摘要；项目若有额外清单，应通过项目约定或对应扩展 skill 提供，不在 DevFlow Core 中保留旧项目清单。
 
 | 类别 | 必查项 |
 |---|---|

@@ -46,7 +46,7 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 
 - **Code-Level Design Review**: 检查数据结构、控制流、接口签名草案、关键路径
 - **Component Design Conformance Check**: 检查与 `docs/component-design.md` 的一致性；不重新审组件级决策
-- **Internal Quality Review**: 按 `docs/devflow-internal-quality.md` 检查代码层设计质量、接口契约、可维护性和演进成本
+- **Clean Design Review**: 按 `devflow-clean-design` 检查代码层设计质量、接口契约、可维护性和演进成本
 - **Applicable Constraint Review**: 按适用编码规范 / 领域约束检查语言和领域风险
 - **Test Design Adequacy Review**: 检查测试设计章节的用例覆盖 / 边界 / 异常 / 适用风险 / mock 边界 / RED-GREEN 证据要求
 - **Traceability Check**: 检查每个用例回指 requirement row，适用领域风险至少有一个用例或 N/A 理由
@@ -56,10 +56,10 @@ description: 当 devflow-ar-design 产出的 ar-design-draft.md 需要独立评�
 
 评审 AR 实现设计与测试设计章节时，叠加第三层内在质量和适用扩展约束，与本 skill 的 conformance / traceability rubric 互补：
 
-- 以 `docs/devflow-internal-quality.md` 作为通用设计质量与代码质量标尺。
+- 以 `devflow-clean-design` 作为通用设计质量标尺。
 - 以适用编码规范 skill 作为语言级判据。
 - 以适用领域约束 skill 作为领域风险判据。
-- 测试设计有效性仍属于第二层 TDD / test-review 体系，不再使用 `devflow-test-craft` 作为第三层标尺。
+- 测试设计有效性仍属于第二层 TDD / test-review 体系，不作为第三层 clean-layer 标尺。
 
 透镜只提供判别标尺，verdict 仍由本评审节点唯一裁决；reviewer 不改设计 / 不改测试。
 
@@ -218,7 +218,8 @@ reroute_via_router: true | false
 |---|---|
 | `references/ar-design-review-rubric.md` | 8 维度 rubric + rule IDs |
 | Local Test Design Contract Excerpt | 测试设计章节最小契约 |
-| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../devflow-clean-design/SKILL.md` | 第三层设计内在质量统筹 skill |
 | `../c-coding-standards/SKILL.md` | C 编码规范扩展（适用时读取） |
 | `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |

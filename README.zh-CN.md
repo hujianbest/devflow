@@ -11,7 +11,7 @@
 
 DevFlow 是一个开发阶段工作流，用来把团队已经接受的 AR / DTS / CHANGE work item 推进到规格澄清、设计、TDD 实现、独立评审、完成门禁和收尾。下一步永远从持久化工件恢复，而不是从聊天记忆猜。
 
-DevFlow Core 直接映射 [`docs/devflow-philosophy.md`](docs/devflow-philosophy.md) 的三层质量模型：SDD 保证意图正确，TDD 保证功能正确，重写后的第三层保证设计和代码内在质量。语言规则和领域约束通过扩展 skill 提供，例如 `c-coding-standards`、`cpp-coding-standards`、`automotive-embedded-development`。详见 [`docs/devflow-core-architecture.md`](docs/devflow-core-architecture.md) 与 [`docs/devflow-internal-quality.md`](docs/devflow-internal-quality.md)。
+DevFlow Core 直接映射 [`docs/devflow-philosophy.md`](docs/devflow-philosophy.md) 的三层质量模型：SDD 保证意图正确，TDD 保证功能正确，重写后的第三层由 `devflow-clean-design` 与 `devflow-clean-code` 统筹设计和代码内在质量。语言规则和领域约束通过扩展 skill 提供，例如 `c-coding-standards`、`cpp-coding-standards`、`embedded-development`、`automotive-development`。详见 [`docs/devflow-core-architecture.md`](docs/devflow-core-architecture.md)。
 
 DevFlow 的范围故意比 idea-to-product 工作流更窄。它不负责产品发现、发布运维、系统 / 集成 / 验收测试，也不负责线上事故管理。它从团队已经接受的需求或问题单开始。
 
@@ -120,9 +120,9 @@ DevFlow 包含一个 public entry meta-skill、13 个 canonical `devflow-*` runt
 
 - **Meta（`using-devflow`）** 发现该用哪个 skill，承载永远生效的行为宪法，并托管其他所有 skill 共同遵循的约定。
 - **运行时路由（`devflow-router`）** 把工件证据转成唯一 canonical 下一步。
-- **内在质量核心** 定义于 [`docs/devflow-internal-quality.md`](docs/devflow-internal-quality.md)，承载通用设计质量与代码质量。
+- **Clean design/code skills**（`devflow-clean-design`、`devflow-clean-code`）统筹第三层设计和代码内在质量。
 - **编码规范 skills**（如 `c-coding-standards`、`cpp-coding-standards`）提供语言级规则。
-- **领域约束 skills**（如 `automotive-embedded-development`）提供跨全流程的领域质量约束。
+- **领域约束 skills**（如 `embedded-development`、`automotive-development`）提供跨全流程的领域质量约束。
 
 ### Meta 与路由
 
@@ -164,10 +164,12 @@ DevFlow 包含一个 public entry meta-skill、13 个 canonical `devflow-*` runt
 
 | Skill | 做什么 | 被谁叠加 |
 |---|---|---|
-| [`docs/devflow-internal-quality.md`](docs/devflow-internal-quality.md) | 通用第三层内在质量模型 | 设计、实现、代码评审、完成门禁 |
+| [`devflow-clean-design`](skills/devflow-clean-design/SKILL.md) | 通用 clean design 约束 | 设计节点和设计评审 |
+| [`devflow-clean-code`](skills/devflow-clean-code/SKILL.md) | 通用 clean code 约束 | 构建、代码评审、完成门禁 |
 | [`c-coding-standards`](skills/c-coding-standards/SKILL.md) | C 编码规范、工具链、静态分析、指针/内存/资源规则 | C work item |
 | [`cpp-coding-standards`](skills/cpp-coding-standards/SKILL.md) | C++ 编码规范、RAII / 生命周期 / 模板 / ABI 规则 | C++ work item |
-| [`automotive-embedded-development`](skills/automotive-embedded-development/SKILL.md) | 车载嵌入式领域约束，覆盖 DevFlow 全流程 | 车载嵌入式 work item |
+| [`embedded-development`](skills/embedded-development/SKILL.md) | 嵌入式领域约束，覆盖 DevFlow 全流程 | 嵌入式 work item |
+| [`automotive-development`](skills/automotive-development/SKILL.md) | 车载专属约束，如 ASIL、SOA/MDC、DTC、SELinux、整车生命周期 | 车载 work item |
 
 ---
 
@@ -179,7 +181,7 @@ DevFlow 不是 prompt 集合，而是面向 agent 的受控工程工作流。
 |---|---|---|
 | 意图 | 规格锚定的 SDD | 把范围、约束和验收标准留在可评审文件中 |
 | 规划 | 设计选项和评审门禁 | 在代码前显式记录架构、接口、风险和测试设计 |
-| 内在质量 | 内在质量核心 + 编码规范 + 领域约束 | 让设计和代码可维护、可读、可演进、可审查 |
+| 内在质量 | `devflow-clean-design` + `devflow-clean-code` + 编码规范 + 领域约束 | 让设计和代码可维护、可读、可演进、可审查 |
 | 执行 | 门禁式 TDD | 要求 fail-first 证据、GREEN 验证，并且一次只有一个 active task |
 | 路由 | 基于工件恢复 | 让另一个 agent 可从 `progress.md`、reviews、evidence 和 completion records 续作 |
 | 评审 | 角色分离 subagent | 防止作者和批准者塌缩到同一个会话 |
@@ -274,9 +276,12 @@ devflow/
 │   ├── devflow-completion-gate/
 │   ├── devflow-finalize/
 │   ├── devflow-problem-fix/
+│   ├── devflow-clean-design/         #   设计内在质量统筹
+│   ├── devflow-clean-code/           #   编码内在质量统筹
 │   ├── c-coding-standards/           #   C 编码规范扩展
 │   ├── cpp-coding-standards/         #   C++ 编码规范扩展
-│   └── automotive-embedded-development/ # 车载嵌入式领域约束
+│   ├── embedded-development/         # 嵌入式领域约束
+│   └── automotive-development/       # 车载领域约束
 ├── docs/
 │   ├── devflow-core-architecture.md  # DevFlow Core 架构
 │   ├── devflow-internal-quality.md   # 重写后的第三层内在质量

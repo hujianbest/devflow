@@ -1,0 +1,15 @@
+{
+  "skill": "devflow-clean-code",
+  "scenarios": [
+    {
+      "id": "reject-scope-creep-refactor",
+      "prompt": "During GREEN for one active task, the implementer also rewrites neighboring helpers and renames unrelated files.",
+      "expected": [
+        "flags scope creep and hat mixing",
+        "requires unrelated cleanup to be recorded as follow-up",
+        "keeps GREEN and REFACTOR separate",
+        "does not produce a runtime next action"
+      ]
+    }
+  ]
+}

@@ -56,7 +56,7 @@ description: 当 DTS、紧急缺陷或已上线问题在任何代码修改前需
 - **Reproduce First**: 必须先复现或显式无法复现
 - **Contract Sanity Check**: 校对当前行为是否真的违反既有 spec / 设计 / API 契约
 - **Blameless Post-Mortem Mindset**: 关注机制 / 系统性原因，不归咎个人
-- **Applicable Constraint Awareness**: 根因分析必须消费适用的编码规范 skill 与领域约束 skill；车载嵌入式 work item 叠加 `automotive-embedded-development`
+- **Applicable Constraint Awareness**: 根因分析必须消费适用的编码规范 skill 与领域约束 skill；嵌入式 work item 叠加 `embedded-development`，车载 work item 叠加 `automotive-development`
 
 ## 工作流
 
@@ -214,4 +214,5 @@ Default DTS directory is features/DTS<id>-<slug>/. Create or update README.md, p
 | `../using-devflow/references/devflow-work-item-readme-template.md` | 共享 work item README 模板 |
 | `../using-devflow/references/devflow-progress-template.md` | 共享 progress.md 模板 |
 | `../using-devflow/references/devflow-traceability-template.md` | 共享 traceability.md 模板 |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |

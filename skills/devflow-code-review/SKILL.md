@@ -48,15 +48,15 @@ description: 当 devflow-test-review 已通过且代码变更需要在完成门�
 - **Design Conformance Check**: 实现遵循 AR 设计 + 组件设计；偏离需有理由且可追溯
 - **Behavior Delta Conformance**: 对照 requirement rows 的 `Change Type` 与 Existing Behavior / Baseline；`modify` / `remove` 不得无意破坏保留行为或遗漏删除语义
 - **SOA Boundary Conformance**: 检查代码是否破坏 SOA 边界 / 引入未解释跨组件依赖
-- **Internal Quality Review**: 按 `docs/devflow-internal-quality.md` 检查设计质量、代码质量、可维护性、接口契约、可读性和演进成本
+- **Clean Code Review**: 按 `devflow-clean-code` 检查代码质量、可维护性、可读性、范围纪律和演进成本
 - **Coding Standards Conformance**: 适用时读取 `c-coding-standards`、`cpp-coding-standards` 或项目声明的其他编码规范 skill
-- **Domain Constraint Conformance**: 适用时读取 `automotive-embedded-development` 或项目声明的其他领域约束 skill
+- **Domain Constraint Conformance**: 适用时读取 `embedded-development`、`automotive-development` 或项目声明的其他领域约束 skill
 - **Refactor Note Audit**: 检查 implementation-log.md 中 Refactor Note 的完整性、cleanup 是否守住 Two Hats、是否触发 escalation 边界
 - **Separation Of Author / Reviewer**: reviewer 不改代码
 
 ## 第三层扩展约束
 
-评审代码质量时，先使用 `docs/devflow-internal-quality.md` 作为通用内在质量判据；再按 router / 项目配置叠加适用的编码规范和领域约束。扩展 skill 只提供判据，verdict 仍由本评审节点唯一裁决；reviewer 不改代码。
+评审代码质量时，先使用 `devflow-clean-code` 作为通用编码内在质量判据；再按 router / 项目配置叠加适用的编码规范和领域约束。扩展 skill 只提供判据，verdict 仍由本评审节点唯一裁决；reviewer 不改代码。
 
 ## 工作流
 
@@ -216,8 +216,8 @@ reroute_via_router: true | false
 | 文件 | 用途 |
 |---|---|
 | `references/code-review-rubric.md` | 8 维度 rubric + rule IDs |
-| `references/team-code-review-checklist.md` | 旧团队代码检视清单示例（仅项目显式启用时读取） |
-| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../devflow-clean-code/SKILL.md` | 第三层编码内在质量统筹 skill |
 | `../c-coding-standards/SKILL.md` | C 语言编码规范扩展（适用时读取） |
 | `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |

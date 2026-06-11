@@ -7,7 +7,8 @@
       "expected": [
         "routes runtime decisions through devflow-router",
         "identifies cpp-coding-standards as an applicable constraint",
-        "identifies automotive-embedded-development as an applicable constraint",
+        "identifies embedded-development as an applicable constraint",
+        "identifies automotive-development as an applicable constraint",
         "does not write extension skills as next_action_or_recommended_skill"
       ]
     }

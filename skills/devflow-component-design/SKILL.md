@@ -54,13 +54,13 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 - **Clean Architecture Boundary Discipline**: 保持依赖方向稳定；不让实现细节倒灌到上层
 - **Interface Segregation**: 组件对外接口尽量内聚、最小知识
 - **Design Options Before Draft**: 正式起草前先列 2-3 个组件级方案、trade-off、推荐项与模块架构师确认状态
-- **Internal Quality Design**: 按 `docs/devflow-internal-quality.md` 检查组件设计质量、边界稳定性、接口契约和演进成本
+- **Clean Design**: 按 `devflow-clean-design` 检查组件设计质量、边界稳定性、接口契约和演进成本
 - **Template-Constrained Design**: 设计文档结构由团队模板决定（`references/devflow-component-design-template.md`，留空待团队补齐）
-- **Applicable Constraint Awareness**: 适用时叠加编码规范 skill 与领域约束 skill；本节点不把 C/C++ 或车载嵌入式作为默认语境
+- **Applicable Constraint Awareness**: 适用时叠加编码规范 skill 与领域约束 skill；本节点不把 C/C++ 或嵌入式作为默认语境
 
 ## 内在质量与扩展约束
 
-本节点起草 / 修订组件实现设计时，在步骤 3「方案选择 checkpoint」与步骤 5「起草 / 修订设计」内部叠加 `docs/devflow-internal-quality.md`，并按项目 / router 识别结果叠加适用编码规范与领域约束。扩展约束只提升设计质量，**不改变**组件边界停下规则、模板约束或独立评审；它们不写 progress/handoff、不产生 verdict。
+本节点起草 / 修订组件实现设计时，在步骤 3「方案选择 checkpoint」与步骤 5「起草 / 修订设计」内部叠加 `devflow-clean-design`，并按项目 / router 识别结果叠加适用领域约束。扩展约束只提升设计质量，**不改变**组件边界停下规则、模板约束或独立评审；它们不写 progress/handoff、不产生 verdict。
 
 ## 工作流
 
@@ -102,7 +102,7 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 
 按 SOA Component Boundary Analysis + Clean Architecture + Interface Segregation + Internal Quality Design 写 `features/<id>/component-design-draft.md`。具体结构必须遵循 `references/devflow-component-design-template.md` 的团队章节，不再使用 devflow 简化骨架。至少完整覆盖：
 
-- **1 修订记录**、**2 术语**、**3 概述**：组件名、所属系统、职责 / 非职责、Owner、参考资料；适用领域约束时补充 ASIL 等领域字段
+- **1 修订记录**、**2 术语**、**3 概述**：组件名、所属系统、职责 / 非职责、Owner、参考资料；适用 `automotive-development` 时补充 ASIL 等车载领域字段
 - **4 输入**：组件上下文视图（PlantUML）与组件全量功能列表；功能编号作为后续 AR 的基线引用
 - **5 组件详细设计**：Design Options（候选方案 / trade-off / 推荐项 / 确认状态）、开发视图、代码结构模型、领域模型（如有）、实现模型、数据设计、构建依赖、运行视图、通信 / 数据流 / 并发机制
 - **6 组件或子组件关键功能设计**：接口定义、功能列表详设、软件单元设计、需求描述列表、测试设计
@@ -209,5 +209,6 @@ description: 当 component-impact 档位下的 AR 范围触及 SOA 接口、依�
 | 文件 | 用途 |
 |---|---|
 | `references/devflow-component-design-template.md` | 团队组件设计模板（待团队补齐） |
-| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../devflow-clean-design/SKILL.md` | 第三层设计内在质量统筹 skill |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |

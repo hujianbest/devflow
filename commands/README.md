@@ -44,8 +44,8 @@ Slash command **不复制** SKILL.md 的内容，只声明本阶段会跨过哪�
 ## 不引入的命令（明确划线）
 
 - ❌ `/ship` 并行 fan-out：与 DevFlow 顺序门禁链（test-review → code-review → completion-gate → finalize）冲突。
-- ❌ `/code-simplify`：简化属于第三层内在质量核心与适用编码规范，在 `devflow-tdd-implementation` 的 REFACTOR 步骤内部消费，不另立命令或节点。
-- ℹ️ 内在质量核心、编码规范 skills（如 `c-coding-standards` / `cpp-coding-standards`）和领域约束 skills（如 `automotive-embedded-development`）不设独立 command：它们由设计 / 构建 / 评审 / 门禁节点在工作流内部消费，提升产物质量，不改变流程拓扑、不进 handoff、不产 verdict。
+- ❌ `/code-simplify`：简化属于 `devflow-clean-code` 与适用编码规范，在 `devflow-tdd-implementation` 的 REFACTOR 步骤内部消费，不另立命令或节点。
+- ℹ️ `devflow-clean-design`、`devflow-clean-code`、编码规范 skills（如 `c-coding-standards` / `cpp-coding-standards`）和领域约束 skills（如 `embedded-development` / `automotive-development`）不设独立 command：它们由设计 / 构建 / 评审 / 门禁节点在工作流内部消费，提升产物质量，不改变流程拓扑、不进 handoff、不产 verdict。
 - ❌ `/plan`：tasks 队列由 `devflow-tdd-implementation` 内部 preflight 管理，不另立 command。
 - ❌ 任何 meta-orchestrator command：运行时证据路由归 `devflow-router`，不另立与之竞争的编排命令（各 command / agent 本身仍可被独立调用，这里只是不再叠一层编排器）。
 - ℹ️ `/devflow-review` 是 **灵活评审入口**（可 standalone 独立运行，也可随流程评审），不是 **自审捷径**：它按用户诉求选评审 skill 并交 **独立** `devflow-reviewer` 子代理执行（standalone 直接派发对用户目标出审查内容；in-flow 经 `devflow-router` 派发并喂顺序门禁）；父会话 / 作者永不自审，本命令也不改任何工件、不替代各阶段命令内已编排的评审。

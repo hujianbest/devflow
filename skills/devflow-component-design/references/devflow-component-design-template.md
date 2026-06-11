@@ -35,7 +35,7 @@
 | 所属软件系统 / 子系统名称 | 一般对应 SE 软件架构设计中的子系统 |
 | 组件职责 |  |
 | 组件非职责 |  |
-| ASIL 等级 | QM / ASILA / ASILB / ASILC / ASILD，来自软件架构设计定义 |
+| ASIL 等级（仅车载适用） | 启用 `automotive-development` 时填写 QM / ASILA / ASILB / ASILC / ASILD；否则 N/A |
 | 模块架构师 / Owner |  |
 
 ### 3.3 参考资料

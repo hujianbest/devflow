@@ -51,7 +51,7 @@ description: 当 devflow-component-design 产出的 component-design-draft.md �
 
 ## 内在质量与扩展约束
 
-评审组件设计质量时，以 `docs/devflow-internal-quality.md` 作为通用设计质量判据，并按 router / 项目配置叠加适用编码规范与领域约束。扩展 skill 只提供判据，verdict 仍由本评审节点唯一裁决；reviewer 不改设计。
+评审组件设计质量时，以 `devflow-clean-design` 作为通用设计质量判据，并按 router / 项目配置叠加适用领域约束。扩展 skill 只提供判据，verdict 仍由本评审节点唯一裁决；reviewer 不改设计。
 
 ## 工作流
 
@@ -201,5 +201,6 @@ reroute_via_router: true | false
 | 文件 | 用途 |
 |---|---|
 | `references/component-design-review-rubric.md` | 7 维度 rubric + rule IDs |
-| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../devflow-clean-design/SKILL.md` | 第三层设计内在质量统筹 skill |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |

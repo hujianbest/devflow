@@ -4,7 +4,7 @@
 
 DevFlow 处理 AR / DTS / CHANGE work item，使用 `standard` / `component-impact` / `hotfix` / `lightweight` profiles。
 
-Profile 决定 runtime 路径；编码规范 / 领域约束决定质量判据。两者正交。`c-coding-standards`、`cpp-coding-standards`、`automotive-embedded-development` 可以作为 Applicable Constraints 传给 flow/review/gate 节点，但永远不是 `Current Stage` 或 `Next Action Or Recommended Skill`。
+Profile 决定 runtime 路径；clean-layer、编码规范、领域约束决定质量判据。两者正交。`devflow-clean-design`、`devflow-clean-code`、`c-coding-standards`、`cpp-coding-standards`、`embedded-development`、`automotive-development` 可以作为 Applicable Constraints 传给 flow/review/gate 节点，但永远不是 `Current Stage` 或 `Next Action Or Recommended Skill`。
 
 ## Standard 路由
 
@@ -58,7 +58,7 @@ using-devflow
 
 Hotfix 可以压缩文档量，但不能跳过 test-review、code-review 或 completion-gate。
 
-Hotfix 若属于车载嵌入式问题，应叠加 `automotive-embedded-development`；若涉及 C 或 C++ 实现，应叠加对应编码规范 skill。叠加约束不改变 hotfix 路由顺序。
+Hotfix 若属于嵌入式问题，应叠加 `embedded-development`；若属于车载软件问题，应叠加 `automotive-development`；若涉及 C 或 C++ 实现，应叠加对应编码规范 skill。叠加约束不改变 hotfix 路由顺序。
 
 ## Lightweight 路由
 
@@ -82,11 +82,14 @@ Lightweight 只压缩文档量，不移除质量门禁，也不移除适用的�
 
 | 证据 | Applicable Constraints |
 |---|---|
+| 设计 authoring / 设计 review | `devflow-clean-design` |
+| 实现 / 重构 / code review / completion gate | `devflow-clean-code` |
 | C 源码 / 头文件 / C 测试 / MISRA C | `c-coding-standards` |
 | C++ 源码 / C++ 测试 / RAII / 模板 / ABI / AUTOSAR C++ | `cpp-coding-standards` |
-| 车载嵌入式 / ASIL / SOA / MDC / realtime / resource budget | `automotive-embedded-development` |
+| 通用嵌入式 / memory / interrupt / realtime / hardware resources | `embedded-development` |
+| 车载软件 / ASIL / automotive SOA / MDC / DTC / SELinux | `automotive-development` |
 
-约束可以叠加。例如车载 C++ 变更通常同时适用 `cpp-coding-standards` 与 `automotive-embedded-development`。
+约束可以叠加。例如车载 C++ 嵌入式变更通常同时适用 `cpp-coding-standards`、`embedded-development` 与 `automotive-development`。
 
 ## Hard Stops（硬停止）
 

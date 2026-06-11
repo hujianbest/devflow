@@ -104,7 +104,7 @@ implementer 的 self-review 有价值，但永远不能替代 `devflow-test-revi
 实现 Current Active Task 时，在工作流内部叠加第二层 TDD 判据与第三层扩展约束：
 
 - 步骤 6「从测试设计落地测试」与步骤 7「RED」→ 遵循第二层 TDD / 测试有效性规则，确保测试先失败且验证真实行为。
-- 步骤 8「GREEN」与步骤 9「REFACTOR」→ 叠加 `docs/devflow-internal-quality.md`、适用编码规范 skill（如 `c-coding-standards` / `cpp-coding-standards`）与领域约束 skill（如 `automotive-embedded-development`）。
+- 步骤 8「GREEN」与步骤 9「REFACTOR」→ 叠加 `devflow-clean-code`、适用编码规范 skill（如 `c-coding-standards` / `cpp-coding-standards`）与领域约束 skill（如 `embedded-development`）。
 
 扩展约束不放宽 fail-first RED、单 active task、Two Hats 或 fresh evidence 纪律，也不替代独立 `devflow-test-review` / `devflow-code-review`；它们不写 progress/handoff、不产生 verdict。
 
@@ -251,8 +251,9 @@ TDD 实现阶段最常见的偷懒话术与反驳。命中任意一条 → 停�
 | `references/task-plan-template.md` | task queue plan 模板 |
 | `references/task-board-template.md` | task-board 状态投影模板 |
 | `references/red-green-refactor-discipline.md` | RED / GREEN / REFACTOR 纪律 |
-| `docs/devflow-internal-quality.md` | 第三层代码内在质量通用判据 |
+| `../devflow-clean-code/SKILL.md` | 第三层编码内在质量统筹 skill |
 | `../c-coding-standards/SKILL.md` | C 编码规范扩展（适用时读取） |
 | `../cpp-coding-standards/SKILL.md` | C++ 编码规范扩展（适用时读取） |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |
 | 本地测试设计契约摘录 | 测试设计字段契约 |

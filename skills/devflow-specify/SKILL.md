@@ -254,7 +254,8 @@ AR / DTS / CHANGE work item 额外项：
 | `references/requirement-rows-contract.md` | requirement rows 最小字段、EARS Statement Patterns、BDD Acceptance Rules、MoSCoW Priority、Source / Trace Anchor、Brainstorming Notes Normalization、Common Failure Modes |
 | `references/granularity-and-split.md` | INVEST `Small` + `Independent` 检查（G1-G6 + 适用领域扩展规则）、Split Rules、Mechanical vs Scope-Shaping Split、Cross-Work-Item Split |
 | `references/nfr-quality-attribute-scenarios.md` | ISO/IEC 25010 质量维度、QAS 五要素、适用 NFR 改写示例、最小签入条件 |
-| `../automotive-embedded-development/SKILL.md` | 车载嵌入式领域约束扩展（适用时读取） |
+| `../embedded-development/SKILL.md` | 通用嵌入式领域约束扩展（适用时读取） |
+| `../automotive-development/SKILL.md` | 车载领域约束扩展（适用时读取） |
 | `../using-devflow/references/devflow-work-item-readme-template.md` | 通用 work item README 模板（共享） |
 | `../using-devflow/references/devflow-progress-template.md` | 通用 progress.md 模板（共享） |
 | `../using-devflow/references/devflow-traceability-template.md` | 通用 traceability.md 模板（共享） |

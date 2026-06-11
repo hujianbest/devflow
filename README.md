@@ -11,7 +11,7 @@
 
 DevFlow is a development-stage workflow for AI coding agents. It takes an accepted AR / DTS / CHANGE work item through specification, design, TDD implementation, independent review, completion gating, and closeout. The next step is recovered from durable artifacts, not chat memory.
 
-DevFlow Core maps directly to the three quality layers in [`docs/devflow-philosophy.md`](docs/devflow-philosophy.md): SDD for intent correctness, TDD for functional correctness, and a rewritten internal-quality layer for design and code quality. Language rules and domain constraints are extension skills, such as `c-coding-standards`, `cpp-coding-standards`, and `automotive-embedded-development`. See [`docs/devflow-core-architecture.md`](docs/devflow-core-architecture.md) and [`docs/devflow-internal-quality.md`](docs/devflow-internal-quality.md).
+DevFlow Core maps directly to the three quality layers in [`docs/devflow-philosophy.md`](docs/devflow-philosophy.md): SDD for intent correctness, TDD for functional correctness, and a rewritten internal-quality layer coordinated by `devflow-clean-design` and `devflow-clean-code`. Language rules and domain constraints are extension skills, such as `c-coding-standards`, `cpp-coding-standards`, `embedded-development`, and `automotive-development`. See [`docs/devflow-core-architecture.md`](docs/devflow-core-architecture.md).
 
 DevFlow is intentionally narrower than an idea-to-product workflow. It does not own product discovery, release operations, system / integration / acceptance testing, or runtime incident management. It starts after the team has accepted the requirement or problem report.
 
@@ -120,9 +120,9 @@ DevFlow ships one public entry meta-skill, 13 canonical `devflow-*` runtime node
 
 - **Meta (`using-devflow`)** discovers which skill applies, carries the always-on behavior constitution, and hosts the shared conventions every other skill follows.
 - **Runtime router (`devflow-router`)** turns artifact evidence into the single next canonical node.
-- **Internal quality core** defines generic design and code quality in [`docs/devflow-internal-quality.md`](docs/devflow-internal-quality.md).
+- **Clean design/code skills** (`devflow-clean-design`, `devflow-clean-code`) coordinate operational third-layer design and code quality.
 - **Coding standards skills** such as `c-coding-standards` and `cpp-coding-standards` provide language-specific rules.
-- **Domain constraint skills** such as `automotive-embedded-development` provide domain-specific constraints across the full flow.
+- **Domain constraint skills** such as `embedded-development` and `automotive-development` provide domain-specific constraints across the full flow.
 
 ### Meta And Routing
 
@@ -164,10 +164,12 @@ These are **not** flow nodes. They provide third-layer quality constraints consu
 
 | Skill | What it does | Invoked by |
 |---|---|---|
-| [`docs/devflow-internal-quality.md`](docs/devflow-internal-quality.md) | Generic internal-quality model for design and code quality | Design, implementation, code review, completion gate |
+| [`devflow-clean-design`](skills/devflow-clean-design/SKILL.md) | Generic clean-design constraints for design authoring and review | Design nodes and design reviews |
+| [`devflow-clean-code`](skills/devflow-clean-code/SKILL.md) | Generic clean-code constraints for implementation, refactor, code review, and gate checks | Build, code review, completion gate |
 | [`c-coding-standards`](skills/c-coding-standards/SKILL.md) | C coding standards, tooling, static analysis, pointer/memory/resource rules | C work items |
 | [`cpp-coding-standards`](skills/cpp-coding-standards/SKILL.md) | C++ coding standards, RAII/lifetime/templates/ABI rules | C++ work items |
-| [`automotive-embedded-development`](skills/automotive-embedded-development/SKILL.md) | Automotive embedded domain constraints across the full DevFlow lifecycle | Automotive embedded work items |
+| [`embedded-development`](skills/embedded-development/SKILL.md) | Generic embedded constraints across the full DevFlow lifecycle | Embedded work items |
+| [`automotive-development`](skills/automotive-development/SKILL.md) | Automotive-specific constraints such as ASIL, SOA/MDC, DTC, SELinux, and vehicle lifecycle | Automotive work items |
 
 ---
 
@@ -179,7 +181,7 @@ DevFlow is not a prompt collection. It is a controlled engineering workflow for 
 |---|---|---|
 | Intent | Spec-anchored SDD | Keeps scope, constraints, and acceptance criteria in reviewable files |
 | Planning | Design options and review gates | Makes architecture, interfaces, risks, and test design explicit before code |
-| Internal quality | Internal-quality core + coding standards + domain constraints | Keeps code and design maintainable, readable, evolvable, and reviewable |
+| Internal quality | `devflow-clean-design` + `devflow-clean-code` + coding standards + domain constraints | Keeps code and design maintainable, readable, evolvable, and reviewable |
 | Execution | Gated TDD | Requires fail-first evidence, GREEN verification, and one active task at a time |
 | Routing | Artifact-based recovery | Lets another agent resume from `progress.md`, reviews, evidence, and completion records |
 | Review | Role-separated subagents | Prevents authoring and approval from collapsing into one session |
@@ -275,9 +277,12 @@ devflow/
 │   ├── devflow-completion-gate/
 │   ├── devflow-finalize/
 │   ├── devflow-problem-fix/
+│   ├── devflow-clean-design/         #   Internal quality coordinator: design
+│   ├── devflow-clean-code/           #   Internal quality coordinator: code
 │   ├── c-coding-standards/           #   Coding standards extension: C
 │   ├── cpp-coding-standards/         #   Coding standards extension: C++
-│   └── automotive-embedded-development/
+│   ├── embedded-development/         #   Domain constraints: embedded
+│   └── automotive-development/       #   Domain constraints: automotive
 ├── docs/
 │   ├── devflow-core-architecture.md  # DevFlow Core architecture
 │   ├── devflow-internal-quality.md   # Rewritten internal-quality layer

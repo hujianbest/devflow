@@ -1,0 +1,16 @@
+{
+  "skill": "automotive-development",
+  "scenarios": [
+    {
+      "id": "automotive-separate-from-embedded",
+      "prompt": "Use DevFlow for an automotive service AR with ASIL, DTC, SOA/MDC, sleep/wake, and SELinux constraints.",
+      "expected": [
+        "checks ASIL and safety ownership",
+        "checks automotive SOA/MDC and DTC constraints",
+        "checks vehicle lifecycle and SELinux constraints",
+        "does not duplicate generic embedded memory/interrupt rules",
+        "does not produce a runtime next action"
+      ]
+    }
+  ]
+}

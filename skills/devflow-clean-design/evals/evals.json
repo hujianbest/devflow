@@ -1,0 +1,15 @@
+{
+  "skill": "devflow-clean-design",
+  "scenarios": [
+    {
+      "id": "reject-over-abstracted-design",
+      "prompt": "Review an AR design that introduces a generic plugin framework for a single current requirement.",
+      "expected": [
+        "flags over-abstraction",
+        "asks for simpler design tied to current requirement",
+        "does not produce a runtime next action",
+        "does not replace independent design review verdict"
+      ]
+    }
+  ]
+}

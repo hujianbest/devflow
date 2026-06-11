@@ -7,7 +7,7 @@ Thanks for your interest in DevFlow. This document describes how to contribute t
 DevFlow v1.0 is intentionally narrow:
 
 - It targets the **development stage**: from accepted AR / DTS / CHANGE through specification, design, TDD, review, completion gate, and closeout.
-- It is organized around a **general DevFlow Core** plus extension skills. Language rules live in coding-standards skills such as `c-coding-standards` and `cpp-coding-standards`; domain constraints live in skills such as `automotive-embedded-development`.
+- It is organized around a **general DevFlow Core** plus extension skills. Language rules live in coding-standards skills such as `c-coding-standards` and `cpp-coding-standards`; domain constraints live in skills such as `embedded-development` and `automotive-development`.
 - OpenCode is the first supported adapter. Other agent runtimes may be added as platform adapters, but must not change the core quality model or canonical runtime nodes.
 - It does **not** cover product discovery, system / integration / acceptance testing, release operations, or runtime incident response. These belong to other `*-flow` families.
 
@@ -53,7 +53,7 @@ The `description` is a **classifier**, not a flow summary. It only answers "shou
 - ✅ Good: `Use when independently reviewing code changes produced by devflow-tdd-implementation against an approved AR design. Not for writing tests, modifying production code, or test effectiveness review.`
 - ❌ Bad: `Use when reviewing code — read the diff, score it, write findings, hand off.`
 
-Front-load triggering keywords (`spec review`, `AR implementation design`, `component design`, `test review`, `code review`, `C`, `C++`, `automotive embedded`) so automatic skill discovery can match them.
+Front-load triggering keywords (`spec review`, `AR implementation design`, `component design`, `test review`, `code review`, `C`, `C++`, `embedded`, `automotive`) so automatic skill discovery can match them.
 
 ## Anti-rationalization
 
@@ -96,7 +96,7 @@ When you change a hard gate, profile rule, key workflow step, or extension disco
 
 ## Repository hygiene
 
-- File naming: canonical runtime skill directories are `devflow-<noun>`. Coding standards use `<language>-coding-standards` (for example `c-coding-standards`, `cpp-coding-standards`). Domain constraints use `<domain>-development` or another concrete domain name (for example `automotive-embedded-development`). Reference files are `kebab-case.md`.
+- File naming: canonical runtime skill directories are `devflow-<noun>`. Coding standards use `<language>-coding-standards` (for example `c-coding-standards`, `cpp-coding-standards`). Domain constraints use `<domain>-development` or another concrete domain name (for example `embedded-development`, `automotive-development`). Reference files are `kebab-case.md`.
 - Don't add `.cursor/`, `.opencode/`, `.claude/` editor-specific directories at the repository root unless they are part of a deliberate integration release.
 - Don't introduce a `skills/docs/` or `skills/templates/` shared folder. References live per-skill.
 
