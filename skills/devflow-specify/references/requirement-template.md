@@ -1,101 +1,73 @@
-# 需求规格模板
+# spec.md 模板
 
-使用说明：
+使用说明：`devflow-specify` 生成 `features/<id>-<slug>/spec.md` 的默认模板。团队 `AGENTS.md` 声明等价模板时优先遵循团队约定。微小修改可压缩本模板（见 `using-devflow` 的裁剪规则），但需求条目的可测试性要求不变。
 
-- 本模板是 `devflow-specify` 生成 `features/<Work Item Id>-<slug>/requirement.md` 的默认模板。
-- 若团队 `AGENTS.md` 声明了等价模板或路径，优先遵循团队约定。
-- 本模板是规格 / requirement 的文档骨架；devflow 中默认落点为 `features/<id>/requirement.md`。
-- 详细字段契约不在本模板重复维护：Requirement Rows、Interface Contract Candidates 以 `requirement-rows-contract.md` 为准；NFR 的 QAS 写法以 `nfr-quality-attribute-scenarios.md` 为准。
+```markdown
+# <Work Item ID> <标题>
 
-## 1. 身份信息
+## 身份信息
 
 | 字段 | 内容 |
 |---|---|
-| Work Item Type | AR / DTS / CHANGE |
-| Work Item ID |  |
-| Title |  |
-| Owner |  |
-| Owning Component | 必填 |
-| Related IR | 上游追溯锚点（可选） |
-| Related SR | 上游追溯锚点（可选） |
-| Related AR | DTS 影响功能需求时填写 |
-| Workflow Profile | standard / component-impact / hotfix / lightweight |
+| 类型 | AR / DTS / CHANGE |
+| ID |  |
+| 所属组件 |  |
+| 上游追溯 | IR / SR / 缺陷单 / 输入文档锚点 |
+| 状态 | draft / 已确认 |
 
-## 2. 背景与目标
+## 背景与目标
 
-- 背景:
-- 目标:
-- 用户 / 相关方:
-- 当前问题或需求来源:
+- 背景与问题来源:
+- 目标（做完后什么变得不同）:
 
-## 3. 范围 / 非范围
+## 范围 / 非范围
 
-### 3.1 范围
+- 范围:
+- 非范围:
 
-- 
+## 需求条目
 
-### 3.2 非范围
+### FR-001 <标题>
+- Statement: <EARS 句式>
+- Acceptance:
+  - Given …；When …；Then …
+  - Given …；When <异常条件>；Then <保护/反馈行为>
+- Priority: Must / Should / Could
+- Source: <上游锚点>
+- Change Type: new / modify / remove
+- Existing Behavior: <modify/remove 必填旧行为基线；new 写 N/A>
 
-- 
+### NFR-001 <标题>
+- 类别: <ISO 25010 维度>
+- QAS:
+  - Stimulus Source / Stimulus / Environment / Response / Response Measure（含阈值）
+- Acceptance: <与 QAS 一致的 Given/When/Then>
+- Source / Change Type / Existing Behavior: 同上
 
-## 4. 需求条目（Requirement Rows）
+### CON-001 / ASM-001 / EXC-001 …
+（约束 / 假设 / 显式排除项，按需）
 
-每条核心 row 至少满足 `references/requirement-rows-contract.md` 的字段契约。
+## 接口候选契约（涉及对外接口时必填）
 
-| ID | Type | Change Type | Existing Behavior / Baseline | Statement | Acceptance | Source / Trace Anchor | Impact |
-|---|---|---|---|---|---|---|---|
-| FR-001 | FR | new / modify / remove | `N/A` for new; required for modify/remove |  |  |  |  |
+### IFC-001 <接口/服务语义名>
+- Provider / Consumer:
+- Operation（触发条件与操作语义）:
+- Inputs（语义级字段、单位、范围）:
+- Outputs / 可观察结果:
+- Error Semantics（错误码、失败语义、幂等性）:
+- Sync/Async 与时序预期:
+- Compatibility（兼容/版本/弃用策略）:
+- Covers: <FR/IFR IDs>
 
-## 5. 验收标准
+## Open Questions
 
-| ID | 验收条件 | 覆盖 Requirement Rows | 验证方式 |
-|---|---|---|---|
-| AC-001 |  |  |  |
-
-## 6. 适用 NFR（如适用）
-
-核心 NFR 应使用 QAS 五要素表达，详见 `references/nfr-quality-attribute-scenarios.md`。本节只保留记录落点，具体字段以该参考文件为准。
-
-| NFR ID | QAS 摘要 | Acceptance / Response Measure | 备注 |
-|---|---|---|---|
-| NFR-001 |  |  |  |
-
-## 7. 未决问题
-
-### 7.1 阻塞问题
-
-| ID | 问题 | Owner | 影响 | 截止 / 下一步 |
+| ID | 问题 | 类型 | 负责人 | 阻塞什么决策 |
 |---|---|---|---|---|
-| OQ-001 |  |  |  |  |
+| OQ-001 |  | blocking / non-blocking |  |  |
 
-### 7.2 非阻塞问题
+## 假设与依赖
 
-| ID | 问题 | Owner | 处理方式 |
-|---|---|---|---|
-| OQ-002 |  |  |  |
-
-## 8. 假设与依赖
-
-| ID | 类型 | 内容 | 失效影响 | Owner |
-|---|---|---|---|---|
-| ASM-001 | Assumption / Dependency |  |  |  |
-
-## 9. 组件影响章节（AR / DTS / CHANGE）
-
-### 9.1 组件影响评估
-
-| 影响面 | 是否影响 | 说明 | 指向组件设计章节 |
-|---|---|---|---|
-| SOA 接口 | yes / no |  |  |
-| 组件依赖 | yes / no |  |  |
-| 状态机 | yes / no |  |  |
-| 运行时行为 | yes / no |  |  |
-| 内部实现 | yes / no |  |  |
-
-### 9.2 接口契约候选（Interface Contract Candidates，如适用）
-
-当存在 `IFR` row，或 `Component Impact = interface` 时必填。字段契约见 `references/requirement-rows-contract.md#interface-contract-candidatesar--dts--change`。
-
-| Candidate ID | Interface / Service Name | Provider / Consumer | Operation | Covers Requirement Rows | Open Questions |
-|---|---|---|---|---|---|
-| IFC-001 |  |  |  |  |  |
+| ID | 内容 | 失效影响 |
+|---|---|---|
+| ASM-001 |  |  |
+```

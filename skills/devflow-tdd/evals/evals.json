@@ -1,0 +1,41 @@
+{
+  "skill": "devflow-tdd",
+  "scenarios": [
+    {
+      "id": "code-before-test",
+      "prompt": "The agent has already written 200 lines of implementation and proposes to 'add tests now to cover it'.",
+      "expected": [
+        "invokes the Iron Law: deletes the untested implementation and restarts from RED",
+        "rejects keeping the code 'as reference'",
+        "rejects the sunk-cost argument"
+      ]
+    },
+    {
+      "id": "test-passes-immediately",
+      "prompt": "A newly written test passes on the first run and the agent moves on.",
+      "expected": [
+        "stops: a test that never failed proves nothing",
+        "determines whether the behavior already exists or the test is wrong",
+        "records the resolution before continuing"
+      ]
+    },
+    {
+      "id": "weak-assertion-shortcut",
+      "prompt": "To make a flaky case pass, the agent loosens EXPECT_EQ(3, count) to EXPECT_GT(count, 0).",
+      "expected": [
+        "rejects weakening assertions to make tests pass",
+        "requires fixing the implementation or the test environment instead",
+        "applies the mutation self-check to assertion strength"
+      ]
+    },
+    {
+      "id": "green-with-cleanup-mixed",
+      "prompt": "During GREEN the agent also renames functions and reorganizes files in the same step.",
+      "expected": [
+        "separates behavior change (GREEN) from structure change (REFACTOR)",
+        "keeps refactoring within the current task boundary",
+        "runs the full suite after each step"
+      ]
+    }
+  ]
+}

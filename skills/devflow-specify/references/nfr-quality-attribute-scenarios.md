@@ -1,8 +1,8 @@
 # devflow NFR Quality Attribute Scenarios（NFR QAS）
 
-> 配套 `devflow-specify/SKILL.md`。规定 `features/<id>/requirement.md` 中**每条核心 NFR** 的最小契约：以 ISO/IEC 25010 作为质量模型分类，用 Quality Attribute Scenarios（QAS）格式表达每条 NFR，让它在 spec 层面就具备可验证、可追溯的形状。
+> 配套 `devflow-specify`。规定 spec.md 中**每条核心 NFR** 的最小契约：以 ISO/IEC 25010 作为质量模型分类，用 Quality Attribute Scenarios（QAS）格式表达每条 NFR，让它在 spec 层面就具备可验证、可追溯的形状。
 >
-> 这解决了「NFR 章节写成 '性能要好、要安全、要好维护' 无阈值口号」的常见失败模式——这种 NFR 进入 AR 实现设计 / TDD 后无法生成可执行的 RED 用例。
+> 这解决了「NFR 章节写成 '性能要好、要安全、要好维护' 无阈值口号」的常见失败模式——这种 NFR 进入设计 / TDD 后无法生成可执行的 RED 用例。
 
 ## 一句话规则
 
@@ -135,12 +135,6 @@ QAS:
 - Response Measure: 100% 配置块在启用前通过完整性校验；失败时上报事件 ConfigVerifyFailed 在 100 ms 内被监控通道收到
 ```
 
-## 与其他 reference 的关系
-
-- 单条 NFR 的最小字段（ID / Statement / Acceptance / Priority / Source）：`requirement-rows-contract.md`
-- NFR row 是否过大、是否应拆分：`granularity-and-split.md`
-- spec-review 对核心 NFR 的检查（必须有 QAS、Response Measure 阈值、Acceptance 与 QAS 一致）：the spec-review rubric
-
 ## 写法约定
 
 - 每条核心 NFR 至少 1 个 QAS；若无法写出 QAS → 不够具体，回澄清
@@ -151,10 +145,9 @@ QAS:
 
 ## 与下游衔接
 
-- `devflow-ar-design` 的测试设计章节会把 QAS 映射到具体 unit / integration / simulation 测试用例，并写入「适用风险覆盖矩阵」
-- `devflow-tdd-implementation` 把 Response Measure 转为 RED 步的判定（例如 latency 直方图、size 工具输出、leak detector 报告）
-- `devflow-test-review` 在 `TC4 Applicable Risk Coverage` 维度反向核对：每条适用 NFR 是否被 `applicable-risk` 用例覆盖或有明确 N/A 理由
-- `devflow-code-review` 在 `CR4 Memory & Resource Lifecycle` / `CR5 Concurrency & Real-time` / `CR6 Error Handling & Defensive Design` 维度反向核对实现是否符合 QAS Response Measure
+- `devflow-design` 的测试设计章节把 QAS 映射到具体 unit / integration / simulation 测试用例
+- `devflow-tdd` 把 Response Measure 转为 RED 步的判定（例如 latency 直方图、size 工具输出、leak detector 报告）
+- `devflow-review` 反向核对：每条适用 NFR 是否被测试用例覆盖或有明确 N/A 理由，实现是否符合 Response Measure
 
 ## 常见风险信号
 
@@ -167,7 +160,7 @@ QAS:
 
 ## 最小签入条件
 
-送 `devflow-spec-review` 前，每条核心 NFR 至少满足：
+送评审前，每条核心 NFR 至少满足：
 
 - [ ] 已归类到 ISO/IEC 25010 维度
 - [ ] 含 QAS 五要素
