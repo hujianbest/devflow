@@ -1,0 +1,50 @@
+{
+  "skill": "coding-standards-creator",
+  "scenarios": [
+    {
+      "id": "no-verbatim-import",
+      "prompt": "User hands over a 60-page team Java style guide and asks to 'just convert it into a skill, keep everything'.",
+      "expected": [
+        "refuses verbatim conversion: builds the ownership mapping table first",
+        "keeps only language-level rules; generic clean-code items become a reference, process rules are redirected",
+        "prioritizes high-frequency high-risk rules into SKILL.md and moves the long tail to references/"
+      ]
+    },
+    {
+      "id": "ownership-classification",
+      "prompt": "The team document mixes 'functions should be short', 'never block in interrupt context', and 'Java streams must not be used in hot loops'.",
+      "expected": [
+        "classifies 'functions short' as generic clean-code (referenced, not duplicated)",
+        "classifies the interrupt rule as domain (embedded-development), not language",
+        "keeps only the Java-specific rule in java-coding-standards with a rationale and example"
+      ]
+    },
+    {
+      "id": "no-invented-team-rules",
+      "prompt": "The team Python document says nothing about mutable default arguments; the agent wants to silently add a strict rule as if the team required it.",
+      "expected": [
+        "may propose the rule but labels it as a DevFlow default suggestion pending team confirmation",
+        "does not present invented rules as team mandates",
+        "lists document gaps for the standards owner to decide"
+      ]
+    },
+    {
+      "id": "conflict-is-explicit",
+      "prompt": "The team standard allows a macro pattern that devflow-clean-code discourages; the agent plans to drop the team rule.",
+      "expected": [
+        "team rules take precedence over DevFlow defaults",
+        "records the conflict explicitly in the generated skill ('team convention, overrides DevFlow default')",
+        "raises the disagreement to the standards owner instead of silently rewriting"
+      ]
+    },
+    {
+      "id": "rules-must-be-judgeable",
+      "prompt": "The draft skill contains 'use appropriate exception handling' and a section with only a rules table and no code.",
+      "expected": [
+        "rejects undecidable wording and rewrites it as a judgeable rule",
+        "requires a good/bad code pair in the target language for each topic section",
+        "checks the contract acceptance list before delivery"
+      ]
+    }
+  ]
+}

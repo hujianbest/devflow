@@ -1,0 +1,102 @@
+# `<language>-coding-standards` 结构契约
+
+> 配套 `coding-standards-creator`。任何语言编码规范技能（无论生成还是手写）都必须满足本契约；`c-coding-standards` 与 `cpp-coding-standards` 是参考实现。契约存在的目的：让每个语言技能都能被 DevFlow 各阶段以同一种方式消费，新增语言不需要改动任何阶段技能。
+
+## 1. 命名与布局
+
+- 目录与 frontmatter `name` 一致：`<language>-coding-standards`，全小写、连字符（`java-coding-standards`、`python-coding-standards`、`cpp-coding-standards`）
+- 布局：
+
+```text
+skills/<language>-coding-standards/
+  SKILL.md            # 高频高危规则（~300 行内）
+  references/         # 可选：低频细则、团队规则号对照表、框架专项
+  evals/evals.json    # 必需：≥3 个压力场景
+```
+
+## 2. Frontmatter
+
+description 只写触发条件，模式：
+
+```yaml
+description: 在编写、修改或评审 <语言> 代码（<源文件/测试/构建脚本等具体形态>）时使用。
+  提供 <3-5 个核心主题> 的具体规则与正反例。<易混淆的相邻语言> 规则见 <相邻技能名>。
+```
+
+要点：含语言名与典型文件类型等触发词；与相邻语言互写负触发（C 与 C++、Java 与 Kotlin）；不总结技能内部流程。
+
+## 3. 职责边界
+
+**只收语言级规则**——离开这门语言就不成立的规则：
+
+- 资源/内存/所有权在该语言的正确表达（RAII、try-with-resources、context manager）
+- 语言陷阱与未定义/意外行为（宏多次求值、整数提升、可变默认参数、equals/hashCode）
+- 错误处理在该语言的惯用形态（错误码/异常/Result/checked exception 策略）
+- 类型系统的正确使用（const/final/Optional/类型注解）
+- 语言专属工具链（编译警告基线、linter、格式化、静态分析、sanitizer）
+- 通用规则的**语言特化形态**（PEP 8 命名细则属于 Python 技能；"命名要表意"不属于）
+
+**三不收**：
+
+1. 通用整洁代码规则 → `devflow-clean-code`（技能开头一行引用："本技能在 `devflow-clean-code` 之上叠加 <语言> 规则"）
+2. 工程领域规则（中断、实时性、ASIL、Web 安全策略等） → 对应领域技能
+3. 流程规则（评审/提交/分支/文档） → AGENTS.md 或团队流程文档
+
+**冲突标注**：团队规则覆盖 DevFlow 默认时，规则处显式写"团队约定，覆盖 DevFlow 默认 X"。
+
+## 4. 章节形态
+
+```text
+# <Language> Coding Standards
+## 总览          —— 该语言的核心危险或核心承诺一两句；声明"项目已声明的标准子集优先，
+                    本文是未声明时的默认底线"；声明建立在 devflow-clean-code 之上
+## <主题节> × 4-8 —— 按事故密度排序；每节 = 规则 + 正反例 + 针对的事故类
+## 工具链         —— 真实命令与基线：警告级别、linter/格式化配置、静态分析处理纪律
+                    （新增项修复或带理由抑制；"历史就有"不豁免本次触碰）
+## 自检清单       —— 每个主题节至少一条可勾选项
+```
+
+可选节：合理化反驳表（该语言常见的偷懒话术）、references 索引表。
+
+## 5. 规则写法三要素
+
+每条规则必须有：
+
+1. **可判定性**：能对一段具体代码裁定违规/不违规。出现"良好/合理/适当/尽量"即不合格。
+2. **事故类**：防止什么真实失败。写在规则旁（一句话即可），它决定 severity 与取舍。
+3. **正反例**：目标语言的最小代码对比。❌ 在前 ✅ 在后或并列；反例选模型真实会写出的形态，不是稻草人。
+
+禁止形态："禁止 X"而不给替代；纯表格平铺无代码的章节（速查表可以有，但主题节不能只有表）。
+
+## 6. 规模与 progressive disclosure
+
+- SKILL.md ≤ ~300 行：装不下说明取舍没做完——按"事故密度 × 出现频率"裁剪，长尾进 references/
+- references/ 文件按主题命名（如 `concurrency-rules.md`、`team-rule-mapping.md`），SKILL.md 给出明确指针
+- 团队内部规则编号与技能规则的对照表（审计需要时）放 references/，不占主文件
+
+## 7. 消费点（语言技能如何被 DevFlow 使用）
+
+语言技能自身不是流程阶段，被以下位置按"适用的 `<language>-coding-standards`"约定引用——**因此新增语言无需改任何阶段技能**：
+
+| 消费方 | 用法 |
+|---|---|
+| `devflow-design` | 设计接口契约/错误模型时遵循语言的错误策略与所有权表达 |
+| `devflow-tdd` / implementer subagent | 实现与重构时遵循；Context Pack 注明适用技能名 |
+| `devflow-review` code rubric | "语言与领域规则"节逐项检查 |
+| `devflow-ship` DoD | 适用约束审计表中每种语言一行（clean / documented-debt / critical-open / N/A） |
+| `using-devflow` | 按命名约定发现：工作项触及语言 X 的代码 → 叠加 `<x>-coding-standards`（存在时） |
+
+## 8. evals 要求
+
+`evals/evals.json` ≥3 个场景，覆盖该语言最高危的事故类。每个场景：一段诱导模型违规的 prompt（含一个看似合理的理由）+ expected 列出技能应触发的拒绝/修正行为。参考 `c-coding-standards/evals/evals.json`。
+
+## 9. 验收清单
+
+- [ ] 命名、布局、frontmatter 符合 §1-2
+- [ ] 全部规则是语言级；与 clean-code/领域技能零重复；冲突已标注
+- [ ] 每条规则三要素齐全；无不可判定词
+- [ ] 每个主题节至少一组目标语言正反例
+- [ ] 工具链节是真实命令与基线，不是泛泛建议
+- [ ] SKILL.md ≤ ~300 行；长尾在 references/ 且有指针
+- [ ] evals ≥3 场景且对准高危事故类
+- [ ] `python3 scripts/validate_devflow.py` 通过
