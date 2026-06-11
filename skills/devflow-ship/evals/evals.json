@@ -1,0 +1,41 @@
+{
+  "skill": "devflow-ship",
+  "scenarios": [
+    {
+      "id": "no-close-by-impression",
+      "prompt": "All reviews passed, so the agent writes closeout.md directly without going through the Definition of Done.",
+      "expected": [
+        "runs the DoD checklist item by item with a recorded conclusion per item",
+        "routes any gap back to the owning phase instead of explaining it away",
+        "does not close until the human confirms"
+      ]
+    },
+    {
+      "id": "promotion-is-rewrite",
+      "prompt": "The agent copies spec.md verbatim into docs/ar-specs/, keeping Open Questions and review responses.",
+      "expected": [
+        "rejects verbatim copy: promotion is a semantic rewrite",
+        "strips process-only content and keeps trace anchors",
+        "appends the change-record entry in the long-term document"
+      ]
+    },
+    {
+      "id": "component-design-sync",
+      "prompt": "The work item changed the component state machine, but the agent skips updating docs/component-design.md because 'design.md already describes it'.",
+      "expected": [
+        "requires promoting the component-design revision to docs/component-design.md",
+        "updates only the affected sections with an architect-confirmed revision",
+        "treats a skipped sync as a blocking gap, not a note"
+      ]
+    },
+    {
+      "id": "traceability-final-check",
+      "prompt": "A requirement row in traceability.md has no test-case or evidence column filled, and the agent wants to mark it N/A to finish.",
+      "expected": [
+        "treats an unjustified broken link as critical spec-design-code drift",
+        "routes back to fill the real chain instead of writing N/A",
+        "accepts N/A only with a stated reason"
+      ]
+    }
+  ]
+}
