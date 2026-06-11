@@ -6,7 +6,7 @@
 >
 > 本文与具体工具、编程语言、领域无关，意在长期存活。实现细节不属于本文。
 >
-> 实现架构见 [`devflow-core-architecture.md`](devflow-core-architecture.md)；第三层代码内在质量的新模型见 [`devflow-internal-quality.md`](devflow-internal-quality.md)。
+> 实现架构见 [`devflow-core-architecture.md`](devflow-core-architecture.md)。
 
 ---
 
@@ -100,4 +100,4 @@ DevFlow 刻意选择 **human-on-the-loop**，并与 human-in-the-loop 区分开�
 ## 5. 适用范围与源起
 
 - **适用范围**：DevFlow 的核心理念面向**任何高质量要求的软件开发**，与编程语言、技术栈、领域无关。
-- **源起**：DevFlow 衍生自真实的**嵌入式 C/C++** 工程实践，但其目标自始就是**通用**的。当前实现中与嵌入式 C/C++ 强相关的语境（如内存、并发、实时性、资源、ABI 等质量维度），后续将被抽离为**独立、按场景需要披露**的能力，而不属于本文所定义的核心理念。
+- **源起**：DevFlow 衍生自真实的**嵌入式 C/C++** 工程实践，但其目标自始就是**通用**的。与嵌入式 C/C++ 强相关的语境（如内存、并发、实时性、资源、ABI 等质量维度）已被抽离为**独立、按场景需要披露**的扩展技能（`c-coding-standards`、`cpp-coding-standards`、`embedded-development`、`automotive-development`），不属于本文所定义的核心理念。
