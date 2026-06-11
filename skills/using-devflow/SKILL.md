@@ -25,23 +25,28 @@ DevFlow 把「产出高质量代码」拆成由外到内的三层质量，每层
 需求/任务到达
     |
     v
-[1] devflow-specify     写 spec.md：把意图变成可测试的规格
+[1] devflow-specify     写 spec.md + 初始化 traceability.md
     |                   ── 人审查规格（可用 devflow-review 预审）──
     v
-[2] devflow-design      写 design.md：模块职责、接口契约、错误模型、测试设计
+[2] devflow-design      影响组件边界时先修订 component-design-draft.md；
+    |                   写 design.md：职责、接口契约、错误模型、测试设计
     |                   ── 人审查设计（可用 devflow-review 预审）──
     v
 [3] devflow-tdd         按测试设计逐用例 RED→GREEN→REFACTOR
-    |                   （实现与重构全程叠加 devflow-clean-code
-    |                     与适用的语言/领域规范技能）
+    |                   默认逐任务派发 implementer subagent；
+    |                   tasks.md 记证据行；叠加 devflow-clean-code
+    |                   与适用的语言/领域规范技能
     v
 [4] devflow-review      独立评审测试与代码，产出 findings
     |                   ── 人确认 verdict，决定完成或返工 ──
     v
-完成：全部验收标准有通过的测试，评审无 critical findings
+[5] devflow-ship        DoD 核验 + 追溯终验 + promotion 长期资产 + closeout
+    |                   ── 人确认关闭 ──
+    v
+完成
 ```
 
-旁路：**缺陷修复**走 `devflow-fix`（复现 → 根因 → 最小修复），其中修复实现仍回到 TDD（先写复现缺陷的失败测试）。
+旁路：**缺陷修复**走 `devflow-fix`（复现 → 根因 → 最小修复），其中修复实现仍回到 TDD（先写复现缺陷的失败测试），收尾同样经 `devflow-ship`。
 
 阶段允许回溯：写测试时发现规格漏洞就回去补规格；实现时发现设计错误就回去改设计。回溯时更新对应工件，不要让代码与工件漂移。
 
@@ -49,7 +54,7 @@ DevFlow 把「产出高质量代码」拆成由外到内的三层质量，每层
 
 - **微小修改**（几行、无接口变化、风险低）：spec 可压缩成 tasks.md 里的一段验收标准，design 可省略，但 TDD 与 clean code 不裁剪。
 - **纯重构**（行为不变）：不需要 spec/design，但必须有覆盖现有行为的测试先行。
-- 拿不准时不裁剪。裁剪的是**文档量**，永远不是**质量门槛**（测试先行、人审把关、整洁标准）。
+- 拿不准时不裁剪。裁剪的是**文档量**，永远不是**质量门槛**（测试先行、证据行、人审把关、DoD 核验、整洁标准）。微小修改的 DoD 裁剪规则见 `devflow-ship` 的 Definition of Done。
 
 ## 工件约定
 
@@ -57,21 +62,27 @@ DevFlow 把「产出高质量代码」拆成由外到内的三层质量，每层
 
 ```text
 features/<id>-<slug>/
-  spec.md        # 规格：范围、需求条目、验收标准（devflow-specify 产出）
-  design.md      # 设计：模块、接口、错误模型、测试设计（devflow-design 产出）
-  tasks.md       # 任务清单与状态：每个任务对应一组测试用例（devflow-tdd 维护）
-  reviews/       # 评审记录（devflow-review 产出）
+  spec.md                     # 规格（devflow-specify 产出）
+  traceability.md             # 追溯矩阵：spec-design-code 一致性约束（specify 初始化，逐阶段补列）
+  component-design-draft.md   # 组件级设计修订（影响组件边界时，devflow-design 产出）
+  design.md                   # 工作项级设计（devflow-design 产出）
+  tasks.md                    # 任务清单 + 每任务 RED/GREEN 证据行（devflow-tdd 维护）
+  reviews/                    # 评审记录（devflow-review 产出）
+  closeout.md                 # 收尾记录（devflow-ship 产出）
 ```
+
+长期资产在 `docs/`（`component-design.md`、`ar-specs/`、`ar-designs/`），由 `devflow-ship` 在收尾时从过程工件 promotion，平时各阶段只读。
 
 恢复进度时按工件状态判断，不依赖聊天记忆：
 
 | 磁盘状态 | 下一步 |
 |---|---|
 | 目录不存在 / spec.md 缺失或未获人确认 | `devflow-specify` |
-| spec 已确认，design.md 缺失或未获人确认 | `devflow-design` |
+| spec 已确认，design.md 缺失或未获人确认（含组件边界受影响但组件设计未修订） | `devflow-design` |
 | design 已确认，tasks.md 有未完成任务 | `devflow-tdd` |
 | 任务全部完成，reviews/ 缺测试或代码评审 | `devflow-review` |
 | 评审有未闭环 findings | 按 findings 返工对应阶段 |
+| 评审闭环，closeout.md 缺失 | `devflow-ship` |
 
 工件与聊天记忆冲突时，以工件为准。项目根 `AGENTS.md` 可以覆盖路径与模板约定。
 
@@ -96,6 +107,7 @@ features/<id>-<slug>/
 | `devflow-tdd` | 用 RED→GREEN→REFACTOR 证明功能正确 | 设计确认后的全部实现期 |
 | `devflow-clean-code` | 把代码写整洁：命名、函数、错误处理、重构 | 写代码与重构时随读随用 |
 | `devflow-review` | 独立评审规格/设计/测试/代码 | 每个阶段产物完成后 |
+| `devflow-ship` | DoD 核验、promotion 长期资产、closeout | 评审闭环后的收尾 |
 | `devflow-fix` | 复现 → 根因 → 最小修复 | 缺陷、回归、线上问题 |
 | `c-coding-standards` | C 语言规则与惯用法 | 工作项含 C 代码 |
 | `cpp-coding-standards` | C++ 语言规则与惯用法 | 工作项含 C++ 代码 |

@@ -19,11 +19,15 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 
 ## 任务组织
 
-实现的输入是 design.md 的**测试设计表**。在 `features/<id>/tasks.md` 里把用例组织成任务：
+实现的输入是 design.md 的**测试设计表**。在 `features/<id>/tasks.md` 里把用例组织成任务，**每个任务完成时附上 RED/GREEN 证据行**（命令 + 关键输出摘要 + commit 锚点）——这是评审者和人核验"测试真的失败过、真的在最终代码上跑过"的最低限度证据，不接受只有叙述没有输出的"证据"：
 
 ```markdown
 ## 任务清单
+
 - [x] T1: TC-001, TC-002 — mode_set 正常切换与非法输入   (done)
+  - RED:   `ctest -R ModeServiceTest` → FAIL: SetModeRejectsInvalid…
+           (expected ERR_INVALID_ARG, got OK) @ a1b2c3d
+  - GREEN: `ctest` → 47/47 passed, 0 warnings @ d4e5f6a
 - [ ] T2: TC-003 — 切换中重入返回 ERR_BUSY               (in progress)
 - [ ] T3: TC-004 — ModeChanged 事件载荷与时序
 ```
@@ -31,8 +35,24 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 规则：
 
 - **一次只有一个 in-progress 任务**。每个任务是一个薄垂直切片：完成后可构建、全部测试通过、可独立提交。
-- 任务循环：取下一个用例 → RED → GREEN →（按需）REFACTOR → 勾掉 → 下一个。
+- 任务循环：取下一个用例 → RED → GREEN →（按需）REFACTOR → 补证据行与 traceability → 勾掉 → 下一个。
+- 任务完成时更新 `features/<id>/traceability.md` 对应行的任务 ID、代码文件、测试代码文件、验证证据列。
 - 实现中发现设计错误或规格漏洞：**停下任务**，回 `devflow-design` / `devflow-specify` 修正工件并重新确认，不在代码里悄悄绕过。
+
+## 执行模式：默认派发 implementer subagent
+
+runtime 支持 subagent 时，**默认每个任务派发一个全新上下文的 implementer subagent**（角色定义 `agents/devflow-implementer.md`）执行：新上下文只依赖打包的输入工作，天然防止长会话的上下文漂移，也强制设计工件可冷读。
+
+派发时给 subagent 的 **Context Pack**（不传聊天历史）：
+
+- 任务 ID 与对应测试设计用例（Case ID、场景、预期结果）
+- design.md 相关章节（接口契约、错误模型摘录）与允许触碰的文件范围
+- 测试/构建命令、适用的 coding-standards 与领域技能名
+- 返回契约：`DONE`（附证据行）/ `NEEDS_CONTEXT`（缺关键输入，回来重新打包）/ `BLOCKED`（越界或设计问题，附原因）
+
+父会话职责：逐任务派发、校验返回的证据行、更新 tasks.md 与 traceability、串联提交。subagent 返回 `BLOCKED` 提示设计问题时，父会话回 `devflow-design`，不催 subagent 硬做。
+
+runtime 无 subagent 时退化为当前会话直接执行循环，纪律不变。
 
 ## 循环
 
@@ -67,6 +87,8 @@ TEST(ModeTest, Test1) {
 - 失败原因是**目标行为缺失**，不是拼写错误或测试环境问题
 - 测试一写就通过？说明它没有验证新行为：要么行为已存在（确认后跳过该用例），要么测试写错了。
 
+把命令与关键失败输出记为 tasks.md 的 RED 证据行（含 commit 锚点）。
+
 ### GREEN：最小实现
 
 只写让当前 RED 转绿的最少代码。不实现测试没有要求的功能，不引入设计没有批准的抽象，不顺手清理。
@@ -93,7 +115,7 @@ int mode_set(mode_t mode) {
 }
 ```
 
-**验证 GREEN（必做）**：当前测试通过；**完整测试套件**通过（无回归）；构建输出干净（无新增警告）。其他测试挂了 → 现在就修，不带病推进。
+**验证 GREEN（必做）**：当前测试通过；**完整测试套件**通过（无回归）；构建输出干净（无新增警告）。其他测试挂了 → 现在就修，不带病推进。把命令与通过摘要记为 tasks.md 的 GREEN 证据行（含 commit 锚点）。
 
 ### REFACTOR：在绿灯上清理
 
@@ -157,11 +179,12 @@ EXPECT_EQ(MODE_NORMAL, fake_event_queue_last().payload.mode);
 任务完成前逐项确认：
 
 - [ ] 每个新行为都有先失败后通过的测试；失败原因当时已确认是行为缺失
+- [ ] tasks.md 中本任务的 RED/GREEN 证据行齐全（命令 + 关键输出 + commit 锚点），证据来自真实运行
 - [ ] 完整测试套件通过；构建无新增警告
 - [ ] 断言经得起 mutation 自检（改错实现关键行，测试会红）
 - [ ] mock 只用于真实边界；没有 test-only 后门
 - [ ] REFACTOR 没有改变行为；清理留在任务范围内
-- [ ] tasks.md 状态已更新；本任务已提交
+- [ ] tasks.md 状态与 traceability.md 对应行已更新；本任务已提交
 - [ ] 适用的语言/领域规范（coding-standards / embedded / automotive）已在实现中遵循
 
 ## 支撑参考

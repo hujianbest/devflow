@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### 2.1 — Restore必要能力（最小流程表面积）
+
+2.0 重写后经讨论确认以下 1.x 能力必要，以新的形态恢复：
+
+#### Added
+
+- **`devflow-ship`（新阶段技能）**：收尾 = DoD 核验 + 追溯终验 + promotion + closeout。`references/definition-of-done.md` 按三层组织核验项（含微小修改 / 缺陷工作项的裁剪规则）；`references/promotion-checklist.md` 规定长期资产（`docs/ar-specs/`、`docs/ar-designs/`、`docs/component-design.md`）的同步对象与语义化改写规则。恢复 `/devflow-ship` 命令。
+- **组件级设计（团队开发流程要求）**：`devflow-design` 升级为两级设计——影响组件边界时必须先修订 `component-design-draft.md` 并经模块架构师确认，工作项设计只引用组件基线。恢复两份企业级模板（`devflow-component-design-template.md`、`devflow-ar-design-template.md`）并增补「高质量设计增补」章节（接口契约六项、错误模型、数据所有权、简单性检验 / 边界检验、错误与降级总策略、抽象与演进成本），替代原 design-template.md。
+- **追溯矩阵 `traceability.md`**：作为 spec-design-code 一致性的显式约束。specify 初始化（需求/Change Type/上游锚点列），design / tdd 逐阶段补列，review 抽查（design/code rubric 新增检查项），ship 终验。模板在 `devflow-specify/references/traceability-template.md`。
+- **极简证据纪律**：tasks.md 每个完成任务必须带 RED/GREEN 证据行（命令 + 关键输出摘要 + commit 锚点），替代 1.x 的 evidence/ 目录与多文件格式；test-review rubric 对应检查。
+- **implementer subagent 默认执行模式**：恢复精简版 `agents/devflow-implementer.md`；`devflow-tdd` 在 runtime 支持时默认逐任务派发全新上下文 subagent（输入为 Context Pack 而非聊天历史），防上下文漂移；无 subagent 时退化为当前会话执行，纪律不变。
+
+#### 原则不变
+
+恢复的是**能力**而非 1.x 样板形态：仍无 router、无 progress.md 状态机、无 handoff YAML、无 profile/execution-mode。流程仍为 specify → design → tdd → review → ship 单链 + fix 旁路。
+
 ### 2.0 — Rewrite: minimal process, maximal substance
 
 调研了 skill 编写的业界实践（Anthropic Agent Skills 指南、superpowers 等）并审计了 1.x 全部内容后的结论：约半数篇幅是流程样板（对象契约、handoff 字段、canonical 节点、profile/execution-mode），而声称是核心的第三层（clean-design/clean-code/语言规范）反而最薄、几乎没有可模仿的正反例。2.0 据此重写：**流程最小化、内容最大化**，目标对齐理念文档的一句话——SDD 范式下生成 Clean Code 的代码，而不是仅仅能运行的代码。

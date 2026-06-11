@@ -26,11 +26,12 @@ DevFlow 的目标一句话：**SDD 范式下生成 Clean Code 的代码，而不
 ```text
 skills/
   using-devflow/             # 入口：三层模型、工作流、工件约定、行为准则
-  devflow-specify/           # 第一层：可测试的规格
-  devflow-design/            # 设计：职责边界、接口契约、错误模型、测试设计
-  devflow-tdd/               # 第二层：测试先行实现
+  devflow-specify/           # 第一层：可测试的规格 + 追溯矩阵初始化
+  devflow-design/            # 设计：组件级 + 工作项级两级设计，含企业模板与质量增补章节
+  devflow-tdd/               # 第二层：测试先行实现（默认派发 implementer subagent，证据行落盘）
   devflow-clean-code/        # 第三层：整洁代码标准与重构目录
   devflow-review/            # 独立评审：四类 rubric（spec/design/test/code）
+  devflow-ship/              # 收尾：DoD 核验 + promotion 长期资产 + closeout
   devflow-fix/               # 缺陷修复：复现 → 根因 → 最小修复
   c-coding-standards/        # 语言扩展：C 规则与惯用法
   cpp-coding-standards/      # 语言扩展：C++ 规则与惯用法
@@ -40,7 +41,7 @@ skills/
 
 两类 skill：
 
-- **阶段 skill**（specify / design / tdd / review / fix）：有工作流、有产物、有人审把关点。
+- **阶段 skill**（specify / design / tdd / review / ship / fix）：有工作流、有产物、有人审把关点。
 - **叠加 skill**（clean-code、语言、领域）：提供贯穿各阶段的质量约束与判据，被阶段 skill 引用，自身不是阶段。
 
 依赖方向：阶段 skill 可以引用叠加 skill 与 `using-devflow` 的约定；叠加 skill 之间按「通用 → 语言 → 领域」单向引用（如 `cpp-coding-standards` 建立在 `devflow-clean-code` 之上）；不存在反向依赖。
@@ -48,8 +49,9 @@ skills/
 ## 4. 工作流与工件
 
 ```text
-specify → [人审] → design → [人审] → tdd（叠加 clean-code/语言/领域）→ review → [人审] → done
-缺陷旁路：fix（复现→根因→边界）→ tdd → review
+specify → [人审] → design → [人审] → tdd（叠加 clean-code/语言/领域）→ review → [人审]
+        → ship（DoD 核验 + promotion）→ [人确认关闭] → done
+缺陷旁路：fix（复现→根因→边界）→ tdd → review → ship
 ```
 
 工件模型（`features/<id>-<slug>/`）：
@@ -57,10 +59,15 @@ specify → [人审] → design → [人审] → tdd（叠加 clean-code/语言/
 | 工件 | 产出者 | 内容 |
 |---|---|---|
 | `spec.md` | devflow-specify | 范围、需求条目、验收标准、接口候选契约 |
-| `design.md` | devflow-design | 模块职责、接口契约、错误模型、方案取舍、测试设计 |
-| `tasks.md` | devflow-tdd | 任务清单与状态（用例 → 任务映射） |
+| `traceability.md` | specify 初始化，design/tdd 补列 | 追溯矩阵：需求→设计→测试→代码→证据，spec-design-code 一致性约束 |
+| `component-design-draft.md` | devflow-design | 组件级设计修订（影响组件边界时；企业模板） |
+| `design.md` | devflow-design | 工作项级设计：职责、接口契约、错误模型、测试设计、质量增补章节 |
+| `tasks.md` | devflow-tdd | 任务清单与状态 + 每任务 RED/GREEN 证据行（命令、输出摘要、commit 锚点） |
 | `fix.md` | devflow-fix | 复现、根因、修复边界（缺陷工作项） |
 | `reviews/` | devflow-review | 评审记录（findings + verdict + 抽查记录） |
+| `closeout.md` | devflow-ship | DoD 核验摘要、promotion 路径表、债务去向 |
+
+长期资产（`docs/`）：`component-design.md`、`ar-specs/`、`ar-designs/`。由 `devflow-ship` 在收尾时从过程工件**语义化改写** promotion；其他阶段只读。组件级设计是团队开发流程要求：影响组件边界的工作项必须先修订组件设计并经模块架构师确认。
 
 进度恢复规则在 `using-devflow` 中定义：按工件存在性与确认状态判断下一步，工件优先于聊天记忆。
 
@@ -68,7 +75,8 @@ specify → [人审] → design → [人审] → tdd（叠加 clean-code/语言/
 
 - 作者不自审：评审由 `devflow-review` 派发独立 subagent（角色定义 `agents/devflow-reviewer.md`）执行。
 - 评审者不动手修：评审产出 findings 与 verdict，修改由作者执行。
-- 人做最终把关：规格确认、设计确认、评审 verdict 闭环都需要人。
+- 实现默认隔离：`devflow-tdd` 在 runtime 支持时逐任务派发全新上下文的 implementer subagent（角色定义 `agents/devflow-implementer.md`），输入为打包的 Context Pack 而非聊天历史，防止长会话上下文漂移。
+- 人做最终把关：规格确认、设计确认、评审 verdict 闭环、DoD 核验后的关闭都需要人。
 - DevFlow 不替团队角色拍板业务方向、优先级、验收阈值、架构边界。
 
 ## 6. 平台适配
@@ -79,4 +87,6 @@ specify → [人审] → design → [人审] → tdd（叠加 clean-code/语言/
 
 ## 7. 与 1.x 的关系
 
-1.x 的 13 个 canonical 流程节点、`devflow-router`、`progress.md` 多字段状态、profile/execution-mode 机制在 2.0 中移除——审计结论是它们让流程样板占据了约半数内容，挤压了真正指导设计与编码的部分。1.x 的高价值内容（EARS/QAS/粒度启发式、TDD 纪律、评审 rule 思想）全部保留并强化为带正反例的形式。
+1.x 的 13 个 canonical 流程节点、`devflow-router`、`progress.md` 多字段状态、handoff YAML、profile/execution-mode 机制在 2.0 中移除——审计结论是它们让流程样板占据了约半数内容，挤压了真正指导设计与编码的部分。1.x 的高价值内容（EARS/QAS/粒度启发式、TDD 纪律、评审 rule 思想）全部保留并强化为带正反例的形式。
+
+1.x 中以下**能力**经讨论确认必要后，以最小流程表面积恢复（不恢复其 1.x 样板形态）：收尾与 promotion（`devflow-ship`，含 Definition of Done）、组件级设计与两份企业模板（并入 `devflow-design`，模板增补质量章节）、追溯矩阵（`traceability.md`）、TDD 证据纪律（tasks.md 证据行替代 evidence/ 目录）、implementer subagent（`devflow-tdd` 默认执行模式）。

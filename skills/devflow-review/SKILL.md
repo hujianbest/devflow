@@ -21,7 +21,7 @@ description: 在规格、设计、测试或代码需要独立评审时使用：�
 | 评审目标 | Rubric | 关注核心 |
 |---|---|---|
 | spec.md | `references/spec-review-rubric.md` | 可测试性、变更风险显式、无走私的实现细节 |
-| design.md | `references/design-review-rubric.md` | 契约完整、复杂度有理由、测试设计覆盖 |
+| design.md（及 component-design-draft.md，如适用） | `references/design-review-rubric.md` | 契约完整、复杂度有理由、测试设计覆盖、追溯一致 |
 | 测试 | `references/test-review-rubric.md` | 断言强度、覆盖映射、mock 边界、RED 证据 |
 | 代码 | `references/code-review-rubric.md` | 正确性、与设计一致、整洁标准、语言/领域规则 |
 

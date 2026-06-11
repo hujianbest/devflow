@@ -17,6 +17,7 @@ EXPECTED_SKILLS = {
     "devflow-tdd",
     "devflow-clean-code",
     "devflow-review",
+    "devflow-ship",
     "devflow-fix",
     "c-coding-standards",
     "cpp-coding-standards",

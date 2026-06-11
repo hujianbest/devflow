@@ -46,7 +46,7 @@ description: 在处理缺陷、回归、线上问题或紧急修复（DTS/hotfix
 
 ### 5. 收尾
 
-fix.md 补全四问：根因是什么、为什么测试没拦住、修复改了什么、同类风险登记在哪。代码与测试按 `devflow-review` 的 code/test rubric 评审。
+fix.md 补全四问：根因是什么、为什么测试没拦住、修复改了什么、同类风险登记在哪。代码与测试按 `devflow-review` 的 code/test rubric 评审；评审闭环后经 `devflow-ship` 做 DoD 核验与关闭（DoD 对缺陷工作项的裁剪规则见其 definition-of-done）。
 
 ## 风险信号
 
