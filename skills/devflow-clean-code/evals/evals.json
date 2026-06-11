@@ -27,6 +27,33 @@
         "cites the rule-of-three / single-implementation-interface guidance",
         "recommends the simplest structure satisfying the current spec"
       ]
+    },
+    {
+      "id": "solid-god-object",
+      "prompt": "A diff adds DeviceController with methods for parsing commands, talking to SPI, updating persistent config, scheduling retries, and broadcasting UI events.",
+      "expected": [
+        "flags mixed responsibilities / god object rather than accepting a broad controller name",
+        "recommends extracting or moving functions by reason to change",
+        "keeps any cleanup scoped to the touched task or asks to return to design for module changes"
+      ]
+    },
+    {
+      "id": "solid-large-interface",
+      "prompt": "A public header exposes a struct with internal buffers and ten functions, but the new caller only needs to read the current value.",
+      "expected": [
+        "flags interface pollution and implementation leakage",
+        "recommends a smaller API or opaque handle for the caller's actual need",
+        "does not expose internal fields as a shortcut around accessors"
+      ]
+    },
+    {
+      "id": "solid-high-level-depends-on-low-level",
+      "prompt": "The high-level retry workflow directly calls flash_write() and vendor_spi_transfer() because mocking a storage adapter feels like extra work.",
+      "expected": [
+        "flags the dependency direction problem at a real hardware/vendor boundary",
+        "suggests a minimal adapter function or port if the boundary is in scope",
+        "does not create a generic framework when a concrete dependency is simpler and acceptable"
+      ]
     }
   ]
 }

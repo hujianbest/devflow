@@ -159,6 +159,34 @@ static const char *const k_dtc_names[] = {
 
 **步骤**：① 确认确实不可达（小心条件编译、链接脚本、宏拼接、外部 ABI 调用方）；② 整块删除，不留注释尸体；③ 提交信息注明删了什么、为何确认无引用。
 
+## 11. 拆大接口 / 隐藏实现（Interface Segregation）
+
+**识别**：公共头文件暴露内部结构体字段、私有宏或一组调用方只用其中一小部分的大而全 API；改内部实现会迫使无关调用方重编译或修改。
+
+**步骤**：① 按调用方实际需要分组 API；② 把内部字段改为不透明句柄或移入 `.c` / detail 命名空间；③ 删除调用方不需要的 include；④ 跑构建和相关测试。
+
+```c
+/* before：调用方被迫知道所有字段 */
+typedef struct {
+    uint32_t raw;
+    uint32_t filtered;
+    uint8_t calibration_state;
+} sensor_t;
+int sensor_read(sensor_t *s, uint32_t *value);
+
+/* after：契约只暴露调用方需要的事 */
+typedef struct sensor sensor_t;
+int sensor_read(const sensor_t *s, uint32_t *value);
+```
+
+## 12. 在真实边界引入适配层（Dependency Inversion）
+
+**识别**：高层流程直接调用硬件寄存器、协议栈、文件系统或第三方库；测试必须 mock 内部纯逻辑才能绕开底层细节。
+
+**步骤**：① 确认边界真实存在（硬件、外部组件、第三方库、跨进程/跨组件）；② 用最小端口函数表达高层需要的能力；③ 底层适配实现端口；④ 高层只依赖端口契约；⑤ 跑测试。
+
+不要为了 DIP 创建没有第二个真实实现、也不跨所有权边界的接口。那是单实现抽象，回 `devflow-design` 的抽象纪律处理。
+
 ## 不要做的"重构"
 
 - **绿灯之外的重构**：测试不全绿时改结构 = 蒙眼搬家
