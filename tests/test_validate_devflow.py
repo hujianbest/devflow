@@ -66,6 +66,28 @@ def test_legacy_skill_directories_are_rejected(tmp_path):
     assert any("devflow-router" in error and "removed" in error for error in result)
 
 
+def test_new_language_coding_standards_is_accepted_by_convention(tmp_path):
+    validator = load_validator()
+    for name in validator.EXPECTED_SKILLS:
+        write_skill(tmp_path, name)
+    write_skill(tmp_path, "java-coding-standards")
+
+    result = validator.validate_skill_set(tmp_path)
+
+    assert result == []
+
+
+def test_malformed_coding_standards_name_is_rejected(tmp_path):
+    validator = load_validator()
+    for name in validator.EXPECTED_SKILLS:
+        write_skill(tmp_path, name)
+    write_skill(tmp_path, "Java_Style-coding-standards")
+
+    result = validator.validate_skill_set(tmp_path)
+
+    assert any("naming convention" in error for error in result)
+
+
 def test_legacy_references_are_detected_in_active_text():
     validator = load_validator()
 

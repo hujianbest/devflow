@@ -61,6 +61,14 @@ specify ──[人审]──> design ──[人审]──> tdd 实现 ──> re
 | [`embedded-development`](skills/embedded-development/SKILL.md) | 嵌入式约束：内存、中断、实时性、硬件边界、证据策略 |
 | [`automotive-development`](skills/automotive-development/SKILL.md) | 车载约束：ASIL、整车生命周期、SOA、DTC、SELinux、跨 ECU |
 
+语言规范按 `<language>-coding-standards` 命名约定扩展（规划中：java、python 等）：各阶段技能以约定方式引用，新增语言零改动接入；所有语言技能遵循同一份[结构契约](skills/coding-standards-creator/references/coding-standards-skill-contract.md)。
+
+### 工具技能
+
+| 技能 | 做什么 |
+|---|---|
+| [`coding-standards-creator`](skills/coding-standards-creator/SKILL.md) | 把团队内部编码规范文档转化为新的 `<language>-coding-standards` 技能：归属判定（语言级/通用/领域/流程）、规则提炼（可判定 + 事故类 + 正反例）、接入注册、交人验收 |
+
 ## 快速开始
 
 OpenCode 会自动发现 `skills/` 下的每个 `SKILL.md`（详见 [`docs/guides/opencode-setup.md`](docs/guides/opencode-setup.md)）；其他支持 Agent Skills 的 runtime（Claude Code、Cursor 等）同理。
@@ -88,7 +96,7 @@ git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git --sq
 
 ```text
 devflow/
-├── skills/            # 7 个阶段技能 + 5 个叠加技能（见上表）
+├── skills/            # 7 个阶段技能 + 5 个叠加技能 + 1 个工具技能（见上表）
 ├── commands/          # slash-style 阶段入口（平台适配层）
 ├── agents/            # devflow-reviewer / devflow-implementer 子代理角色定义
 ├── docs/

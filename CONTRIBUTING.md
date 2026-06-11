@@ -7,7 +7,8 @@ Thanks for your interest in DevFlow. This document describes how to contribute t
 DevFlow is intentionally narrow:
 
 - It targets the **development stage**: from an accepted requirement through specification, design, TDD implementation, and independent review.
-- It is organized as **phase skills** (`devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-review`, `devflow-fix`, plus the `using-devflow` entry) and **overlay skills** (`devflow-clean-code`, `c-coding-standards`, `cpp-coding-standards`, `embedded-development`, `automotive-development`).
+- It is organized as **phase skills** (`devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-review`, `devflow-ship`, `devflow-fix`, plus the `using-devflow` entry), **overlay skills** (`devflow-clean-code`, the `<language>-coding-standards` family such as `c-coding-standards` / `cpp-coding-standards`, `embedded-development`, `automotive-development`), and **tooling skills** (`coding-standards-creator`).
+- New language standards are created with `coding-standards-creator` and must satisfy its structural contract (`skills/coding-standards-creator/references/coding-standards-skill-contract.md`); phase skills reference language standards by convention, so adding a language must not require touching them.
 - It does **not** cover product discovery, system / integration / acceptance testing, release operations, or runtime incident response.
 
 The architecture spec is [`docs/devflow-core-architecture.md`](docs/devflow-core-architecture.md); the philosophy (north star) is [`docs/devflow-philosophy.md`](docs/devflow-philosophy.md). When an implementation choice conflicts with the philosophy, the philosophy wins.

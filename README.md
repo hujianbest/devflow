@@ -62,6 +62,14 @@ Per-work-item artifacts (`features/<id>-<slug>/`): `spec.md`, `traceability.md`,
 | [`embedded-development`](skills/embedded-development/SKILL.md) | Embedded constraints: memory, interrupts, real-time, hardware boundaries, evidence strategy |
 | [`automotive-development`](skills/automotive-development/SKILL.md) | Automotive constraints: ASIL, vehicle lifecycle, SOA, DTC, SELinux, cross-ECU |
 
+Language standards extend via the `<language>-coding-standards` naming convention (java, python, etc. planned): phase skills reference them by convention, so new languages plug in with zero changes elsewhere; every language skill follows the same [structural contract](skills/coding-standards-creator/references/coding-standards-skill-contract.md).
+
+### Tooling skills
+
+| Skill | What it does |
+|---|---|
+| [`coding-standards-creator`](skills/coding-standards-creator/SKILL.md) | Turns an internal team coding standard document into a new `<language>-coding-standards` skill: rule ownership triage (language / generic / domain / process), rule distillation (judgeable + failure class + good/bad examples), registration, human sign-off |
+
 ## Quick start
 
 OpenCode auto-discovers every `SKILL.md` under `skills/` (see [`docs/guides/opencode-setup.md`](docs/guides/opencode-setup.md)); the same applies to any runtime that supports Agent Skills (Claude Code, Cursor, etc.).
@@ -90,7 +98,7 @@ Project overrides: create an `AGENTS.md` with a `## Project overrides` section a
 
 ```text
 devflow/
-├── skills/            # 7 phase skills + 5 overlay skills (see tables above)
+├── skills/            # 7 phase skills + 5 overlay skills + 1 tooling skill (see tables above)
 ├── commands/          # slash-style phase entries (platform adapter)
 ├── agents/            # devflow-reviewer / devflow-implementer subagent personas
 ├── docs/
