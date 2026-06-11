@@ -39,7 +39,7 @@ List the DevFlow skills you can see, and tell me which one you would load
 if I asked to start a new feature.
 ```
 
-The agent should list the core skills (`using-devflow`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-ship`, `devflow-fix`) plus the language/domain extensions (`c-coding-standards`, `cpp-coding-standards`, `embedded-development`, `automotive-development`), and pick `using-devflow` as the entry.
+The agent should list the core skills (`using-devflow`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-ship`, `devflow-fix`), the language/domain extensions (`<language>-coding-standards` skills such as `c-coding-standards` and `cpp-coding-standards`, plus `embedded-development`, `automotive-development`), and the tooling skill `coding-standards-creator`, picking `using-devflow` as the entry.
 
 ## How it works
 
@@ -68,7 +68,7 @@ SHIP      devflow-ship           → DoD check, promotion to docs/, closeout.md
 FIX       devflow-fix            → fix.md, then back through TDD
 ```
 
-Overlay skills (`devflow-clean-code`, `c/cpp-coding-standards`, `embedded/automotive-development`) are consumed inside these phases; they are constraints, not phases.
+Overlay skills (`devflow-clean-code`, the applicable `<language>-coding-standards`, `embedded/automotive-development`) are consumed inside these phases; they are constraints, not phases. New language standards are generated from internal team documents via `coding-standards-creator`.
 
 ### Reviewer subagents
 

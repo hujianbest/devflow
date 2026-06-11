@@ -23,8 +23,7 @@
 | 约束项 | 来源 |
 |---|---|
 | 整洁代码 | `devflow-clean-code` |
-| C 编码规范 | `c-coding-standards`（适用时） |
-| C++ 编码规范 | `cpp-coding-standards`（适用时） |
+| 语言编码规范 | 适用的 `<language>-coding-standards`，工作项涉及的每种语言一行（如 `c-coding-standards`、`cpp-coding-standards`） |
 | 嵌入式约束 | `embedded-development`（适用时） |
 | 车载约束 | `automotive-development`（适用时） |
 

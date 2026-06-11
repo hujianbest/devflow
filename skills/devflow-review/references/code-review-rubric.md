@@ -44,7 +44,7 @@
 
 ### 语言与领域规则
 
-- [ ] `c-coding-standards` / `cpp-coding-standards` 适用规则已过（所有权注释、宏纪律、RAII、规则五等）
+- [ ] 适用语言的 `<language>-coding-standards` 规则已过（如 C 的所有权注释/宏纪律、C++ 的 RAII/规则五；按 diff 涉及的语言加载对应技能）
 - [ ] 领域约束（`embedded-development` / `automotive-development`）适用项有实现或显式 N/A
 
 ## Verdict 指引

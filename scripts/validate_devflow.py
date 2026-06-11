@@ -21,9 +21,16 @@ EXPECTED_SKILLS = {
     "devflow-fix",
     "c-coding-standards",
     "cpp-coding-standards",
+    "coding-standards-creator",
     "embedded-development",
     "automotive-development",
 }
+
+# Language standards follow the `<language>-coding-standards` naming convention and
+# are generated/maintained via coding-standards-creator. New language skills (e.g.
+# java-coding-standards) are valid without being listed here; add them to
+# EXPECTED_SKILLS once adopted, to guard against accidental deletion.
+CODING_STANDARDS_NAME = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*-coding-standards$")
 
 # Skills and mechanisms removed in 2.0; they must not resurface in active text.
 LEGACY_SKILL_NAMES = {
@@ -129,6 +136,11 @@ def validate_skill_set(root: Path = ROOT) -> list[str]:
         errors.append(f"skills/{missing}: expected skill is missing")
     for legacy in sorted(present & LEGACY_SKILL_NAMES):
         errors.append(f"skills/{legacy}: legacy skill should be removed")
+    for name in sorted(present):
+        if name.endswith("-coding-standards") and not CODING_STANDARDS_NAME.match(name):
+            errors.append(
+                f"skills/{name}: must follow the <language>-coding-standards naming convention"
+            )
     return errors
 
 

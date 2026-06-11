@@ -35,16 +35,26 @@ skills/
   devflow-fix/               # 缺陷修复：复现 → 根因 → 最小修复
   c-coding-standards/        # 语言扩展：C 规则与惯用法
   cpp-coding-standards/      # 语言扩展：C++ 规则与惯用法
+  coding-standards-creator/  # 工具：把团队编码规范转化为新的 <language>-coding-standards
   embedded-development/      # 领域扩展：嵌入式约束
   automotive-development/    # 领域扩展：车载约束
 ```
 
-两类 skill：
+三类 skill：
 
 - **阶段 skill**（specify / design / tdd / review / ship / fix）：有工作流、有产物、有人审把关点。
 - **叠加 skill**（clean-code、语言、领域）：提供贯穿各阶段的质量约束与判据，被阶段 skill 引用，自身不是阶段。
+- **工具 skill**（coding-standards-creator）：生成与维护扩展技能本身，不参与工作项流程。
 
 依赖方向：阶段 skill 可以引用叠加 skill 与 `using-devflow` 的约定；叠加 skill 之间按「通用 → 语言 → 领域」单向引用（如 `cpp-coding-standards` 建立在 `devflow-clean-code` 之上）；不存在反向依赖。
+
+### 语言规范的扩展机制
+
+语言规范按 `<language>-coding-standards` 命名约定接入（现有 c/cpp，规划 java/python 等）。扩展性由三件事保证：
+
+1. **约定式引用**：所有阶段 skill、rubric、DoD、命令只写「适用的 `<language>-coding-standards`」，不枚举具体语言——新增语言零改动接入。
+2. **结构契约**：每个语言技能满足同一份契约（`coding-standards-creator/references/coding-standards-skill-contract.md`）：命名、frontmatter 触发条件、只收语言级规则的边界、规则三要素（可判定 + 事故类 + 正反例）、规模上限、消费点、evals。
+3. **生成工具**：`coding-standards-creator` 把团队内部编码规范文档转化为符合契约的新技能：逐条归属判定（语言级收录 / 通用引用 clean-code / 领域移交 / 流程剔除）、规则提炼改写、接入注册、交人验收。
 
 ## 4. 工作流与工件
 

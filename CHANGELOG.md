@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### 2.2 — Coding standards 扩展机制与 creator 工具
+
+为语言编码规范的横向扩展（规划 java/python 等）建立机制：
+
+#### Added
+
+- **`coding-standards-creator`（新工具技能）**：把团队内部编码规范文档转化为符合 DevFlow 形态的 `<language>-coding-standards` 技能。核心工作流：逐条归属判定（语言级收录 / 通用引用 `devflow-clean-code` 不复制 / 领域规则移交领域技能 / 流程规则剔除并提示归属）→ 规则提炼三要素（可判定 + 针对的事故类 + 目标语言正反例；"禁止 X"必补替代）→ 按契约生成 → 接入注册 → 归属映射表交人验收。纪律：团队规则与 DevFlow 默认冲突时团队优先且显式标注；不发明团队规则（补充建议须标注待确认）。
+- **结构契约** `references/coding-standards-skill-contract.md`：所有语言技能的统一标准——命名约定、frontmatter 触发条件模式、只收语言级规则的边界（三不收）、规则写法三要素、规模上限与 progressive disclosure、五个消费点、evals 要求、验收清单。附可拷贝骨架 `coding-standards-skill-template.md`。
+- 校验脚本：`<language>-coding-standards` 命名模式检查；新语言技能无需注册即合法，采纳后建议加入 `EXPECTED_SKILLS` 防误删。
+
+#### Changed
+
+- **约定式引用替代语言枚举**：`devflow-design`/`devflow-clean-code`/`devflow-review` code rubric/`devflow-ship` DoD/commands/agents 中的 `c-coding-standards`/`cpp-coding-standards` 硬编码改为「适用的 `<language>-coding-standards`」约定（c/cpp 作为示例保留）——新增语言零改动接入。
+- `using-devflow` 技能地图改为约定行 + 发现规则；DoD 约束审计表改为"每种语言一行"。
+
 ### 2.1 — Restore必要能力（最小流程表面积）
 
 2.0 重写后经讨论确认以下 1.x 能力必要，以新的形态恢复：
