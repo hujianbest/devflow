@@ -28,14 +28,14 @@ DevFlow 2.0 遵循两条原则（也是与常见"流程框架"的区别）：
 ## 工作流
 
 ```text
-specify ──[人审]──> design ──[人审]──> tdd 实现 ──> review ──[人审]──> 完成
-   写可测试的规格      接口契约/错误模型/      逐用例           独立评审
-                      测试设计               RED→GREEN→        测试与代码
-                                            REFACTOR
-缺陷旁路：fix（复现 → 根因 → 最小修复）→ tdd → review
+specify ──[人审]──> design ──[人审]──> tdd 实现 ──> review ──[人审]──> ship ──[人确认]──> 完成
+   写可测试规格        组件级+工作项级设计：     逐用例            独立评审        DoD 核验、
+   初始化追溯矩阵      接口契约/错误模型/       RED→GREEN→        测试与代码      promotion
+                      测试设计                REFACTOR                          长期资产
+缺陷旁路：fix（复现 → 根因 → 最小修复）→ tdd → review → ship
 ```
 
-每个工作项的过程工件（`features/<id>-<slug>/`）：`spec.md`、`design.md`、`tasks.md`、`reviews/`（缺陷工作项为 `fix.md`）。下一步永远从工件状态恢复，不依赖聊天记忆。
+每个工作项的过程工件（`features/<id>-<slug>/`）：`spec.md`、`traceability.md`、`design.md`（影响组件边界时另有 `component-design-draft.md`）、`tasks.md`（含每任务 RED/GREEN 证据行）、`reviews/`、`closeout.md`（缺陷工作项为 `fix.md`）。长期资产（`docs/component-design.md`、`docs/ar-specs/`、`docs/ar-designs/`）由 ship 阶段沉淀。下一步永远从工件状态恢复，不依赖聊天记忆。
 
 ## 技能目录
 
@@ -45,9 +45,10 @@ specify ──[人审]──> design ──[人审]──> tdd 实现 ──> re
 |---|---|
 | [`using-devflow`](skills/using-devflow/SKILL.md) | 入口：三层模型、工作流地图、工件约定、行为准则 |
 | [`devflow-specify`](skills/devflow-specify/SKILL.md) | 把意图写成可测试规格：EARS 句式、BDD 验收、NFR QAS、变更基线 |
-| [`devflow-design`](skills/devflow-design/SKILL.md) | 软件设计：职责边界、耦合判断、抽象纪律、接口契约、错误模型、测试设计 |
-| [`devflow-tdd`](skills/devflow-tdd/SKILL.md) | 测试先行实现：RED→GREEN→REFACTOR、断言强度、mock 边界 |
+| [`devflow-design`](skills/devflow-design/SKILL.md) | 两级软件设计（组件级 + 工作项级，企业模板 + 质量增补章节）：职责边界、耦合判断、抽象纪律、接口契约、错误模型、测试设计 |
+| [`devflow-tdd`](skills/devflow-tdd/SKILL.md) | 测试先行实现：RED→GREEN→REFACTOR、断言强度、mock 边界；默认逐任务派发 implementer subagent，证据行落盘 |
 | [`devflow-review`](skills/devflow-review/SKILL.md) | 独立评审：规格/设计/测试/代码四类 rubric，作者永不自审 |
+| [`devflow-ship`](skills/devflow-ship/SKILL.md) | 收尾：Definition of Done 核验、promotion 长期资产、closeout |
 | [`devflow-fix`](skills/devflow-fix/SKILL.md) | 缺陷修复：复现 → 根因三层 → 最小修复边界 → TDD 修复 |
 
 ### 叠加技能（贯穿各阶段的质量约束）
@@ -79,7 +80,7 @@ git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git --sq
 用 DevFlow 开发：为通知组件增加重试机制。先把需求理清楚，不要直接写代码。
 ```
 
-也可以使用 [`commands/`](commands/README.md) 下的 slash-style 阶段入口：`/devflow`、`/devflow-specify`、`/devflow-design`、`/devflow-build`、`/devflow-review`、`/devflow-fix`。
+也可以使用 [`commands/`](commands/README.md) 下的 slash-style 阶段入口：`/devflow`、`/devflow-specify`、`/devflow-design`、`/devflow-build`、`/devflow-review`、`/devflow-ship`、`/devflow-fix`。
 
 项目级覆盖：在你的仓库根目录创建带 `## Project overrides` 章节的 `AGENTS.md`，可覆盖工件路径与模板；不创建时使用内置默认值。
 
@@ -87,9 +88,9 @@ git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git --sq
 
 ```text
 devflow/
-├── skills/            # 6 个阶段技能 + 5 个叠加技能（见上表）
+├── skills/            # 7 个阶段技能 + 5 个叠加技能（见上表）
 ├── commands/          # slash-style 阶段入口（平台适配层）
-├── agents/            # devflow-reviewer 独立评审角色定义
+├── agents/            # devflow-reviewer / devflow-implementer 子代理角色定义
 ├── docs/
 │   ├── devflow-philosophy.md         # 核心理念（北极星）
 │   ├── devflow-core-architecture.md  # 架构映射

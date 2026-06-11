@@ -28,14 +28,15 @@ DevFlow 2.0 follows two principles (and this is what distinguishes it from typic
 ## Workflow
 
 ```text
-specify ──[human]──> design ──[human]──> tdd ──> review ──[human]──> done
- testable spec        interface contracts /  per-case      independent review
-                      error model /          RED→GREEN→    of tests & code
-                      test design            REFACTOR
-Defect path: fix (reproduce → root cause → minimal fix) → tdd → review
+specify ──[human]──> design ──[human]──> tdd ──> review ──[human]──> ship ──[human]──> done
+ testable spec +     component-level +     per-case      independent     DoD check,
+ traceability init   work-item design:     RED→GREEN→    review of       promotion of
+                     contracts / error     REFACTOR      tests & code    long-term assets
+                     model / test design
+Defect path: fix (reproduce → root cause → minimal fix) → tdd → review → ship
 ```
 
-Per-work-item artifacts (`features/<id>-<slug>/`): `spec.md`, `design.md`, `tasks.md`, `reviews/` (`fix.md` for defects). The next step is always recovered from artifact state, never from chat memory.
+Per-work-item artifacts (`features/<id>-<slug>/`): `spec.md`, `traceability.md`, `design.md` (plus `component-design-draft.md` when component boundaries are affected), `tasks.md` (with per-task RED/GREEN evidence lines), `reviews/`, `closeout.md` (`fix.md` for defects). Long-term assets (`docs/component-design.md`, `docs/ar-specs/`, `docs/ar-designs/`) are promoted at the ship phase. The next step is always recovered from artifact state, never from chat memory.
 
 ## Skill catalog
 
@@ -45,9 +46,10 @@ Per-work-item artifacts (`features/<id>-<slug>/`): `spec.md`, `design.md`, `task
 |---|---|
 | [`using-devflow`](skills/using-devflow/SKILL.md) | Entry: three-layer model, workflow map, artifact conventions, behavior rules |
 | [`devflow-specify`](skills/devflow-specify/SKILL.md) | Turn intent into a testable spec: EARS statements, BDD acceptance, NFR QAS, change baselines |
-| [`devflow-design`](skills/devflow-design/SKILL.md) | Software design: responsibility boundaries, coupling checks, abstraction discipline, interface contracts, error model, test design |
-| [`devflow-tdd`](skills/devflow-tdd/SKILL.md) | Test-first implementation: RED→GREEN→REFACTOR, assertion strength, mock boundaries |
+| [`devflow-design`](skills/devflow-design/SKILL.md) | Two-level software design (component + work-item, enterprise templates with quality supplements): responsibility boundaries, coupling checks, abstraction discipline, interface contracts, error model, test design |
+| [`devflow-tdd`](skills/devflow-tdd/SKILL.md) | Test-first implementation: RED→GREEN→REFACTOR, assertion strength, mock boundaries; dispatches an implementer subagent per task by default, with on-disk evidence lines |
 | [`devflow-review`](skills/devflow-review/SKILL.md) | Independent review: four rubrics (spec/design/test/code); authors never self-review |
+| [`devflow-ship`](skills/devflow-ship/SKILL.md) | Closeout: Definition-of-Done check, promotion of long-term assets, closeout record |
 | [`devflow-fix`](skills/devflow-fix/SKILL.md) | Defect handling: reproduce → three-level root cause → minimal fix boundary → TDD fix |
 
 ### Overlay skills (quality constraints across all phases)
@@ -80,7 +82,7 @@ Use DevFlow: add a retry mechanism to the notifications component.
 Clarify the requirements first; do not jump straight to code.
 ```
 
-Slash-style phase entries are available under [`commands/`](commands/README.md): `/devflow`, `/devflow-specify`, `/devflow-design`, `/devflow-build`, `/devflow-review`, `/devflow-fix`.
+Slash-style phase entries are available under [`commands/`](commands/README.md): `/devflow`, `/devflow-specify`, `/devflow-design`, `/devflow-build`, `/devflow-review`, `/devflow-ship`, `/devflow-fix`.
 
 Project overrides: create an `AGENTS.md` with a `## Project overrides` section at your repo root to override artifact paths and templates; without it, built-in defaults apply.
 
@@ -88,9 +90,9 @@ Project overrides: create an `AGENTS.md` with a `## Project overrides` section a
 
 ```text
 devflow/
-├── skills/            # 6 phase skills + 5 overlay skills (see tables above)
+├── skills/            # 7 phase skills + 5 overlay skills (see tables above)
 ├── commands/          # slash-style phase entries (platform adapter)
-├── agents/            # devflow-reviewer independent-reviewer persona
+├── agents/            # devflow-reviewer / devflow-implementer subagent personas
 ├── docs/
 │   ├── devflow-philosophy.md         # core philosophy (north star)
 │   ├── devflow-core-architecture.md  # architecture mapping

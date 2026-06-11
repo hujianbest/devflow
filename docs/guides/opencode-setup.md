@@ -39,7 +39,7 @@ List the DevFlow skills you can see, and tell me which one you would load
 if I asked to start a new feature.
 ```
 
-The agent should list the core skills (`using-devflow`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-fix`) plus the language/domain extensions (`c-coding-standards`, `cpp-coding-standards`, `embedded-development`, `automotive-development`), and pick `using-devflow` as the entry.
+The agent should list the core skills (`using-devflow`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-ship`, `devflow-fix`) plus the language/domain extensions (`c-coding-standards`, `cpp-coding-standards`, `embedded-development`, `automotive-development`), and pick `using-devflow` as the entry.
 
 ## How it works
 
@@ -59,10 +59,12 @@ OpenCode reads each skill's YAML frontmatter `description` (triggering condition
 ### Lifecycle mapping
 
 ```text
-SPECIFY   devflow-specify        → spec.md      (human confirms)
-DESIGN    devflow-design         → design.md    (human confirms)
-BUILD     devflow-tdd            → code + tests, tasks.md
-REVIEW    devflow-review         → reviews/     (human confirms verdict)
+SPECIFY   devflow-specify        → spec.md + traceability.md   (human confirms)
+DESIGN    devflow-design         → design.md (+ component-design-draft.md)   (human confirms)
+BUILD     devflow-tdd            → code + tests, tasks.md with evidence lines
+                                   (dispatches implementer subagents by default)
+REVIEW    devflow-review         → reviews/    (human confirms verdict)
+SHIP      devflow-ship           → DoD check, promotion to docs/, closeout.md
 FIX       devflow-fix            → fix.md, then back through TDD
 ```
 
