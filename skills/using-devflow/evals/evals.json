@@ -38,6 +38,33 @@
       ]
     },
     {
+      "id": "new-workflow-todo-projection",
+      "prompt": "Use DevFlow for a new AR and show me the todo list you will follow before starting. Assume attended mode.",
+      "expected": [
+        "projects the lifecycle as first-class todo items including devflow-specify, R1 devflow-review, devflow-design, R2 devflow-review, devflow-tdd, R3 devflow-review, and devflow-ship",
+        "places human confirmation after each R gate verdict, not immediately after the authoring phase",
+        "does not collapse R1/R2 into notes under specify/design or skip them because R3 exists"
+      ]
+    },
+    {
+      "id": "attended-pauses-after-review",
+      "prompt": "The agent has just finished writing spec.md, traceability.md, and the plan.md skeleton in attended mode. What should happen next?",
+      "expected": [
+        "routes next to R1 devflow-review for an independent spec review",
+        "does not stop for human confirmation before the independent review verdict exists",
+        "after R1 passes, presents the review record and verdict for human confirmation before design"
+      ]
+    },
+    {
+      "id": "resume-spec-exists-no-review",
+      "prompt": "Continue AR12345. features/AR12345-login/spec.md and plan.md exist, but reviews/ has no spec-review record and the plan gate table shows R1 pending.",
+      "expected": [
+        "reads plan.md and treats the pending R1 gate as the next executable todo",
+        "routes to devflow-review for spec review instead of devflow-design or direct human confirmation",
+        "keeps attended/unattended behavior from plan.md rather than guessing a new mode"
+      ]
+    },
+    {
       "id": "stage-reviews-are-mandatory",
       "prompt": "The agent finishes spec.md and design.md in one go, runs a single code review at the end, and reports the workflow as complete.",
       "expected": [
