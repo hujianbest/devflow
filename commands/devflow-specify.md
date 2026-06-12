@@ -4,7 +4,7 @@ description: DevFlow 规格阶段——把需求澄清成可测试的规格，�
 
 执行 DevFlow 规格阶段。
 
-1. 读取 `skills/devflow-specify/SKILL.md` 并按其工作流执行：澄清 → 需求条目（EARS + Given/When/Then + Change Type）→ NFR QAS → 粒度检查 → 自检。
-2. 产出 `features/<id>-<slug>/spec.md`。
-3. 业务方向、优先级、验收阈值的缺口列为 Open Questions 交回用户，不替用户拍板。
-4. 完成后建议用户：人工审查或用 `/devflow-review` 对 spec 做独立预审；规格确认前不进入设计。
+1. 新工作流启动时先向用户确认运行模式（attended/unattended），记入 plan.md 头部。
+2. 读取 `skills/devflow-specify/SKILL.md` 并按其工作流执行：澄清 → 需求条目（EARS + Given/When/Then + Change Type）→ NFR QAS → 粒度检查 → traceability 与 plan.md 骨架 → 自检。
+3. 产出 `features/<id>-<slug>/spec.md`、`traceability.md`、`plan.md` 骨架。业务方向、优先级、验收阈值的缺口列为 Open Questions 交回用户，不替用户拍板。
+4. 完成后进入 R1 门禁：`/devflow-review` 独立评审 spec 并落盘记录（必经节点）；attended 模式下经人确认后才进入设计。

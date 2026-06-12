@@ -4,16 +4,16 @@
 
 ## 第一层 SDD：意图正确
 
-1. `spec.md` 存在且状态为「已确认」；本轮实现范围与 spec 范围一致（没有 spec 外的功能混进来）
-2. spec 评审记录存在（`reviews/`），critical/important findings 已闭环
+1. `spec.md` 存在且 R1 门禁通过；本轮实现范围与 spec 范围一致（没有 spec 外的功能混进来）
+2. spec 评审记录存在（`reviews/`），critical/important findings 的 **Resolution 列已逐条回填**（修复+commit / 人接受+理由 / 债务+去向）
 3. blocking Open Questions 全部闭合（答案已写回 spec），没有被悄悄遗忘的待决项
 
 ## 第二层 TDD：功能正确
 
-4. `tasks.md` 全部任务为 done；每个任务带 RED/GREEN 证据行（命令、关键输出、commit 锚点），证据是本轮真实产生的
+4. `plan.md` 全部任务为 done；每个任务带 RED/GREEN 证据行（命令、关键输出、commit 锚点），证据是本轮真实产生的；门禁状态表与 reviews/ 实际记录一致
 5. spec 每条验收标准（含 NFR 的 Response Measure）有对应**通过**的测试；`modify` 条目有回归测试、`remove` 条目有删除后语义测试的通过记录
 6. 完整测试套件在最终代码上全绿；构建无新增警告
-7. 测试评审与代码评审记录存在，verdict 为通过（或 findings 已闭环后复审通过），且经人确认
+7. R1/R2/R3 全部评审记录存在于 `reviews/`，最终 verdict 为通过，findings 全部有 Resolution；attended 模式下各门禁均有人工确认记录，unattended 模式下已把 `reviews/` 全量呈给人做事后审计
 
 ## 第三层 Clean Code：内在质量
 
@@ -37,6 +37,6 @@
 
 ## 裁剪说明
 
-- 微小修改（按 `using-devflow` 裁剪规则省略了 spec/design）：第 1-3、8 项替换为「tasks.md 中的验收标准已全部有通过测试」；其余各项**不降低**。
+- 微小修改（按 `using-devflow` 裁剪规则省略了 spec/design）：第 1-3、8 项替换为「plan.md 中的验收标准已全部有通过测试」；其余各项**不降低**。
 - 缺陷工作项（DTS）：第 1-3 项替换为「fix.md 的复现/根因/修复边界完整，复现测试先失败后通过」；其余各项不降低。
 - 紧急不等于绕过：任何情况下证据要求（4-7、10）与一致性要求（8、11）不可裁剪。

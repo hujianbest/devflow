@@ -7,10 +7,11 @@ description: 在规格、设计、测试或代码需要独立评审时使用：�
 
 ## 总览
 
-评审是 human-on-the-loop 的支点：AI 生产，独立评审暴露问题，人做最终把关。两条不变量：
+评审是 human-on-the-loop 的支点：AI 生产，独立评审暴露问题，人做最终把关。它是工作流的**必经节点**：specify、design、tdd 每个阶段产物完成后都经评审（R1/R2/R3，见 `using-devflow` 工作流），通过前不进入下一阶段。三条不变量：
 
 1. **作者不自审。** 写产物的会话/agent 不能给自己出 verdict。评审由独立 subagent 或新会话执行——它没有作者的写作记忆，只能依赖产物本身，这正是"可冷读"的检验方式。
 2. **评审者不动手修。** 评审产出 findings 和 verdict，修改由作者根据 findings 执行。裁判不下场。
+3. **没有记录的评审等于没有评审。** 每轮评审必须在 `reviews/` 落盘一份记录；findings 的修复过程必须回写同一份记录（resolution 闭环）。口头说"评审过了"而 `reviews/` 里没有对应文件与闭环记录，按未评审处理。
 
 评审不是流程仪式。一次好的评审 = 带着「这东西哪里会骗我」的怀疑去读：规格会在哪里被两种人读出两种意思？测试会放过哪种错误实现？代码哪里在对读者撒谎？
 
@@ -45,11 +46,26 @@ verdict 三选一：
 - `需修改`：findings 可定向修复，修复后复审
 - `重新设计`：问题出在上游（规格漏洞、设计方向错误），打回对应阶段
 
-评审记录写入 `features/<id>/reviews/<目标>-review-<日期>.md`：评审对象（含版本/commit）、findings 列表、verdict、抽查记录（如做了 mutation 自检，写明改了哪行、哪个测试红了）。
+### 4. 落盘评审记录（必做，与评审同时发生）
 
-### 4. 人做最终把关
+记录写入 `features/<id>/reviews/<目标>-review-<日期>.md`，同一目标的复审追加轮次后缀（`-r2`、`-r3`）。每份记录包含：评审对象（含版本/commit）、findings 表（**含 Resolution 列**）、verdict、抽查记录（如做了 mutation 自检，写明改了哪行、哪个测试红了）。格式见 `agents/devflow-reviewer.md` 的输出模板。
 
-把 findings 与 verdict 呈给人。人可以否决评审意见（接受某条债务、放宽某个阈值）——记录在评审文件里即可。**人没有确认前，verdict 不算闭环。**
+### 5. Findings 闭环（作者侧职责）
+
+verdict 为 `需修改`/`重新设计` 时，作者按 findings 返工，并**逐条回写**原评审记录的 Resolution 列：
+
+- 修复了：怎么改的 + commit 锚点
+- 人接受不修：理由 + 谁接受的
+- 升级为债务：登记去向（plan.md 债务节 / 新工作项）
+
+全部 critical/important 有 resolution 后发起复审（新轮次记录）。**Resolution 列有空着的 critical/important，门禁不算通过**——`devflow-ship` 的 DoD 会核验这一点。
+
+### 6. 人工确认（按运行模式）
+
+- `attended`（默认）：把评审记录与 verdict 呈给人，**人同意后才进入下一阶段**；人的否决/接受意见记入评审文件。
+- `unattended`：不停顿，但本技能的其余动作一项不少——独立评审、落盘记录、critical 阻塞返工与复审照常执行；人工确认列记 `N/A(unattended)`，供人事后统一审计 `reviews/`。
+
+在 plan.md 门禁表更新本轮门禁状态与记录路径。
 
 ## 评审者纪律
 
@@ -62,9 +78,12 @@ verdict 三选一：
 ## 风险信号
 
 - 作者会话自己宣布"评审通过"
+- 声称评审完成但 `reviews/` 没有对应记录文件（= 未评审）
+- findings 修复后没有回写 Resolution，复审记录里问题"凭空消失"
 - findings 全是 minor 措辞建议，对错误路径、断言强度、契约完整性只字不提（评审走过场）
 - verdict 为"需修改"但 findings 没有一条具体到位置
 - 评审者直接动手改了代码
+- attended 模式下未经人确认就进入下一阶段；或以"unattended"为由省掉评审/记录本身
 - 同一产物三轮评审仍在打回 → 停止循环，升级人裁决方向问题
 
 ## 支撑参考
