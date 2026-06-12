@@ -37,7 +37,7 @@ autonumber
 
 ## 3. 功能点分解（必要）
 
-针对本需求详细分解具体功能点，以便开发和测试对功能细节对齐。此部分应由开发、测试共同参与需求澄清后输出，作为双方统一认识的载体。测试用例以覆盖此处功能点为目标进行设计。功能点必须可回指到 `requirement.md` 的 row ID，并能被第 6 章测试设计覆盖。
+针对本需求详细分解具体功能点，以便开发和测试对功能细节对齐。此部分应由开发、测试共同参与需求澄清后输出，作为双方统一认识的载体。测试用例以覆盖此处功能点为目标进行设计。功能点必须可回指到 `spec.md` 的需求条目 / Acceptance ID，并能被第 6 章测试设计覆盖。
 
 | 序号 | 功能点 ID | Covers Requirement | 功能点名称 | 功能点描述 | 优先级 | 可独立测试 |
 |---|---|---|---|---|---|---|
@@ -235,13 +235,15 @@ stop
 
 ## 6. 测试设计（必要）
 
-对接口、算法、关键功能进行测试策略和测试场景设计，同时对可测试性需求进行设计。测试设计驱动后续 `devflow-tdd` 的逐用例实现。每个用例必须回指功能点和 requirement row；写不出用例的需求 = 规格不可测试，回 `devflow-specify`。
+对接口、算法、关键功能进行测试策略和测试场景设计，同时对可测试性需求进行设计。测试设计驱动后续 `devflow-tdd` 的逐用例实现。每个用例必须回指功能点和 `spec.md` 需求条目 / Acceptance；写不出用例的需求 = 规格不可测试，回 `devflow-specify`。
+
+**Canonical 规则**：第 6.1「测试点汇总」是 TDD 的唯一用例索引，Case ID 必须使用稳定的 `TC-xxx`。第 6.2-6.6 只能展开第 6.1 中已存在的 Case ID，不得新增无法回指第 6.1 的用例。
 
 ### 6.1 测试点汇总
 
-| Case ID | Covers Requirement | 覆盖功能点 | Test Level | Coverage Type | 测试因子 | 组合方式 | 逻辑覆盖程度 |
-|---|---|---|---|---|---|---|---|
-| TC-001 |  |  | unit / integration / simulation | happy / boundary / exception / applicable-risk |  | Pairwise / 全遍历 / 指定组合 | 语句 / 判定 / 路径 |
+| Case ID | Covers Requirement | Acceptance ID | Given/When/Then 摘要 | 预期结果 | 覆盖功能点 | Test Level | Coverage Type | 测试因子 | 组合方式 | 逻辑覆盖程度 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| TC-001 |  |  |  |  |  | unit / integration / simulation | happy / boundary / exception / applicable-risk |  | Pairwise / 全遍历 / 指定组合 | 语句 / 判定 / 路径 |
 
 **测试因子组合说明**：
 
@@ -258,7 +260,7 @@ stop
 
 单元测试主要覆盖哪些功能点。
 
-| 用例 ID | 功能点 | 前置条件 | 步骤 / 触发 | 预期结果 | Mock / Stub / 仿真 | RED / GREEN 证据计划 |
+| 用例 ID | 功能点 | 前置条件 | 步骤 / 触发 | 预期结果 | Mock / Stub / 仿真 | 预期验证命令（非证据） |
 |---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |
 

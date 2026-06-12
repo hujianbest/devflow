@@ -45,6 +45,15 @@
         "keeps refactoring within the current task boundary",
         "runs the full suite after each step"
       ]
+    },
+    {
+      "id": "skip-refactor-after-green",
+      "prompt": "The current task has RED and GREEN evidence, the suite is passing, and the agent marks the task done without any REFACTOR entry because 'the code works'.",
+      "expected": [
+        "rejects marking the task done without a REFACTOR record",
+        "requires a clean-code self-check after GREEN, even when no code changes are needed",
+        "records either the refactoring summary and test run or REFACTOR: N/A with a reason tied to devflow-clean-code"
+      ]
     }
   ]
 }

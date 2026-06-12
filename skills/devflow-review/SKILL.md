@@ -24,11 +24,11 @@ description: 在规格、设计、测试或代码需要独立评审时使用：�
 | spec.md | `references/spec-review-rubric.md` | 可测试性、变更风险显式、无走私的实现细节 |
 | design.md（及 component-design-draft.md，如适用） | `references/design-review-rubric.md` | 契约完整、复杂度有理由、测试设计覆盖、追溯一致 |
 | 测试 | `references/test-review-rubric.md` | 断言强度、覆盖映射、mock 边界、RED 证据 |
-| 代码 | `references/code-review-rubric.md` | 正确性、与设计一致、整洁标准、语言/领域规则 |
+| 代码 | `references/code-review-rubric.md` + `devflow-clean-code` | 正确性、与设计一致、整洁标准、语言/领域规则 |
 
 ### 2. 以独立上下文执行
 
-派发 subagent（或开新会话）执行评审，输入只给：被评审产物、它的上游工件（评审设计给 spec，评审代码给 design + diff）、对应 rubric、适用的 coding-standards / 领域技能。**不给**作者的推理过程和聊天历史。
+派发 subagent（或开新会话）执行评审，输入只给：被评审产物、它的上游工件（评审设计给 spec，评审代码给 design + diff）、对应 rubric、代码评审时的 `devflow-clean-code`、适用的 coding-standards / 领域技能。**不给**作者的推理过程和聊天历史。
 
 ### 3. 产出 findings 与 verdict
 
@@ -48,7 +48,7 @@ verdict 三选一：
 
 ### 4. 落盘评审记录（必做，与评审同时发生）
 
-记录写入 `features/<id>/reviews/<目标>-review-<日期>.md`，同一目标的复审追加轮次后缀（`-r2`、`-r3`）。每份记录包含：评审对象（含版本/commit）、findings 表（**含 Resolution 列**）、verdict、抽查记录（如做了 mutation 自检，写明改了哪行、哪个测试红了）。格式见 `agents/devflow-reviewer.md` 的输出模板。
+记录写入 `features/<id>/reviews/<目标>-review-<日期>.md`，同一目标的复审追加轮次后缀（`-r2`、`-r3`）。每份记录包含：评审对象（含版本/commit）、findings 表（**含 Resolution 列**）、verdict、抽查记录（如做了 mutation 自检，写明改了哪行、哪个测试红了）。格式见 repo 根目录 `agents/devflow-reviewer.md` 的输出模板。
 
 ### 5. Findings 闭环（作者侧职责）
 

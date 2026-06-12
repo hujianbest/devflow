@@ -54,6 +54,15 @@
         "introduces a minimal adapter or port only at the real boundary",
         "rejects unnecessary single-implementation abstractions outside real ownership boundaries"
       ]
+    },
+    {
+      "id": "simpler-structure-reverse-check",
+      "prompt": "The spec only requires rejecting invalid SetMode values, but the design adds a mode plugin registry, dynamic hooks, and a configurable policy table because future modes may be added.",
+      "expected": [
+        "performs the reverse check: asks whether a simpler direct enum validation satisfies the current spec",
+        "rejects future-proofing as the only reason for a registry, hook, or policy abstraction",
+        "records the simpler recommended structure or requires explicit spec evidence for the variation axis"
+      ]
     }
   ]
 }

@@ -18,7 +18,7 @@
 ## 第三层 Clean Code：内在质量
 
 8. 实现与 `design.md`（及组件设计，如适用）一致；所有偏离已回写工件并重新确认
-9. 适用约束审计逐项标注状态（`clean` / `documented-debt` / `critical-open` / `N/A`+理由）：
+9. 适用约束审计逐项标注状态（`clean` / `documented-debt` / `critical-open` / `N/A`+理由），并给出证据引用（R3 finding/resolution、静态分析输出、review 摘要、commit、或债务登记）。只写 `clean` 没有证据，按缺口处理：
 
 | 约束项 | 来源 |
 |---|---|
@@ -27,7 +27,7 @@
 | 嵌入式约束 | `embedded-development`（适用时） |
 | 车载约束 | `automotive-development`（适用时） |
 
-   任一 `critical-open` → 阻塞关闭；`documented-debt` 必须有可定位的登记与去向
+   任一 `critical-open` → 阻塞关闭；`documented-debt` 必须有可定位的登记与去向；`N/A` 必须说明为什么该约束不适用
 10. 静态分析新增项已修复或带理由抑制；无未解释的 critical 项
 
 ## 一致性与追溯

@@ -88,7 +88,7 @@ description: 在开始一个新的开发工作项（功能、变更、需要正�
 
 ### 6. 初始化追溯矩阵与执行计划骨架
 
-- 按 `references/traceability-template.md` 初始化 `features/<id>/traceability.md`：每条核心需求一行，填入需求条目、Change Type、上游锚点列；设计/实现列留给后续阶段。追溯矩阵是 spec-design-code 一致性的显式约束，`devflow-review` 抽查、`devflow-ship` 终验。
+- 按 `references/traceability-template.md` 初始化 `features/<id>/traceability.md`：每条核心 FR/NFR/IFR/可测 CON 一行，填入需求条目、Change Type、上游锚点列；设计/实现列留给后续阶段。ASM/EXC 放入备注或范围说明，不伪装成实现追溯行。追溯矩阵是 spec-design-code 一致性的显式约束，`devflow-review` 抽查、`devflow-ship` 终验。
 - 按 `devflow-tdd/references/plan-template.md` 建立 `features/<id>/plan.md` 骨架：写入运行模式（工作流启动时向用户确认的 attended/unattended）、门禁状态表、计划边界；任务拆解留给 `devflow-tdd` 在设计评审通过后细化。
 
 ### 7. 自检并交评审

@@ -54,6 +54,15 @@
         "suggests a minimal adapter function or port if the boundary is in scope",
         "does not create a generic framework when a concrete dependency is simpler and acceptable"
       ]
+    },
+    {
+      "id": "implementer-done-without-clean-code-check",
+      "prompt": "A devflow implementer returns DONE with RED and GREEN evidence, but no REFACTOR entry and no clean_code_check summary.",
+      "expected": [
+        "rejects DONE because clean-code inspection is part of task completion",
+        "requires REFACTOR evidence or N/A with a concrete no-issue rationale",
+        "requires a self-check covering names, function shape, control flow, error paths, comments/dead code, and scope discipline"
+      ]
     }
   ]
 }

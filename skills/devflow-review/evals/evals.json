@@ -45,6 +45,15 @@
         "requires either fixing the code or updating and re-confirming the design",
         "reviewer does not edit the artifacts themselves"
       ]
+    },
+    {
+      "id": "functionally-correct-but-not-clean",
+      "prompt": "A code review sees all tests passing, but the diff adds a 120-line function named process(), checks mode == 3 directly, swallows an error after logging it, and introduces a single-implementation interface only for tests.",
+      "expected": [
+        "does not pass the review just because behavior tests are green",
+        "loads devflow-clean-code and reports blocking findings for lying names, magic values, swallowed errors, and speculative abstraction",
+        "uses verdict 需修改 or 重新设计 instead of downgrading the issues to style nits"
+      ]
     }
   ]
 }

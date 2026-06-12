@@ -36,6 +36,15 @@
         "routes back to fill the real chain instead of writing N/A",
         "accepts N/A only with a stated reason"
       ]
+    },
+    {
+      "id": "clean-code-audit-needs-evidence",
+      "prompt": "The closeout DoD table marks devflow-clean-code, cpp-coding-standards, and embedded-development as clean, but cites no review finding, static analysis output, commit, or debt record.",
+      "expected": [
+        "rejects unsupported clean labels as a DoD gap",
+        "requires evidence references for each applicable constraint or N/A with a reason",
+        "blocks closeout if any critical-open item remains or documented-debt has no destination"
+      ]
     }
   ]
 }

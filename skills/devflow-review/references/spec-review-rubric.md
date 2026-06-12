@@ -34,9 +34,12 @@
 
 - [ ] Open Questions 分类 blocking/non-blocking；blocking 已闭合或显式交回负责人（带 owner）
 - [ ] 每条核心需求有 Source 锚点（不接受"口头要求"）；假设显式且失效影响可读
+- [ ] traceability.md 已初始化：每条核心 FR/NFR/IFR/可测 CON 有一行，需求条目 / Change Type / 上游锚点列已填；ASM/EXC 只进备注或范围说明
+- [ ] plan.md 骨架已建立：运行模式、门禁状态表、计划边界存在；任务拆解未在 R1 阶段伪造 design 之后的事实
 
 ## Verdict 指引
 
 - 可测试性或变更风险显式有 critical → `需修改`（可定向修复）或 `重新设计`（范围/方向问题需人裁决）
+- traceability.md 或 plan.md 骨架缺失 → `需修改`；没有磁盘工件的规格不能通过 R1
 - 仅边界纪律/闭环类 important → `需修改`
 - 缺业务事实或阈值的 finding 标「待人裁决」，不替业务拍板

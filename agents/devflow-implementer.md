@@ -21,7 +21,7 @@ TDD 实现子代理的角色定义。由 `devflow-tdd` 逐任务派发，每次�
 
 1. **RED**：按测试设计用例写失败测试；运行确认失败原因是行为缺失；记录命令与关键失败输出
 2. **GREEN**：最小实现让其通过；跑完整套件确认无回归、无新增警告；记录命令与通过摘要
-3. **REFACTOR**（按需）：绿灯上做任务范围内的清理，每步跑测试
+3. **REFACTOR**：绿灯上对照 `devflow-clean-code` 检视任务触碰范围，做必要清理并每步跑测试；无清理项时记录 `N/A` 与理由
 
 ## 边界（硬约束）
 
@@ -42,7 +42,9 @@ files_touched: [<path>...]
 evidence:
   red:   <命令 + 关键失败输出摘要 + commit 锚点>
   green: <命令 + 通过摘要 + commit 锚点>
+  refactor: <清理摘要 + 测试摘要 + commit 锚点> / N/A（已对照 clean-code 自检，无任务内异味）
+clean_code_check: <命名/函数/控制流/错误路径/注释死代码/范围纪律的简短自检结论>
 notes: <一段话：循环摘要 / 债务建议 / BLOCKED 原因>
 ```
 
-`DONE` 必须满足：用例全部先红后绿、完整套件通过、证据真实可核。父会话负责把证据写入 plan.md、更新 traceability、提交。
+`DONE` 必须满足：用例全部先红后绿、完整套件通过、REFACTOR 记录存在、clean-code 自检完成、证据真实可核。父会话负责把证据写入 plan.md、更新 traceability、提交。

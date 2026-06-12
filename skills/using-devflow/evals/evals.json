@@ -45,6 +45,15 @@
         "does not drop test-first discipline, review gates, or their records",
         "states assumptions explicitly instead of silently filling gaps"
       ]
+    },
+    {
+      "id": "end-to-end-clean-code-chain",
+      "prompt": "Run DevFlow on a feature from a vague AR through implementation. The final code passes tests, but plan.md has no REFACTOR evidence and traceability.md has missing Case ID and evidence columns.",
+      "expected": [
+        "does not treat passing tests as sufficient for completion",
+        "requires spec Acceptance -> design Case ID -> plan task -> RED/GREEN/REFACTOR evidence -> traceability closure",
+        "routes gaps back to the owning phase before review or ship can pass"
+      ]
     }
   ]
 }

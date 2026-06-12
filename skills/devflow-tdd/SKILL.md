@@ -21,21 +21,22 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 
 实现的输入是 design.md 的**测试设计表**；执行的载体是 `features/<id>/plan.md`（模板见 `references/plan-template.md`）。
 
-**进入实现前先细化 plan.md**（specify 阶段已建骨架：运行模式 + 门禁表）：把测试设计表的用例组织成任务，每个任务**自包含**——用例锚点（含 Given/When/Then 摘要）、精确文件路径、RED/GREEN 步骤与验证命令、完成定义全部内联。标准只有一个：**一个全新会话只读 spec.md + design.md + plan.md 就能从任意断点继续执行**。"同上""见前文"式的任务描述使中断恢复失效，按违规处理。
+**进入实现前先细化 plan.md**（specify 阶段已建骨架：运行模式 + 门禁表）：把测试设计表的用例组织成任务，每个任务**自包含**——用例锚点（含 Given/When/Then 摘要）、精确文件路径、RED/GREEN/REFACTOR 步骤与验证命令、完成定义全部内联。细化完成后先核对：plan 覆盖的 Case ID 集合必须等于 design.md 测试设计表的 Case ID 全集；缺失或新增都说明工件漂移，先回 `devflow-design` 修正。标准只有一个：**一个全新会话只读 spec.md + design.md + plan.md 就能从任意断点继续执行**。"同上""见前文"式的任务描述使中断恢复失效，按违规处理。
 
-每个任务完成时在 plan.md 附上 RED/GREEN 证据行（命令 + 关键输出摘要 + commit 锚点）——这是评审者和人核验"测试真的失败过、真的在最终代码上跑过"的最低限度证据，不接受只有叙述没有输出的"证据"：
+每个任务完成时在 plan.md 附上 RED/GREEN/REFACTOR 证据行（命令 + 关键输出摘要 + commit 锚点；REFACTOR 可为有理由的 `N/A`）——这是评审者和人核验"测试真的失败过、真的在最终代码上跑过、代码已经过 clean-code 检视"的最低限度证据，不接受只有叙述没有输出的"证据"：
 
 ```markdown
 - 证据:
   - RED:   `ctest -R ModeServiceTest` → FAIL: SetModeRejectsInvalid…
            (expected ERR_INVALID_ARG, got OK) @ a1b2c3d
   - GREEN: `ctest` → 47/47 passed, 0 warnings @ d4e5f6a
+  - REFACTOR: 提取 `is_valid_mode()`，替换裸值；`ctest` → 47/47 passed @ e7f8a9b
 ```
 
 规则：
 
 - **一次只有一个 in-progress 任务**。每个任务是一个薄垂直切片：完成后可构建、全部测试通过、可独立提交。
-- 任务循环：取 plan.md 第一个未完成任务 → RED → GREEN →（按需）REFACTOR → 补证据行与 traceability → 更新任务状态 → 下一个。**每步勾选实时更新到 plan.md**，断点信息只存在于磁盘，不存在于会话记忆。
+- 任务循环：取 plan.md 第一个未完成任务 → RED → GREEN → REFACTOR → 补证据行与 traceability → 更新任务状态 → 下一个。**REFACTOR 是默认步骤，不是可选收尾**；如果 GREEN 后已无任务内异味，只能记录 `REFACTOR: N/A` 并写明已对照 `devflow-clean-code` 自检的理由。**每步勾选实时更新到 plan.md**，断点信息只存在于磁盘，不存在于会话记忆。
 - 任务完成时更新 `features/<id>/traceability.md` 对应行的任务 ID、代码文件、测试代码文件、验证证据列。
 - plan 是测试设计的执行索引：不得新增 design.md 中没有的用例或业务事实；发现缺用例 → 回 `devflow-design`。
 - 实现中发现设计错误或规格漏洞：**停下任务**，在 plan.md 记录阻塞原因，回 `devflow-design` / `devflow-specify` 修正工件并重新评审，不在代码里悄悄绕过。
@@ -43,14 +44,14 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 
 ## 执行模式：默认派发 implementer subagent
 
-runtime 支持 subagent 时，**默认每个任务派发一个全新上下文的 implementer subagent**（角色定义 `agents/devflow-implementer.md`）执行：新上下文只依赖打包的输入工作，天然防止长会话的上下文漂移，也强制设计工件可冷读。
+runtime 支持 subagent 时，**默认每个任务派发一个全新上下文的 implementer subagent**（角色定义见 repo 根目录 `agents/devflow-implementer.md`）执行：新上下文只依赖打包的输入工作，天然防止长会话的上下文漂移，也强制设计工件可冷读。
 
 派发时给 subagent 的 **Context Pack**（不传聊天历史）：
 
 - 任务 ID 与对应测试设计用例（Case ID、场景、预期结果）
 - design.md 相关章节（接口契约、错误模型摘录）与允许触碰的文件范围
-- 测试/构建命令、适用的 coding-standards 与领域技能名
-- 返回契约：`DONE`（附证据行）/ `NEEDS_CONTEXT`（缺关键输入，回来重新打包）/ `BLOCKED`（越界或设计问题，附原因）
+- 测试/构建命令、`devflow-clean-code`、适用的 `<language>-coding-standards` 与领域技能名
+- 返回契约：`DONE`（附 RED/GREEN/REFACTOR 证据行与 clean-code 自检摘要）/ `NEEDS_CONTEXT`（缺关键输入，回来重新打包）/ `BLOCKED`（越界或设计问题，附原因）
 
 父会话职责：逐任务派发、校验返回的证据行、更新 plan.md 与 traceability、串联提交。subagent 返回 `BLOCKED` 提示设计问题时，父会话回 `devflow-design`，不催 subagent 硬做。
 
@@ -123,7 +124,9 @@ int mode_set(mode_t mode) {
 
 只在全绿后进行。两顶帽子严格分开：GREEN 帽只加行为，REFACTOR 帽只改结构——**重构不改变任何可观察行为，期间不新增任何测试预期**。
 
-做什么：消除本任务引入的重复、改善命名、提取函数、用常量替换魔法数（具体手法与判断见 `devflow-clean-code`）。每做一步跑一次测试，保持全绿。
+做什么：对照 `devflow-clean-code` 的自检清单审视本任务触碰范围，消除本任务引入的重复、改善命名、提取函数、用常量替换魔法数、收紧错误处理表达。每做一步跑一次测试，保持全绿。
+
+不能静默跳过：即使没有代码改动，也要在 plan.md 记录 `REFACTOR: N/A`，说明已检查命名、函数长度/抽象层级、控制流、错误路径、注释/死代码、范围纪律，且无任务内异味。没有 REFACTOR 记录的任务不是 done。
 
 边界：清理限于当前任务触碰的范围。发现需要跨模块的结构性重构、或想引入设计未声明的新抽象 → 登记为债务或回 `devflow-design`，不在任务内顺手做。REFACTOR 中发现还缺行为 → 摘下帽子，回 RED。
 
@@ -185,9 +188,9 @@ EXPECT_EQ(MODE_NORMAL, fake_event_queue_last().payload.mode);
 - [ ] 完整测试套件通过；构建无新增警告
 - [ ] 断言经得起 mutation 自检（改错实现关键行，测试会红）
 - [ ] mock 只用于真实边界；没有 test-only 后门
-- [ ] REFACTOR 没有改变行为；清理留在任务范围内
+- [ ] REFACTOR 没有改变行为；清理留在任务范围内；若为 `N/A`，plan.md 写明已对照 `devflow-clean-code` 自检的理由
 - [ ] plan.md 任务状态与 traceability.md 对应行已更新；本任务已提交
-- [ ] 适用的语言/领域规范（coding-standards / embedded / automotive）已在实现中遵循
+- [ ] `devflow-clean-code` 与适用的语言/领域规范（coding-standards / embedded / automotive）已在实现中遵循
 
 ## 支撑参考
 

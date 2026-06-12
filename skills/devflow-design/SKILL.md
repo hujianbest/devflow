@@ -177,7 +177,7 @@ int mode_set(mode_t mode);
 
 ## 测试设计
 
-设计文档必须含测试设计章节——这是第一层规格通向第二层 TDD 的桥。把 spec 的每条验收标准映射成用例：
+设计文档必须含测试设计章节——这是第一层规格通向第二层 TDD 的桥。把 spec 的每条验收标准映射成用例。**canonical 测试设计表只有一张**：工作项设计模板第 6.1 的 Case ID 汇总表（或等价表），它是 `devflow-tdd` 细化 plan 的唯一入口；第 6.2+ 子表只能展开步骤、mock、风险覆盖，不得引入无法回指到第 6.1 的新用例。
 
 | Case ID | 覆盖需求 | 场景（Given/When/Then 摘要） | 层级 | 预期结果 |
 |---|---|---|---|---|
@@ -190,6 +190,7 @@ int mode_set(mode_t mode);
 - 每条 FR/IFR 至少一个正向 + 一个异常/边界用例；每条 NFR 的 QAS Response Measure 对应一个可量化用例
 - `modify` 需求必须有回归用例（旧行为中要保留的部分）；`remove` 必须有删除后语义用例
 - 写明每个用例的层级（unit / integration / simulation）与 mock 边界：只 mock 硬件、外部组件、慢速依赖；内部纯逻辑不 mock
+- Case ID 必须稳定（`TC-xxx`），并能双向追溯：spec Acceptance → Case ID → plan 任务；组件级测试项如需引用，先映射到工作项级 `TC-xxx`
 - 写不出用例的需求 = 规格不可测试 → 回 `devflow-specify`
 
 这张表就是 `devflow-tdd` 的任务来源：实现时逐用例 RED→GREEN→REFACTOR。

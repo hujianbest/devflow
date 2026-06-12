@@ -28,6 +28,7 @@
 - [ ] 设计级别判定正确：触及对外接口/依赖/状态机时，组件设计草稿已先行修订并经模块架构师确认；工作项设计只引用组件基线，未重新定义组件级架构
 - [ ] `modify`/`remove` 需求的兼容策略在设计中落地
 - [ ] traceability.md 的组件设计章节/设计章节/测试设计用例列已填且与文档一致（断链 = critical）
+- [ ] spec Acceptance 与 design Case ID 双向可追溯：每条 Acceptance 至少映射到一个 Case ID；每个 Case ID 都能回指 spec 需求/Acceptance；无孤儿用例或漏测验收
 
 ### 方案取舍
 
@@ -38,6 +39,7 @@
 ### 测试设计（不过 = critical）
 
 - [ ] spec 每条验收标准映射到用例；FR 有正向+异常；NFR 的 Response Measure 有可量化用例
+- [ ] 第 6.1 Case ID 汇总表是 canonical 测试设计入口；第 6.2+ 子表只展开既有 Case ID，不产生无法追溯的新用例
 - [ ] modify 有回归用例；remove 有删除后语义用例
 - [ ] 每个用例有层级与 mock 边界；mock 只在真实边界（硬件/外部组件/时钟），不 mock 内部纯逻辑
 - [ ] 没有写不出用例的需求残留（有 → 规格不可测试，打回 specify）
