@@ -25,9 +25,10 @@ description: 在工作项全部任务完成、测试与代码评审闭环后收�
 | 缺口 | 回到 |
 |---|---|
 | 需求条目无对应通过测试 / 验收标准未覆盖 | `devflow-tdd` |
-| 评审 findings（critical/important）未闭环 | 按 findings 返工对应阶段 |
+| reviews/ 缺某个门禁的评审记录，或 findings 的 Resolution 列有空缺 | 补评审（`devflow-review`）或按 findings 返工并回写 resolution |
+| plan.md 门禁状态表与 reviews/ 实际记录不一致 | 修正门禁表；状态造假按 critical 处理 |
 | 实现与 design.md / 组件设计漂移 | `devflow-design`（改工件）或 `devflow-tdd`（改代码） |
-| 证据缺失或过期（RED/GREEN 记录、静态分析） | `devflow-tdd` 补真实证据，不补叙述 |
+| 证据缺失或过期（RED/GREEN 证据行、静态分析） | `devflow-tdd` 补真实证据，不补叙述 |
 
 ### 2. 追溯终验
 

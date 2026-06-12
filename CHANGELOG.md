@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### 2.3 — 真实流程验证反馈：评审门禁、plan.md、评审记录闭环
+
+针对真实开发流程验证发现的三个不符合预期点（只在 code 后才 review 且全程无停顿；tasks.md 信息不足以支撑中断恢复；评审问题与解决过程未落盘）：
+
+#### Changed — 评审成为必经门禁，运行模式启动时确认
+
+- 工作流改为 **specify → R1 review → design → R2 review → tdd → R3 review → ship**：每个阶段产物完成后必须经 `devflow-review` 独立评审并落盘记录，通过前不进入下一阶段。删除 2.0 中"可用 devflow-review 预审"的可选措辞（验证表明它会被模型解读为可跳过）。
+- 新增**运行模式**，工作流启动时向用户确认一次并记入 plan.md：`attended`（默认，每个评审后人工确认再继续）/ `unattended`（连续执行便于长时间运行）。`unattended` 只移除人工停顿：独立评审、记录落盘、critical findings 阻塞返工照常，人事后统一审计 `reviews/`。
+- specify/design/tdd 各技能与 commands 的前置/后置检查改为按 plan.md 门禁表 + reviews/ 记录核验。
+
+#### Changed — tasks.md 升级为 plan.md（中断恢复的单一入口）
+
+- 恢复 `devflow-tdd/references/plan-template.md`（融合 1.x task-plan 模板与 superpowers 计划结构）：运行模式与门禁状态表、固定的「恢复指引」节、**自包含任务**（用例锚点含 Given/When/Then 摘要、精确文件路径、RED/GREEN 步骤与验证命令、完成定义、证据行）、风险与债务登记。
+- 生命周期：specify 建骨架（运行模式+门禁表）→ design 评审通过后 tdd 细化任务 → 执行期实时更新勾选与证据。标准：**全新会话只读 spec+design+plan 即可从任意断点继续**；"同上/见聊天记录"式任务按违规处理。
+
+#### Changed — 评审记录与 Resolution 闭环硬性化
+
+- `devflow-review` 新增不变量：**没有记录的评审等于没有评审**。每轮评审落盘 `reviews/<目标>-review-<日期>.md`（复审加 `-r2` 轮次），findings 表含 **Resolution 列**。
+- 作者按 findings 返工后必须逐条回写 Resolution（修复+commit / 人接受+理由 / 登记债务+去向）；critical/important 未闭环不放行；复审核对 Resolution 与实际 diff。
+- `devflow-ship` DoD 对应强化：R1/R2/R3 记录齐全、Resolution 全闭环、plan.md 门禁表与 reviews/ 一致（造假按 critical）。
+- `agents/devflow-reviewer.md` 输出模板更新：轮次、Resolution 列、人工确认节。
+
 ### 2.2 — Coding standards 扩展机制与 creator 工具
 
 为语言编码规范的横向扩展（规划 java/python 等）建立机制：

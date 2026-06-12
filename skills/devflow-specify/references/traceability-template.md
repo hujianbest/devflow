@@ -13,7 +13,7 @@
 
 | 需求条目 | Change Type | 上游锚点 | 组件设计章节 | 设计章节 | 测试设计用例 | 任务 | 代码文件/函数 | 测试代码 | 验证证据 |
 |---|---|---|---|---|---|---|---|---|---|
-| FR-001 | modify | SR-1234 §3.2 | §6.2.1 | §4.2 / §7.1 | TC-001, TC-002 | T1 | src/mode.c:mode_set | test/mode_test.cpp | tasks.md#T1 |
+| FR-001 | modify | SR-1234 §3.2 | §6.2.1 | §4.2 / §7.1 | TC-001, TC-002 | T1 | src/mode.c:mode_set | test/mode_test.cpp | plan.md#T1 |
 |  |  |  |  |  |  |  |  |  |  |
 
 ## 备注

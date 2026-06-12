@@ -28,14 +28,16 @@ DevFlow 2.0 遵循两条原则（也是与常见"流程框架"的区别）：
 ## 工作流
 
 ```text
-specify ──[人审]──> design ──[人审]──> tdd 实现 ──> review ──[人审]──> ship ──[人确认]──> 完成
-   写可测试规格        组件级+工作项级设计：     逐用例            独立评审        DoD 核验、
-   初始化追溯矩阵      接口契约/错误模型/       RED→GREEN→        测试与代码      promotion
-                      测试设计                REFACTOR                          长期资产
+specify ──review──> design ──review──> tdd 实现 ──review──> ship ──[人确认]──> 完成
+   写可测试规格        组件级+工作项级设计：      逐用例             DoD 核验、
+   plan 骨架与         接口契约/错误模型/        RED→GREEN→         promotion
+   追溯矩阵            测试设计                 REFACTOR            长期资产
 缺陷旁路：fix（复现 → 根因 → 最小修复）→ tdd → review → ship
 ```
 
-每个工作项的过程工件（`features/<id>-<slug>/`）：`spec.md`、`traceability.md`、`design.md`（影响组件边界时另有 `component-design-draft.md`）、`tasks.md`（含每任务 RED/GREEN 证据行）、`reviews/`、`closeout.md`（缺陷工作项为 `fix.md`）。长期资产（`docs/component-design.md`、`docs/ar-specs/`、`docs/ar-designs/`）由 ship 阶段沉淀。下一步永远从工件状态恢复，不依赖聊天记忆。
+每个阶段产物完成后都经 `devflow-review` 独立评审并落盘记录（必经门禁）。工作流启动时确认一次**运行模式**：`attended`（默认，每个评审后人工确认再继续）或 `unattended`（连续执行，便于长时间运行——但独立评审、记录落盘、critical 阻塞照常，人事后统一审计 `reviews/`）。
+
+每个工作项的过程工件（`features/<id>-<slug>/`）：`spec.md`、`traceability.md`、`design.md`（影响组件边界时另有 `component-design-draft.md`）、`plan.md`（运行模式、门禁状态、自包含任务拆解与证据行——中断恢复的单一入口）、`reviews/`（每轮评审记录，findings + resolution 闭环）、`closeout.md`（缺陷工作项为 `fix.md`）。长期资产（`docs/component-design.md`、`docs/ar-specs/`、`docs/ar-designs/`）由 ship 阶段沉淀。下一步永远从工件状态恢复，不依赖聊天记忆。
 
 ## 技能目录
 

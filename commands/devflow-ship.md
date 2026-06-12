@@ -4,7 +4,7 @@ description: DevFlow 收尾阶段——DoD 核验、promotion 长期资产、clo
 
 执行 DevFlow 收尾阶段。
 
-1. 前置检查：tasks.md 全部任务完成、测试与代码评审记录存在且 findings 闭环；否则回对应阶段。
+1. 前置检查：plan.md 全部任务完成且门禁表 R1/R2/R3 均通过、reviews/ 记录齐全且 findings 全部有 Resolution；否则回对应阶段。
 2. 读取 `skills/devflow-ship/SKILL.md` 并按其工作流执行：DoD 逐项核验 → traceability 终验 → promotion（spec/design/组件设计 → docs/ 长期资产，语义化改写）→ closeout.md。
 3. 核验发现缺口 → 返工对应阶段，补完再回来；不解释缺口、不带病关闭。
 4. 把 closeout 呈给用户做最终确认；确认后工作项关闭，`features/<id>/` 原地保留。
