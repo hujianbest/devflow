@@ -28,15 +28,17 @@ DevFlow 2.0 follows two principles (and this is what distinguishes it from typic
 ## Workflow
 
 ```text
-specify ──[human]──> design ──[human]──> tdd ──> review ──[human]──> ship ──[human]──> done
- testable spec +     component-level +     per-case      independent     DoD check,
- traceability init   work-item design:     RED→GREEN→    review of       promotion of
-                     contracts / error     REFACTOR      tests & code    long-term assets
-                     model / test design
+specify ──review──> design ──review──> tdd ──review──> ship ──[human]──> done
+ testable spec +    component-level +    per-case        DoD check,
+ plan skeleton +    work-item design:    RED→GREEN→      promotion of
+ traceability       contracts / error    REFACTOR        long-term assets
+                    model / test design
 Defect path: fix (reproduce → root cause → minimal fix) → tdd → review → ship
 ```
 
-Per-work-item artifacts (`features/<id>-<slug>/`): `spec.md`, `traceability.md`, `design.md` (plus `component-design-draft.md` when component boundaries are affected), `tasks.md` (with per-task RED/GREEN evidence lines), `reviews/`, `closeout.md` (`fix.md` for defects). Long-term assets (`docs/component-design.md`, `docs/ar-specs/`, `docs/ar-designs/`) are promoted at the ship phase. The next step is always recovered from artifact state, never from chat memory.
+Every phase output passes an independent `devflow-review` gate with an on-disk record before the next phase starts. At workflow start the **run mode** is confirmed once: `attended` (default — human approves after each review) or `unattended` (runs continuously for long sessions — independent reviews, records, and critical-finding blocking still happen; the human audits `reviews/` afterwards).
+
+Per-work-item artifacts (`features/<id>-<slug>/`): `spec.md`, `traceability.md`, `design.md` (plus `component-design-draft.md` when component boundaries are affected), `plan.md` (run mode, gate states, self-contained task breakdown with evidence lines — the single entry point for interrupted-work recovery), `reviews/` (one record per review round, findings + resolution closure), `closeout.md` (`fix.md` for defects). Long-term assets (`docs/component-design.md`, `docs/ar-specs/`, `docs/ar-designs/`) are promoted at the ship phase. The next step is always recovered from artifact state, never from chat memory.
 
 ## Skill catalog
 

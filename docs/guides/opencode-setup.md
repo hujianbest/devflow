@@ -59,14 +59,18 @@ OpenCode reads each skill's YAML frontmatter `description` (triggering condition
 ### Lifecycle mapping
 
 ```text
-SPECIFY   devflow-specify        → spec.md + traceability.md   (human confirms)
-DESIGN    devflow-design         → design.md (+ component-design-draft.md)   (human confirms)
-BUILD     devflow-tdd            → code + tests, tasks.md with evidence lines
+SPECIFY   devflow-specify        → spec.md + traceability.md + plan.md skeleton
+R1        devflow-review         → reviews/spec-review-*.md   (human confirms in attended mode)
+DESIGN    devflow-design         → design.md (+ component-design-draft.md)
+R2        devflow-review         → reviews/design-review-*.md (human confirms in attended mode)
+BUILD     devflow-tdd            → code + tests, plan.md with task progress & evidence lines
                                    (dispatches implementer subagents by default)
-REVIEW    devflow-review         → reviews/    (human confirms verdict)
+R3        devflow-review         → reviews/test-review-*.md, code-review-*.md
 SHIP      devflow-ship           → DoD check, promotion to docs/, closeout.md
-FIX       devflow-fix            → fix.md, then back through TDD
+FIX       devflow-fix            → fix.md, then back through TDD + R3
 ```
+
+The run mode (`attended` / `unattended`) is confirmed once at workflow start and recorded in plan.md; `unattended` removes human pauses but never removes reviews, records, or critical-finding blocking.
 
 Overlay skills (`devflow-clean-code`, the applicable `<language>-coding-standards`, `embedded/automotive-development`) are consumed inside these phases; they are constraints, not phases. New language standards are generated from internal team documents via `coding-standards-creator`.
 
