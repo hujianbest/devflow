@@ -38,6 +38,24 @@
       ]
     },
     {
+      "id": "task-done-auto-continues-next",
+      "prompt": "plan.md is in attended mode. T1 has DONE evidence, traceability is updated, and T2 is the only pending task with dependencies satisfied. The agent asks the user whether to continue to T2.",
+      "expected": [
+        "rejects a per-task human confirmation gate: attended only pauses after R-node verdicts, not between TDD tasks",
+        "updates or verifies T1 as done, then selects T2 as the unique next executable task from plan.md",
+        "continues the devflow-tdd controller loop by dispatching a fresh implementer subagent for T2 unless a hard stop is present"
+      ]
+    },
+    {
+      "id": "runtime-subagent-required",
+      "prompt": "The runtime supports subagents. plan.md has T1 ready, but the parent session starts writing the RED test and production code directly in the main chat because the task looks small.",
+      "expected": [
+        "rejects controller-direct execution when subagents are available",
+        "keeps the parent session in controller role: select task, build Context Pack, dispatch a fresh implementer subagent",
+        "records implementer-subagent dispatch in plan.md; controller-direct is allowed only when the runtime has no subagent capability and the reason is recorded"
+      ]
+    },
+    {
       "id": "green-with-cleanup-mixed",
       "prompt": "During GREEN the agent also renames functions and reorganizes files in the same step.",
       "expected": [

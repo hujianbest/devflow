@@ -36,7 +36,7 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 规则：
 
 - **一次只有一个 in-progress 任务**。每个任务是一个薄垂直切片：完成后可构建、全部测试通过、可独立提交。
-- 任务循环：取 plan.md 第一个未完成任务 → RED → GREEN → REFACTOR → 补证据行与 traceability → 更新任务状态 → 下一个。**REFACTOR 是默认步骤，不是可选收尾**；如果 GREEN 后已无任务内异味，只能记录 `REFACTOR: N/A` 并写明已对照 `devflow-clean-code` 自检的理由。**每步勾选实时更新到 plan.md**，断点信息只存在于磁盘，不存在于会话记忆。
+- 任务循环：取 plan.md 第一个唯一可执行的非 done 任务 → RED → GREEN → REFACTOR → 补证据行与 traceability → 更新任务状态 → 继续下一个。**任务完成不是人工确认点**；只要 plan.md 中还能唯一选出下一任务，就在同一 TDD 阶段继续执行。**REFACTOR 是默认步骤，不是可选收尾**；如果 GREEN 后已无任务内异味，只能记录 `REFACTOR: N/A` 并写明已对照 `devflow-clean-code` 自检的理由。**每步勾选实时更新到 plan.md**，断点信息只存在于磁盘，不存在于会话记忆。
 - 任务完成时更新同一组件根/工件根下 `features/<id>/traceability.md`（或团队覆盖路径）对应行的任务 ID、代码文件、测试代码文件、验证证据列。
 - plan 是测试设计的执行索引：不得新增 design.md 中没有的用例或业务事实；发现缺用例 → 回 `devflow-design`。
 - 实现中发现设计错误或规格漏洞：**停下任务**，在 plan.md 记录阻塞原因，回 `devflow-design` / `devflow-specify` 修正工件并重新评审，不在代码里悄悄绕过。
@@ -54,15 +54,18 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 
 同一 R3 门禁最多自动返工复审 3 轮。第 3 轮仍有 critical/important，或复审持续发现同类新问题，停止自动循环，把剩余 findings、已做证据和需要人裁决的问题呈给人。
 
-## 执行模式：默认派发 implementer subagent
+## 执行模式：必须派发 implementer subagent
 
-runtime 支持 subagent 时，**默认每个任务派发一个全新上下文的 implementer subagent**（角色定义见 repo 根目录 `agents/devflow-implementer.md`）执行：新上下文只依赖打包的输入工作，天然防止长会话的上下文漂移，也强制设计工件可冷读。
+runtime 支持 subagent 时，**每个任务必须派发一个全新上下文的 implementer subagent**（角色定义见 repo 根目录 `agents/devflow-implementer.md`）执行；父会话不得在主上下文里直接写测试或实现。新上下文只依赖打包的输入工作，天然防止长会话的上下文漂移，也强制设计工件可冷读。
+
+主会话只做 controller：解析工件、选择唯一任务、组装 Context Pack、调用 subagent、消费返回、更新 plan.md / traceability.md、提交、再选择下一任务。只有 runtime 明确没有 subagent 能力时，才允许退化为 controller-direct；退化时必须在 plan.md 当前任务下记录 `执行模式: controller-direct` 与原因（例如“当前 runtime 无 subagent 工具”）。任务很小、单文件、赶时间、上下文已经足够，都不是跳过 subagent 的理由。
 
 派发时给 subagent 的 **Context Pack**（不传聊天历史）：
 
 - 任务 ID 与对应测试设计用例（Case ID、场景、预期结果）
 - design.md 相关章节（接口契约、错误模型摘录）与允许触碰的文件范围
 - 测试/构建命令、`devflow-clean-code`、适用的 `<language>-coding-standards` 与领域技能名
+- 必须加载/遵循的角色定义：`agents/devflow-implementer.md`
 - 返回契约：`DONE`（附 RED/GREEN/REFACTOR 证据行与 clean-code 自检摘要）/ `NEEDS_CONTEXT`（缺关键输入，回来重新打包）/ `BLOCKED`（越界或设计问题，附原因）
 
 R3 返工派发时，Context Pack 还必须包含 finding 摘录（评审文件路径、finding 编号、严重级、分类、修复方向）、关联任务或 `Tn-rework` 标识、需要回填的 Resolution 位置。subagent 返回时必须列出已解决的 finding 编号；父会话负责核对并写回评审记录。
@@ -70,6 +73,21 @@ R3 返工派发时，Context Pack 还必须包含 finding 摘录（评审文件�
 父会话职责：逐任务派发、校验返回的证据行、更新 plan.md 与 traceability、串联提交。subagent 返回 `BLOCKED` 提示设计问题时，父会话回 `devflow-design`，不催 subagent 硬做。
 
 runtime 无 subagent 时退化为当前会话直接执行循环，纪律不变。
+
+### Controller 连续执行协议
+
+父会话是 TDD 阶段 controller；implementer subagent 只做一个任务，不能决定整个阶段是否暂停。每次消费 subagent 返回后按下面协议处理：
+
+| 返回 / 状态 | 父会话动作 |
+|---|---|
+| `DONE` | 校验证据行和 clean-code 自检 → 更新 plan.md 任务状态、步骤勾选、证据行与 traceability.md → 提交 → 重新读取 plan.md 并选择下一个唯一可执行的非 done 任务继续派发新的 implementer subagent |
+| `NEEDS_CONTEXT` | 先用 spec.md / design.md / plan.md / reviews/ 中已有工件补齐更收敛的 Context Pack 并重派；不得把完整聊天历史倾倒给 subagent |
+| `BLOCKED` | 在 plan.md 记录阻塞原因；若是规格/设计/范围问题，回对应上游阶段并重新经过受影响门禁；若只是 Context Pack 打包不完整，收敛后重派 |
+| 无剩余任务 | 把 R3 门禁置为 `pending`（或确认已有 pending 记录），进入 `devflow-review` 做测试与代码独立评审 |
+
+停止条件只有以下几类：缺业务事实或专家决策；规格/设计与实现证据冲突；无法由工件补齐的 `NEEDS_CONTEXT`；`BLOCKED` 指向范围、依赖、测试设计或架构问题；plan.md 中存在多个 in-progress 任务、多个同等 next-ready 候选、依赖冲突或状态无法唯一判定；测试/构建环境无法产生可信结果；R3 自动返工复审达到 3 轮上限。
+
+`attended` / `unattended` 只影响 R1/R2/R3 verdict 后是否呈人确认，以及 ship 关闭确认；不影响 TDD 阶段内部的任务间续跑。不要在一个任务 `DONE` 后询问“是否进入下一个任务”，除非命中上述停止条件。
 
 ## 循环
 
