@@ -49,7 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 #### Added
 
-- **`devflow-ship`（新阶段技能）**：收尾 = DoD 核验 + 追溯终验 + promotion + closeout。`references/definition-of-done.md` 按三层组织核验项（含微小修改 / 缺陷工作项的裁剪规则）；`references/promotion-checklist.md` 规定长期资产（`docs/ar-specs/`、`docs/ar-designs/`、`docs/component-design.md`）的同步对象与语义化改写规则。恢复 `/devflow-ship` 命令。
+- **`devflow-ship`（新阶段技能）**：收尾 = DoD 核验 + 追溯终验 + promotion + closeout。`references/definition-of-done.md` 按三层组织核验项（含微小修改 / 缺陷工作项的裁剪规则）；`references/promotion-checklist.md` 规定长期资产（`docs/ar-specs/`、`docs/ar-designs/`、`docs/component-design.md`）的同步对象与最小清理规则：保留原模板主体，只移除 Open Questions、过程笔记和评审应答。恢复 `/devflow-ship` 命令。
 - **组件级设计（团队开发流程要求）**：`devflow-design` 升级为两级设计——影响组件边界时必须先修订 `component-design-draft.md` 并经模块架构师确认，工作项设计只引用组件基线。恢复两份企业级模板（`devflow-component-design-template.md`、`devflow-ar-design-template.md`）并增补「高质量设计增补」章节（接口契约六项、错误模型、数据所有权、简单性检验 / 边界检验、错误与降级总策略、抽象与演进成本），替代原 design-template.md。
 - **追溯矩阵 `traceability.md`**：作为 spec-design-code 一致性的显式约束。specify 初始化（需求/Change Type/上游锚点列），design / tdd 逐阶段补列，review 抽查（design/code rubric 新增检查项），ship 终验。模板在 `devflow-specify/references/traceability-template.md`。
 - **极简证据纪律**：tasks.md 每个完成任务必须带 RED/GREEN 证据行（命令 + 关键输出摘要 + commit 锚点），替代 1.x 的 evidence/ 目录与多文件格式；test-review rubric 对应检查。

@@ -81,7 +81,7 @@ specify → R1 review → design → R2 review → tdd（叠加 clean-code/语�
 | `reviews/` | devflow-review | 每轮一份评审记录（findings 含 Resolution 列 + verdict + 抽查记录 + 人工确认） |
 | `closeout.md` | devflow-ship | DoD 核验摘要、promotion 路径表、债务去向 |
 
-长期资产（默认位于同一组件根下的 `docs/`）：`component-design.md`、`ar-specs/`、`ar-designs/`。由 `devflow-ship` 在收尾时从过程工件**语义化改写** promotion；其他阶段只读。组件级设计是团队开发流程要求：影响组件边界的工作项必须先修订组件设计并经模块架构师确认。
+长期资产（默认位于同一组件根下的 `docs/`）：`component-design.md`、`ar-specs/`、`ar-designs/`。由 `devflow-ship` 在收尾时从过程工件 promotion：保留原 spec/design/component-design 模板主体，只清理 Open Questions、过程笔记和评审应答；其他阶段只读。组件级设计是团队开发流程要求：影响组件边界的工作项必须先修订组件设计并经模块架构师确认。
 
 进度恢复规则在 `using-devflow` 中定义：按工件存在性与确认状态判断下一步，工件优先于聊天记忆。
 
