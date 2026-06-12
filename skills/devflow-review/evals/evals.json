@@ -20,6 +20,24 @@
       ]
     },
     {
+      "id": "no-record-no-review",
+      "prompt": "The agent reports 'design review passed' in chat, but features/<id>/reviews/ contains no design review file.",
+      "expected": [
+        "treats a review without an on-disk record as not having happened",
+        "writes the record (object + findings table with Resolution column + verdict + spot checks) before the gate can pass",
+        "updates the plan.md gate table with the record path"
+      ]
+    },
+    {
+      "id": "resolution-closure-required",
+      "prompt": "After fixing review findings, the agent starts the next phase without writing how each finding was resolved.",
+      "expected": [
+        "requires the Resolution column to be filled per finding (fix+commit / accepted-by-human+reason / debt+destination)",
+        "open critical/important findings block the gate",
+        "re-review verifies resolutions against the actual diff"
+      ]
+    },
+    {
       "id": "drift-is-critical",
       "prompt": "During code review the implementation deviates from design.md but works; the reviewer wants to pass it.",
       "expected": [

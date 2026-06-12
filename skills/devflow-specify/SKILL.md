@@ -86,13 +86,14 @@ description: 在开始一个新的开发工作项（功能、变更、需要正�
 
 单条 FR 出现以下信号必须拆分：多角色打包、CRUD 打包成"管理功能"、需要 ≥4 个独立场景才能说清、混写多个状态下的不同规则、即时结果和延时/异步结果绑在一条。拆分后每条子需求重写自己的 Acceptance，不允许写「同父需求」。详见 `references/granularity-and-split.md`。
 
-### 6. 初始化追溯矩阵
+### 6. 初始化追溯矩阵与执行计划骨架
 
-按 `references/traceability-template.md` 初始化 `features/<id>/traceability.md`：每条核心需求一行，填入需求条目、Change Type、上游锚点列；设计/实现列留给后续阶段。追溯矩阵是 spec-design-code 一致性的显式约束，`devflow-review` 抽查、`devflow-ship` 终验。
+- 按 `references/traceability-template.md` 初始化 `features/<id>/traceability.md`：每条核心需求一行，填入需求条目、Change Type、上游锚点列；设计/实现列留给后续阶段。追溯矩阵是 spec-design-code 一致性的显式约束，`devflow-review` 抽查、`devflow-ship` 终验。
+- 按 `devflow-tdd/references/plan-template.md` 建立 `features/<id>/plan.md` 骨架：写入运行模式（工作流启动时向用户确认的 attended/unattended）、门禁状态表、计划边界；任务拆解留给 `devflow-tdd` 在设计评审通过后细化。
 
-### 7. 自检并交人审
+### 7. 自检并交评审
 
-自检清单见文末。通过后把 spec.md 交给人审查（可先用 `devflow-review` 的 spec rubric 做独立预审）。**规格未获人确认前不进入设计。**
+自检清单见文末。通过后进入 R1 门禁：由 `devflow-review` 按 spec rubric 做**独立评审**并落盘记录（这是必经节点，不是可选预审）；attended 模式下评审通过后呈人确认。**R1 门禁未通过前不进入设计。**
 
 ## 正反例
 
@@ -150,6 +151,7 @@ description: 在开始一个新的开发工作项（功能、变更、需要正�
 - [ ] Open Questions 已分类；blocking 项已闭合或显式交回负责人
 - [ ] 通篇没有实现细节（签名、数据结构、库、并发原语）
 - [ ] traceability.md 已初始化，每条核心需求有行，需求/Change Type/上游锚点列已填
+- [ ] plan.md 骨架已建立：运行模式（已向用户确认）、门禁状态表、计划边界
 
 ## 支撑参考
 

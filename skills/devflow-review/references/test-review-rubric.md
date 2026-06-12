@@ -1,6 +1,6 @@
 # 测试评审 Rubric
 
-> 评审对象：测试代码 + tasks.md + RED/GREEN 记录。上游输入：design.md 的测试设计表、spec.md 验收标准。作者侧标准见 `devflow-tdd` 与其 `references/test-quality.md`。
+> 评审对象：测试代码 + plan.md + RED/GREEN 证据行。上游输入：design.md 的测试设计表、spec.md 验收标准。作者侧标准见 `devflow-tdd` 与其 `references/test-quality.md`。
 >
 > 核心怀疑：**这些测试会放过哪种错误实现？**
 
@@ -22,7 +22,7 @@
 
 ### TDD 证据
 
-- [ ] tasks.md 每个 done 任务有 RED/GREEN 证据行：命令、关键输出摘要、commit 锚点；只有叙述没有输出的"证据"不接受
+- [ ] plan.md 每个 done 任务有 RED/GREEN 证据行：命令、关键输出摘要、commit 锚点；只有叙述没有输出的"证据"不接受
 - [ ] RED 证据的失败原因是行为缺失（不是环境/拼写错误）；GREEN 证据来自最终代码（锚点可核）
 - [ ] 一写就绿的测试有解释（行为已存在的确认）
 

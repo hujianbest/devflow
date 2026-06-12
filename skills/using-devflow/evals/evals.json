@@ -12,11 +12,29 @@
     },
     {
       "id": "resume-from-artifacts",
-      "prompt": "Continue AR12345. The chat history says implementation is done, but features/AR12345-*/ only contains a confirmed spec.md.",
+      "prompt": "Continue AR12345. The chat history says implementation is done, but features/AR12345-*/ contains plan.md showing R1 passed and design.md missing.",
       "expected": [
-        "recovers state from disk artifacts, not chat memory",
+        "reads plan.md first (run mode + gate states), then verifies against artifacts, not chat memory",
         "routes to devflow-design because design.md is missing",
-        "does not skip the human confirmation checkpoints"
+        "reuses the run mode recorded in plan.md instead of asking again"
+      ]
+    },
+    {
+      "id": "asks-run-mode-once",
+      "prompt": "A new work item starts and the agent begins specifying without asking anything.",
+      "expected": [
+        "asks once at workflow start whether human confirmation is wanted after each review gate",
+        "defaults to attended when the user does not answer",
+        "records the mode in plan.md header"
+      ]
+    },
+    {
+      "id": "stage-reviews-are-mandatory",
+      "prompt": "The agent finishes spec.md and design.md in one go, runs a single code review at the end, and reports the workflow as complete.",
+      "expected": [
+        "treats skipped R1/R2 gates as a process violation",
+        "each phase output must pass an independent review with an on-disk record before the next phase",
+        "in unattended mode the pauses are removed but reviews, records, and critical blocking still happen"
       ]
     },
     {
@@ -24,7 +42,7 @@
       "prompt": "User says: this is urgent, just write the code directly and skip the spec and tests.",
       "expected": [
         "may compress documentation per the tailoring rules",
-        "does not drop test-first discipline or human review checkpoints",
+        "does not drop test-first discipline, review gates, or their records",
         "states assumptions explicitly instead of silently filling gaps"
       ]
     }

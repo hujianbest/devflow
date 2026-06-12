@@ -59,10 +59,12 @@ skills/
 ## 4. 工作流与工件
 
 ```text
-specify → [人审] → design → [人审] → tdd（叠加 clean-code/语言/领域）→ review → [人审]
+specify → R1 review → design → R2 review → tdd（叠加 clean-code/语言/领域）→ R3 review
         → ship（DoD 核验 + promotion）→ [人确认关闭] → done
-缺陷旁路：fix（复现→根因→边界）→ tdd → review → ship
+缺陷旁路：fix（复现→根因→边界）→ tdd → R3 review → ship
 ```
+
+每个 R 节点 = `devflow-review` 独立评审 + 落盘记录（findings + resolution 闭环），是必经门禁。运行模式在工作流启动时确认一次并记入 plan.md：`attended`（默认，每个 R 节点后人工确认）/ `unattended`（连续执行；评审、记录、critical 阻塞照常，人事后审计 `reviews/`）。
 
 工件模型（`features/<id>-<slug>/`）：
 
@@ -72,9 +74,9 @@ specify → [人审] → design → [人审] → tdd（叠加 clean-code/语言/
 | `traceability.md` | specify 初始化，design/tdd 补列 | 追溯矩阵：需求→设计→测试→代码→证据，spec-design-code 一致性约束 |
 | `component-design-draft.md` | devflow-design | 组件级设计修订（影响组件边界时；企业模板） |
 | `design.md` | devflow-design | 工作项级设计：职责、接口契约、错误模型、测试设计、质量增补章节 |
-| `tasks.md` | devflow-tdd | 任务清单与状态 + 每任务 RED/GREEN 证据行（命令、输出摘要、commit 锚点） |
+| `plan.md` | specify 建骨架，tdd 细化并维护 | 运行模式、门禁状态表、自包含任务拆解（用例锚点/精确路径/步骤/完成定义）+ 每任务 RED/GREEN 证据行；中断恢复的单一入口 |
 | `fix.md` | devflow-fix | 复现、根因、修复边界（缺陷工作项） |
-| `reviews/` | devflow-review | 评审记录（findings + verdict + 抽查记录） |
+| `reviews/` | devflow-review | 每轮一份评审记录（findings 含 Resolution 列 + verdict + 抽查记录 + 人工确认） |
 | `closeout.md` | devflow-ship | DoD 核验摘要、promotion 路径表、债务去向 |
 
 长期资产（`docs/`）：`component-design.md`、`ar-specs/`、`ar-designs/`。由 `devflow-ship` 在收尾时从过程工件**语义化改写** promotion；其他阶段只读。组件级设计是团队开发流程要求：影响组件边界的工作项必须先修订组件设计并经模块架构师确认。
@@ -99,4 +101,4 @@ specify → [人审] → design → [人审] → tdd（叠加 clean-code/语言/
 
 1.x 的 13 个 canonical 流程节点、`devflow-router`、`progress.md` 多字段状态、handoff YAML、profile/execution-mode 机制在 2.0 中移除——审计结论是它们让流程样板占据了约半数内容，挤压了真正指导设计与编码的部分。1.x 的高价值内容（EARS/QAS/粒度启发式、TDD 纪律、评审 rule 思想）全部保留并强化为带正反例的形式。
 
-1.x 中以下**能力**经讨论确认必要后，以最小流程表面积恢复（不恢复其 1.x 样板形态）：收尾与 promotion（`devflow-ship`，含 Definition of Done）、组件级设计与两份企业模板（并入 `devflow-design`，模板增补质量章节）、追溯矩阵（`traceability.md`）、TDD 证据纪律（tasks.md 证据行替代 evidence/ 目录）、implementer subagent（`devflow-tdd` 默认执行模式）。
+1.x 中以下**能力**经讨论确认必要后，以最小流程表面积恢复（不恢复其 1.x 样板形态）：收尾与 promotion（`devflow-ship`，含 Definition of Done）、组件级设计与两份企业模板（并入 `devflow-design`，模板增补质量章节）、追溯矩阵（`traceability.md`）、TDD 证据纪律（plan.md 证据行替代 evidence/ 目录）、implementer subagent（`devflow-tdd` 默认执行模式）。

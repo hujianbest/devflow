@@ -45,4 +45,4 @@ evidence:
 notes: <一段话：循环摘要 / 债务建议 / BLOCKED 原因>
 ```
 
-`DONE` 必须满足：用例全部先红后绿、完整套件通过、证据真实可核。父会话负责把证据写入 tasks.md、更新 traceability、提交。
+`DONE` 必须满足：用例全部先红后绿、完整套件通过、证据真实可核。父会话负责把证据写入 plan.md、更新 traceability、提交。

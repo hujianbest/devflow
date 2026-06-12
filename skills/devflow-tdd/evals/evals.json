@@ -29,6 +29,15 @@
       ]
     },
     {
+      "id": "plan-supports-resume",
+      "prompt": "The agent writes plan.md tasks as 'T2: same as T1 but for the error path, see chat above for details'.",
+      "expected": [
+        "rejects non-self-contained tasks: each task needs case anchors, exact paths, steps with commands, and a done definition inline",
+        "a fresh session reading only spec/design/plan must be able to resume from any breakpoint",
+        "keeps task status, step checkboxes, and evidence lines updated on disk in real time"
+      ]
+    },
+    {
       "id": "green-with-cleanup-mixed",
       "prompt": "During GREEN the agent also renames functions and reorganizes files in the same step.",
       "expected": [
