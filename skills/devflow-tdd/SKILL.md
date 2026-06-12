@@ -17,27 +17,29 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 
 例外（需向人确认）：一次性探索原型（探索完丢弃，正式实现仍走 TDD）、生成代码、纯配置。想着"就这一次跳过 TDD"？停。那是合理化。
 
-## 任务组织
+## 计划与任务组织
 
-实现的输入是 design.md 的**测试设计表**。在 `features/<id>/tasks.md` 里把用例组织成任务，**每个任务完成时附上 RED/GREEN 证据行**（命令 + 关键输出摘要 + commit 锚点）——这是评审者和人核验"测试真的失败过、真的在最终代码上跑过"的最低限度证据，不接受只有叙述没有输出的"证据"：
+实现的输入是 design.md 的**测试设计表**；执行的载体是 `features/<id>/plan.md`（模板见 `references/plan-template.md`）。
+
+**进入实现前先细化 plan.md**（specify 阶段已建骨架：运行模式 + 门禁表）：把测试设计表的用例组织成任务，每个任务**自包含**——用例锚点（含 Given/When/Then 摘要）、精确文件路径、RED/GREEN 步骤与验证命令、完成定义全部内联。标准只有一个：**一个全新会话只读 spec.md + design.md + plan.md 就能从任意断点继续执行**。"同上""见前文"式的任务描述使中断恢复失效，按违规处理。
+
+每个任务完成时在 plan.md 附上 RED/GREEN 证据行（命令 + 关键输出摘要 + commit 锚点）——这是评审者和人核验"测试真的失败过、真的在最终代码上跑过"的最低限度证据，不接受只有叙述没有输出的"证据"：
 
 ```markdown
-## 任务清单
-
-- [x] T1: TC-001, TC-002 — mode_set 正常切换与非法输入   (done)
+- 证据:
   - RED:   `ctest -R ModeServiceTest` → FAIL: SetModeRejectsInvalid…
            (expected ERR_INVALID_ARG, got OK) @ a1b2c3d
   - GREEN: `ctest` → 47/47 passed, 0 warnings @ d4e5f6a
-- [ ] T2: TC-003 — 切换中重入返回 ERR_BUSY               (in progress)
-- [ ] T3: TC-004 — ModeChanged 事件载荷与时序
 ```
 
 规则：
 
 - **一次只有一个 in-progress 任务**。每个任务是一个薄垂直切片：完成后可构建、全部测试通过、可独立提交。
-- 任务循环：取下一个用例 → RED → GREEN →（按需）REFACTOR → 补证据行与 traceability → 勾掉 → 下一个。
+- 任务循环：取 plan.md 第一个未完成任务 → RED → GREEN →（按需）REFACTOR → 补证据行与 traceability → 更新任务状态 → 下一个。**每步勾选实时更新到 plan.md**，断点信息只存在于磁盘，不存在于会话记忆。
 - 任务完成时更新 `features/<id>/traceability.md` 对应行的任务 ID、代码文件、测试代码文件、验证证据列。
-- 实现中发现设计错误或规格漏洞：**停下任务**，回 `devflow-design` / `devflow-specify` 修正工件并重新确认，不在代码里悄悄绕过。
+- plan 是测试设计的执行索引：不得新增 design.md 中没有的用例或业务事实；发现缺用例 → 回 `devflow-design`。
+- 实现中发现设计错误或规格漏洞：**停下任务**，在 plan.md 记录阻塞原因，回 `devflow-design` / `devflow-specify` 修正工件并重新评审，不在代码里悄悄绕过。
+- 中断恢复：按 plan.md 的「恢复指引」节执行——先看门禁表，再找第一个非 done 任务，以步骤勾选与证据行判断断点。
 
 ## 执行模式：默认派发 implementer subagent
 
@@ -50,7 +52,7 @@ runtime 支持 subagent 时，**默认每个任务派发一个全新上下文的
 - 测试/构建命令、适用的 coding-standards 与领域技能名
 - 返回契约：`DONE`（附证据行）/ `NEEDS_CONTEXT`（缺关键输入，回来重新打包）/ `BLOCKED`（越界或设计问题，附原因）
 
-父会话职责：逐任务派发、校验返回的证据行、更新 tasks.md 与 traceability、串联提交。subagent 返回 `BLOCKED` 提示设计问题时，父会话回 `devflow-design`，不催 subagent 硬做。
+父会话职责：逐任务派发、校验返回的证据行、更新 plan.md 与 traceability、串联提交。subagent 返回 `BLOCKED` 提示设计问题时，父会话回 `devflow-design`，不催 subagent 硬做。
 
 runtime 无 subagent 时退化为当前会话直接执行循环，纪律不变。
 
@@ -87,7 +89,7 @@ TEST(ModeTest, Test1) {
 - 失败原因是**目标行为缺失**，不是拼写错误或测试环境问题
 - 测试一写就通过？说明它没有验证新行为：要么行为已存在（确认后跳过该用例），要么测试写错了。
 
-把命令与关键失败输出记为 tasks.md 的 RED 证据行（含 commit 锚点）。
+把命令与关键失败输出记为 plan.md 的 RED 证据行（含 commit 锚点）。
 
 ### GREEN：最小实现
 
@@ -115,7 +117,7 @@ int mode_set(mode_t mode) {
 }
 ```
 
-**验证 GREEN（必做）**：当前测试通过；**完整测试套件**通过（无回归）；构建输出干净（无新增警告）。其他测试挂了 → 现在就修，不带病推进。把命令与通过摘要记为 tasks.md 的 GREEN 证据行（含 commit 锚点）。
+**验证 GREEN（必做）**：当前测试通过；**完整测试套件**通过（无回归）；构建输出干净（无新增警告）。其他测试挂了 → 现在就修，不带病推进。把命令与通过摘要记为 plan.md 的 GREEN 证据行（含 commit 锚点）。
 
 ### REFACTOR：在绿灯上清理
 
@@ -179,16 +181,17 @@ EXPECT_EQ(MODE_NORMAL, fake_event_queue_last().payload.mode);
 任务完成前逐项确认：
 
 - [ ] 每个新行为都有先失败后通过的测试；失败原因当时已确认是行为缺失
-- [ ] tasks.md 中本任务的 RED/GREEN 证据行齐全（命令 + 关键输出 + commit 锚点），证据来自真实运行
+- [ ] plan.md 中本任务的 RED/GREEN 证据行齐全（命令 + 关键输出 + commit 锚点），证据来自真实运行
 - [ ] 完整测试套件通过；构建无新增警告
 - [ ] 断言经得起 mutation 自检（改错实现关键行，测试会红）
 - [ ] mock 只用于真实边界；没有 test-only 后门
 - [ ] REFACTOR 没有改变行为；清理留在任务范围内
-- [ ] tasks.md 状态与 traceability.md 对应行已更新；本任务已提交
+- [ ] plan.md 任务状态与 traceability.md 对应行已更新；本任务已提交
 - [ ] 适用的语言/领域规范（coding-standards / embedded / automotive）已在实现中遵循
 
 ## 支撑参考
 
 | 文件 | 用途 |
 |---|---|
+| `references/plan-template.md` | plan.md 模板：运行模式与门禁表、自包含任务结构、恢复指引、证据行 |
 | `references/test-quality.md` | 断言强度、测试命名、fixture 设计、mock 边界的详细判据与正反例 |
