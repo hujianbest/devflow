@@ -54,6 +54,34 @@
         "requires a clean-code self-check after GREEN, even when no code changes are needed",
         "records either the refactoring summary and test run or REFACTOR: N/A with a reason tied to devflow-clean-code"
       ]
+    },
+    {
+      "id": "r3-code-finding-rework",
+      "prompt": "R3 code review returns rework: finding #2 says mode_set returns OK for invalid mode and finding #3 says the same task introduced a misleading process() helper. All original tasks are marked done.",
+      "expected": [
+        "enters R3 rework mode instead of ship",
+        "creates a rework entry for the done task without overwriting the original RED/GREEN/REFACTOR evidence",
+        "writes or strengthens a failing test for the invalid-mode bug before fixing code",
+        "fixes the naming/structure issue on green tests and records new evidence plus Resolution entries"
+      ]
+    },
+    {
+      "id": "r3-test-finding-strengthens-red",
+      "prompt": "R3 test review says TC-004 passed because the assertion only checks result != null and would miss the documented error state.",
+      "expected": [
+        "treats the weak assertion as a TDD rework item",
+        "strengthens or rewrites the test so it fails against the weak implementation before changing production code",
+        "records RED/GREEN/REFACTOR evidence and updates the review finding Resolution before re-review"
+      ]
+    },
+    {
+      "id": "r3-design-drift-escalates-upstream",
+      "prompt": "R3 review finds the implementation follows a different error contract than design.md, and the chosen contract may actually be the right one.",
+      "expected": [
+        "does not silently update code or design inside TDD",
+        "marks the TDD task blocked and returns to devflow-design for the contract decision",
+        "requires the affected design review to be redone before continuing implementation"
+      ]
     }
   ]
 }

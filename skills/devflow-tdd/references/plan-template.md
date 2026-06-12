@@ -3,7 +3,7 @@
 使用说明：
 
 - `plan.md` 是工作项的**执行计划与中断恢复的单一入口**：任何新会话（上下文完全丢失）只读 spec.md → design.md → plan.md 三个文件，就能从断点继续执行，不需要任何聊天记忆。这决定了它的写法标准：**每个任务自包含**——组件根、工件根、精确文件路径、测试用例锚点、验证命令、完成判据、REFACTOR 检视标准全部内联，不写「同上」「见聊天记录」。
-- 生命周期：`devflow-specify` 在工作流启动时建骨架（组件根 + 工件根 + 运行模式 + 门禁表 + 边界）；`devflow-design` 评审通过后由 `devflow-tdd` 细化任务拆解；TDD 执行期逐任务更新状态与证据行；各 R 评审节点更新门禁表。门禁表也是 todo / 计划投影的来源：存在 `pending` / `rework` 门禁时，下一条执行待办就是该门禁，而不是后续阶段。
+- 生命周期：`devflow-specify` 在工作流启动时建骨架（组件根 + 工件根 + 运行模式 + 门禁表 + 边界）；`devflow-design` 评审通过后由 `devflow-tdd` 细化任务拆解；TDD 执行期逐任务更新状态与证据行；各 R 评审节点更新门禁表。门禁表也是 todo / 计划投影的来源：`pending` 表示下一步去评审；`rework` 表示评审已打回，下一步先回对应作者阶段修 findings，修完再复审；`passed` 表示评审 verdict 已通过，attended 下还要看人工确认列是否为 yes。
 - plan 是 design 测试设计的**执行索引层**，不是测试设计本身：不得新增 design.md 中没有的用例或业务事实；发现缺用例 → 回 `devflow-design`。
 
 ````markdown
@@ -17,12 +17,12 @@
 - 长期文档根: `<component-root>/docs`（或 `AGENTS.md` 覆盖后的等价路径）
 - 来源工件: spec.md@<commit> / design.md@<commit>
 
-| 门禁 | 状态 | 评审记录 | 人工确认（attended） |
-|---|---|---|---|
-| R1 spec 评审 | pending / passed / rework | reviews/spec-review-<日期>.md | yes / no / N/A(unattended) |
-| R2 design 评审 | pending / passed / rework | reviews/design-review-<日期>.md | … |
-| R3 test+code 评审 | pending / passed / rework | reviews/test-review-…、code-review-… | … |
-| ship DoD | pending / passed | closeout.md | … |
+| 门禁 | 状态 | 轮次 | 评审记录 | 返工目标 | 人工确认（attended） |
+|---|---|---:|---|---|---|
+| R1 spec 评审 | pending / passed / rework | 0 | reviews/spec-review-<日期>.md | devflow-specify / N/A | yes / no / N/A(unattended) |
+| R2 design 评审 | pending / passed / rework | 0 | reviews/design-review-<日期>.md | devflow-design / N/A | … |
+| R3 test+code 评审 | pending / passed / rework | 0 | reviews/test-review-…、code-review-… | devflow-tdd / devflow-design / devflow-specify / N/A | … |
+| ship DoD | pending / passed | 0 | closeout.md | N/A | … |
 
 ## 恢复指引（保留此节原文）
 
@@ -30,10 +30,12 @@
 
 1. 先读取本文件头部的组件根、工件根、长期文档根，后续所有相对路径都以这些根解析；
 2. 读 spec.md、design.md（必要时 component-design-draft.md）取得契约与测试设计；
-3. 看上方门禁表确定所处阶段：有 pending/rework 门禁 → 先去该门禁；例如 spec 已写完但 R1 pending 时，下一步是 `devflow-review`，不是人工确认或 `devflow-design`；
-4. 门禁全通过且有未完成任务 → 从下方第一个非 done 任务继续，按其「步骤」执行；
-5. in-progress 任务以其「步骤」勾选与证据行判断断点：有 RED 证据无 GREEN 证据 = 从实现继续；
-6. 运行模式以本文件头部为准，不重新询问。
+3. 看上方门禁表确定所处阶段：有 `pending` 门禁 → 先去 `devflow-review`；例如 spec 已写完但 R1 pending 时，下一步是评审，不是人工确认或 `devflow-design`；
+4. 有 `rework` 门禁 → 先去“返工目标”阶段修 findings，Resolution 全部闭环后再回 `devflow-review` 复审；R3 rework 默认返工目标是 `devflow-tdd`；
+5. attended 模式下，门禁为 `passed` 但人工确认列为 no → 先呈人确认评审记录，不重复评审；
+6. 门禁全通过且有未完成任务 → 从下方第一个非 done 任务继续，按其「步骤」执行；
+7. in-progress 任务以其「步骤」勾选与证据行判断断点：有 RED 证据无 GREEN 证据 = 从实现继续；
+8. 运行模式以本文件头部为准，不重新询问。
 
 ## 计划边界
 
@@ -67,6 +69,15 @@
   - REFACTOR: <改动摘要 + 测试命令摘要> @ <commit> / N/A（已对照 clean-code 自检，无任务内异味：<理由>）
 
 ### T2: …（同结构）
+
+## 评审返工队列
+
+<!-- R1/R2/R3 被评审打回时维护。pending 门禁不写返工队列；rework 门禁必须有对应 open finding。
+     R3 finding 命中已 done 任务时，保留原任务证据，创建 Tn-rework 或在原任务下追加返工条目。 -->
+
+| Finding | 来源评审 | 严重级 | 分类 | 返工目标 | 关联任务/文件 | 状态 | Resolution / 复审 |
+|---|---|---|---|---|---|---|---|
+| F-001 | reviews/<目标>-review-<日期>.md#1 | critical / important / minor | LLM-FIXABLE / USER-INPUT / TEAM-EXPERT | devflow-tdd / devflow-design / devflow-specify | T1 / `src/...` / `test/...` | open / fixed / accepted / debt | <修复摘要 + commit + 验证命令；复审记录路径> |
 
 ## 风险与待确认
 

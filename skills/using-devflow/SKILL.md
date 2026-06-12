@@ -38,7 +38,9 @@ DevFlow 把「产出高质量代码」拆成由外到内的三层质量。第一
     |                   subagent；plan.md 记进度与证据行；叠加
     |                   devflow-clean-code 与适用语言/领域规范技能
 [R3] devflow-review     独立评审测试与代码 → 记录到 reviews/ ──[人工确认]──
-    v
+    |                   ├─ 需修改：回 devflow-tdd 定向返工，回填 Resolution 后复审
+    |                   └─ 重新设计：回 devflow-design / devflow-specify 修正上游工件
+    v                   （同一 R 节点最多自动返工复审 3 轮，仍不通过则升级人裁决）
 [4] devflow-ship        DoD 核验 + 追溯终验 + promotion 长期资产 + closeout
     |                   ── 人确认关闭 ──
     v
@@ -47,20 +49,32 @@ DevFlow 把「产出高质量代码」拆成由外到内的三层质量。第一
 
 **评审是必经节点，不是可选预审**：每个阶段产物完成后必须经 `devflow-review` 独立评审并把记录写入 `reviews/`，评审通过（且按运行模式获得人工确认）之前不进入下一阶段。跳过任何一个 R 节点直接进入下一阶段，都是流程违规。
 
+### 轻量状态机
+
+DevFlow 不维护独立路由器或额外状态文件；`plan.md` 的门禁表、任务状态、`reviews/` 记录就是可恢复状态。恢复或续作时按下面语义解释门禁：
+
+| 状态 | 含义 | 下一步 |
+|---|---|---|
+| `pending` | 该阶段产物已就绪但尚未独立评审 | 去 `devflow-review` 执行对应 R 门禁 |
+| `passed` | 评审 verdict 已通过；attended 下还要看人工确认列 | 确认列为 yes / N/A 时进入下一阶段；为 no 时呈人确认 |
+| `rework` | 评审已打回，仍有未闭环 findings | 先回作者阶段定向返工，回填 Resolution 后再复审 |
+
+R1 `rework` 默认回 `devflow-specify`；R2 `rework` 默认回 `devflow-design`；R3 `rework` 默认回 `devflow-tdd`。只有评审明确指出规格漏洞、设计方向错误、工件间漂移需要改上游时，才回更上游阶段。`pending` 和 `rework` 不能混用：`pending` 是去评审，`rework` 是先修再评审。
+
 ### Todo 投影规则
 
-当需要生成 todo / 计划 / 执行队列时，把上面的生命周期按节点原样投影：阶段节点、R 门禁节点、ship 节点都是一级待办。`devflow-specify` 完成只表示 spec/traceability/plan 骨架就绪，下一条待办必须是 R1 `devflow-review`；`devflow-design` 完成只表示 design 就绪，下一条待办必须是 R2 `devflow-review`。`attended` 的人工确认附着在对应 R 节点 verdict 之后，不替代独立评审，也不发生在评审之前；`unattended` 只移除人工停顿，不移除任何 R 节点。
+当需要生成 todo / 计划 / 执行队列时，把上面的生命周期按节点原样投影：阶段节点、R 门禁节点、ship 节点都是一级待办。`devflow-specify` 完成只表示 spec/traceability/plan 骨架就绪，下一条待办必须是 R1 `devflow-review`；`devflow-design` 完成只表示 design 就绪，下一条待办必须是 R2 `devflow-review`。R3 打回时，下一条待办必须是 `devflow-tdd` 定向返工与回填 Resolution，随后才是 `devflow-review` 复审；不得把 `rework` 当成“立刻再评审”。`attended` 的人工确认附着在对应 R 节点 verdict 之后，不替代独立评审，也不发生在评审之前；`unattended` 只移除人工停顿，不移除任何 R 节点。
 
 ### 运行模式（工作流启动时确认一次）
 
-启动工作流时**先问用户一次**：「每个评审节点之后是否需要人工确认？」并把答案记入 plan.md 头部：
+启动工作流时**先问用户一次**：「评审通过后是否需要停下呈人确认，还是连续执行到必须人工决策的点？」并把答案记入 plan.md 头部：
 
 | 模式 | 行为 |
 |---|---|
-| `attended`（默认） | 每个 R 节点后停下，把评审记录与 verdict 呈给人，人同意后才进入下一阶段 |
-| `unattended` | R 节点后不停顿连续执行，便于长时间运行 |
+| `attended`（默认） | R 节点通过后停下，把评审记录与 verdict 呈给人；但可由 AI 修复的 findings 仍先自动返工复审，不把修文、补测试、改代码的细节抛给人决策 |
+| `unattended` | R 节点后不停顿连续执行，便于长时间运行；遇到缺业务事实、规格/设计不可决策、专家裁决、3 轮仍不通过时才停下 |
 
-**`unattended` 只移除人工停顿，不移除任何质量动作**：独立评审照做、评审记录照写、critical findings 照样阻塞（返工修复并复审，而不是带病推进）、DoD 照核验。所有评审记录留存在 `reviews/`，供人事后统一审计。用户未明确回答时按 `attended` 执行；模式记录后，恢复执行的会话沿用 plan.md 中的模式，不重新猜测。
+**`unattended` 只移除人工停顿，不移除任何质量动作**：独立评审照做、评审记录照写、critical findings 照样阻塞（返工修复并复审，而不是带病推进）、DoD 照核验。所有评审记录留存在 `reviews/`，供人事后统一审计。用户未明确回答时按 `attended` 执行；模式记录后，恢复执行的会话沿用 plan.md 中的模式，不重新猜测。无论哪种模式，只有 `devflow-specify` / `devflow-design` 中无法由 AI 决定的业务规则、验收阈值、架构边界、专家取舍，以及自动返工达到 3 轮上限，才需要向人提问。
 
 旁路：**缺陷修复**走 `devflow-fix`（复现 → 根因 → 最小修复），其中修复实现仍回到 TDD（先写复现缺陷的失败测试），修复后的测试与代码同样经 R3 评审，收尾同样经 `devflow-ship`。
 
@@ -105,12 +119,18 @@ features/<id>-<slug>/
 | 磁盘状态 | 下一步 |
 |---|---|
 | 目录不存在 / spec.md 缺失 | `devflow-specify`（启动时确认运行模式） |
-| spec.md 存在，reviews/ 无通过的 spec 评审（或 attended 下未获人工确认） | `devflow-review`（R1）/ 呈人确认 |
-| spec 门禁通过，design.md 缺失（含组件边界受影响但组件设计未修订） | `devflow-design` |
-| design.md 存在，reviews/ 无通过的 design 评审（或未获人工确认） | `devflow-review`（R2）/ 呈人确认 |
-| design 门禁通过，plan.md 有未完成任务 | `devflow-tdd`（从 plan.md 第一个未完成任务继续） |
-| 任务全部完成，reviews/ 缺测试或代码评审（或未获人工确认） | `devflow-review`（R3）/ 呈人确认 |
-| 评审有未闭环 findings | 按 findings 返工对应阶段，修复后更新评审记录的 resolution |
+| R1 为 `rework`，或 spec 评审有未闭环 critical/important findings | `devflow-specify` 定向修复；缺业务事实时只问最小问题；修复后回填 Resolution 并复审 |
+| spec.md 存在，R1 为 `pending` 或 reviews/ 无 spec 评审记录 | `devflow-review`（R1） |
+| R1 verdict 通过但 attended 人工确认列为 no | 呈人确认 R1 评审记录；同意后再进入 `devflow-design` |
+| R1 已通过且确认完成，design.md 缺失（含组件边界受影响但组件设计未修订） | `devflow-design` |
+| R2 为 `rework`，或 design 评审有未闭环 critical/important findings | `devflow-design` 定向修复；需要架构/专家裁决时停下；修复后回填 Resolution 并复审 |
+| design.md 存在，R2 为 `pending` 或 reviews/ 无 design 评审记录 | `devflow-review`（R2） |
+| R2 verdict 通过但 attended 人工确认列为 no | 呈人确认 R2 评审记录；同意后再进入 `devflow-tdd` |
+| R2 已通过且确认完成，plan.md 有未完成任务 | `devflow-tdd`（从 plan.md 第一个未完成任务继续） |
+| R3 为 `rework`，或测试/代码评审有未闭环 critical/important findings | `devflow-tdd` 定向返工；回填 Resolution 后复审，最多自动循环 3 轮 |
+| 任务全部完成，R3 为 `pending` 或 reviews/ 缺测试/代码评审记录 | `devflow-review`（R3） |
+| R3 verdict 通过但 attended 人工确认列为 no | 呈人确认 R3 评审记录；同意后再进入 `devflow-ship` |
+| 评审 verdict 为 `重新设计` 或 findings 指向规格/设计漂移 | 回 `devflow-design` / `devflow-specify` 修正上游工件，并重新经过受影响的 R 门禁 |
 | 全部门禁通过，closeout.md 缺失 | `devflow-ship` |
 
 工件与聊天记忆冲突时，以工件为准。组件仓库根 `AGENTS.md` 可以覆盖路径与模板约定。

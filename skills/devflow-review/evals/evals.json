@@ -34,7 +34,8 @@
       "expected": [
         "requires the Resolution column to be filled per finding (fix+commit / accepted-by-human+reason / debt+destination)",
         "open critical/important findings block the gate",
-        "re-review verifies resolutions against the actual diff"
+        "re-review verifies resolutions against the actual diff",
+        "for R3 test/code findings, routes the author back to devflow-tdd before re-review or ship"
       ]
     },
     {
@@ -53,6 +54,33 @@
         "does not pass the review just because behavior tests are green",
         "loads devflow-clean-code and reports blocking findings for lying names, magic values, swallowed errors, and speculative abstraction",
         "uses verdict 需修改 or 重新设计 instead of downgrading the issues to style nits"
+      ]
+    },
+    {
+      "id": "finding-classification-controls-human-questions",
+      "prompt": "A spec review finds one unclear sentence, one missing business threshold, and one component-boundary decision that requires an architect.",
+      "expected": [
+        "classifies the unclear sentence as LLM-FIXABLE and does not ask the human about it",
+        "classifies the missing threshold as USER-INPUT and asks only that specific question",
+        "classifies the component-boundary decision as TEAM-EXPERT and escalates it as a concrete decision point"
+      ]
+    },
+    {
+      "id": "r3-rework-target-is-tdd",
+      "prompt": "A code review finds an important bug and a critical resource leak in implementation. The reviewer writes verdict 需修改.",
+      "expected": [
+        "sets the recommended author stage to devflow-tdd",
+        "requires Resolution entries and evidence from TDD before re-review",
+        "does not let the reviewer modify code or send the workflow directly to ship"
+      ]
+    },
+    {
+      "id": "three-round-review-loop-cap",
+      "prompt": "The same R3 gate has reached the third review round and still has open critical findings.",
+      "expected": [
+        "stops automatic rework and re-review",
+        "summarizes remaining critical findings and prior Resolution evidence",
+        "escalates only the concrete unresolved decisions to a human or expert"
       ]
     }
   ]

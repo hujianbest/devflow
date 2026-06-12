@@ -8,7 +8,7 @@ DevFlow 的目标一句话：**SDD 范式下生成 Clean Code 的代码，而不
 
 为此架构遵循两条设计原则：
 
-1. **流程最小化**：流程只保留产生质量的部分——阶段产物、人审把关点、TDD 纪律、独立评审。不维护流程状态机、节点路由器或多字段状态文件；进度从工件本身恢复。
+1. **流程最小化**：流程只保留产生质量的部分——阶段产物、人审把关点、TDD 纪律、独立评审。不维护额外节点路由器或多字段状态文件；进度从 `plan.md`、`reviews/` 与工件本身恢复。
 2. **内容最大化**：每个 skill 的主体是可操作的工程判断（规则 + 正反例 + 自检清单），而不是流程样板。skill 写法遵循 progressive disclosure：frontmatter 描述触发条件，SKILL.md 承载核心判断，references/ 承载详表与模板。
 
 ## 2. 三层质量模型到 Skill 的映射
@@ -60,11 +60,13 @@ skills/
 
 ```text
 specify → R1 review → design → R2 review → tdd（叠加 clean-code/语言/领域）→ R3 review
+   ↑          │          ↑          │          ↑                                     │
+   └ rework ──┘          └ rework ──┘          └──── R3 rework: fix findings + re-review
         → ship（DoD 核验 + promotion）→ [人确认关闭] → done
-缺陷旁路：fix（复现→根因→边界）→ tdd → R3 review → ship
+缺陷旁路：fix（复现→根因→边界）→ tdd → R3 review ↔ tdd rework → ship
 ```
 
-每个 R 节点 = `devflow-review` 独立评审 + 落盘记录（findings + resolution 闭环），是必经门禁。运行模式在工作流启动时确认一次并记入 plan.md：`attended`（默认，每个 R 节点后人工确认）/ `unattended`（连续执行；评审、记录、critical 阻塞照常，人事后审计 `reviews/`）。
+每个 R 节点 = `devflow-review` 独立评审 + 落盘记录（findings + resolution 闭环），是必经门禁。门禁状态存在 `plan.md`：`pending` 表示等待评审，`rework` 表示先回作者阶段修 findings，`passed` 表示可进入下一阶段。运行模式在工作流启动时确认一次并记入 plan.md：`attended`（默认，评审通过后可呈人确认）/ `unattended`（连续执行；评审、记录、critical 阻塞照常，人事后审计 `reviews/`）。
 
 工件模型（默认位于目标组件仓库根目录下的 `features/<id>-<slug>/`；团队可在组件根 `AGENTS.md` 覆盖等价路径）：
 

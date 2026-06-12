@@ -42,6 +42,18 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 - 实现中发现设计错误或规格漏洞：**停下任务**，在 plan.md 记录阻塞原因，回 `devflow-design` / `devflow-specify` 修正工件并重新评审，不在代码里悄悄绕过。
 - 中断恢复：按 plan.md 的「恢复指引」节执行——先看门禁表，再找第一个非 done 任务，以步骤勾选与证据行判断断点。
 
+## R3 返工模式
+
+`devflow-tdd` 不只从 R2 通过后进入；R3 测试/代码评审打回时也从这里恢复。进入返工模式时先读 plan.md 门禁表和最新 `reviews/` 记录，找出未闭环的 critical/important findings：
+
+1. **确定返工目标**：测试断言、RED 证据、实现 bug、代码整洁问题默认在本阶段修；如果 finding 证明 design.md 或 spec.md 本身错误，停止本阶段并回对应上游。
+2. **建立返工队列**：在 plan.md 的“评审返工队列”中为每条 finding 记录评审文件、finding 编号、目标任务/文件、测试命令、当前状态。已 `done` 的任务被命中时，不覆盖原任务证据；创建 `Tn-rework` 或在原任务下追加“R3 返工”条目。
+3. **按 TDD 修复**：测试弱或缺失 → 先写/加强会失败的测试并记录 RED；实现错误 → 先用失败测试复现；纯整洁问题且不改变行为 → 在全绿上 REFACTOR，并记录测试保持全绿。不得为了过评审弱化断言。
+4. **回填 Resolution**：每修完一条 finding，在原评审记录 Resolution 列写明修复摘要、commit 锚点、验证命令；同步更新 plan.md 返工队列状态。
+5. **复审而非 ship**：全部 open findings 闭环后，下一步必须回 R3 `devflow-review` 复审；复审通过前不能进入 `devflow-ship`。
+
+同一 R3 门禁最多自动返工复审 3 轮。第 3 轮仍有 critical/important，或复审持续发现同类新问题，停止自动循环，把剩余 findings、已做证据和需要人裁决的问题呈给人。
+
 ## 执行模式：默认派发 implementer subagent
 
 runtime 支持 subagent 时，**默认每个任务派发一个全新上下文的 implementer subagent**（角色定义见 repo 根目录 `agents/devflow-implementer.md`）执行：新上下文只依赖打包的输入工作，天然防止长会话的上下文漂移，也强制设计工件可冷读。
@@ -52,6 +64,8 @@ runtime 支持 subagent 时，**默认每个任务派发一个全新上下文的
 - design.md 相关章节（接口契约、错误模型摘录）与允许触碰的文件范围
 - 测试/构建命令、`devflow-clean-code`、适用的 `<language>-coding-standards` 与领域技能名
 - 返回契约：`DONE`（附 RED/GREEN/REFACTOR 证据行与 clean-code 自检摘要）/ `NEEDS_CONTEXT`（缺关键输入，回来重新打包）/ `BLOCKED`（越界或设计问题，附原因）
+
+R3 返工派发时，Context Pack 还必须包含 finding 摘录（评审文件路径、finding 编号、严重级、分类、修复方向）、关联任务或 `Tn-rework` 标识、需要回填的 Resolution 位置。subagent 返回时必须列出已解决的 finding 编号；父会话负责核对并写回评审记录。
 
 父会话职责：逐任务派发、校验返回的证据行、更新 plan.md 与 traceability、串联提交。subagent 返回 `BLOCKED` 提示设计问题时，父会话回 `devflow-design`，不催 subagent 硬做。
 
@@ -178,6 +192,8 @@ EXPECT_EQ(MODE_NORMAL, fake_event_queue_last().payload.mode);
 - 多个任务同时 in-progress
 - 跳过完整套件，只跑新测试就宣布完成
 - 为了让测试过而改弱断言，而不是修实现
+- R3 打回后直接再次评审，未先按 findings 创建返工任务、补证据并回填 Resolution
+- R3 修复完成后直接进入 ship，跳过复审
 
 ## 验证清单
 
@@ -191,6 +207,7 @@ EXPECT_EQ(MODE_NORMAL, fake_event_queue_last().payload.mode);
 - [ ] REFACTOR 没有改变行为；清理留在任务范围内；若为 `N/A`，plan.md 写明已对照 `devflow-clean-code` 自检的理由
 - [ ] plan.md 任务状态与 traceability.md 对应行已更新；本任务已提交
 - [ ] `devflow-clean-code` 与适用的语言/领域规范（coding-standards / embedded / automotive）已在实现中遵循
+- [ ] 若来自 R3 返工：每条 open finding 已映射到返工队列，Resolution 已回填，修复证据已记录，下一步是 R3 复审而不是 ship
 
 ## 支撑参考
 

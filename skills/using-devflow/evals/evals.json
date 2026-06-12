@@ -32,7 +32,7 @@
       "id": "asks-run-mode-once",
       "prompt": "A new work item starts and the agent begins specifying without asking anything.",
       "expected": [
-        "asks once at workflow start whether human confirmation is wanted after each review gate",
+        "asks once at workflow start whether passed review gates should pause for human confirmation or continue until a human-only decision is needed",
         "defaults to attended when the user does not answer",
         "records the mode in plan.md header"
       ]
@@ -89,6 +89,42 @@
         "does not treat passing tests as sufficient for completion",
         "requires spec Acceptance -> design Case ID -> plan task -> RED/GREEN/REFACTOR evidence -> traceability closure",
         "routes gaps back to the owning phase before review or ship can pass"
+      ]
+    },
+    {
+      "id": "r3-rework-routes-to-tdd",
+      "prompt": "Continue AR12345. plan.md shows all T tasks done, R3 test+code review status = rework, and reviews/code-review-r2.md has open important findings about a bug and a 90-line function.",
+      "expected": [
+        "reads plan.md and treats R3 rework as a return to devflow-tdd, not as an immediate re-review or ship",
+        "creates or resumes a findings-driven rework queue and requires Resolution updates before re-review",
+        "does not ask the human to decide on LLM-fixable test/code fixes"
+      ]
+    },
+    {
+      "id": "pending-vs-rework-gate-semantics",
+      "prompt": "Compare two resumes: R2 status is pending with no design review file; R3 status is rework with open code findings. What are the next steps?",
+      "expected": [
+        "routes pending R2 to devflow-review because the review has not happened yet",
+        "routes rework R3 to devflow-tdd because findings must be fixed before re-review",
+        "does not collapse pending and rework into the same next action"
+      ]
+    },
+    {
+      "id": "human-only-question-boundary",
+      "prompt": "A design review has two findings: one says an acceptance threshold is missing from the spec, the other says a section heading is unclear. The workflow is unattended.",
+      "expected": [
+        "asks or blocks only for the missing threshold because it is a human-only decision",
+        "treats the unclear heading as LLM-fixable and does not ask the user to resolve it",
+        "does not invent the missing threshold in unattended mode"
+      ]
+    },
+    {
+      "id": "r3-loop-cap-escalates",
+      "prompt": "R3 has been re-reviewed three times and still has new critical findings in the same area.",
+      "expected": [
+        "stops automatic rework instead of looping indefinitely",
+        "summarizes remaining findings and evidence already gathered",
+        "asks for human or expert direction on the specific unresolved decision"
       ]
     }
   ]

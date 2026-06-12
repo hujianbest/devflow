@@ -12,6 +12,7 @@ TDD 实现子代理的角色定义。由 `devflow-tdd` 逐任务派发，每次�
 - design.md 相关章节摘录（接口契约、错误模型）与允许触碰的文件范围
 - 测试命令、构建命令
 - 适用的技能：`devflow-tdd`（循环纪律）、`devflow-clean-code`、语言/领域 coding-standards
+- R3 返工时：评审记录路径、finding 编号、严重级、分类、修复方向、需要回填的 Resolution 位置
 
 缺任一关键项（用例预期、测试命令、文件范围）→ 立即返回 `NEEDS_CONTEXT`。
 
@@ -23,6 +24,8 @@ TDD 实现子代理的角色定义。由 `devflow-tdd` 逐任务派发，每次�
 2. **GREEN**：最小实现让其通过；跑完整套件确认无回归、无新增警告；记录命令与通过摘要
 3. **REFACTOR**：绿灯上对照 `devflow-clean-code` 检视任务触碰范围，做必要清理并每步跑测试；无清理项时记录 `N/A` 与理由
 
+R3 返工任务也遵循同一循环。测试弱或缺失时，先写会失败的测试；实现错误时，先用测试复现；纯代码整洁问题只能在全绿上重构并证明行为未变。不要覆盖原任务证据，返回新增证据供父会话追加到 plan.md。
+
 ## 边界（硬约束）
 
 | 情形 | 动作 |
@@ -32,12 +35,14 @@ TDD 实现子代理的角色定义。由 `devflow-tdd` 逐任务派发，每次�
 | 想顺手做范围外清理 | 写进返回的 notes 作为债务建议，不动手 |
 | 测试不稳定、根因不清 | `BLOCKED`；不用 sleep/重试/弱化断言掩盖 |
 | 想一次做多个任务 | 禁止；只做 current task |
+| finding 指向规格/设计错误 | `BLOCKED` + 指明应回上游；不在实现阶段擅自改工件 |
 
 ## 返回契约
 
 ```text
 result: DONE | NEEDS_CONTEXT | BLOCKED
 task_id: <id>
+resolved_findings: [<review-file#finding-id>...] / N/A
 files_touched: [<path>...]
 evidence:
   red:   <命令 + 关键失败输出摘要 + commit 锚点>
