@@ -2,8 +2,8 @@
 
 使用说明：
 
-- `plan.md` 是工作项的**执行计划与中断恢复的单一入口**：任何新会话（上下文完全丢失）只读 spec.md → design.md → plan.md 三个文件，就能从断点继续执行，不需要任何聊天记忆。这决定了它的写法标准：**每个任务自包含**——精确文件路径、测试用例锚点、验证命令、完成判据、REFACTOR 检视标准全部内联，不写「同上」「见聊天记录」。
-- 生命周期：`devflow-specify` 在工作流启动时建骨架（运行模式 + 门禁表 + 边界）；`devflow-design` 评审通过后由 `devflow-tdd` 细化任务拆解；TDD 执行期逐任务更新状态与证据行；各 R 评审节点更新门禁表。
+- `plan.md` 是工作项的**执行计划与中断恢复的单一入口**：任何新会话（上下文完全丢失）只读 spec.md → design.md → plan.md 三个文件，就能从断点继续执行，不需要任何聊天记忆。这决定了它的写法标准：**每个任务自包含**——组件根、工件根、精确文件路径、测试用例锚点、验证命令、完成判据、REFACTOR 检视标准全部内联，不写「同上」「见聊天记录」。
+- 生命周期：`devflow-specify` 在工作流启动时建骨架（组件根 + 工件根 + 运行模式 + 门禁表 + 边界）；`devflow-design` 评审通过后由 `devflow-tdd` 细化任务拆解；TDD 执行期逐任务更新状态与证据行；各 R 评审节点更新门禁表。
 - plan 是 design 测试设计的**执行索引层**，不是测试设计本身：不得新增 design.md 中没有的用例或业务事实；发现缺用例 → 回 `devflow-design`。
 
 ````markdown
@@ -12,6 +12,9 @@
 ## 运行模式与门禁状态
 
 - 运行模式: attended / unattended（工作流启动时向用户确认一次，此后沿用）
+- 组件根: `<absolute-or-repo-relative-component-root>`
+- 工件根: `<component-root>/features/<id>-<slug>`（或 `AGENTS.md` 覆盖后的等价路径）
+- 长期文档根: `<component-root>/docs`（或 `AGENTS.md` 覆盖后的等价路径）
 - 来源工件: spec.md@<commit> / design.md@<commit>
 
 | 门禁 | 状态 | 评审记录 | 人工确认（attended） |
@@ -25,11 +28,12 @@
 
 上下文丢失后从本文件恢复：
 
-1. 读 spec.md、design.md（必要时 component-design-draft.md）取得契约与测试设计；
-2. 看上方门禁表确定所处阶段：有 pending/rework 门禁 → 先去该门禁；
-3. 门禁全通过且有未完成任务 → 从下方第一个非 done 任务继续，按其「步骤」执行；
-4. in-progress 任务以其「步骤」勾选与证据行判断断点：有 RED 证据无 GREEN 证据 = 从实现继续；
-5. 运行模式以本文件头部为准，不重新询问。
+1. 先读取本文件头部的组件根、工件根、长期文档根，后续所有相对路径都以这些根解析；
+2. 读 spec.md、design.md（必要时 component-design-draft.md）取得契约与测试设计；
+3. 看上方门禁表确定所处阶段：有 pending/rework 门禁 → 先去该门禁；
+4. 门禁全通过且有未完成任务 → 从下方第一个非 done 任务继续，按其「步骤」执行；
+5. in-progress 任务以其「步骤」勾选与证据行判断断点：有 RED 证据无 GREEN 证据 = 从实现继续；
+6. 运行模式以本文件头部为准，不重新询问。
 
 ## 计划边界
 

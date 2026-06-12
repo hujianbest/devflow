@@ -1,6 +1,6 @@
 # traceability.md 模板
 
-使用说明：`devflow-specify` 初始化 `features/<id>-<slug>/traceability.md`，此后各阶段**只追加自己负责的列**：specify 填需求与上游锚点，design 填设计章节与测试设计用例，tdd 填任务/代码/测试/证据。它是 spec-design-code 一致性的显式约束：任何一列对不上，说明工件之间已经漂移。`devflow-review` 抽查它，`devflow-ship` 关闭前终验它。
+使用说明：`devflow-specify` 初始化组件根下 `features/<id>-<slug>/traceability.md`（或团队覆盖后的等价路径），此后各阶段**只追加自己负责的列**：specify 填需求与上游锚点，design 填设计章节与测试设计用例，tdd 填任务/代码/测试/证据。它是 spec-design-code 一致性的显式约束：任何一列对不上，说明工件之间已经漂移。`devflow-review` 抽查它，`devflow-ship` 关闭前终验它。
 
 ```markdown
 # <Work Item ID> 追溯矩阵

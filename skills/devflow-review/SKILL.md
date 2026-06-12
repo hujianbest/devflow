@@ -48,7 +48,7 @@ verdict 三选一：
 
 ### 4. 落盘评审记录（必做，与评审同时发生）
 
-记录写入 `features/<id>/reviews/<目标>-review-<日期>.md`，同一目标的复审追加轮次后缀（`-r2`、`-r3`）。每份记录包含：评审对象（含版本/commit）、findings 表（**含 Resolution 列**）、verdict、抽查记录（如做了 mutation 自检，写明改了哪行、哪个测试红了）。格式见 repo 根目录 `agents/devflow-reviewer.md` 的输出模板。
+记录写入同一组件根/工件根下 `features/<id>/reviews/<目标>-review-<日期>.md`（或团队覆盖路径），同一目标的复审追加轮次后缀（`-r2`、`-r3`）。每份记录包含：评审对象（含版本/commit）、findings 表（**含 Resolution 列**）、verdict、抽查记录（如做了 mutation 自检，写明改了哪行、哪个测试红了）。格式见 repo 根目录 `agents/devflow-reviewer.md` 的输出模板。
 
 ### 5. Findings 闭环（作者侧职责）
 

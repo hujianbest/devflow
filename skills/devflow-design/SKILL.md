@@ -17,22 +17,22 @@ description: 在规格确认后、写代码前做软件设计时使用；也在�
 
 | 级别 | 工件 | 何时需要 | 模板 |
 |---|---|---|---|
-| 组件级设计 | `features/<id>/component-design-draft.md` → ship 时 promote 到 `docs/component-design.md` | 工作项影响组件边界：对外接口 / 组件依赖 / 状态机 / 组件职责变化，或组件设计基线缺失、过期 | `references/devflow-component-design-template.md` |
-| 工作项级设计 | `features/<id>/design.md` | 每个工作项（微小修改可按 `using-devflow` 裁剪） | `references/devflow-ar-design-template.md` |
+| 组件级设计 | 组件根下 `features/<id>/component-design-draft.md` → ship 时 promote 到组件根下 `docs/component-design.md`（或团队覆盖路径） | 工作项影响组件边界：对外接口 / 组件依赖 / 状态机 / 组件职责变化，或组件设计基线缺失、过期 | `references/devflow-component-design-template.md` |
+| 工作项级设计 | 组件根下 `features/<id>/design.md`（或团队覆盖路径） | 每个工作项（微小修改可按 `using-devflow` 裁剪） | `references/devflow-ar-design-template.md` |
 
-**硬性顺序**：影响组件边界时，必须**先**修订组件设计草稿并经评审与模块架构师确认，**再**写工作项设计；工作项设计只能引用组件基线（功能编号、接口契约、软件单元），不得重新定义组件级架构。`docs/component-design.md` 不存在而工作项触及组件边界 → 先补建组件设计，不要在工作项设计里"顺便"定义组件架构。
+**硬性顺序**：影响组件边界时，必须**先**修订组件设计草稿并经评审与模块架构师确认，**再**写工作项设计；工作项设计只能引用组件基线（功能编号、接口契约、软件单元），不得重新定义组件级架构。组件根下 `docs/component-design.md`（或团队覆盖的组件设计基线）不存在而工作项触及组件边界 → 先补建组件设计，不要在工作项设计里"顺便"定义组件架构。
 
 **设计的第一律：简单性。** 满足当前规格的最少结构就是好结构。每多一层间接、一个抽象、一个配置项，都要付出理解、测试和演进的复利成本。本文所有原则最终都服务于这一条。
 
 ## 工作流
 
-1. **读 spec 与组件基线**：读已确认的 `spec.md` 和 `docs/component-design.md`（存在时），列出本变更触碰的既有模块与新增职责。
+1. **读 spec 与组件基线**：先读 plan.md 头部记录的组件根与工件根，或按 `using-devflow` 重新解析；读该组件根下已确认的 `spec.md` 和 `docs/component-design.md`（存在时，或团队覆盖路径），列出本变更触碰的既有模块与新增职责。
 2. **判定设计级别**：按 spec 的接口候选契约与影响面判断是否触及组件边界；触及 → 先按组件模板修订 `component-design-draft.md`，确认后再继续。
 3. **划分模块职责**（见下文 §职责与边界）。
 4. **设计接口契约与错误模型**（见 §接口契约、§错误模型）。
 5. **记录方案取舍**：有真实可选方案时写 2-3 个选项的对比；只有一个合理方案时写明其他方案为什么不成立（见 §方案取舍）。
 6. **写测试设计**：把 spec 的每条验收标准映射成测试用例表（见 §测试设计）。
-7. **更新追溯**：在 `features/<id>/traceability.md` 填入每条需求对应的组件设计章节 / 工作项设计章节 / 测试设计用例列。
+7. **更新追溯**：在组件根下 `features/<id>/traceability.md`（或团队覆盖路径）填入每条需求对应的组件设计章节 / 工作项设计章节 / 测试设计用例列。
 8. **自检**（文末清单）后进入 R2 门禁：由 `devflow-review` 按 design rubric 做**独立评审**并落盘记录（必经节点）；attended 模式下评审通过后呈人确认。**R2 门禁未通过前不进入实现。**
 
 实现中发现设计有误：停下、回来改 design.md（必要时回到组件设计）、重新评审确认，不在代码里悄悄偏离。

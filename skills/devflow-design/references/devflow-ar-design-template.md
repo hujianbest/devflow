@@ -2,7 +2,7 @@
 
 使用说明：
 
-- 本模板用于 `devflow-design` 产出工作项级设计 `features/<id>/design.md`，并在 `devflow-ship` 收尾时 promote 到 `docs/ar-designs/AR<id>-<slug>.md`。
+- 本模板用于 `devflow-design` 产出组件根下的工作项级设计 `features/<id>/design.md`（或团队覆盖路径），并在 `devflow-ship` 收尾时 promote 到组件根下 `docs/ar-designs/AR<id>-<slug>.md`（或团队覆盖路径）。
 - 正式交付件必须删除模板说明、示例业务内容和任何占位符；不得残留 `AI提示`、`TBD`、`{DATE}`、变量替换规则等模板痕迹。
 - 测试设计必须是本文档章节，不得拆成独立 `test-design.md`。
 - 本模板采用团队 AR 设计作业结构：AR 概述、动态行为、功能点分解、实现设计、适用领域场景设计、重构设计、测试设计、高质量设计增补、模板修订记录均为必填骨架。MDC / SELinux 等车载领域内容仅在启用 `automotive-development` 时填写；通用嵌入式风险内容由 `embedded-development` 提供。
@@ -20,7 +20,7 @@
 | 所属组件 |  |
 | 关联 IR / SR |  |
 | Owner / 开发负责人 |  |
-| 组件基线 | `docs/component-design.md` 章节 / 版本锚点 |
+| 组件基线 | 组件根下 `docs/component-design.md` 章节 / 版本锚点（或团队覆盖路径） |
 
 ## 2. 动态行为（必要）
 
@@ -68,7 +68,7 @@ autonumber
 - 业务流程与异常流程
 - 现有功能影响评估
 - 代码移植说明（如有）
-- 与 `docs/component-design.md` 的一致性说明
+- 与组件根下 `docs/component-design.md`（或团队覆盖的组件设计基线）的一致性说明
 
 ### 4.2 功能实现设计（必要）
 

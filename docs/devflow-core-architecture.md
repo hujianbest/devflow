@@ -66,7 +66,7 @@ specify → R1 review → design → R2 review → tdd（叠加 clean-code/语�
 
 每个 R 节点 = `devflow-review` 独立评审 + 落盘记录（findings + resolution 闭环），是必经门禁。运行模式在工作流启动时确认一次并记入 plan.md：`attended`（默认，每个 R 节点后人工确认）/ `unattended`（连续执行；评审、记录、critical 阻塞照常，人事后审计 `reviews/`）。
 
-工件模型（`features/<id>-<slug>/`）：
+工件模型（默认位于目标组件仓库根目录下的 `features/<id>-<slug>/`；团队可在组件根 `AGENTS.md` 覆盖等价路径）：
 
 | 工件 | 产出者 | 内容 |
 |---|---|---|
@@ -74,12 +74,12 @@ specify → R1 review → design → R2 review → tdd（叠加 clean-code/语�
 | `traceability.md` | specify 初始化，design/tdd 补列 | 追溯矩阵：需求→设计→测试→代码→证据，spec-design-code 一致性约束 |
 | `component-design-draft.md` | devflow-design | 组件级设计修订（影响组件边界时；企业模板） |
 | `design.md` | devflow-design | 工作项级设计：职责、接口契约、错误模型、测试设计、质量增补章节 |
-| `plan.md` | specify 建骨架，tdd 细化并维护 | 运行模式、门禁状态表、自包含任务拆解（用例锚点/精确路径/步骤/完成定义）+ 每任务 RED/GREEN 证据行；中断恢复的单一入口 |
+| `plan.md` | specify 建骨架，tdd 细化并维护 | 组件根、工件根、运行模式、门禁状态表、自包含任务拆解（用例锚点/精确路径/步骤/完成定义）+ 每任务 RED/GREEN 证据行；中断恢复的单一入口 |
 | `fix.md` | devflow-fix | 复现、根因、修复边界（缺陷工作项） |
 | `reviews/` | devflow-review | 每轮一份评审记录（findings 含 Resolution 列 + verdict + 抽查记录 + 人工确认） |
 | `closeout.md` | devflow-ship | DoD 核验摘要、promotion 路径表、债务去向 |
 
-长期资产（`docs/`）：`component-design.md`、`ar-specs/`、`ar-designs/`。由 `devflow-ship` 在收尾时从过程工件**语义化改写** promotion；其他阶段只读。组件级设计是团队开发流程要求：影响组件边界的工作项必须先修订组件设计并经模块架构师确认。
+长期资产（默认位于同一组件根下的 `docs/`）：`component-design.md`、`ar-specs/`、`ar-designs/`。由 `devflow-ship` 在收尾时从过程工件**语义化改写** promotion；其他阶段只读。组件级设计是团队开发流程要求：影响组件边界的工作项必须先修订组件设计并经模块架构师确认。
 
 进度恢复规则在 `using-devflow` 中定义：按工件存在性与确认状态判断下一步，工件优先于聊天记忆。
 
@@ -95,7 +95,7 @@ specify → R1 review → design → R2 review → tdd（叠加 clean-code/语�
 
 `commands/` 提供 slash-style 阶段入口（thin pointer，不复制 skill 内容）；`docs/guides/opencode-setup.md` 描述 OpenCode 接入。其他 runtime（Claude Code、Cursor 等）只需让其 skill 发现机制指向 `skills/`。平台适配不改变三层质量模型与工作流。
 
-项目级覆盖：组件仓库根目录的 `AGENTS.md` `## Project overrides` 可覆盖工件路径与模板；不创建时使用 `using-devflow` 内置默认值。
+项目级覆盖：组件仓库根目录的 `AGENTS.md` `## Project overrides` 可覆盖工件路径与模板；不创建时使用 `using-devflow` 内置默认值。路径覆盖只改变组件根内的相对工件位置，不应把工件写到 DevFlow skill 仓库或上级工作区根。
 
 ## 7. 与 1.x 的关系
 

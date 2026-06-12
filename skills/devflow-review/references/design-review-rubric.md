@@ -1,6 +1,6 @@
 # 设计评审 Rubric
 
-> 评审对象：`features/<id>/design.md`，以及（影响组件边界时）`component-design-draft.md`。上游输入：已确认的 spec.md、既有 `docs/component-design.md`。作者侧标准见 `devflow-design` 与两份模板的「高质量设计增补」章节。
+> 评审对象：组件根下 `features/<id>/design.md`，以及（影响组件边界时）`component-design-draft.md`（或团队覆盖路径）。上游输入：已确认的 spec.md、组件根下既有 `docs/component-design.md`（或团队覆盖路径）。作者侧标准见 `devflow-design` 与两份模板的「高质量设计增补」章节。
 >
 > 核心怀疑：**拿着这份设计，实现者还需要"发明"什么吗？复杂度配得上规格吗？**
 

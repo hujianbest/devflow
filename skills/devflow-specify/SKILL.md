@@ -11,13 +11,13 @@ description: 在开始一个新的开发工作项（功能、变更、需要正�
 
 写规格时你在对抗的失败模式：需求含糊 → 模型靠猜补全 → 做出来的不是用户要的东西。所以规格阶段的纪律是：**澄清而不臆造**。你可以追问、可以提出方案让人选择，但不能替人决定业务规则、优先级和验收阈值。
 
-产出：`features/<id>-<slug>/spec.md`（模板见 `references/requirement-template.md`）。
+产出：组件根下的 `features/<id>-<slug>/spec.md`（模板见 `references/requirement-template.md`；组件仓库根 `AGENTS.md` 覆盖路径时使用覆盖后的工件根）。
 
 ## 工作流
 
 ### 1. 收集上下文
 
-读取：用户的原始请求、上游单据（如有）、相关的长期文档（组件设计、接口文档）、项目 `AGENTS.md`。判断工作项类型：新功能（AR）、变更（CHANGE）、缺陷（DTS，通常先经 `devflow-fix` 产出根因再回到这里）。
+读取：用户的原始请求、上游单据（如有）、相关的长期文档（组件设计、接口文档）、组件仓库根 `AGENTS.md`。先按 `using-devflow` 的路径解析纪律确定组件根与工件根；没有确定组件根前不创建 `features/` 或 `docs/`。判断工作项类型：新功能（AR）、变更（CHANGE）、缺陷（DTS，通常先经 `devflow-fix` 产出根因再回到这里）。
 
 ### 2. 澄清（Capture → Challenge → Clarify）
 
@@ -88,8 +88,8 @@ description: 在开始一个新的开发工作项（功能、变更、需要正�
 
 ### 6. 初始化追溯矩阵与执行计划骨架
 
-- 按 `references/traceability-template.md` 初始化 `features/<id>/traceability.md`：每条核心 FR/NFR/IFR/可测 CON 一行，填入需求条目、Change Type、上游锚点列；设计/实现列留给后续阶段。ASM/EXC 放入备注或范围说明，不伪装成实现追溯行。追溯矩阵是 spec-design-code 一致性的显式约束，`devflow-review` 抽查、`devflow-ship` 终验。
-- 按 `devflow-tdd/references/plan-template.md` 建立 `features/<id>/plan.md` 骨架：写入运行模式（工作流启动时向用户确认的 attended/unattended）、门禁状态表、计划边界；任务拆解留给 `devflow-tdd` 在设计评审通过后细化。
+- 按 `references/traceability-template.md` 初始化 `<component-root>/features/<id>/traceability.md`（或组件仓库覆盖后的等价路径）：每条核心 FR/NFR/IFR/可测 CON 一行，填入需求条目、Change Type、上游锚点列；设计/实现列留给后续阶段。ASM/EXC 放入备注或范围说明，不伪装成实现追溯行。追溯矩阵是 spec-design-code 一致性的显式约束，`devflow-review` 抽查、`devflow-ship` 终验。
+- 按 `devflow-tdd/references/plan-template.md` 建立 `<component-root>/features/<id>/plan.md`（或组件仓库覆盖后的等价路径）骨架：写入组件根、工件根、运行模式（工作流启动时向用户确认的 attended/unattended）、门禁状态表、计划边界；任务拆解留给 `devflow-tdd` 在设计评审通过后细化。
 
 ### 7. 自检并交评审
 
@@ -151,7 +151,7 @@ description: 在开始一个新的开发工作项（功能、变更、需要正�
 - [ ] Open Questions 已分类；blocking 项已闭合或显式交回负责人
 - [ ] 通篇没有实现细节（签名、数据结构、库、并发原语）
 - [ ] traceability.md 已初始化，每条核心需求有行，需求/Change Type/上游锚点列已填
-- [ ] plan.md 骨架已建立：运行模式（已向用户确认）、门禁状态表、计划边界
+- [ ] plan.md 骨架已建立：组件根、工件根、运行模式（已向用户确认）、门禁状态表、计划边界
 
 ## 支撑参考
 

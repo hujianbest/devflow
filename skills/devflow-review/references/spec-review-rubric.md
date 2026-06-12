@@ -1,6 +1,6 @@
 # 规格评审 Rubric
 
-> 评审对象：`features/<id>/spec.md`。上游输入：用户原始请求/上游单据。作者侧标准见 `devflow-specify`。
+> 评审对象：组件根下 `features/<id>/spec.md`（或团队覆盖路径）。上游输入：用户原始请求/上游单据。作者侧标准见 `devflow-specify`。
 >
 > 核心怀疑：**两个不同的人读这份规格，会做出同一个东西吗？**
 

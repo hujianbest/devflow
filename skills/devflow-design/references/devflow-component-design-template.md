@@ -2,7 +2,7 @@
 
 使用说明：
 
-- 本模板用于 `devflow-design` 在工作项影响组件边界（对外接口 / 依赖 / 状态机 / 组件职责）时产出 `features/<id>/component-design-draft.md`，经评审与模块架构师确认后，由 `devflow-ship` promote 到 `docs/component-design.md`。
+- 本模板用于 `devflow-design` 在工作项影响组件边界（对外接口 / 依赖 / 状态机 / 组件职责）时产出组件根下 `features/<id>/component-design-draft.md`（或团队覆盖路径），经评审与模块架构师确认后，由 `devflow-ship` promote 到组件根下 `docs/component-design.md`（或团队覆盖路径）。
 - 正式交付件必须删除模板说明、示例业务内容和任何占位符；不得残留 `AI提示`、`TBD`、`{DATE}` 等模板痕迹。
 - 本文档采用团队组件设计作业结构：修订记录、术语、概述、输入、组件详细设计、关键功能设计、评审纪要、成本评估、高质量设计增补均为必填骨架。
 - 本文档是工作项级设计（design.md）的组件基线，下游工作项设计必须引用功能编号、接口契约、软件单元、功能场景时序图和测试项，不得重新定义组件级架构。

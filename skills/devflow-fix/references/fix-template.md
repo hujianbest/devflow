@@ -1,6 +1,6 @@
 # fix.md 模板
 
-使用说明：`devflow-fix` 生成 `features/DTS<id>-<slug>/fix.md` 的默认模板。按严重度伸缩：简单缺陷可精简，但「复现」「根因三层」「先失败的复现测试」不可省。
+使用说明：`devflow-fix` 生成组件根下 `features/DTS<id>-<slug>/fix.md`（或团队覆盖路径）的默认模板。按严重度伸缩：简单缺陷可精简，但「复现」「根因三层」「先失败的复现测试」不可省。
 
 ```markdown
 # DTS<id> <标题>

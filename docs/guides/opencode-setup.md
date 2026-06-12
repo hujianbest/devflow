@@ -9,7 +9,7 @@ DevFlow integrates with OpenCode through:
 - The [`using-devflow`](../../skills/using-devflow/SKILL.md) entry skill — the three-layer quality model, workflow map, artifact conventions, and behavior rules.
 - OpenCode's built-in `skill` tool, which automatically discovers any `SKILL.md` under `skills/`.
 - Optional slash-style commands under `commands/` for teams that prefer explicit phase entry.
-- An optional project-level `AGENTS.md` `## Project overrides` section in your component repository to override default artifact paths and templates.
+- An optional project-level `AGENTS.md` `## Project overrides` section in your component repository to override default artifact paths and templates. Default `features/` and `docs/` paths are resolved under the target component repository root, not the DevFlow skill-pack directory or a parent workspace.
 
 This is an **agent-driven** workflow: skills are selected automatically by intent. Slash commands are thin pointers, not a separate mechanism.
 
@@ -50,7 +50,7 @@ OpenCode reads each skill's YAML frontmatter `description` (triggering condition
 | User says… | Agent loads |
 |---|---|
 | "Help me clarify AR12345" | `using-devflow` → `devflow-specify` |
-| "Continue AR12345" | `using-devflow` (recovers stage from `features/AR12345-*/` artifacts) |
+| "Continue AR12345" | `using-devflow` (recovers stage from the target component root's `features/AR12345-*/` artifacts) |
 | "Design the approved spec" | `devflow-design` (+ applicable language/domain skills) |
 | "Implement the next task" | `devflow-tdd` + `devflow-clean-code` (+ language/domain skills) |
 | "Review the tests / the code" | `devflow-review` (dispatches an independent reviewer subagent) |
@@ -66,7 +66,7 @@ R2        devflow-review         → reviews/design-review-*.md (human confirms 
 BUILD     devflow-tdd            → code + tests, plan.md with task progress & evidence lines
                                    (dispatches implementer subagents by default)
 R3        devflow-review         → reviews/test-review-*.md, code-review-*.md
-SHIP      devflow-ship           → DoD check, promotion to docs/, closeout.md
+SHIP      devflow-ship           → DoD check, promotion to component-root docs/, closeout.md
 FIX       devflow-fix            → fix.md, then back through TDD + R3
 ```
 

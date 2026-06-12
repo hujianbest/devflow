@@ -19,9 +19,9 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 
 ## 计划与任务组织
 
-实现的输入是 design.md 的**测试设计表**；执行的载体是 `features/<id>/plan.md`（模板见 `references/plan-template.md`）。
+实现的输入是 design.md 的**测试设计表**；执行的载体是组件根下 `features/<id>/plan.md`（或团队覆盖路径；模板见 `references/plan-template.md`）。
 
-**进入实现前先细化 plan.md**（specify 阶段已建骨架：运行模式 + 门禁表）：把测试设计表的用例组织成任务，每个任务**自包含**——用例锚点（含 Given/When/Then 摘要）、精确文件路径、RED/GREEN/REFACTOR 步骤与验证命令、完成定义全部内联。细化完成后先核对：plan 覆盖的 Case ID 集合必须等于 design.md 测试设计表的 Case ID 全集；缺失或新增都说明工件漂移，先回 `devflow-design` 修正。标准只有一个：**一个全新会话只读 spec.md + design.md + plan.md 就能从任意断点继续执行**。"同上""见前文"式的任务描述使中断恢复失效，按违规处理。
+**进入实现前先细化 plan.md**（specify 阶段已建骨架：组件根 + 工件根 + 运行模式 + 门禁表）：把测试设计表的用例组织成任务，每个任务**自包含**——用例锚点（含 Given/When/Then 摘要）、精确文件路径、RED/GREEN/REFACTOR 步骤与验证命令、完成定义全部内联。细化完成后先核对：plan 覆盖的 Case ID 集合必须等于 design.md 测试设计表的 Case ID 全集；缺失或新增都说明工件漂移，先回 `devflow-design` 修正。标准只有一个：**一个全新会话只读 spec.md + design.md + plan.md 就能从任意断点继续执行**。"同上""见前文"式的任务描述使中断恢复失效，按违规处理。
 
 每个任务完成时在 plan.md 附上 RED/GREEN/REFACTOR 证据行（命令 + 关键输出摘要 + commit 锚点；REFACTOR 可为有理由的 `N/A`）——这是评审者和人核验"测试真的失败过、真的在最终代码上跑过、代码已经过 clean-code 检视"的最低限度证据，不接受只有叙述没有输出的"证据"：
 
@@ -37,7 +37,7 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 
 - **一次只有一个 in-progress 任务**。每个任务是一个薄垂直切片：完成后可构建、全部测试通过、可独立提交。
 - 任务循环：取 plan.md 第一个未完成任务 → RED → GREEN → REFACTOR → 补证据行与 traceability → 更新任务状态 → 下一个。**REFACTOR 是默认步骤，不是可选收尾**；如果 GREEN 后已无任务内异味，只能记录 `REFACTOR: N/A` 并写明已对照 `devflow-clean-code` 自检的理由。**每步勾选实时更新到 plan.md**，断点信息只存在于磁盘，不存在于会话记忆。
-- 任务完成时更新 `features/<id>/traceability.md` 对应行的任务 ID、代码文件、测试代码文件、验证证据列。
+- 任务完成时更新同一组件根/工件根下 `features/<id>/traceability.md`（或团队覆盖路径）对应行的任务 ID、代码文件、测试代码文件、验证证据列。
 - plan 是测试设计的执行索引：不得新增 design.md 中没有的用例或业务事实；发现缺用例 → 回 `devflow-design`。
 - 实现中发现设计错误或规格漏洞：**停下任务**，在 plan.md 记录阻塞原因，回 `devflow-design` / `devflow-specify` 修正工件并重新评审，不在代码里悄悄绕过。
 - 中断恢复：按 plan.md 的「恢复指引」节执行——先看门禁表，再找第一个非 done 任务，以步骤勾选与证据行判断断点。

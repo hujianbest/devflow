@@ -12,7 +12,7 @@ description: 在工作项全部任务完成、测试与代码评审闭环后收�
 对应两个动作，缺一不可：
 
 1. **完成核验**：对照 Definition of Done 逐项检查证据。"评审通过了"不等于"可以关闭"——DoD 是人在最后把关时的固定核验清单，防止靠印象关单。
-2. **资产沉淀（promotion）**：把 `features/<id>/` 里已确认的规格与设计**语义化改写**为长期文档。过程工件是给本次开发用的；长期资产是给下一个工作项、下一个人、下一轮 AI 用的。不做 promotion，工件就停在 features/ 里腐烂，组件设计基线逐渐失真。
+2. **资产沉淀（promotion）**：把组件根下 `features/<id>/`（或团队覆盖路径）里已确认的规格与设计**语义化改写**为同一组件根下的长期文档。过程工件是给本次开发用的；长期资产是给下一个工作项、下一个人、下一轮 AI 用的。不做 promotion，工件就停在 features/ 里腐烂，组件设计基线逐渐失真。
 
 收尾不修代码、不补测试：核验发现缺口 → 回对应阶段补，补完再回来。
 
@@ -32,7 +32,7 @@ description: 在工作项全部任务完成、测试与代码评审闭环后收�
 
 ### 2. 追溯终验
 
-通读 `features/<id>/traceability.md`：每条需求 → 设计章节 → 测试用例 → 代码/测试文件 → 证据的链路闭合；`N/A` 项有理由。断链 = spec-design-code 不一致的直接信号，按 critical 处理。
+通读同一组件根/工件根下 `features/<id>/traceability.md`（或团队覆盖路径）：每条需求 → 设计章节 → 测试用例 → 代码/测试文件 → 证据的链路闭合；`N/A` 项有理由。断链 = spec-design-code 不一致的直接信号，按 critical 处理。
 
 ### 3. Promotion
 
@@ -40,19 +40,19 @@ description: 在工作项全部任务完成、测试与代码评审闭环后收�
 
 | 过程工件 | 长期资产 | 条件 |
 |---|---|---|
-| `spec.md` | `docs/ar-specs/<id>-<slug>.md` | AR/CHANGE 工作项必做；纯缺陷（无规格变更）N/A |
-| `design.md` | `docs/ar-designs/<id>-<slug>.md` | 有正式设计的工作项必做 |
-| `component-design-draft.md` | `docs/component-design.md` | 本工作项修订了组件设计时必做（模块架构师确认后） |
+| `spec.md` | 组件根下 `docs/ar-specs/<id>-<slug>.md`（或团队覆盖路径） | AR/CHANGE 工作项必做；纯缺陷（无规格变更）N/A |
+| `design.md` | 组件根下 `docs/ar-designs/<id>-<slug>.md`（或团队覆盖路径） | 有正式设计的工作项必做 |
+| `component-design-draft.md` | 组件根下 `docs/component-design.md`（或团队覆盖路径） | 本工作项修订了组件设计时必做（模块架构师确认后） |
 
 promotion 是**语义化改写**，不是复制：去掉 Open Questions、过程笔记、评审应答；保留追溯锚点（ID、来源、测试设计用例、评审记录路径）；在长期文档的变更记录表追加本次修订（日期、触发工作项、摘要）。组件设计只更新受影响章节，不顺手重排其他章节。
 
 ### 4. Closeout 记录
 
-写 `features/<id>/closeout.md`（一页内）：DoD 核验结果摘要、promotion 路径表（同步了什么 / N/A 及理由）、遗留债务清单（带去向：新工作项 / 登记的 issue）、复盘一句话（本次流程哪里最磨损，反哺 skill 或模板）。
+写同一组件根/工件根下 `features/<id>/closeout.md`（或团队覆盖路径，一页内）：DoD 核验结果摘要、promotion 路径表（同步了什么 / N/A 及理由）、遗留债务清单（带去向：新工作项 / 登记的 issue）、复盘一句话（本次流程哪里最磨损，反哺 skill 或模板）。
 
 ### 5. 人确认关闭
 
-把 closeout 呈给人。人确认后工作项关闭；`features/<id>/` 原地保留（不移动、不删除），保证追溯链接长期有效。
+把 closeout 呈给人。人确认后工作项关闭；组件根下 `features/<id>/`（或团队覆盖路径）原地保留（不移动、不删除），保证追溯链接长期有效。
 
 ## 风险信号
 

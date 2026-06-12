@@ -20,6 +20,15 @@
       ]
     },
     {
+      "id": "component-root-artifact-placement",
+      "prompt": "Use DevFlow for AR12345 in component directory D:/workspace/components/notification, while the current shell is at D:/workspace. Generate the spec artifacts.",
+      "expected": [
+        "resolves D:/workspace/components/notification as the component root before creating or reading artifacts",
+        "creates features/AR12345-*/spec.md, traceability.md, and plan.md under that component root, not under D:/workspace",
+        "records or reports the resolved component root and artifact root before proceeding"
+      ]
+    },
+    {
       "id": "asks-run-mode-once",
       "prompt": "A new work item starts and the agent begins specifying without asking anything.",
       "expected": [

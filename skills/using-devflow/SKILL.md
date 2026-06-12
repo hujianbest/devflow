@@ -70,6 +70,16 @@ DevFlow 把「产出高质量代码」拆成由外到内的三层质量。第一
 
 ## 工件约定
 
+### 路径解析纪律
+
+DevFlow 工件路径一律相对于**目标组件仓库根目录**解析，而不是相对于当前会话所在目录或 DevFlow skills 仓库。开始、恢复、评审、实现、收尾前都先确定组件根：
+
+1. 用户显式给出组件目录时，以该目录为组件根；
+2. 否则读取当前仓库根的 `AGENTS.md` / 团队约定，若声明目标组件根或路径覆盖则遵循；
+3. 仍无法确定时，使用当前工作目录所在的组件仓库根；如果当前目录不是目标组件仓库，先停下询问。
+
+默认 `features/` 与 `docs/` 都是组件根下的相对路径：`<component-root>/features/...`、`<component-root>/docs/...`。组件仓库根 `AGENTS.md` 可以覆盖这些相对路径与模板约定；覆盖后所有阶段必须使用覆盖路径，不再回退到默认根目录路径。产出前先在回复或 plan.md 头部写明解析出的组件根与工件根，避免把工件误建到上级仓库根。
+
 每个工作项一个目录（`AR<id>`/`DTS<id>`/`CHANGE<id>` 或团队等价编号）：
 
 ```text
@@ -84,7 +94,7 @@ features/<id>-<slug>/
   closeout.md                 # 收尾记录（devflow-ship 产出）
 ```
 
-长期资产在 `docs/`（`component-design.md`、`ar-specs/`、`ar-designs/`），由 `devflow-ship` 在收尾时从过程工件 promotion，平时各阶段只读。
+长期资产在组件根下 `docs/`（`component-design.md`、`ar-specs/`、`ar-designs/`，或团队覆盖路径），由 `devflow-ship` 在收尾时从过程工件 promotion，平时各阶段只读。
 
 恢复进度时**先读 `plan.md`**（运行模式 + 阶段门禁状态 + 当前任务），再按工件状态校验，不依赖聊天记忆：
 
@@ -99,7 +109,7 @@ features/<id>-<slug>/
 | 评审有未闭环 findings | 按 findings 返工对应阶段，修复后更新评审记录的 resolution |
 | 全部门禁通过，closeout.md 缺失 | `devflow-ship` |
 
-工件与聊天记忆冲突时，以工件为准。项目根 `AGENTS.md` 可以覆盖路径与模板约定。
+工件与聊天记忆冲突时，以工件为准。组件仓库根 `AGENTS.md` 可以覆盖路径与模板约定。
 
 ## 行为准则
 

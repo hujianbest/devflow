@@ -25,7 +25,7 @@
 
 ## 输出
 
-写入 `features/<id>/reviews/<目标>-review-<日期>.md`（复审追加 `-r2`/`-r3` 轮次后缀）：
+写入同一组件根/工件根下 `features/<id>/reviews/<目标>-review-<日期>.md`（或团队覆盖路径；复审追加 `-r2`/`-r3` 轮次后缀）：
 
 ```markdown
 # <目标> Review <日期>（第 n 轮）

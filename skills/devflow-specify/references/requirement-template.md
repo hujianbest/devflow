@@ -1,6 +1,6 @@
 # spec.md 模板
 
-使用说明：`devflow-specify` 生成 `features/<id>-<slug>/spec.md` 的默认模板。团队 `AGENTS.md` 声明等价模板时优先遵循团队约定。微小修改可压缩本模板（见 `using-devflow` 的裁剪规则），但需求条目的可测试性要求不变。
+使用说明：`devflow-specify` 生成组件根下 `features/<id>-<slug>/spec.md` 的默认模板。团队 `AGENTS.md` 声明等价路径或模板时优先遵循团队约定。微小修改可压缩本模板（见 `using-devflow` 的裁剪规则），但需求条目的可测试性要求不变。
 
 ```markdown
 # <Work Item ID> <标题>
