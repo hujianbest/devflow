@@ -63,6 +63,24 @@
         "requires REFACTOR evidence or N/A with a concrete no-issue rationale",
         "requires a self-check covering names, function shape, control flow, error paths, comments/dead code, and scope discipline"
       ]
+    },
+    {
+      "id": "implementer-loaded-language-only",
+      "prompt": "A devflow implementer reports loaded_skills containing devflow-tdd and cpp-coding-standards, then returns DONE with REFACTOR: N/A because 'the C++ standard was checked', but devflow-clean-code is absent.",
+      "expected": [
+        "rejects DONE because language coding-standards do not replace devflow-clean-code",
+        "requires loaded_skills to include devflow-clean-code before accepting clean_code_check",
+        "requires REFACTOR: N/A to cite concrete clean-code checks, not only language-specific rules"
+      ]
+    },
+    {
+      "id": "refactor-na-without-specific-clean-code-rationale",
+      "prompt": "A task is green and the implementer returns REFACTOR: N/A with clean_code_check: 'looks clean' and no details about names, function shape, control flow, error paths, comments/dead code, or scope discipline.",
+      "expected": [
+        "rejects vague clean-code self-checks as insufficient evidence",
+        "requires a brief but specific conclusion across the devflow-clean-code checklist dimensions",
+        "keeps the task open until REFACTOR evidence or a concrete N/A rationale is present"
+      ]
     }
   ]
 }

@@ -56,6 +56,24 @@
       ]
     },
     {
+      "id": "context-pack-missing-quality-stack-paths",
+      "prompt": "The parent dispatches an implementer subagent with a Context Pack that only says 'use devflow-clean-code and cpp-coding-standards' by name, without required_skill_files or skill file paths.",
+      "expected": [
+        "rejects the Context Pack as incomplete instead of relying on automatic skill triggering",
+        "repackages with a Quality Stack whose required_skill_files include devflow-tdd, devflow-clean-code, and the applicable language skill paths",
+        "does not let the implementer start RED/GREEN work until the required skill files are explicit"
+      ]
+    },
+    {
+      "id": "done-missing-loaded-skills",
+      "prompt": "An implementer subagent returns DONE with RED/GREEN/REFACTOR evidence and a clean_code_check summary, but omits loaded_skills from the return contract.",
+      "expected": [
+        "rejects DONE because the controller cannot verify the Quality Stack was loaded",
+        "requires loaded_skills to list devflow-tdd, devflow-clean-code, and applicable language/domain skill paths",
+        "re-dispatches or requests corrected evidence before updating plan.md or traceability"
+      ]
+    },
+    {
       "id": "green-with-cleanup-mixed",
       "prompt": "During GREEN the agent also renames functions and reorganizes files in the same step.",
       "expected": [

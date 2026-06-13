@@ -7,7 +7,7 @@ description: 在编写、修改或评审 C++ 代码（类、模板、RAII、智�
 
 ## 总览
 
-现代 C++ 的核心承诺：**资源安全可以由结构保证，而不是靠每个人小心。** 本技能在 `devflow-clean-code` 之上叠加 C++ 规则，取向与 C++ Core Guidelines 一致；项目声明了 AUTOSAR C++ / 团队子集时以项目为准。
+现代 C++ 的核心承诺：**资源安全可以由结构保证，而不是靠每个人小心。** 本技能在 `devflow-clean-code` 之上叠加 C++ 规则，不能替代通用 clean-code 自检；取向与 C++ Core Guidelines 一致，项目声明了 AUTOSAR C++ / 团队子集时以项目为准。
 
 ## RAII：资源唯一正解
 

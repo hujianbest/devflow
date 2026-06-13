@@ -11,10 +11,16 @@ TDD 实现子代理的角色定义。由 `devflow-tdd` 逐任务派发，每次�
 - 任务 ID 与对应测试设计用例（Case ID、场景 Given/When/Then、预期结果）
 - design.md 相关章节摘录（接口契约、错误模型）与允许触碰的文件范围
 - 测试命令、构建命令
-- 适用的技能：`devflow-tdd`（循环纪律）、`devflow-clean-code`、语言/领域 coding-standards
+- Quality Stack：`required_skill_files`（必须读取的 skill 文件路径）与每个技能在本任务中的用途，至少包含 `devflow-tdd`、`devflow-clean-code`，以及适用的语言/领域 coding-standards
 - R3 返工时：评审记录路径、finding 编号、严重级、分类、修复方向、需要回填的 Resolution 位置
 
-缺任一关键项（用例预期、测试命令、文件范围）→ 立即返回 `NEEDS_CONTEXT`。
+缺任一关键项（用例预期、测试命令、文件范围、Quality Stack）→ 立即返回 `NEEDS_CONTEXT`。
+
+## 启动协议
+
+执行任务前先读取 Quality Stack 中的 `required_skill_files`，并在返回的 `loaded_skills` 中列出实际读取的技能名与路径。`devflow-clean-code` 是 REFACTOR 与 `clean_code_check` 的通用基准；语言/领域 coding-standards 只提供叠加约束，不能替代它。
+
+如果 Context Pack 只给了技能名、缺文件路径，或缺少 `devflow-clean-code` / 适用的语言技能，返回 `NEEDS_CONTEXT` 并说明缺哪一项；不要靠模型自动触发来补齐。若某个路径读取失败，也返回 `NEEDS_CONTEXT`，让父会话重新打包。
 
 ## 执行
 
@@ -44,6 +50,8 @@ result: DONE | NEEDS_CONTEXT | BLOCKED
 task_id: <id>
 resolved_findings: [<review-file#finding-id>...] / N/A
 files_touched: [<path>...]
+loaded_skills:
+  - <skill-name>: <skill-file-path>
 evidence:
   red:   <命令 + 关键失败输出摘要 + commit 锚点>
   green: <命令 + 通过摘要 + commit 锚点>
@@ -52,4 +60,4 @@ clean_code_check: <命名/函数/控制流/错误路径/注释死代码/范围�
 notes: <一段话：循环摘要 / 债务建议 / BLOCKED 原因>
 ```
 
-`DONE` 必须满足：用例全部先红后绿、完整套件通过、REFACTOR 记录存在、clean-code 自检完成、证据真实可核。父会话负责把证据写入 plan.md、更新 traceability、提交。
+`DONE` 必须满足：`loaded_skills` 覆盖 Quality Stack（含 `devflow-tdd`、`devflow-clean-code` 与适用语言/领域技能）、用例全部先红后绿、完整套件通过、REFACTOR 记录存在、clean-code 自检完成、证据真实可核。父会话负责把证据写入 plan.md、更新 traceability、提交。

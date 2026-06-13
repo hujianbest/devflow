@@ -38,7 +38,7 @@ description: 在编写、修改或评审 <语言> 代码（<源文件/测试/构
 
 **三不收**：
 
-1. 通用整洁代码规则 → `devflow-clean-code`（技能开头一行引用："本技能在 `devflow-clean-code` 之上叠加 <语言> 规则"）
+1. 通用整洁代码规则 → `devflow-clean-code`（技能开头一行引用："本技能在 `devflow-clean-code` 之上叠加 <语言> 规则，不能替代通用 clean-code 自检"）
 2. 工程领域规则（中断、实时性、ASIL、Web 安全策略等） → 对应领域技能
 3. 流程规则（评审/提交/分支/文档） → AGENTS.md 或团队流程文档
 
@@ -76,12 +76,12 @@ description: 在编写、修改或评审 <语言> 代码（<源文件/测试/构
 
 ## 7. 消费点（语言技能如何被 DevFlow 使用）
 
-语言技能自身不是流程阶段，被以下位置按"适用的 `<language>-coding-standards`"约定引用——**因此新增语言无需改任何阶段技能**：
+语言技能自身不是流程阶段，也不是 `devflow-clean-code` 的替代品。被以下位置按"适用的 `<language>-coding-standards`"约定引用时，必须与 `devflow-clean-code` 同时进入 Quality Stack——**因此新增语言无需改任何阶段技能**：
 
 | 消费方 | 用法 |
 |---|---|
 | `devflow-design` | 设计接口契约/错误模型时遵循语言的错误策略与所有权表达 |
-| `devflow-tdd` / implementer subagent | 实现与重构时遵循；Context Pack 注明适用技能名 |
+| `devflow-tdd` / implementer subagent | 实现与重构时遵循；Context Pack 的 `required_skill_files` 同时列出 `devflow-clean-code` 与适用语言技能路径，返回的 `loaded_skills` 必须覆盖二者 |
 | `devflow-review` code rubric | "语言与领域规则"节逐项检查 |
 | `devflow-ship` DoD | 适用约束审计表中每种语言一行（clean / documented-debt / critical-open / N/A） |
 | `using-devflow` | 按命名约定发现：工作项触及语言 X 的代码 → 叠加 `<x>-coding-standards`（存在时） |
@@ -93,7 +93,7 @@ description: 在编写、修改或评审 <语言> 代码（<源文件/测试/构
 ## 9. 验收清单
 
 - [ ] 命名、布局、frontmatter 符合 §1-2
-- [ ] 全部规则是语言级；与 clean-code/领域技能零重复；冲突已标注
+- [ ] 全部规则是语言级；与 clean-code/领域技能零重复；冲突已标注；总览明确本技能叠加在 `devflow-clean-code` 之上且不能替代它
 - [ ] 每条规则三要素齐全；无不可判定词
 - [ ] 每个主题节至少一组目标语言正反例
 - [ ] 工具链节是真实命令与基线，不是泛泛建议

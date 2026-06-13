@@ -1,6 +1,6 @@
 ---
 name: devflow-clean-code
-description: 在编写、修改或重构任何实现代码与测试代码时使用；也在代码评审需要内在质量判据、或发现命名混乱/函数过长/嵌套过深/错误处理散乱等代码异味时使用。语言无关的整洁代码标准；语言细则见对应的 <language>-coding-standards 技能（如 c-coding-standards、cpp-coding-standards）。
+description: 在编写、修改或重构任何实现代码与测试代码时使用；TDD implementer 进入 GREEN/REFACTOR 和返回 clean_code_check 时必须作为通用基准加载。也在代码评审需要内在质量判据、或发现命名混乱/函数过长/嵌套过深/错误处理散乱等代码异味时使用。语言无关的整洁代码标准；语言细则见对应的 <language>-coding-standards 技能（如 c-coding-standards、cpp-coding-standards），语言规范不能替代本技能。
 ---
 
 # DevFlow Clean Code（第三层）
@@ -11,7 +11,7 @@ description: 在编写、修改或重构任何实现代码与测试代码时使�
 
 人能持续低成本地审查 AI 的产出（human-on-the-loop 能成立），靠的就是这一层。所以"整洁"不是美学偏好，是协作姿态的前提。
 
-本文是语言无关的标准；语言细则在对应的 `<language>-coding-standards` 技能（现有 `c-coding-standards` / `cpp-coding-standards`，可按同一契约扩展）。示例用 C/C++ 写，原则通用。
+本文是语言无关的标准；TDD implementer 的 REFACTOR 证据与 `clean_code_check` 以本文为通用基准。语言细则在对应的 `<language>-coding-standards` 技能（现有 `c-coding-standards` / `cpp-coding-standards`，可按同一契约扩展），它们叠加在本文之上而不是替代本文。示例用 C/C++ 写，原则通用。
 
 ## 命名
 

@@ -14,7 +14,7 @@ description: 在编写、修改或评审 <语言> 代码（<源文件后缀/测�
 
 <一两句：这门语言的核心危险（如 C 的内存安全）或核心承诺（如 Rust 的所有权、现代 C++ 的 RAII），本技能的规则都围绕它组织。>
 
-本技能在 `devflow-clean-code` 的通用标准之上叠加 <语言> 规则。项目声明了 <团队规范名/标准子集，如 PEP 8、Google Java Style、MISRA> 时以项目为准，本文是未声明时的默认底线。
+本技能在 `devflow-clean-code` 的通用标准之上叠加 <语言> 规则，不能替代通用 clean-code 自检。项目声明了 <团队规范名/标准子集，如 PEP 8、Google Java Style、MISRA> 时以项目为准，本文是未声明时的默认底线。
 
 <若有团队规则覆盖 DevFlow 默认：在对应规则处标注"团队约定，覆盖 DevFlow 默认 X"。>
 
