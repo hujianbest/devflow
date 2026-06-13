@@ -6,118 +6,215 @@
 ![Version](https://img.shields.io/badge/version-v2.0.0-blue.svg)
 ![Core](https://img.shields.io/badge/core-three%20quality%20layers-green.svg)
 
-**A development-workflow skill suite for AI coding agents. The goal in one sentence: produce Clean Code under the SDD paradigm — not code that merely runs.**
+**A development-workflow skill suite for AI coding agents: SDD for the right thing, TDD for proven behavior, and Clean Code for code worth keeping.**
 
-The default path of AI coding jumps from a vague one-liner straight to code, reliably producing three failure modes: building the wrong thing (guessed requirements), building it wrong (unverified code), and building it badly (runs, but rots). DevFlow counters them with a three-layer quality model, from the outside in:
+DevFlow packages a disciplined AI-assisted engineering workflow into self-contained Markdown skills: specification, design, test-first implementation, independent review, defect handling, closeout, and language/domain quality overlays.
 
-| Layer | Question it answers | Carried by |
-|---|---|---|
-| **Layer 1 SDD (spec-driven)** | Are we building the right thing? | `devflow-specify` |
-| **Layer 2 TDD (test-driven)** | Is it proven functionally correct? | `devflow-tdd` |
-| **Layer 3 Clean Code** | Is the code itself well made? | `devflow-design` + `devflow-clean-code` |
+![DevFlow workflow loop](docs/asserts/devflow-2-workflow-loop-v3.png)
 
-The collaboration stance is **human-on-the-loop**: the AI does the work; the human reviews the key artifacts (spec, design, tests, code). Philosophy: [`docs/devflow-philosophy.md`](docs/devflow-philosophy.md). Architecture: [`docs/devflow-core-architecture.md`](docs/devflow-core-architecture.md).
+---
 
-## Design stance
+## Commands
 
-DevFlow 2.0 follows two principles (and this is what distinguishes it from typical "process frameworks"):
+DevFlow provides slash-style phase entries as a thin platform adapter. The authoritative workflow lives in `skills/<name>/SKILL.md`; commands only express intent and load the right skill.
 
-- **Minimal process**: keep only the process that produces quality — phase artifacts, human checkpoints, TDD discipline, independent review. No state machine, no router, no multi-field status files; progress is recovered from on-disk artifacts.
-- **Maximal substance**: the body of every skill is actionable engineering judgment — rules, good/bad code examples, rebuttals to rationalizations, verification checklists — not process boilerplate.
+| What you're doing | Command | Skill | Key principle |
+|-------------------|---------|-------|---------------|
+| Enter or resume DevFlow | `/devflow` | `using-devflow` | Recover from artifacts |
+| Define what to build | `/devflow-specify` | `devflow-specify` | Spec before code |
+| Plan how to build it | `/devflow-design` | `devflow-design` | Design before implementation |
+| Build with tests | `/devflow-build` | `devflow-tdd` | RED -> GREEN -> REFACTOR |
+| Review an artifact | `/devflow-review` | `devflow-review` | Authors do not self-review |
+| Close engineering work | `/devflow-ship` | `devflow-ship` | DoD before closeout |
+| Fix a defect | `/devflow-fix` | `devflow-fix` | Reproduce before repair |
 
-## Workflow
+`devflow-clean-code`, language standards, and domain standards do not have separate commands. They are quality overlays consumed inside design, implementation, and review.
 
-```text
-specify ──review──> design ──review──> tdd ──review──> ship ──[human]──> done
- testable spec +    component-level +    per-case        DoD check,
- plan skeleton +    work-item design:    RED→GREEN→      promotion of
- traceability       contracts / error    REFACTOR        long-term assets
-                    model / test design
-Defect path: fix (reproduce → root cause → minimal fix) → tdd → review → ship
-```
+---
 
-Every phase output passes an independent `devflow-review` gate with an on-disk record before the next phase starts. At workflow start the **run mode** is confirmed once: `attended` (default — human approves after each review) or `unattended` (runs continuously for long sessions — independent reviews, records, and critical-finding blocking still happen; the human audits `reviews/` afterwards).
+## Quick Start
 
-Per-work-item artifacts (`features/<id>-<slug>/`): `spec.md`, `traceability.md`, `design.md` (plus `component-design-draft.md` when component boundaries are affected), `plan.md` (run mode, gate states, self-contained task breakdown with evidence lines — the single entry point for interrupted-work recovery), `reviews/` (one record per review round, findings + resolution closure), `closeout.md` (`fix.md` for defects). Long-term assets (`docs/component-design.md`, `docs/ar-specs/`, `docs/ar-designs/`) are promoted at the ship phase. The next step is always recovered from artifact state, never from chat memory.
-
-## Skill catalog
-
-### Phase skills
-
-| Skill | What it does |
-|---|---|
-| [`using-devflow`](skills/using-devflow/SKILL.md) | Entry: three-layer model, workflow map, artifact conventions, behavior rules |
-| [`devflow-specify`](skills/devflow-specify/SKILL.md) | Turn intent into a testable spec: EARS statements, BDD acceptance, NFR QAS, change baselines |
-| [`devflow-design`](skills/devflow-design/SKILL.md) | Two-level software design (component + work-item, enterprise templates with quality supplements): responsibility boundaries, coupling checks, abstraction discipline, interface contracts, error model, test design |
-| [`devflow-tdd`](skills/devflow-tdd/SKILL.md) | Test-first implementation: RED→GREEN→REFACTOR, assertion strength, mock boundaries; dispatches an implementer subagent per task by default, with on-disk evidence lines |
-| [`devflow-review`](skills/devflow-review/SKILL.md) | Independent review: four rubrics (spec/design/test/code); authors never self-review |
-| [`devflow-ship`](skills/devflow-ship/SKILL.md) | Closeout: Definition-of-Done check, promotion of long-term assets, closeout record |
-| [`devflow-fix`](skills/devflow-fix/SKILL.md) | Defect handling: reproduce → three-level root cause → minimal fix boundary → TDD fix |
-
-### Overlay skills (quality constraints across all phases)
-
-| Skill | What it does |
-|---|---|
-| [`devflow-clean-code`](skills/devflow-clean-code/SKILL.md) | Clean code standards: naming, functions, control flow, error handling, comments, refactoring catalog (with before/after) |
-| [`c-coding-standards`](skills/c-coding-standards/SKILL.md) | C rules: pointer ownership, memory & resources, buffers, integers, macros, headers |
-| [`cpp-coding-standards`](skills/cpp-coding-standards/SKILL.md) | C++ rules: RAII, ownership in signatures, class design, error strategy, template discipline, ABI |
-| [`embedded-development`](skills/embedded-development/SKILL.md) | Embedded constraints: memory, interrupts, real-time, hardware boundaries, evidence strategy |
-| [`automotive-development`](skills/automotive-development/SKILL.md) | Automotive constraints: ASIL, vehicle lifecycle, SOA, DTC, SELinux, cross-ECU |
-
-Language standards extend via the `<language>-coding-standards` naming convention (java, python, etc. planned): phase skills reference them by convention, so new languages plug in with zero changes elsewhere; every language skill follows the same [structural contract](skills/coding-standards-creator/references/coding-standards-skill-contract.md).
-
-### Tooling skills
-
-| Skill | What it does |
-|---|---|
-| [`coding-standards-creator`](skills/coding-standards-creator/SKILL.md) | Turns an internal team coding standard document into a new `<language>-coding-standards` skill: rule ownership triage (language / generic / domain / process), rule distillation (judgeable + failure class + good/bad examples), registration, human sign-off |
-
-## Quick start
-
-OpenCode auto-discovers every `SKILL.md` under `skills/` (see [`docs/guides/opencode-setup.md`](docs/guides/opencode-setup.md)); the same applies to any runtime that supports Agent Skills (Claude Code, Cursor, etc.).
+Point your Agent Skills runtime at this repository's `skills/` directory, or vendor DevFlow into the target project. OpenCode setup details are in [docs/guides/opencode-setup.md](docs/guides/opencode-setup.md); the same model applies to runtimes that support Agent Skills, including Cursor and Claude Code.
 
 ```bash
-# Option A: sibling skill pack
+# Option A: keep DevFlow as a sibling skill pack
 git clone https://github.com/hujianbest/devflow.git ~/devflow
 cd /path/to/your-repo && ln -s ~/devflow/skills .opencode-skills
 
-# Option B: vendor into your repo
+# Option B: vendor DevFlow into your repository
 git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git --squash main
 ```
 
 Try it:
 
 ```text
-Use DevFlow: add a retry mechanism to the notifications component.
+Use DevFlow from this repo.
+I want to add a retry mechanism to the notifications component.
 Clarify the requirements first; do not jump straight to code.
 ```
 
-Slash-style phase entries are available under [`commands/`](commands/README.md): `/devflow`, `/devflow-specify`, `/devflow-design`, `/devflow-build`, `/devflow-review`, `/devflow-ship`, `/devflow-fix`.
+Project overrides: create an `AGENTS.md` with a `## Project overrides` section at the target repository root to override artifact paths and templates. Without it, built-in defaults apply.
 
-Project overrides: create an `AGENTS.md` with a `## Project overrides` section at your repo root to override artifact paths and templates; without it, built-in defaults apply.
+---
 
-## Project layout
+## See It Work
+
+```text
+You:    Use DevFlow from this repo. Add rate limiting to the notifications API.
+        Do not jump straight to code.
+
+DF:     Starts with `using-devflow`, confirms the run mode, resolves the target
+        component root, then routes into `devflow-specify` because no approved
+        spec exists.
+
+You:    Continue with DevFlow once the spec is ready.
+
+DF:     Runs an independent `devflow-review` gate. If the spec passes and the
+        run mode allows progress, `devflow-design` writes component/work-item
+        design, interface contracts, error model, and test design.
+
+You:    Build the approved design.
+
+DF:     `devflow-tdd` refines `plan.md`, implements one task at a time with
+        RED -> GREEN -> REFACTOR evidence, applies `devflow-clean-code` plus
+        language/domain standards, and updates evidence lines on disk.
+
+You:    Verify and close the work.
+
+DF:     `devflow-review` checks tests and code from an independent context.
+        `devflow-ship` runs the Definition of Done, promotes durable docs, and
+        writes `closeout.md` for human final confirmation.
+```
+
+At workflow start DevFlow records one run mode: `attended` by default, where review verdicts pause for human confirmation, or `unattended`, where long sessions keep moving while independent reviews, records, critical-finding stops, and later human audit still remain mandatory.
+
+---
+
+## All Skills
+
+DevFlow currently ships 13 core skills: 7 phase skills, 5 quality overlays, and 1 tooling skill.
+
+### Phase Skills
+
+| Skill | What it does | Use when |
+|-------|--------------|----------|
+| [using-devflow](skills/using-devflow/SKILL.md) | Entry, workflow map, artifact conventions, recovery rules, behavior rules | Starting, resuming, or asking what DevFlow should do next |
+| [devflow-specify](skills/devflow-specify/SKILL.md) | Turns intent into a testable spec with EARS, BDD acceptance, NFR QAS, and traceability | A feature/change needs requirements before design or code |
+| [devflow-design](skills/devflow-design/SKILL.md) | Produces component/work-item design, boundaries, contracts, error model, tradeoffs, and test design | An approved spec needs technical design |
+| [devflow-tdd](skills/devflow-tdd/SKILL.md) | Implements with RED -> GREEN -> REFACTOR, task evidence, assertion quality, and mock-boundary discipline | Design is approved and implementation starts |
+| [devflow-review](skills/devflow-review/SKILL.md) | Independently reviews specs, designs, tests, or code with findings and verdicts | A phase artifact is ready to pass a gate |
+| [devflow-ship](skills/devflow-ship/SKILL.md) | Checks Definition of Done, promotes long-term assets, and writes closeout | Reviews are closed and engineering work is ready to finish |
+| [devflow-fix](skills/devflow-fix/SKILL.md) | Handles defects through reproduction, root cause, minimal fix boundary, and TDD repair | A regression, bug, hotfix, or shipped-behavior defect appears |
+
+### Quality Overlays
+
+| Skill | What it does | Use when |
+|-------|--------------|----------|
+| [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | Language-neutral clean code standards: naming, functions, control flow, errors, comments, refactoring | Writing, refactoring, or reviewing implementation and test code |
+| [c-coding-standards](skills/c-coding-standards/SKILL.md) | C-specific rules for ownership, memory/resources, buffers, integers, macros, headers, and error returns | Work touches C source, headers, or C tests |
+| [cpp-coding-standards](skills/cpp-coding-standards/SKILL.md) | C++ rules for RAII, ownership signatures, class design, errors, templates, and ABI | Work touches C++ source, classes, templates, or C++ tests |
+| [embedded-development](skills/embedded-development/SKILL.md) | Embedded constraints around memory, interrupts, real time, hardware boundaries, and evidence | Firmware, drivers, HAL, RTOS, or constrained-device work |
+| [automotive-development](skills/automotive-development/SKILL.md) | Automotive constraints around ASIL, vehicle lifecycle, SOA, DTC, SELinux, and cross-ECU coordination | ECU, domain-controller, vehicle-service, or platform work |
+
+### Tooling
+
+| Skill | What it does | Use when |
+|-------|--------------|----------|
+| [coding-standards-creator](skills/coding-standards-creator/SKILL.md) | Converts internal team coding standards into a new `<language>-coding-standards` skill | A team needs to add or revise a language standard |
+
+Language standards extend by convention: work touching language X can load `<x>-coding-standards` when present. New language skills follow the shared [structural contract](skills/coding-standards-creator/references/coding-standards-skill-contract.md), so phase skills do not need to be rewritten for each language.
+
+---
+
+## The DevFlow Method
+
+DevFlow is not a prompt collection. It is a small, evidence-based workflow for getting AI agents to produce code that can be reviewed, trusted, and maintained.
+
+| Layer | DevFlow method | Why it matters |
+|-------|----------------|----------------|
+| Intent | Spec-driven development | Prevents the agent from guessing requirements |
+| Planning | Component/work-item design | Makes boundaries, contracts, errors, and tests explicit before code |
+| Execution | Test-driven development | Separates "it looks right" from behavior proven by tests |
+| Internal quality | Clean Code overlays | Keeps code readable, simple, maintainable, and reviewable |
+| Review | Independent gates | Keeps authorship and judgment separate |
+| Recovery | Artifact-first state | Lets another agent or human resume from files, not chat memory |
+| Closeout | DoD and promotion | Records what changed, what passed, and which docs became durable assets |
+
+DevFlow's collaboration stance is **human-on-the-loop**: the AI does the work, and humans review the key artifacts and decisions. See [docs/devflow-philosophy.md](docs/devflow-philosophy.md) and [docs/devflow-core-architecture.md](docs/devflow-core-architecture.md).
+
+---
+
+## How Skills Work
+
+Each skill is a self-contained operating procedure:
+
+```text
+SKILL.md
+├── Trigger conditions
+├── Workflow steps
+├── Required artifacts
+├── Evidence and review contracts
+├── Quality rules and examples
+├── Red flags and rationalization traps
+└── Verification checklist
+```
+
+Key design choices:
+
+- **Minimal process.** DevFlow keeps the phase artifacts, human checkpoints, TDD discipline, and independent reviews that produce quality.
+- **Maximal substance.** The body of each skill is engineering judgment: rules, examples, failure modes, checklists, and review rubrics.
+- **Evidence over memory.** Progress is recovered from `plan.md`, `reviews/`, `traceability.md`, and the artifact files themselves.
+- **Authors do not self-review.** The agent that creates an artifact does not approve it.
+
+---
+
+## Project Structure
 
 ```text
 devflow/
-├── skills/            # 7 phase skills + 5 overlay skills + 1 tooling skill (see tables above)
-├── commands/          # slash-style phase entries (platform adapter)
-├── agents/            # devflow-reviewer / devflow-implementer subagent personas
+├── skills/                         # 13 core skills
+│   ├── using-devflow/              # Entry and recovery rules
+│   ├── devflow-specify/            # Testable specs and traceability
+│   ├── devflow-design/             # Component/work-item design
+│   ├── devflow-tdd/                # Test-first implementation
+│   ├── devflow-review/             # Independent review gates
+│   ├── devflow-ship/               # DoD, promotion, closeout
+│   ├── devflow-fix/                # Defect path
+│   ├── devflow-clean-code/         # Language-neutral clean code
+│   ├── c-coding-standards/         # C overlay
+│   ├── cpp-coding-standards/       # C++ overlay
+│   ├── embedded-development/       # Embedded overlay
+│   ├── automotive-development/     # Automotive overlay
+│   └── coding-standards-creator/   # Language-standard generator
+├── commands/                       # Slash-style phase entries
+├── agents/                         # devflow-reviewer and devflow-implementer personas
 ├── docs/
-│   ├── devflow-philosophy.md         # core philosophy (north star)
-│   ├── devflow-core-architecture.md  # architecture mapping
-│   └── guides/opencode-setup.md
-├── scripts/           # repository consistency checks
-└── tests/
+│   ├── devflow-philosophy.md
+│   ├── devflow-core-architecture.md
+│   ├── devflow-internal-quality.md
+│   ├── guides/
+│   └── asserts/
+├── scripts/                        # Repository consistency checks
+├── tests/
+├── CONTRIBUTING.md
+└── README.zh-CN.md
 ```
+
+Per-work-item artifacts live in the target component repository, normally under `features/<id>-<slug>/`: `spec.md`, `traceability.md`, `design.md`, `plan.md`, `reviews/`, and `closeout.md` or `fix.md`. Long-term assets such as `docs/component-design.md`, `docs/ar-specs/`, and `docs/ar-designs/` are promoted during `devflow-ship`.
+
+---
 
 ## Scope
 
-DevFlow covers the engineering segment from an accepted requirement to a reviewed implementation. It does not cover product discovery, release operations, system/integration/acceptance testing, or incident management; nor does it make business, priority, acceptance-threshold, or architecture-boundary decisions on behalf of the team — those belong to humans.
+DevFlow covers the engineering segment from an accepted requirement to a reviewed implementation and closeout. It does not cover product discovery, release operations, system/integration/acceptance testing, incident management, or production rollout. It also does not make business direction, priority, acceptance-threshold, or architecture-boundary decisions on behalf of the team.
+
+---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Keep skills concrete, verifiable, example-driven, and keep process boilerplate minimal.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Keep skills concrete, verifiable, example-driven, and light on process boilerplate.
+
+---
 
 ## License
 
