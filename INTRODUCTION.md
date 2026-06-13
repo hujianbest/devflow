@@ -57,7 +57,7 @@ DevFlow 2.0 是一套给 AI coding agent 用的开发流程 skills。它覆盖�
 
 ## 3. 三层质量模型：DevFlow 2.0 的核心
 
-DevFlow 2.0 把“高质量代码”拆成三层，由外到内看：
+DevFlow 2.0 把“高质量代码”拆成三层，由外到内看，也可以理解为自上而下逐层收紧：
 
 1. **第一层 SDD（Spec-Driven Development）**：做的是不是对的事？
 2. **第二层 TDD（Test-Driven Development）**：功能被证明正确了吗？
@@ -143,11 +143,11 @@ fix -> tdd -> R3 review -> ship
 
 ![DevFlow 2.0 工作流闭环](docs/asserts/devflow-2-workflow-loop-v3.png)
 
-图 3：DevFlow 2.0 的阶段工作流，R1/R2/R3 是必经评审门禁，缺陷修复仍回到 TDD 与评审闭环。
+图 3：DevFlow 2.0 的阶段工作流，R1/R2/R3 是必经评审门禁；缺陷修复作为独立旁路进入 fix，随后仍回到 TDD 与评审闭环。
 
 ### specify：把意图写成可测试规格
 
-`devflow-specify` 负责写 `spec.md`，同时建立 `plan.md` 骨架并初始化 `traceability.md`。它要做的不是整理需求描述，而是把模糊输入变成可评审、可测试、可追溯的规格。
+`devflow-specify` 负责写 `spec.md`，并初始化 `traceability.md`。它要做的不是整理需求描述，而是把模糊输入变成可评审、可测试、可追溯的规格。
 
 这个阶段完成后，不能直接进入设计。它必须经过 R1 规格评审。
 
@@ -404,7 +404,7 @@ DevFlow 的价值不在于制造更多流程，而在于让每一步留下的证
 ### 图 3：DevFlow 2.0 工作流闭环
 
 ```text
-现代技术博客信息图，16:9 横图，干净专业，蓝绿灰主色，橙色仅用于 review gate。主题：DevFlow 2.0 工作流闭环。请使用极少文字，只保留清晰中文短标签，不要英文小字。水平流程：specify 写规格 -> R1 评审 -> design 做设计 -> R2 评审 -> tdd 测试驱动 -> R3 评审 -> ship 收尾核验 -> 完成。R1/R2/R3 用橙色门禁图标表示。下方缺陷旁路：fix 缺陷分析 -> tdd 测试驱动 -> R3 评审 -> ship 收尾核验。右上角一个 human-on-the-loop 图标：人站在环上，AI 在环内。注意：ship 只表示收尾核验和资产沉淀，不要火箭，不要发布上线，不要写英文 DoD、Promotion、Closeout。画面简洁、线条清楚、适合技术博客。
+现代技术博客信息图，16:9 横图，干净专业，蓝绿灰主色，橙色仅用于 review gate。主题：DevFlow 2.0 工作流闭环。请使用极少文字，只保留清晰中文短标签，不要英文小字。水平主流程：specify 写规格 -> R1 评审 -> design 做设计 -> R2 评审 -> tdd 测试驱动 -> R3 评审 -> ship 收尾核验 -> 完成。R1/R2/R3 用橙色门禁图标表示。下方缺陷旁路从左侧独立进入，不要从“写规格”向下连接：fix 缺陷分析 -> tdd 测试驱动 -> R3 评审 -> ship 收尾核验。右上角一个 human-on-the-loop 图标：人站在环上，AI 在环内。注意：ship 只表示收尾核验和资产沉淀，不要火箭，不要发布上线，不要写英文 DoD、Promotion、Closeout。画面简洁、线条清楚、适合技术博客。
 ```
 
 ### 图 4：工件证据链与冷启动恢复
@@ -416,5 +416,5 @@ DevFlow 的价值不在于制造更多流程，而在于让每一步留下的证
 ### 图 5：角色分离协作图
 
 ```text
-现代技术博客信息图，16:9 横图，干净专业，蓝绿灰主色，橙色强调边界。主题：DevFlow 角色分离协作。画面中心是 controller，左侧连接 implementer subagent（只执行一个任务、Context Pack），右侧连接 reviewer subagent（独立评审、不修改），上方是 human reviewer 站在环上把关。用清晰箭头表达：controller 派发任务、implementer 返回证据、reviewer 返回 findings、human 确认。中文短标签：作者不自审、评审者不修、人在环上。少文字、技术博客风格。
+现代技术博客信息图，16:9 横图，干净专业，蓝绿灰主色，橙色强调边界。主题：DevFlow 角色分离协作。画面中心是 controller，左侧连接 implementer subagent（只执行一个任务、Context Pack），右侧连接 reviewer subagent（独立评审、不修改），上方是 human reviewer 站在环上把关。用清晰箭头表达：controller 向 implementer 派发任务、implementer 返回证据；controller 向 reviewer 派发评审、reviewer 返回 findings / verdict；human 确认关键结果。中文短标签：作者不自审、评审者不修、人在环上。少文字、技术博客风格。
 ```
