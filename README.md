@@ -58,7 +58,7 @@ Per-work-item artifacts (`features/<id>-<slug>/`): `spec.md`, `traceability.md`,
 
 | Skill | What it does |
 |---|---|
-| [`devflow-clean-code`](skills/devflow-clean-code/SKILL.md) | Clean code standards: naming, functions, control flow, error handling, comments, refactoring catalog (with before/after) |
+| [`devflow-clean-code`](skills/devflow-clean-code/SKILL.md) | Clean code standards organized as a five-dimension decision lens (simple / reliable / maintainable / testable / efficient): naming, functions, control flow, error handling, design-for-testability, performance discipline, comments, refactoring catalog (with before/after) |
 | [`c-coding-standards`](skills/c-coding-standards/SKILL.md) | C rules: pointer ownership, memory & resources, buffers, integers, macros, headers |
 | [`cpp-coding-standards`](skills/cpp-coding-standards/SKILL.md) | C++ rules: RAII, ownership in signatures, class design, error strategy, template discipline, ABI |
 | [`embedded-development`](skills/embedded-development/SKILL.md) | Embedded constraints: memory, interrupts, real-time, hardware boundaries, evidence strategy |

@@ -56,7 +56,7 @@ evidence:
   red:   <命令 + 关键失败输出摘要 + commit 锚点>
   green: <命令 + 通过摘要 + commit 锚点>
   refactor: <清理摘要 + 测试摘要 + commit 锚点> / N/A（已对照 clean-code 自检，无任务内异味）
-clean_code_check: <命名/函数/控制流/错误路径/注释死代码/范围纪律的简短自检结论>
+clean_code_check: <按 devflow-clean-code 五维度的简短自检结论：简洁 / 可靠 / 可维护 / 可测试 / 高效，每维一句"过 或 不适用 + 具体理由">
 notes: <一段话：循环摘要 / 债务建议 / BLOCKED 原因>
 ```
 

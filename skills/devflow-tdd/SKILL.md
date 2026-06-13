@@ -157,9 +157,9 @@ int mode_set(mode_t mode) {
 
 只在全绿后进行。两顶帽子严格分开：GREEN 帽只加行为，REFACTOR 帽只改结构——**重构不改变任何可观察行为，期间不新增任何测试预期**。
 
-做什么：对照 `devflow-clean-code` 的自检清单审视本任务触碰范围，消除本任务引入的重复、改善命名、提取函数、用常量替换魔法数、收紧错误处理表达。每做一步跑一次测试，保持全绿。
+做什么：对照 `devflow-clean-code` 的五维度自检清单（简洁 / 可靠 / 可维护 / 可测试 / 高效）审视本任务触碰范围，消除本任务引入的重复、改善命名、提取函数、用常量替换魔法数、收紧错误处理表达、把难测的隐藏依赖（时钟/全局）从决策逻辑里分离、消除热路径上的白做功。每做一步跑一次测试，保持全绿。
 
-不能静默跳过：即使没有代码改动，也要在 plan.md 记录 `REFACTOR: N/A`，说明已检查命名、函数长度/抽象层级、控制流、错误路径、注释/死代码、范围纪律，且无任务内异味。没有 REFACTOR 记录的任务不是 done。
+不能静默跳过：即使没有代码改动，也要在 plan.md 记录 `REFACTOR: N/A`，说明已对照 `devflow-clean-code` 五维度（简洁 / 可靠 / 可维护 / 可测试 / 高效）逐一检查且无任务内异味，而不是一句"看起来整洁"。没有 REFACTOR 记录的任务不是 done。
 
 边界：清理限于当前任务触碰的范围。发现需要跨模块的结构性重构、或想引入设计未声明的新抽象 → 登记为债务或回 `devflow-design`，不在任务内顺手做。REFACTOR 中发现还缺行为 → 摘下帽子，回 RED。
 
@@ -223,7 +223,7 @@ EXPECT_EQ(MODE_NORMAL, fake_event_queue_last().payload.mode);
 - [ ] 完整测试套件通过；构建无新增警告
 - [ ] 断言经得起 mutation 自检（改错实现关键行，测试会红）
 - [ ] mock 只用于真实边界；没有 test-only 后门
-- [ ] REFACTOR 没有改变行为；清理留在任务范围内；若为 `N/A`，plan.md 写明已对照 `devflow-clean-code` 自检的理由
+- [ ] REFACTOR 没有改变行为；清理留在任务范围内；若为 `N/A`，plan.md 写明已对照 `devflow-clean-code` 五维度（简洁/可靠/可维护/可测试/高效）自检的理由
 - [ ] plan.md 任务状态与 traceability.md 对应行已更新；本任务已提交
 - [ ] implementer 返回的 `loaded_skills` 覆盖 Quality Stack；`devflow-clean-code` 与适用的语言/领域规范（coding-standards / embedded / automotive）已在实现中遵循
 - [ ] 若来自 R3 返工：每条 open finding 已映射到返工队列，Resolution 已回填，修复证据已记录，下一步是 R3 复审而不是 ship

@@ -154,7 +154,7 @@ features/<id>-<slug>/
 | `devflow-specify` | 把意图写成可测试的规格 | 开始新工作项、规格被评审打回 |
 | `devflow-design` | 做出值得长期持有的软件设计；为第三层奠定结构、契约、错误模型和测试设计 | 规格确认后、设计被打回、实现中发现设计问题 |
 | `devflow-tdd` | 用 RED→GREEN→REFACTOR 证明功能正确 | 设计确认后的全部实现期 |
-| `devflow-clean-code` | 把代码写整洁：命名、函数、错误处理、重构 | 写代码、REFACTOR 与代码评审时必读 |
+| `devflow-clean-code` | 把代码写整洁：按简洁/可靠/可维护/可测试/高效五维度的决策透镜，覆盖命名、函数、错误处理、可测试性、性能与重构 | 写代码、REFACTOR 与代码评审时必读 |
 | `devflow-review` | 独立评审规格/设计/测试/代码 | 每个阶段产物完成后 |
 | `devflow-ship` | DoD 核验、promotion 长期资产、closeout | 评审闭环后的收尾 |
 | `devflow-fix` | 复现 → 根因 → 最小修复 | 缺陷、回归、线上问题 |

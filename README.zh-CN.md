@@ -57,7 +57,7 @@ specify ──review──> design ──review──> tdd 实现 ──review�
 
 | 技能 | 做什么 |
 |---|---|
-| [`devflow-clean-code`](skills/devflow-clean-code/SKILL.md) | 整洁代码标准：命名、函数、控制流、错误处理、注释、重构目录（含 before/after） |
+| [`devflow-clean-code`](skills/devflow-clean-code/SKILL.md) | 整洁代码标准，按简洁/可靠/可维护/可测试/高效五维度决策透镜组织：命名、函数、控制流、错误处理、为可测试性而写、性能纪律、注释、重构目录（含 before/after） |
 | [`c-coding-standards`](skills/c-coding-standards/SKILL.md) | C 规则：指针所有权、内存与资源、缓冲区、整数、宏、头文件 |
 | [`cpp-coding-standards`](skills/cpp-coding-standards/SKILL.md) | C++ 规则：RAII、所有权签名、类设计、错误策略、模板纪律、ABI |
 | [`embedded-development`](skills/embedded-development/SKILL.md) | 嵌入式约束：内存、中断、实时性、硬件边界、证据策略 |
