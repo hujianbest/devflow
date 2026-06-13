@@ -67,7 +67,7 @@ runtime 支持 subagent 时，**每个任务必须派发一个全新上下文的
 - 测试/构建命令
 - 必须加载/遵循的角色定义：`agents/devflow-implementer.md`
 - **Quality Stack**：`required_skill_files` 列出必须读取的 skill 文件路径，至少包含 `skills/devflow-tdd/SKILL.md`、`skills/devflow-clean-code/SKILL.md`，以及按触碰文件发现到的适用 `<language>-coding-standards` 与领域技能；同时写明每个技能在本任务中的用途（循环纪律、通用 clean-code 自检、语言/领域约束）。只传路径与用途，不复制技能正文。
-- 返回契约：`DONE`（附 `loaded_skills`、RED/GREEN/REFACTOR 证据行与 clean-code 自检摘要）/ `NEEDS_CONTEXT`（缺关键输入或 Quality Stack，回来重新打包）/ `BLOCKED`（越界或设计问题，附原因）
+- 返回契约：`DONE`（附 `loaded_skills`、RED/GREEN/REFACTOR 证据行与按 `devflow-clean-code` 五维契约填写的 `clean_code_check`）/ `NEEDS_CONTEXT`（缺关键输入或 Quality Stack，回来重新打包）/ `BLOCKED`（越界或设计问题，附原因）
 
 R3 返工派发时，Context Pack 还必须包含 finding 摘录（评审文件路径、finding 编号、严重级、分类、修复方向）、关联任务或 `Tn-rework` 标识、需要回填的 Resolution 位置。subagent 返回时必须列出已解决的 finding 编号；父会话负责核对并写回评审记录。
 
@@ -81,7 +81,7 @@ runtime 无 subagent 时退化为当前会话直接执行循环，纪律不变�
 
 | 返回 / 状态 | 父会话动作 |
 |---|---|
-| `DONE` | 校验 `loaded_skills` 覆盖 Quality Stack、证据行和 clean-code 自检；缺 `devflow-clean-code`、适用语言/领域技能或具体自检结论时拒绝 DONE 并重派 → 更新 plan.md 任务状态、步骤勾选、证据行与 traceability.md → 提交 → 重新读取 plan.md 并选择下一个唯一可执行的非 done 任务继续派发新的 implementer subagent |
+| `DONE` | 校验 `loaded_skills` 覆盖 Quality Stack、证据行和 `clean_code_check`；缺 `devflow-clean-code`、适用语言/领域技能或五维自检结论（简洁/可靠/可维护/可测试/高性能/范围纪律）时拒绝 DONE 并重派 → 更新 plan.md 任务状态、步骤勾选、证据行与 traceability.md → 提交 → 重新读取 plan.md 并选择下一个唯一可执行的非 done 任务继续派发新的 implementer subagent |
 | `NEEDS_CONTEXT` | 先用 spec.md / design.md / plan.md / reviews/ 中已有工件补齐更收敛的 Context Pack（特别是 Quality Stack 的 `required_skill_files`）并重派；不得把完整聊天历史倾倒给 subagent |
 | `BLOCKED` | 在 plan.md 记录阻塞原因；若是规格/设计/范围问题，回对应上游阶段并重新经过受影响门禁；若只是 Context Pack 打包不完整，收敛后重派 |
 | 无剩余任务 | 把 R3 门禁置为 `pending`（或确认已有 pending 记录），进入 `devflow-review` 做测试与代码独立评审 |
@@ -157,9 +157,9 @@ int mode_set(mode_t mode) {
 
 只在全绿后进行。两顶帽子严格分开：GREEN 帽只加行为，REFACTOR 帽只改结构——**重构不改变任何可观察行为，期间不新增任何测试预期**。
 
-做什么：对照 `devflow-clean-code` 的自检清单审视本任务触碰范围，消除本任务引入的重复、改善命名、提取函数、用常量替换魔法数、收紧错误处理表达。每做一步跑一次测试，保持全绿。
+做什么：对照 `devflow-clean-code` 的五维判据审视本任务触碰范围，消除本任务引入的重复、改善命名、提取函数、用常量替换魔法数、收紧错误处理表达，检查测试代码、热路径和资源路径。每做一步跑一次测试，保持全绿。
 
-不能静默跳过：即使没有代码改动，也要在 plan.md 记录 `REFACTOR: N/A`，说明已检查命名、函数长度/抽象层级、控制流、错误路径、注释/死代码、范围纪律，且无任务内异味。没有 REFACTOR 记录的任务不是 done。
+不能静默跳过：即使没有代码改动，也要在 plan.md 记录 `REFACTOR: N/A`，说明已检查简洁、可靠、可维护、可测试、高性能和范围纪律，且无任务内异味。没有 REFACTOR 记录的任务不是 done。
 
 边界：清理限于当前任务触碰的范围。发现需要跨模块的结构性重构、或想引入设计未声明的新抽象 → 登记为债务或回 `devflow-design`，不在任务内顺手做。REFACTOR 中发现还缺行为 → 摘下帽子，回 RED。
 
@@ -223,7 +223,7 @@ EXPECT_EQ(MODE_NORMAL, fake_event_queue_last().payload.mode);
 - [ ] 完整测试套件通过；构建无新增警告
 - [ ] 断言经得起 mutation 自检（改错实现关键行，测试会红）
 - [ ] mock 只用于真实边界；没有 test-only 后门
-- [ ] REFACTOR 没有改变行为；清理留在任务范围内；若为 `N/A`，plan.md 写明已对照 `devflow-clean-code` 自检的理由
+- [ ] REFACTOR 没有改变行为；清理留在任务范围内；若为 `N/A`，plan.md 写明已对照 `devflow-clean-code` 五维判据自检的理由
 - [ ] plan.md 任务状态与 traceability.md 对应行已更新；本任务已提交
 - [ ] implementer 返回的 `loaded_skills` 覆盖 Quality Stack；`devflow-clean-code` 与适用的语言/领域规范（coding-standards / embedded / automotive）已在实现中遵循
 - [ ] 若来自 R3 返工：每条 open finding 已映射到返工队列，Resolution 已回填，修复证据已记录，下一步是 R3 复审而不是 ship

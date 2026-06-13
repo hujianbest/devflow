@@ -81,6 +81,69 @@
         "requires a brief but specific conclusion across the devflow-clean-code checklist dimensions",
         "keeps the task open until REFACTOR evidence or a concrete N/A rationale is present"
       ]
+    },
+    {
+      "id": "r3-clean-code-finding-remediation",
+      "prompt": "R3 code review reports an important finding: a function added in task T4 has a misleading name and hides a file write side effect. The reviewer suggests renaming or splitting it. The author asks whether the reviewer should just fix it directly.",
+      "expected": [
+        "keeps the reviewer in review-only mode and does not fix code in the review context",
+        "routes the finding back to devflow-tdd as an R3 rework item with the finding number and target files",
+        "requires a green-baseline refactor, Resolution backfill, and R3 re-review before ship"
+      ]
+    },
+    {
+      "id": "pure-refactor-baseline-and-small-steps",
+      "prompt": "The user asks for a behavior-preserving cleanup of a module with long functions and duplicated validation. There is no new feature spec, but tests currently pass.",
+      "expected": [
+        "treats this as pure refactor: no spec/design expansion, but tests-first baseline and R3 still apply",
+        "requires a full passing baseline before changing structure",
+        "keeps refactors small and behavior-preserving, with tests rerun after each logical batch"
+      ]
+    },
+    {
+      "id": "test-code-over-abstracted-helper",
+      "prompt": "A test suite introduces GivenValidDeviceReadyForNominalTransferWithRetryBudget() which calls four helper layers; the actual test body only says Act() and AssertOk(). The tests pass.",
+      "expected": [
+        "flags that test code is no longer readable as a behavior specification",
+        "prefers visible Given/When/Then over excessive DRY in tests",
+        "routes the fix to devflow-tdd test refactor while preserving behavior and test pass status"
+      ]
+    },
+    {
+      "id": "performance-hot-path-with-evidence",
+      "prompt": "A new request handler loops through 500 devices and calls device_read_status() once per device over IPC. The design says the handler is on a 100 ms hot path and a batch API already exists.",
+      "expected": [
+        "treats the N+1 IPC pattern as a performance and maintainability issue, not optional micro-optimization",
+        "suggests the existing batch API or another simple structure that better expresses the need",
+        "requires verification with tests and, where available, performance evidence or a clear N/A reason"
+      ]
+    },
+    {
+      "id": "performance-without-evidence-no-micro-optimization",
+      "prompt": "The agent wants to replace a clear three-line validation function with bit tricks and a lookup cache because it might be faster, but there is no hot-path evidence or benchmark.",
+      "expected": [
+        "rejects the change as unsupported micro-optimization that reduces readability",
+        "keeps the clear implementation unless measurement or resource constraints justify complexity",
+        "allows registering a performance observation instead of blocking the task"
+      ]
+    },
+    {
+      "id": "ship-dod-clean-code-audit-missing",
+      "prompt": "All tests pass and R3 review says passed, but plan.md has no clean-code constraint audit and the implementer never recorded a concrete clean_code_check for the final task.",
+      "expected": [
+        "does not allow devflow-ship to close on tests and verdict alone",
+        "requires clean-code audit evidence or a documented-debt/critical-open/N/A status with reasons",
+        "points back to the missing REFACTOR or clean_code_check evidence rather than inventing a summary"
+      ]
+    },
+    {
+      "id": "severity-calibration-style-vs-blocking",
+      "prompt": "A reviewer finds two issues: an optional local variable name could be clearer, and a new function named validate_config() writes persistent state and swallows write failures. The author wants both marked minor style.",
+      "expected": [
+        "keeps the local naming preference as minor if it does not mislead behavior",
+        "classifies the lying name plus swallowed persistence failure as blocking/critical or important according to impact",
+        "explains that severity is based on reader risk and failure semantics, not author preference"
+      ]
     }
   ]
 }

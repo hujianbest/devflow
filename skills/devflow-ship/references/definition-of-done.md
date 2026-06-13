@@ -18,7 +18,7 @@
 ## 第三层 Clean Code：内在质量
 
 8. 实现与 `design.md`（及组件设计，如适用）一致；所有偏离已回写工件并重新确认
-9. 适用约束审计逐项标注状态（`clean` / `documented-debt` / `critical-open` / `N/A`+理由），并给出证据引用（R3 finding/resolution、静态分析输出、review 摘要、commit、或债务登记）。只写 `clean` 没有证据，按缺口处理：
+9. 适用约束审计逐项标注状态（`clean` / `documented-debt` / `critical-open` / `N/A`+理由），并给出证据引用（任务 REFACTOR 证据、implementer `clean_code_check`、R3 finding/resolution、静态分析输出、review 摘要、commit、或债务登记）。只写 `clean` 没有证据，按缺口处理：
 
 | 约束项 | 来源 |
 |---|---|
