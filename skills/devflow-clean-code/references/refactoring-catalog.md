@@ -187,6 +187,52 @@ int sensor_read(const sensor_t *s, uint32_t *value);
 
 不要为了 DIP 创建没有第二个真实实现、也不跨所有权边界的接口。那是单实现抽象，回 `devflow-design` 的抽象纪律处理。
 
+## 13. 提取纯判定 / 注入隐藏依赖（Extract Pure Function / Inject Hidden Dependency，治难测）
+
+**识别**：测一段逻辑必须伪造系统时钟、随机数或全局可变状态；为了断言一个判定结果不得不 mock 模块内部；函数把"算什么"和"做什么"（I/O、写硬件、改全局）缠在一起。
+
+**步骤**：① 把决策逻辑抽成纯函数——所有外部事实（时间、随机、配置）作为入参，无副作用；② 副作用留在调用方的薄外层，由它把真实值传进纯函数；③ 纯函数用普通断言覆盖全部边界，无需 mock；④ 仅在真实边界（硬件/外部组件/慢依赖/时钟）保留可替换接缝；⑤ 跑测试。
+
+```c
+/* before：判定依赖全局时钟，结果落在内部字段，测试必须伪造系统时间 */
+bool token_check(token_t *t) {
+    if (sys_clock_ms() > t->expires_at) { t->state = EXPIRED; return false; }
+    return true;
+}
+
+/* after：纯判定可被任意时间点直接断言；副作用外置 */
+bool token_is_valid(const token_t *t, uint32_t now_ms) {
+    return now_ms <= t->expires_at;
+}
+void token_refresh_state(token_t *t, uint32_t now_ms) {
+    if (!token_is_valid(t, now_ms)) t->state = EXPIRED;
+}
+```
+
+不要把"难测"当成给生产代码加 test-only 后门或 getter 的理由——那是把异味藏起来。难测是设计信号，治法是分离，不是开后门。
+
+## 14. 消除循环内的重复工作（Hoist Invariant / Remove Redundant Work，治低效）
+
+**识别**：循环条件或循环体里重复计算每轮都不变的量（`strlen`、查表、昂贵 getter）；热路径上反复分配/拷贝本可复用的缓冲；明显能线性解决却写成内层重复扫描的 O(n²)。
+
+**步骤**：① 确认该量在循环内确为不变量（无副作用、无依赖循环变量）；② 提到循环外算一次；③ 多余的分配/拷贝改为复用或就地操作；④ 跑测试，确认行为不变。这属于"把代码写对"，不需要 profile 数据背书；但任何**牺牲可读性**的进一步优化必须有测量支撑并加注释（见 `devflow-clean-code` §性能纪律）。
+
+```c
+/* before：每轮重算 list_size，O(n²)；并在循环里反复 malloc 同尺寸临时区 */
+for (int i = 0; i < list_size(xs); i++) {
+    char *tmp = malloc(SZ);
+    transform(item_at(xs, i), tmp);
+    free(tmp);
+}
+
+/* after：不变量出循环，临时区复用一次 */
+int n = list_size(xs);
+char tmp[SZ];
+for (int i = 0; i < n; i++) {
+    transform(item_at(xs, i), tmp);
+}
+```
+
 ## 不要做的"重构"
 
 - **绿灯之外的重构**：测试不全绿时改结构 = 蒙眼搬家

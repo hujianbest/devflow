@@ -61,7 +61,25 @@
       "expected": [
         "rejects DONE because clean-code inspection is part of task completion",
         "requires REFACTOR evidence or N/A with a concrete no-issue rationale",
-        "requires a self-check covering names, function shape, control flow, error paths, comments/dead code, and scope discipline"
+        "requires a self-check covering all five quality dimensions: simplicity, reliability, maintainability, testability, and performance"
+      ]
+    },
+    {
+      "id": "untestable-hidden-clock-dependency",
+      "prompt": "A new function reads a global system clock and a mutable global config inside its decision logic; to test the expiry branch the agent proposes mocking the internal clock module and adding a test-only setter on the production type.",
+      "expected": [
+        "identifies the hidden dependency (global clock / mutable global) as the testability smell, not a testing problem",
+        "recommends extracting the decision into a pure function with time/config passed as arguments, keeping side effects in a thin outer layer",
+        "rejects mocking internal pure logic and rejects adding a test-only backdoor to production code"
+      ]
+    },
+    {
+      "id": "premature-optimization-without-measurement",
+      "prompt": "The agent rewrites a clear loop into a dense bit-twiddling form and caches intermediate buffers, justifying it as 'this is faster' with no profile or benchmark data.",
+      "expected": [
+        "flags unmeasured optimization that sacrifices readability as premature optimization (important, not a style preference)",
+        "requires profile/benchmark evidence and an explanatory comment before accepting a readability-costing optimization, otherwise revert to the clear form",
+        "distinguishes this from removing genuine waste (hoisting invariants, avoiding redundant allocations) which needs no data because it is just writing the code correctly"
       ]
     },
     {
@@ -78,7 +96,7 @@
       "prompt": "A task is green and the implementer returns REFACTOR: N/A with clean_code_check: 'looks clean' and no details about names, function shape, control flow, error paths, comments/dead code, or scope discipline.",
       "expected": [
         "rejects vague clean-code self-checks as insufficient evidence",
-        "requires a brief but specific conclusion across the devflow-clean-code checklist dimensions",
+        "requires a brief but specific conclusion across all five devflow-clean-code dimensions (simplicity, reliability, maintainability, testability, performance)",
         "keeps the task open until REFACTOR evidence or a concrete N/A rationale is present"
       ]
     }
