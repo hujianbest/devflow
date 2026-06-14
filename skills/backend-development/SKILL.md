@@ -1,13 +1,59 @@
 ---
 name: backend-development
-description: 在后端/服务端工作项（HTTP/REST/GraphQL API、服务与仓库层、数据库访问、缓存、鉴权、限流、后台任务、可观测性）的规格、设计、实现或评审中使用，涉及接口契约、数据一致性、幂等、认证授权、过载保护时。前端/UI 见 frontend-development；车载 SOA 服务的整车专属约束见 automotive-development；语言级规则见适用 `<language>-coding-standards`。
+description: 在后端/服务端工作项（HTTP/REST/GraphQL API、服务与仓库层、数据库访问、缓存、鉴权、限流、后台任务、可观测性、配置与机密、弹性容错、生产就绪）的规格、设计、实现或评审中使用，涉及接口契约、分层与依赖方向、配置与机密、错误模型、数据一致性、幂等、认证授权、依赖超时重试熔断、过载保护、优雅停机时。前端/UI 见 frontend-development；前后端集成的客户端侧见 frontend-development 的 API 客户端层维度；车载 SOA 服务的整车专属约束见 automotive-development；语言级规则见适用 `<language>-coding-standards`。
 ---
 
 # Backend Development
 
 ## 总览
 
-后端约束的共同点：**违反时单次请求看着正常，规模化和并发下才坏**——数据不一致、重复扣款、N+1 拖垮数据库、限流失效被打挂、错误被静默吞掉。所以这些约束必须前置到规格和设计：在 spec 里有接口契约与一致性要求、在 design 里有事务边界与幂等策略、在测试里有证据，而不是在压测或线上事故时才发现。本技能按维度给出"在哪个阶段定什么、实现红线、用什么证据"，每条红线尽量配最小正反例。语言写法见适用语言技能，本文只承载后端领域维度。
+后端约束的共同点：**违反时单次请求看着正常，规模化和并发下才坏**——数据不一致、重复扣款、N+1 拖垮数据库、限流失效被打挂、依赖一抖动连接耗尽雪崩、错误被静默吞掉、机密硬编码进仓库。所以这些约束必须前置到规格和设计：在 spec 里有接口契约与一致性要求、在 design 里有分层边界、事务边界、幂等与容错策略、在测试里有证据，而不是在压测或线上事故时才发现。本技能按维度给出"在哪个阶段定什么、实现红线、用什么证据"，每条红线尽量配最小正反例；详表与扩展模式见末尾参考。语言写法见适用语言技能，本文只承载后端领域维度。
+
+> 维度速览：[分层与依赖方向](#分层与依赖方向) · [配置与机密](#配置与机密) · [API 契约](#api-契约) · [错误模型](#错误模型) · [数据访问与一致性](#数据访问与一致性) · [幂等与并发](#幂等与并发) · [认证与授权](#认证与授权) · [缓存与失效](#缓存与失效) · [弹性与依赖容错](#弹性与依赖容错) · [限流与过载保护](#限流与过载保护) · [后台任务与异步](#后台任务与异步) · [可观测性](#可观测性) · [生产就绪](#生产就绪)
+
+## 分层与依赖方向
+
+- **设计定**：请求处理分层——传输/控制器层（解析、校验、序列化）、服务/用例层（业务规则、编排、事务边界）、仓库/网关层（持久化与外部调用）；依赖方向由外向内，业务层不依赖框架的 HTTP 请求/响应类型。
+- **实现红线**：控制器不写业务规则、不直接拼 SQL / 调外部 API；服务层不 import HTTP `req/res`、不读全局请求上下文；跨层依赖通过接口注入而非具体类硬连，以便服务层用 fake 仓库单测。
+
+```ts
+// ❌ 校验+业务规则+DB 访问全堆控制器里 —— 不可复用、不可单测、与框架死耦合
+app.post('/orders', async (req, res) => {
+  if (req.body.items.length === 0) return res.status(400).end();
+  const total = req.body.items.reduce((s, i) => s + i.price, 0);   // 业务规则
+  await db.query('INSERT INTO orders ...', [total]);               // 直连 DB
+});
+
+// ✅ 控制器只做边界翻译，业务进服务层，持久化进仓库层
+app.post('/orders', async (req, res) => {
+  const dto = parseCreateOrder(req.body);                 // 解析 + 校验
+  const order = await orderService.create(req.user, dto); // 业务编排（内部走仓库）
+  res.status(201).json(toOrderResponse(order));           // 序列化
+});
+```
+
+- **证据**：服务层用 fake/in-memory 仓库的单测（无需起 HTTP/DB 即可跑）；控制器层只测边界翻译与状态码映射。
+
+## 配置与机密
+
+- **设计定**：配置来源（环境变量/配置中心）、必填项清单、各环境差异、机密管理方式；启动时集中校验、缺失即 fail-fast。
+- **实现红线**：配置集中读取并在启动时校验类型与必填（缺失直接拒绝启动，不在运行期热路径才崩）；机密/连接串/URL 不硬编码、不进仓库；`.env` 不提交、提供 `.env.example` 占位；不在代码各处散读 `process.env` / `os.environ`。
+
+```ts
+// ❌ 散读环境变量 + 兜底默认密钥 —— 兜底机密会被带进生产，缺失运行期才发现
+const url = process.env.DB_URL || 'postgres://localhost/dev';
+const jwt = process.env.JWT_SECRET || 'dev-secret';
+
+// ✅ 集中校验、缺失即 fail-fast、无兜底机密
+const config = { dbUrl: required('DATABASE_URL'), jwtSecret: required('JWT_SECRET') };
+function required(k: string): string {
+  const v = process.env[k];
+  if (!v) throw new Error(`Missing required env: ${k}`);   // 启动即失败
+  return v;
+}
+```
+
+- **证据**：缺必填项时启动失败的测试；机密扫描（仓库与构建产物无明文密钥）。
 
 ## API 契约
 
@@ -24,7 +70,29 @@ HTTP 404 { "error": { "code": "market_not_found", "message": "Market not found" 
 HTTP 422 { "error": { "code": "validation_failed", "fields": { "name": "required" } } }
 ```
 
-- **证据**：契约/快照测试或 OpenAPI 校验；状态码与错误信封有用例覆盖。
+- **证据**：契约/快照测试或 OpenAPI 校验；状态码与错误信封有用例覆盖。资源建模、分页/过滤/排序、版本与弃用的详表见 [`references/api-and-contract.md`](references/api-and-contract.md)。
+
+## 错误模型
+
+API 契约管的是**对外的线格式**；错误模型管的是**进程内怎么表达和处理错误**，两者要对齐。
+
+- **设计定**：领域错误分类（未找到/校验失败/冲突/无权/依赖不可用…）与到 HTTP 状态码的映射表；区分**可预期的操作型错误**与**编程型缺陷**。
+- **实现红线**：抛带类型/错误码的领域错误而非裸 `Error('xxx')`；统一错误处理在边界把领域错误映射成状态码 + 错误信封；编程型异常记录完整上下文并回笼统 5xx，不把堆栈/内部细节返回客户端；不 catch 后静默吞。
+
+```ts
+// ❌ 裸 Error + 各处 try/catch 自拼响应 —— 状态码与信封不一致、泄漏内部
+throw new Error('user not found');
+// 某处 catch (e) { res.status(500).send(e.message); }   // 该 404 却回 500 并泄漏
+
+// ✅ 类型化领域错误 + 统一边界映射
+class NotFoundError extends AppError {
+  constructor(resource: string, id: string) { super('not_found', 404, `${resource} ${id}`); }
+}
+throw new NotFoundError('User', id);
+// 全局错误处理器：AppError → 对应状态码 + 信封；其余 → 5xx + 记录上下文，不外泄
+```
+
+- **证据**：领域错误→状态码映射有用例覆盖；编程异常路径回 5xx 且不泄漏内部的测试。
 
 ## 数据访问与一致性
 
@@ -88,6 +156,29 @@ if (order.ownerId !== user.id && !user.isAdmin) throw new Forbidden();
 - **实现红线**：写路径同步失效或用短 TTL；**不**跨用户缓存与身份/权限相关的响应（缓存投毒/越权泄漏）；缓存击穿/雪崩有保护（单飞、随机 TTL）。
 - **证据**：失效路径有测试；缓存命中/未命中行为一致（缓存只影响延迟不影响正确性）。
 
+## 弹性与依赖容错
+
+- **设计定**：每个外部依赖（DB/缓存/下游服务/MQ）的超时值、重试策略（哪些可重试、退避与抖动、上限）、熔断/隔离与降级行为；区分幂等可重试与不可重试。
+- **实现红线**：所有跨进程调用设显式超时，不用框架默认的"无限等"；只对幂等且瞬时的失败重试，用指数退避 + 抖动并设上限；对持续失败的依赖熔断快速失败，避免线程/连接池耗尽；关键依赖不可用时有降级路径而非整体雪崩。
+
+```ts
+// ❌ 无超时 + 失败盲目紧密重试 —— 下游一抖动就把自己拖垮（重试风暴 + 连接耗尽）
+const r = await fetch(url);                                    // 无超时：连接挂住
+for (let i = 0; i < 5; i++) { try { return await call(); } catch {} }
+
+// ✅ 超时 + 指数退避+抖动 + 仅幂等重试
+const r = await fetch(url, { signal: AbortSignal.timeout(2000) });
+for (let i = 0; i < MAX; i++) {
+  try { return await call(); }
+  catch (e) {
+    if (!isTransient(e) || i === MAX - 1) throw e;
+    await sleep(base * 2 ** i + jitter());                     // 退避 + 抖动
+  }
+}
+```
+
+- **证据**：超时/重试/熔断路径有测试；依赖故障注入下系统降级而非雪崩的验证。超时/退避/熔断/隔离的取值与模式见 [`references/resilience-and-jobs.md`](references/resilience-and-jobs.md)。
+
 ## 限流与过载保护
 
 - **设计定**：限流维度（用户/IP/租户/接口）与配额、超额行为、过载时的降级策略。
@@ -106,11 +197,40 @@ if (n > LIMIT) return res.status(429).set('Retry-After', WINDOW).end();
 
 - **证据**：限流在多实例下生效的验证；超时/熔断路径有测试。
 
+## 后台任务与异步
+
+- **设计定**：哪些工作移出请求路径（发邮件、生成报表、调慢下游）；任务投递语义（至少一次）、重试与死信、可见性超时；worker 与 API 进程分离。
+- **实现红线**：请求处理器不做长耗时/重 IO 工作，入队交后台；任务幂等（同一任务跑两次结果一致），不假设"恰好一次"；失败任务有重试上限 + 死信 + 告警，不静默丢；任务读取自身所需上下文，不依赖请求级状态。
+
+```ts
+// ❌ 请求里同步发邮件 + 任务非幂等 —— 请求超时，重投即重复发送
+app.post('/signup', async (req, res) => { await createUser(req.body); await sendEmail(); res.end(); });
+
+// ✅ 入队 + 幂等任务
+app.post('/signup', async (req, res) => {
+  const u = await createUser(req.body);
+  await queue.add('welcome', { userId: u.id });               // 移出请求路径
+  res.status(202).end();
+});
+async function welcome({ userId }) {
+  if (await alreadySent(userId)) return;                       // 幂等：重投只生效一次
+  await sendEmail(userId); await markSent(userId);
+}
+```
+
+- **证据**：任务幂等性测试（重复投递只生效一次）；重试到死信的路径有覆盖。
+
 ## 可观测性
 
 - **设计定**：结构化日志字段（含 request/trace id）、关键路径指标（延迟、错误率、吞吐）、告警阈值。
 - **实现红线**：日志结构化且可关联（贯穿 request id）；错误记录足够定位的上下文，**不**静默吞异常；不在日志/指标里写敏感数据。
 - **证据**：关键路径有日志/指标埋点；错误路径产生可观测信号。
+
+## 生产就绪
+
+- **设计定**：健康检查（liveness）与就绪检查（readiness，含关键依赖探测）、优雅停机流程、CORS 允许来源、安全响应头清单。
+- **实现红线**：`/health` 与 `/ready` 分离，ready 探测 DB/缓存等关键依赖（依赖不通即不就绪）；收到 `SIGTERM` 先停接新请求、排空在途、再关连接退出，不硬杀在途请求；CORS 用显式来源白名单不用 `*`（带凭证时尤甚）；设安全响应头（HSTS、内容类型嗅探防护、frame 策略等）。
+- **证据**：readiness 在依赖不可用时返回非 200 的测试；优雅停机不丢在途请求的验证；CORS/安全头配置有检查。停机时序、探针语义与安全头清单见 [`references/resilience-and-jobs.md`](references/resilience-and-jobs.md)。
 
 ## 测试与证据策略
 
@@ -127,20 +247,38 @@ if (n > LIMIT) return res.status(429).set('Retry-After', WINDOW).end();
 
 | 话术 | 现实 |
 |---|---|
+| 「逻辑写控制器里少几层，简单」 | 业务逻辑混入控制器 → 不可复用/不可单测/与框架死耦合；分层是设计红线 |
+| 「兜底个默认密钥免得本地起不来」 | 兜底机密会被带进生产；机密缺失就 fail-fast，配 `.env.example` |
 | 「统一返回 200，错误放 body 里前端好处理」 | 状态码是 HTTP 契约；200 包错误破坏缓存/重试/监控语义 |
+| 「抛个 Error 带上 message 就够了」 | 裸 Error 导致状态码/信封不一致、易泄漏内部；用类型化领域错误 + 统一映射 |
 | 「下游应该不会依赖这个错误码」 | 可观察的接口语义都有消费者；变更走基线 + 列消费者 |
 | 「客户端不会重复提交，不用做幂等」 | 网络重试与重复投递必然发生；副作用操作必须幂等 |
+| 「调下游不设超时，正常都很快」 | 下游一抖动，无超时调用就耗尽连接/线程；跨进程调用必设超时 + 退避重试 |
+| 「邮件在请求里发了就完事」 | 慢/易失败的副作用应入队后台并做幂等，否则请求超时且重投重复 |
 | 「先放宽权限跑通，上线前收紧」 | 越权是高危事故；对象级鉴权从第一天起，且服务端权威 |
 | 「限流用内存计数器够了」 | 多副本/无服务器下进程内计数器失效；用共享存储 |
 | 「N+1 数据量小，先不管」 | 数据量会增长；N+1 是规模化下的典型拖垮点，设计阶段消灭 |
 
 ## 自检清单
 
+- [ ] 分层清晰：控制器只做边界翻译，业务进服务层，持久化进仓库层；业务层不依赖 HTTP 类型
+- [ ] 配置集中、启动 fail-fast；机密/URL 不硬编码不入库，有 `.env.example`
 - [ ] 状态码语义化、错误信封统一、5xx 不泄漏内部；接口变更走 modify + 列消费者
+- [ ] 抛类型化领域错误而非裸 Error；统一边界映射状态码；不静默吞异常
 - [ ] 多步写入有事务/补偿；列表无 N+1；查询取需要的列且走索引；迁移可回滚
 - [ ] 副作用写操作有幂等保护；不依赖"客户端不会重试"
 - [ ] 身份与对象级授权服务端权威、不可绕过；密钥/PII 不入日志
 - [ ] 缓存有失效路径；不跨用户缓存权限相关响应；有击穿/雪崩保护
-- [ ] 生产限流用共享存储；超额回 429 + Retry-After；关键依赖有超时/熔断
+- [ ] 跨进程调用有超时；幂等瞬时失败才重试（退避+抖动+上限）；持续失败熔断有降级
+- [ ] 生产限流用共享存储；超额回 429 + Retry-After
+- [ ] 长耗时/易失败副作用入队后台；任务幂等、有重试上限+死信
 - [ ] 日志结构化可关联、错误不被吞；关键路径有指标
-- [ ] 适用层级（单元/集成/契约）覆盖到位；并发/过载维度在接近生产环境验证
+- [ ] readiness 探测关键依赖；SIGTERM 优雅停机排空在途；CORS 显式来源 + 安全头
+- [ ] 适用层级（单元/集成/契约）覆盖到位；并发/过载/容错维度在接近生产环境验证
+
+## 参考
+
+| 需要… | 参考 |
+|---|---|
+| 资源建模、完整状态码语义、错误信封、分页/过滤/排序、版本与弃用、契约测试 | [`references/api-and-contract.md`](references/api-and-contract.md) |
+| 超时/重试/退避抖动/熔断/隔离的取值与模式、后台任务与死信、优雅停机时序、健康/就绪探针、安全头 | [`references/resilience-and-jobs.md`](references/resilience-and-jobs.md) |
