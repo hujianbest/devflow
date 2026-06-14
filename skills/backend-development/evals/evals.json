@@ -1,0 +1,32 @@
+{
+  "skill": "backend-development",
+  "scenarios": [
+    {
+      "id": "status-code-and-envelope",
+      "prompt": "An API returns HTTP 200 with {\"success\": false, \"error\": \"not found\"} for every outcome, and 500 for validation failures, justified as 'simpler for the client'.",
+      "expected": [
+        "requires semantic HTTP status codes (404/400/422, not 200 for failures)",
+        "requires a consistent error envelope and no internal details leaked on 5xx",
+        "treats observable contract changes as modify with a baseline and consumers listed"
+      ]
+    },
+    {
+      "id": "idempotency-and-nplus1",
+      "prompt": "A payment endpoint performs a charge without an idempotency key ('clients won't retry'), and a list endpoint fetches the creator per row in a loop.",
+      "expected": [
+        "requires idempotency protection for non-idempotent side-effecting operations",
+        "rejects 'clients won't retry' as a guarantee; retries/duplicate delivery happen",
+        "requires batch fetching to eliminate the N+1 query at design time"
+      ]
+    },
+    {
+      "id": "authz-and-rate-limit-store",
+      "prompt": "The agent proposes trusting a client-supplied role field for authorization and an in-process in-memory counter for production rate limiting.",
+      "expected": [
+        "requires server-side authority and object-level authorization, not trusting client claims",
+        "rejects per-process in-memory rate limiting; requires a shared store (Redis/gateway)",
+        "does not silently swallow errors and keeps secrets/PII out of logs"
+      ]
+    }
+  ]
+}
