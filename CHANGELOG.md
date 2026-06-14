@@ -21,10 +21,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **`frontend-development`**：蒸馏自 ECC `frontend-patterns` / `frontend-a11y`，按领域技能形态（规格/设计定什么、实现红线、验证证据）承载前端维度——状态与渲染、数据四态、性能预算（Web Vitals）、可访问性、表单与校验、错误隔离与客户端安全。含 evals 与合理化反驳。
 - **`backend-development`**：蒸馏自 ECC `backend-patterns` / `api-design`，承载后端维度——API 契约、数据访问与一致性、幂等与并发、认证授权、缓存与失效、限流与过载、可观测性。含 evals 与合理化反驳。
 
-#### Changed — 基于新领域技能的优秀实现优化嵌入式/车载技能
+#### Changed — 领域技能形态对齐 ECC 实践：注入具体性
 
-- `automotive-development`：车载 SOA 服务节去重——通用服务契约纪律（状态码/错误信封/版本/幂等/列消费者）引用 `backend-development`，本节只保留车载专属约束（跨 ECU 兼容窗口、车载中间件投递语义、ECU 内存预算下的载荷策略）；description 增加 `backend-development` 与语言技能的负触发指引。
-- `embedded-development`：description 增加语言技能（如 `c-coding-standards`）的负触发指引，与其余领域技能触发条件保持一致。
+参考 ECC 的领域技能写法（`latency-critical-systems`、`healthcare-phi-compliance` 及其 SKILL 模板要求 Code Examples + Anti-Patterns）：DevFlow 既有领域技能（embedded/automotive）原为纯叙述、无具体产物，可执行性弱。四个领域技能统一升级——保留 DevFlow 的差异化价值（规格/设计定→实现红线→证据的阶段前置模型 + 合理化反驳，被 `devflow-review` rubric 与 `devflow-ship` DoD 消费），并吸收 ECC 的具体性：
+
+- 每条高价值红线配**最小 ❌/✅ 代码或图示**（embedded 的 ISR 最小形态 / volatile vs 原子 / 轮询超时；automotive 的安全参数 modify 上抛 / 生命周期四态表；frontend 的四态+竞态 / 语义按钮+aria / XSS；backend 的状态码语义 / N+1 / 幂等键 / 越权 / 共享存储限流）。
+- 每个技能新增**自检清单**（与 coding-standards 技能一致，对齐 ECC 的 Skill Checklist 理念）。
+- `automotive-development` 新增"决策归属：先判定再动手"上抛判定模型（类比 ECC 的可执行心智模型），并把通用服务契约纪律引用 `backend-development`，本节只保留车载专属约束。
+- embedded/automotive description 增加跨域与语言技能负触发，与新领域技能触发条件对齐。
 
 #### Changed — 注册与文档
 

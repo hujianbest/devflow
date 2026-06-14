@@ -7,25 +7,53 @@ description: 在前端/Web UI 工作项（组件、页面、状态管理、数�
 
 ## 总览
 
-前端约束的共同点：**违反时不报错，只让用户体验间歇性地坏**——白屏、卡顿、无障碍用户用不了、状态对不上。所以这些约束必须前置到规格和设计：在 spec 里有交互态与性能阈值、在 design 里有状态归属与可访问性策略、在测试里有证据，而不是在 code review 时靠肉眼发现。本技能按维度给出"在哪个阶段定什么、实现红线、用什么证据"。语言/框架的写法规则（React/TS 惯用法）见适用语言技能，本文只承载前端领域维度。
+前端约束的共同点：**违反时不报错，只让用户体验间歇性地坏**——白屏、卡顿、无障碍用户用不了、状态对不上。所以这些约束必须前置到规格和设计：在 spec 里有交互态与性能阈值、在 design 里有状态归属与可访问性策略、在测试里有证据，而不是在 code review 时靠肉眼发现。本技能按维度给出"在哪个阶段定什么、实现红线、用什么证据"，每条红线尽量配最小正反例。语言/框架的写法规则见适用语言技能，本文只承载前端领域维度。
 
 ## 状态与渲染
 
 - **设计定**：每块状态的**归属**——本地组件态、跨组件共享态、还是服务器数据缓存；单一数据源，派生值就地计算不另存。
-- **实现红线**：
-  - 状态更新不可变（不就地改 props/state 对象）；派生状态不复制成第二份真相
-  - 渲染期是纯函数：不在渲染中发请求、改外部变量、读写 DOM；副作用进受控的生命周期/effect
-  - effect 的依赖完整且引用稳定（回调/对象用记忆化或 ref），否则会无限重渲染/重复请求
-  - 列表项有**稳定且唯一**的 key（不用数组下标作可变列表的 key）
+- **实现红线**：状态更新不可变；渲染期是纯函数（不在渲染中发请求/改外部变量/读写 DOM，副作用进受控 effect）；effect 依赖完整且引用稳定；列表项有稳定且唯一的 key。
+
+```tsx
+// ❌ 就地变异 state + 用数组下标当可变列表的 key + effect 漏依赖
+state.items.push(next);           // 变异，React 不重渲染
+setActive(state.items);
+{items.map((it, i) => <Row key={i} {...it} />)}   // 重排后 key 错位
+useEffect(() => { load(id); }, []);                // 漏 id：陈旧闭包
+
+// ✅ 不可变更新 + 稳定唯一 key + 完整依赖
+setItems(prev => [...prev, next]);
+{items.map(it => <Row key={it.id} {...it} />)}
+useEffect(() => { load(id); }, [id]);
+```
+
 - **证据**：组件单测覆盖状态转换与边界；对易回归的重渲染问题有断言或快照。
 
 ## 数据获取与四态
 
 - **设计定**：每个异步数据源的 **loading / error / empty / success** 四态各有明确 UI；缓存与失效策略；竞态处理（过期响应丢弃）。
-- **实现红线**：
-  - 每个请求都处理 error 与 loading，不只画 success；失败有用户可见的反馈与重试入口
-  - 切换参数时丢弃过期响应（abort 或忽略非最新 key），避免后到的旧响应覆盖新数据
-  - 不产生无限请求循环（effect 依赖稳定）；不在渲染期直接 fetch
+- **实现红线**：每个请求都处理 error 与 loading，不只画 success；切换参数时丢弃过期响应；不产生无限请求循环；不在渲染期直接 fetch。
+
+```tsx
+// ❌ 只画 success；快速切换 id 时后到的旧响应覆盖新数据
+const { data } = useQuery(id);
+return <List items={data} />;
+
+// ✅ 四态都画 + 丢弃过期响应
+useEffect(() => {
+  let active = true;                       // 或用 AbortController
+  setState({ status: 'loading' });
+  fetchById(id)
+    .then(d => active && setState({ status: 'success', data: d }))
+    .catch(e => active && setState({ status: 'error', error: e }));
+  return () => { active = false; };        // 旧请求结果被忽略
+}, [id]);
+if (state.status === 'loading') return <Spinner />;
+if (state.status === 'error')   return <ErrorView onRetry={refetch} />;
+if (isEmpty(state.data))        return <Empty />;
+return <List items={state.data} />;
+```
+
 - **证据**：四态各有测试（含错误与空数据）；竞态/取消路径有覆盖。
 
 ## 性能预算
@@ -38,11 +66,21 @@ description: 在前端/Web UI 工作项（组件、页面、状态管理、数�
 ## 可访问性（a11y）
 
 - **设计定**：语义化 HTML、键盘可达、焦点管理是**设计输入**而非上线前补丁；目标合规级别（如 WCAG AA）写进 spec。
-- **实现红线**：
-  - 表单控件与 `label` 通过 `htmlFor`/`id` 配对；错误用 `aria-describedby` + `role="alert"` 关联，`aria-invalid` 标状态
-  - 交互元素用语义标签（`button`/`a`），不用 `div`/`span` + `onClick` 充当按钮；自定义控件补全 role 与键盘事件
-  - 模态/弹层做焦点陷阱与关闭后焦点恢复；可见焦点不被移除
-  - `aria-*` 用对（不滥用、不与原生语义冲突）；纯装饰图 `alt=""`/`aria-hidden`
+- **实现红线**：交互元素用语义标签；表单控件与 label 配对、错误可被屏幕阅读器感知；模态做焦点陷阱与恢复；`aria-*` 用对、不与原生语义冲突；纯装饰图 `alt=""`。
+
+```tsx
+// ❌ div 当按钮（键盘/读屏用不了）+ label 未关联 + 错误是游离文本
+<div className="btn" onClick={submit}>Save</div>
+<label>Email</label><input type="email" />
+<span className="error">Invalid email</span>
+
+// ✅ 语义按钮 + label/htmlFor 配对 + aria 关联错误
+<button type="button" onClick={submit}>Save</button>
+<label htmlFor="email">Email</label>
+<input id="email" type="email" aria-invalid={!!err} aria-describedby="email-err" />
+{err && <span id="email-err" role="alert">{err}</span>}
+```
+
 - **证据**：axe / eslint-plugin-jsx-a11y 零新增违规；关键流程键盘走查；必要时屏幕阅读器抽查。
 
 ## 表单与校验
@@ -54,10 +92,17 @@ description: 在前端/Web UI 工作项（组件、页面、状态管理、数�
 ## 错误隔离与客户端安全
 
 - **设计定**：错误边界（error boundary）包裹易错子树，单组件崩溃不白屏整页；降级 UI 是设计输出。
-- **实现红线**：
-  - 不把未净化内容塞进 `dangerouslySetInnerHTML`/`innerHTML`（XSS）；用户内容默认转义
-  - 密钥 / 私密令牌不进前端 bundle 或客户端代码；只放可公开的配置
-  - 跳转/资源 URL 校验来源，避免开放重定向与协议注入（`javascript:`）
+- **实现红线**：不把未净化内容塞进 `dangerouslySetInnerHTML`/`innerHTML`（XSS）；密钥/私密令牌不进前端 bundle；跳转/资源 URL 校验来源（防开放重定向与 `javascript:` 注入）。
+
+```tsx
+// ❌ 未净化的用户内容直接注入 DOM → 存储型 XSS
+<div dangerouslySetInnerHTML={{ __html: comment.body }} />
+
+// ✅ 默认转义渲染；确需富文本则先服务端/库净化（白名单）
+<div>{comment.body}</div>
+// 或 <div dangerouslySetInnerHTML={{ __html: sanitize(comment.body) }} />
+```
+
 - **证据**：错误边界触发路径有测试；安全相关项在评审清单逐条核对。
 
 ## 测试与证据策略
@@ -80,3 +125,13 @@ description: 在前端/Web UI 工作项（组件、页面、状态管理、数�
 | 「客户端校验过了就行，省一次请求」 | 客户端校验可被绕过；服务端才是权威校验 |
 | 「性能等上线慢了再优化」 | 性能阈值是 spec 输入；虚拟化/分割是设计决策，不是事后补丁 |
 | 「依赖数组少写一个，反正能跑」 | 依赖不全会导致陈旧闭包或无限重渲染；依赖完整且引用稳定 |
+
+## 自检清单
+
+- [ ] 状态归属明确、单一数据源；更新不可变；列表 key 稳定唯一；effect 依赖完整
+- [ ] loading/error/empty/success 四态都有 UI；过期响应被丢弃；无无限请求循环
+- [ ] 性能阈值有 QAS；长列表虚拟化、重组件懒加载、昂贵计算记忆化；有 Web Vitals 证据
+- [ ] 交互用语义标签；label/控件配对、错误用 aria 关联；模态焦点陷阱与恢复；axe/jsx-a11y 零新增违规
+- [ ] 受控输入单一数据源；提交防重复；客户端校验未替代服务端校验
+- [ ] 错误边界隔离易错子树；无未净化 `dangerouslySetInnerHTML`；密钥不入 bundle
+- [ ] 适用层级（单测/集成/E2E）覆盖到位；环境相关 NFR 在声明环境测量
