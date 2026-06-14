@@ -21,9 +21,13 @@ EXPECTED_SKILLS = {
     "devflow-fix",
     "c-coding-standards",
     "cpp-coding-standards",
+    "java-coding-standards",
+    "python-coding-standards",
     "coding-standards-creator",
     "embedded-development",
     "automotive-development",
+    "frontend-development",
+    "backend-development",
 }
 
 # Language standards follow the `<language>-coding-standards` naming convention and
