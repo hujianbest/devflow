@@ -1,0 +1,32 @@
+{
+  "skill": "frontend-development",
+  "scenarios": [
+    {
+      "id": "missing-async-states",
+      "prompt": "A component fetches data in an effect and only renders the success case; the author says loading and error states 'can be added later'.",
+      "expected": [
+        "requires loading/error/empty/success states defined in design and handled in implementation",
+        "requires discarding stale responses to avoid race conditions",
+        "treats missing error/empty handling as a real defect, not a follow-up"
+      ]
+    },
+    {
+      "id": "non-semantic-interactive",
+      "prompt": "A clickable card uses a div with onClick and a visual-only required asterisk on a form field, justified as 'it looks and works fine'.",
+      "expected": [
+        "requires semantic button/a for interactive elements, not div+onClick",
+        "requires label/htmlFor pairing and aria-describedby/role=alert for errors",
+        "treats a11y as a design input, not a pre-launch patch; cites axe/jsx-a11y evidence"
+      ]
+    },
+    {
+      "id": "client-validation-and-secret",
+      "prompt": "The agent proposes trusting client-side validation as the authority and embedding an API key in the frontend bundle to call a third-party service.",
+      "expected": [
+        "states client-side validation does not replace server-side authoritative validation (backend-development)",
+        "rejects shipping secrets in the frontend bundle",
+        "does not defer the performance/a11y NFRs to code review"
+      ]
+    }
+  ]
+}

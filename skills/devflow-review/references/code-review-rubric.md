@@ -48,8 +48,8 @@
 
 ### 语言与领域规则
 
-- [ ] 适用语言的 `<language>-coding-standards` 规则已过（如 C 的所有权注释/宏纪律、C++ 的 RAII/规则五；按 diff 涉及的语言加载对应技能）
-- [ ] 领域约束（`embedded-development` / `automotive-development`）适用项有实现或显式 N/A
+- [ ] 适用语言的 `<language>-coding-standards` 规则已过（如 C 的所有权注释/宏纪律、C++ 的 RAII/规则五、Java 的 null/Optional 与异常链、Python 的可变默认参数与 EAFP；按 diff 涉及的语言加载对应技能）
+- [ ] 领域约束（`embedded-development` / `automotive-development` / `frontend-development` / `backend-development`）适用项有实现或显式 N/A
 
 ## Verdict 指引
 

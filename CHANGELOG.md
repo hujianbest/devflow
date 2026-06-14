@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### 2.4 — 新增 Java/Python 语言规范与前后端领域技能（蒸馏自 ECC）
+
+将开源 ECC 项目（`affaan-m/ECC`）的相关技能蒸馏为 DevFlow 形态——把目录式 pattern 清单改写为可判定规则 + 针对的事故类 + 正反例，并裁剪到上下文预算内：
+
+#### Added — 语言编码规范（叠加技能）
+
+- **`java-coding-standards`**：蒸馏自 ECC `java-coding-standards`，提炼为语言级规则——null/Optional、equals/hashCode 与集合契约、try-with-resources、异常策略（保留 cause/不吞）、不可变与封装、泛型、并发、数值/字符串陷阱。框架专属约定（Spring/Quarkus）下沉到 `references/framework-conventions.md`，保持 SKILL.md 为语言级。含 evals 与 framework reference。
+- **`python-coding-standards`**：蒸馏自 ECC `python-patterns` / `python-testing`，提炼为语言级规则——可变默认参数、类型注解、EAFP 异常、上下文管理器、身份/相等（is/==）、dataclass、导入与 PEP 8 命名、并发（GIL/async）。含 evals。
+- 两者遵循 `coding-standards-creator` 的结构契约，按命名约定自动被各阶段发现，无需改动阶段技能。
+
+#### Added — 前后端领域技能（叠加技能）
+
+- **`frontend-development`**：蒸馏自 ECC `frontend-patterns` / `frontend-a11y`，按领域技能形态（规格/设计定什么、实现红线、验证证据）承载前端维度——状态与渲染、数据四态、性能预算（Web Vitals）、可访问性、表单与校验、错误隔离与客户端安全。含 evals 与合理化反驳。
+- **`backend-development`**：蒸馏自 ECC `backend-patterns` / `api-design`，承载后端维度——API 契约、数据访问与一致性、幂等与并发、认证授权、缓存与失效、限流与过载、可观测性。含 evals 与合理化反驳。
+
+#### Changed — 领域技能形态对齐 ECC 实践：注入具体性
+
+参考 ECC 的领域技能写法（`latency-critical-systems`、`healthcare-phi-compliance` 及其 SKILL 模板要求 Code Examples + Anti-Patterns）：DevFlow 既有领域技能（embedded/automotive）原为纯叙述、无具体产物，可执行性弱。四个领域技能统一升级——保留 DevFlow 的差异化价值（规格/设计定→实现红线→证据的阶段前置模型 + 合理化反驳，被 `devflow-review` rubric 与 `devflow-ship` DoD 消费），并吸收 ECC 的具体性：
+
+- 每条高价值红线配**最小 ❌/✅ 代码或图示**（embedded 的 ISR 最小形态 / volatile vs 原子 / 轮询超时；automotive 的安全参数 modify 上抛 / 生命周期四态表；frontend 的四态+竞态 / 语义按钮+aria / XSS；backend 的状态码语义 / N+1 / 幂等键 / 越权 / 共享存储限流）。
+- 每个技能新增**自检清单**（与 coding-standards 技能一致，对齐 ECC 的 Skill Checklist 理念）。
+- `automotive-development` 新增"决策归属：先判定再动手"上抛判定模型（类比 ECC 的可执行心智模型），并把通用服务契约纪律引用 `backend-development`，本节只保留车载专属约束。
+- embedded/automotive description 增加跨域与语言技能负触发，与新领域技能触发条件对齐。
+
+#### Changed — 注册与文档
+
+- `scripts/validate_devflow.py` 的 `EXPECTED_SKILLS` 纳入四个新技能（防误删）。
+- README（中英）质量叠加表、项目结构树、技能计数（13 → 17：7 阶段 + 9 叠加 + 1 工具）更新；`using-devflow` 技能地图补充语言与前后端领域技能。
+
 ### 2.3 — 真实流程验证反馈：评审门禁、plan.md、评审记录闭环
 
 针对真实开发流程验证发现的三个不符合预期点（只在 code 后才 review 且全程无停顿；tasks.md 信息不足以支撑中断恢复；评审问题与解决过程未落盘）：

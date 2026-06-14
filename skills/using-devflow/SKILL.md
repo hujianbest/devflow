@@ -158,9 +158,11 @@ features/<id>-<slug>/
 | `devflow-review` | 独立评审规格/设计/测试/代码 | 每个阶段产物完成后 |
 | `devflow-ship` | DoD 核验、promotion 长期资产、closeout | 评审闭环后的收尾 |
 | `devflow-fix` | 复现 → 根因 → 最小修复 | 缺陷、回归、线上问题 |
-| `<language>-coding-standards` | 语言级规则与惯用法（现有 `c-coding-standards`、`cpp-coding-standards`） | 工作项含对应语言的代码 |
+| `<language>-coding-standards` | 语言级规则与惯用法（现有 `c-coding-standards`、`cpp-coding-standards`、`java-coding-standards`、`python-coding-standards`） | 工作项含对应语言的代码 |
 | `embedded-development` | 嵌入式领域约束（内存/中断/实时性/资源） | 嵌入式工作项 |
 | `automotive-development` | 车载领域约束（ASIL/SOA/诊断/整车生命周期） | 车载工作项 |
+| `frontend-development` | 前端领域约束（状态/数据四态/性能/可访问性/客户端安全） | 前端/Web UI 工作项 |
+| `backend-development` | 后端领域约束（API 契约/一致性/幂等/鉴权/限流/可观测性） | 后端/服务端工作项 |
 | `coding-standards-creator` | 把团队编码规范转化为新的语言规范技能 | 需要新建或修订某语言的 coding-standards 时 |
 
 语言与领域技能是**叠加约束**：它们在规格、设计、实现、评审各阶段被对应技能引用，自身不是流程阶段。

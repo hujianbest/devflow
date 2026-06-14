@@ -92,7 +92,7 @@ At workflow start DevFlow records one run mode: `attended` by default, where rev
 
 ## All Skills
 
-DevFlow currently ships 13 core skills: 7 phase skills, 5 quality overlays, and 1 tooling skill.
+DevFlow currently ships 17 core skills: 7 phase skills, 9 quality overlays, and 1 tooling skill.
 
 ### Phase Skills
 
@@ -113,8 +113,12 @@ DevFlow currently ships 13 core skills: 7 phase skills, 5 quality overlays, and 
 | [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | Language-neutral clean code standards: naming, functions, control flow, errors, comments, refactoring | Writing, refactoring, or reviewing implementation and test code |
 | [c-coding-standards](skills/c-coding-standards/SKILL.md) | C-specific rules for ownership, memory/resources, buffers, integers, macros, headers, and error returns | Work touches C source, headers, or C tests |
 | [cpp-coding-standards](skills/cpp-coding-standards/SKILL.md) | C++ rules for RAII, ownership signatures, class design, errors, templates, and ABI | Work touches C++ source, classes, templates, or C++ tests |
+| [java-coding-standards](skills/java-coding-standards/SKILL.md) | Java rules for null/Optional, equals/hashCode contracts, resources, exceptions, immutability, generics, and concurrency | Work touches Java source, records, or JUnit tests |
+| [python-coding-standards](skills/python-coding-standards/SKILL.md) | Python rules for mutable defaults, type hints, EAFP exceptions, context managers, identity/equality, dataclasses, and imports | Work touches Python modules, packages, or pytest tests |
 | [embedded-development](skills/embedded-development/SKILL.md) | Embedded constraints around memory, interrupts, real time, hardware boundaries, and evidence | Firmware, drivers, HAL, RTOS, or constrained-device work |
 | [automotive-development](skills/automotive-development/SKILL.md) | Automotive constraints around ASIL, vehicle lifecycle, SOA, DTC, SELinux, and cross-ECU coordination | ECU, domain-controller, vehicle-service, or platform work |
+| [frontend-development](skills/frontend-development/SKILL.md) | Frontend constraints around state/rendering, async states, performance budget, accessibility, and client-side safety | Component, page, state, form, or Web UI work |
+| [backend-development](skills/backend-development/SKILL.md) | Backend constraints around API contracts, data consistency, idempotency, authz, rate limiting, and observability | API, service/repository, database, or server-side work |
 
 ### Tooling
 
@@ -172,7 +176,7 @@ Key design choices:
 
 ```text
 devflow/
-├── skills/                         # 13 core skills
+├── skills/                         # 17 core skills
 │   ├── using-devflow/              # Entry and recovery rules
 │   ├── devflow-specify/            # Testable specs and traceability
 │   ├── devflow-design/             # Component/work-item design
@@ -183,8 +187,12 @@ devflow/
 │   ├── devflow-clean-code/         # Language-neutral clean code
 │   ├── c-coding-standards/         # C overlay
 │   ├── cpp-coding-standards/       # C++ overlay
+│   ├── java-coding-standards/      # Java overlay
+│   ├── python-coding-standards/    # Python overlay
 │   ├── embedded-development/       # Embedded overlay
 │   ├── automotive-development/     # Automotive overlay
+│   ├── frontend-development/       # Frontend overlay
+│   ├── backend-development/        # Backend overlay
 │   └── coding-standards-creator/   # Language-standard generator
 ├── commands/                       # Slash-style phase entries
 ├── agents/                         # devflow-reviewer and devflow-implementer personas

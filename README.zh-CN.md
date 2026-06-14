@@ -90,7 +90,7 @@ DF:     `devflow-review` 用独立上下文评审测试和代码。`devflow-ship
 
 ## 全部 Skills
 
-DevFlow 当前包含 13 个核心 skills：7 个阶段技能、5 个质量叠加技能、1 个工具技能。
+DevFlow 当前包含 17 个核心 skills：7 个阶段技能、9 个质量叠加技能、1 个工具技能。
 
 ### 阶段技能
 
@@ -111,8 +111,12 @@ DevFlow 当前包含 13 个核心 skills：7 个阶段技能、5 个质量叠加
 | [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | 语言无关的整洁代码标准：命名、函数、控制流、错误处理、注释、重构 | 编写、重构或评审实现代码与测试代码 |
 | [c-coding-standards](skills/c-coding-standards/SKILL.md) | C 规则：所有权、内存/资源、缓冲区、整数、宏、头文件、错误返回 | 工作触及 C 源码、头文件或 C 测试 |
 | [cpp-coding-standards](skills/cpp-coding-standards/SKILL.md) | C++ 规则：RAII、所有权签名、类设计、错误策略、模板纪律、ABI | 工作触及 C++ 源码、类、模板或 C++ 测试 |
+| [java-coding-standards](skills/java-coding-standards/SKILL.md) | Java 规则：null/Optional、equals/hashCode 契约、资源管理、异常策略、不可变、泛型、并发 | 工作触及 Java 源码、record 或 JUnit 测试 |
+| [python-coding-standards](skills/python-coding-standards/SKILL.md) | Python 规则：可变默认参数、类型注解、EAFP 异常、上下文管理器、身份/相等、dataclass、导入 | 工作触及 Python 模块、包或 pytest 测试 |
 | [embedded-development](skills/embedded-development/SKILL.md) | 嵌入式约束：内存、中断、实时性、硬件边界、证据策略 | 固件、驱动、HAL、RTOS 或资源受限设备工作 |
 | [automotive-development](skills/automotive-development/SKILL.md) | 车载约束：ASIL、整车生命周期、SOA、DTC、SELinux、跨 ECU 协同 | ECU、域控、车载服务或整车平台工作 |
+| [frontend-development](skills/frontend-development/SKILL.md) | 前端约束：状态与渲染、数据四态、性能预算、可访问性、客户端安全 | 组件、页面、状态、表单或 Web UI 工作 |
+| [backend-development](skills/backend-development/SKILL.md) | 后端约束：API 契约、数据一致性、幂等、鉴权、限流、可观测性 | API、服务/仓库层、数据库或服务端工作 |
 
 ### 工具技能
 
@@ -170,7 +174,7 @@ SKILL.md
 
 ```text
 devflow/
-├── skills/                         # 13 个核心 skills
+├── skills/                         # 17 个核心 skills
 │   ├── using-devflow/              # 入口与恢复规则
 │   ├── devflow-specify/            # 可测试规格与追溯矩阵
 │   ├── devflow-design/             # 组件/工作项设计
@@ -181,8 +185,12 @@ devflow/
 │   ├── devflow-clean-code/         # 语言无关 Clean Code
 │   ├── c-coding-standards/         # C 叠加约束
 │   ├── cpp-coding-standards/       # C++ 叠加约束
+│   ├── java-coding-standards/      # Java 叠加约束
+│   ├── python-coding-standards/    # Python 叠加约束
 │   ├── embedded-development/       # 嵌入式叠加约束
 │   ├── automotive-development/     # 车载叠加约束
+│   ├── frontend-development/       # 前端叠加约束
+│   ├── backend-development/        # 后端叠加约束
 │   └── coding-standards-creator/   # 语言规范生成器
 ├── commands/                       # slash-style 阶段入口
 ├── agents/                         # devflow-reviewer / devflow-implementer 子代理角色

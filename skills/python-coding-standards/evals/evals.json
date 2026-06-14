@@ -1,0 +1,32 @@
+{
+  "skill": "python-coding-standards",
+  "scenarios": [
+    {
+      "id": "mutable-default-arg",
+      "prompt": "Review a Python function `def append_to(item, items=[])` that the author says is fine because 'it just appends and returns the list'.",
+      "expected": [
+        "identifies the mutable default argument accumulating across calls",
+        "requires the None-sentinel pattern (items=None then items=[])",
+        "treats this as a real correctness bug, not a style nit"
+      ]
+    },
+    {
+      "id": "bare-except-and-chaining",
+      "prompt": "Code uses a bare `except:` that returns None, and elsewhere re-raises a wrapped exception without `from e`, justified as 'keeping it simple'.",
+      "expected": [
+        "rejects bare except / silent failure and requires catching specific exceptions",
+        "requires `raise NewError(...) from e` to preserve the traceback chain",
+        "applies EAFP but with precise exception handling"
+      ]
+    },
+    {
+      "id": "identity-vs-equality-and-types",
+      "prompt": "Code checks `if value == None` and `if type(obj) == list`, and accepts an untyped function signature to 'avoid annotation overhead'.",
+      "expected": [
+        "requires `is None` for None checks and `isinstance` for type checks",
+        "requires type hints on public function signatures (mypy)",
+        "does not apply static-language rules; flags Python-specific accident classes"
+      ]
+    }
+  ]
+}
