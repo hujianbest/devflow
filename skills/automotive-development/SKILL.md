@@ -1,6 +1,6 @@
 ---
 name: automotive-development
-description: 在车载软件工作项（ECU、域控、车载服务、整车平台）的规格、设计、实现或评审中使用，涉及功能安全/ASIL、车载 SOA 服务、DTC/诊断、整车启动/休眠/唤醒、SELinux 或跨 ECU 协同时。通用嵌入式约束见 embedded-development。
+description: 在车载软件工作项（ECU、域控、车载服务、整车平台）的规格、设计、实现或评审中使用，涉及功能安全/ASIL、车载 SOA 服务、DTC/诊断、整车启动/休眠/唤醒、SELinux 或跨 ECU 协同时。通用嵌入式约束见 embedded-development；通用服务接口契约见 backend-development；语言级规则见适用 `<language>-coding-standards`。
 ---
 
 # Automotive Development
@@ -23,9 +23,11 @@ description: 在车载软件工作项（ECU、域控、车载服务、整车平�
 
 ## 车载 SOA 服务
 
-- 服务接口（service/method/event/field）的语义、错误码、版本策略属于组件间契约：变更走 `devflow-specify` 的 IFR + 基线纪律，列出已知消费者与兼容策略。
-- 设计阶段写清：服务不可用时调用方的行为（超时、重试、降级）；事件丢失/重复/乱序的语义；大载荷的所有权与拷贝策略。
-- 红线：不绕过 SOA 接口直接访问其他组件的内部状态；不引入未声明的跨组件依赖。
+- 通用服务契约纪律（接口语义/错误码/版本策略/列消费者/超时重试降级/幂等）见 `backend-development`，本节只承载**车载专属**约束：
+  - 服务接口（service/method/event/field）变更走 `devflow-specify` 的 IFR + 基线纪律；车载语境下消费者常跨 ECU，兼容窗口受整车版本管理约束（不假设对端同步升级）
+  - 事件丢失/重复/乱序的语义按车载通信中间件（如 SOME/IP、DDS）的真实保证写清，不凭记忆假设可靠投递
+  - 大载荷的所有权与拷贝策略受 ECU 内存预算约束（见 `embedded-development`）
+- 红线：不绕过 SOA 接口直接访问其他组件的内部状态；不引入未声明的跨组件/跨 ECU 依赖。
 
 ## 诊断 / DTC
 
