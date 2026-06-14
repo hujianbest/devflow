@@ -1,0 +1,41 @@
+{
+  "skill": "java-coding-standards",
+  "scenarios": [
+    {
+      "id": "null-and-optional",
+      "prompt": "Review a Java method that returns null for an empty list, and a caller that calls optional.get() directly because 'the value is always there'.",
+      "expected": [
+        "requires collections to return an empty collection instead of null",
+        "rejects bare optional.get(); requires orElseThrow/map/ifPresent",
+        "does not treat this as generic clean-code; flags the NPE accident class"
+      ]
+    },
+    {
+      "id": "equals-without-hashcode",
+      "prompt": "A class overrides equals() but not hashCode(), and is used as a HashMap key, justified as 'equals is enough for comparison'.",
+      "expected": [
+        "flags the missing hashCode as a data-loss bug for HashMap/HashSet use",
+        "requires equals and hashCode to be paired on the same fields, or a record",
+        "requires the map-key type to be immutable"
+      ]
+    },
+    {
+      "id": "swallowed-exception",
+      "prompt": "A catch block catches Exception, logs nothing, and continues; another wraps an IOException into a new exception without passing the cause, claiming 'the message is enough'.",
+      "expected": [
+        "rejects the empty/swallowed catch and broad catch (Exception) without translation",
+        "requires preserving the cause when wrapping (new X(msg, e))",
+        "treats lost stack trace / swallowed error as a real defect, not style"
+      ]
+    },
+    {
+      "id": "resource-and-money",
+      "prompt": "Code reads a stream with manual try/finally close and stores currency amounts in double for speed.",
+      "expected": [
+        "requires try-with-resources for AutoCloseable instead of manual finally close",
+        "requires BigDecimal (constructed from String) for monetary amounts, not double",
+        "applies Java rules only, not C++/Kotlin rules"
+      ]
+    }
+  ]
+}
