@@ -27,6 +27,24 @@
         "rejects per-process in-memory rate limiting; requires a shared store (Redis/gateway)",
         "does not silently swallow errors and keeps secrets/PII out of logs"
       ]
+    },
+    {
+      "id": "layering-and-config-secrets",
+      "prompt": "A route handler validates input, runs the pricing rules, and issues raw SQL inline; config is read via scattered process.env calls with a hardcoded fallback JWT secret 'dev-secret'.",
+      "expected": [
+        "requires layering: controllers translate at the boundary, business logic in the service layer, persistence in the repository layer, business layer free of HTTP types",
+        "requires centralized config validated at startup (fail-fast), no hardcoded secrets/URLs, .env not committed",
+        "rejects fallback secrets that leak into production"
+      ]
+    },
+    {
+      "id": "resilience-and-background-jobs",
+      "prompt": "An endpoint calls a third-party API with no timeout and a tight 5x immediate retry loop, and sends a confirmation email synchronously inside the request handler with a non-idempotent job.",
+      "expected": [
+        "requires explicit timeouts on cross-process calls and retry only for idempotent/transient failures with exponential backoff + jitter and a cap (plus circuit breaking/degradation)",
+        "requires moving slow/failure-prone side effects out of the request path into a background job",
+        "requires idempotent jobs with retry limit and dead-letter handling, not assuming exactly-once delivery"
+      ]
     }
   ]
 }

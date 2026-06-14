@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### 2.5 — 对比 minimax-ai/skills 充实前后端领域技能
+
+对标开源 `MiniMax-AI/Skills` 的 `frontend-dev` / `fullstack-dev`（覆盖维度更全、含 references/ 渐进披露），把 DevFlow 原本偏薄的前后端领域技能扩充到能有效指导 AI 前后端开发的程度。仍保留 DevFlow 的差异化形态（规格/设计定→实现红线→证据 + 合理化反驳 + 自检清单，被 `devflow-review` rubric 与 `devflow-ship` DoD 消费），不引入 minimax 的"脚手架式 MANDATORY WORKFLOW"——领域技能是叠加约束而非流程阶段。
+
+#### Changed — `backend-development`
+
+- 新增维度：**分层与依赖方向**（控制器/服务/仓库分层，业务层不依赖 HTTP 类型）、**配置与机密**（集中校验 fail-fast、机密不硬编码不入库）、**错误模型**（类型化领域错误 + 统一边界映射，区分操作型/编程型）、**弹性与依赖容错**（跨进程调用超时、幂等瞬时失败才退避重试、熔断与降级）、**后台任务与异步**（移出请求路径、幂等任务、重试到死信）、**生产就绪**（liveness/readiness、SIGTERM 优雅停机、CORS 显式来源 + 安全头）。
+- 每条新红线配最小 ❌/✅ 正反例；合理化反驳与自检清单同步扩充；顶部加维度速览。
+- 新增 references：`api-and-contract.md`（资源建模、状态码语义、错误信封、分页/过滤/排序、版本与弃用、契约测试）、`resilience-and-jobs.md`（超时/重试/退避抖动/熔断/隔离、后台任务与死信、优雅停机时序、健康/就绪探针、CORS 与安全头）。
+
+#### Changed — `frontend-development`
+
+- 新增维度：**组件架构与边界**（职责拆分、交互边界下沉、组合优于透传、业务进 hook/lib）、**前后端集成与 API 客户端层**（env 基址、集中注入令牌、错误码→文案映射、只 5xx 重试、跨边界类型一致）、**样式与响应式**（设计令牌单一来源、移动优先、动态视口、暗色经令牌）、**动效与运动性能**（只动 GPU 属性、尊重 prefers-reduced-motion、订阅清理与隔离）。
+- 每条新红线配最小 ❌/✅ 正反例；合理化反驳与自检清单同步扩充；顶部加维度速览。
+- 新增 references：`component-and-integration.md`（组件分层、组合/上下文、状态就近、服务端/客户端边界、API 客户端层、错误码→文案映射、跨边界类型一致性）、`styling-and-motion.md`（设计令牌、响应式断点、GPU 友好属性、清理与隔离、reduced-motion）。
+
+#### Changed — 注册与文档
+
+- `frontend-development` / `backend-development` 的 frontmatter 触发条件与 evals 扩充新维度场景（各 +2）。
+- README（中英）质量叠加表一行描述、`using-devflow` 技能地图一句话更新以反映扩充后的维度。
+
 ### 2.4 — 新增 Java/Python 语言规范与前后端领域技能（蒸馏自 ECC）
 
 将开源 ECC 项目（`affaan-m/ECC`）的相关技能蒸馏为 DevFlow 形态——把目录式 pattern 清单改写为可判定规则 + 针对的事故类 + 正反例，并裁剪到上下文预算内：
