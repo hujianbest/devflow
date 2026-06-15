@@ -10,6 +10,19 @@
 
 DevFlow packages a disciplined AI-assisted engineering workflow into self-contained Markdown skills: specification, design, test-first implementation, independent review, defect handling, closeout, and language/domain quality overlays.
 
+## Project Introduction
+
+DevFlow is a reusable workflow layer for teams that use AI coding agents in real software projects. It turns engineering discipline into executable skill instructions, so an agent can move from requirements to design, implementation, review, and closeout without losing the context and evidence humans need to trust the work.
+
+The project is runtime-agnostic by design. You can use it as a standalone skill pack, vendor it into a repository, or adapt its skills to platforms that support Markdown-based agent instructions. Each skill is intentionally small enough to inspect, revise, and combine with project-specific conventions.
+
+## Project Advantages
+
+- **Structured work instead of prompt drift**: DevFlow gives agents phase boundaries, artifact rules, and recovery behavior, reducing the chance that a session jumps from vague intent straight to code.
+- **Three quality layers working together**: SDD clarifies what should be built, TDD proves behavior while implementation evolves, and Clean Code keeps the resulting code maintainable.
+- **Independent review built into the flow**: Specs, designs, tests, and code pass through explicit review gates, with authorship separation and recorded findings.
+- **Adaptable to real project constraints**: Language standards and domain overlays help the same workflow fit backend, frontend, embedded, automotive, safety-critical, and other specialized work.
+
 ![DevFlow workflow loop](docs/asserts/devflow-2-workflow-loop-v3.png)
 
 ---
