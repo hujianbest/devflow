@@ -47,15 +47,17 @@ DevFlow 提供 slash-style 阶段入口，作为很薄的平台适配层。真�
 
 ## 快速开始
 
-把 DevFlow 安装到 OpenCode 的用户级 skills 目录后，所有项目都可以自动发现这些技能。OpenCode 会从 `~/.config/opencode/skills/*/SKILL.md` 加载全局 skills；更多细节见 [docs/guides/opencode-setup.md](docs/guides/opencode-setup.md)。
+把 DevFlow 安装到 OpenCode 的用户级配置目录后，所有项目都可以自动发现这些技能、子 agent 和 slash commands。OpenCode 会分别从 `~/.config/opencode/skills/*/SKILL.md`、`~/.config/opencode/agents/*.md`、`~/.config/opencode/commands/*.md` 加载全局资源；更多细节见 [docs/guides/opencode-setup.md](docs/guides/opencode-setup.md)。
 
 ```bash
 # 克隆 DevFlow 到 OpenCode 用户配置目录
 git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
 
-# 把全部 DevFlow skills 安装到 OpenCode 全局 skills 目录
-mkdir -p ~/.config/opencode/skills
+# 把全部 DevFlow skills、agents 和 commands 安装到 OpenCode 全局目录
+mkdir -p ~/.config/opencode/skills ~/.config/opencode/agents ~/.config/opencode/commands
 cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
+cp ~/.config/opencode/devflow/agents/*.md ~/.config/opencode/agents/
+cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 ```
 
 试一下：
