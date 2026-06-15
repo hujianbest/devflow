@@ -8,19 +8,25 @@ DevFlow integrates with OpenCode through:
 
 - The [`using-devflow`](../../skills/using-devflow/SKILL.md) entry skill — the three-layer quality model, workflow map, artifact conventions, and behavior rules.
 - OpenCode's built-in `skill` tool, which automatically discovers any `SKILL.md` under `skills/`.
-- Optional slash-style commands under `commands/` for teams that prefer explicit phase entry.
+- DevFlow subagents under `agents/`, used by review and implementation phases.
+- Slash-style commands under `commands/` for teams that prefer explicit phase entry.
 - An optional project-level `AGENTS.md` `## Project overrides` section in your component repository to override default artifact paths and templates. Default `features/` and `docs/` paths are resolved under the target component repository root, not the DevFlow skill-pack directory or a parent workspace.
 
 This is an **agent-driven** workflow: skills are selected automatically by intent. Slash commands are thin pointers, not a separate mechanism.
 
 ## Installation
 
-### Option A — Skill pack as a sibling
+### Option A — User-level install
 
 ```bash
-git clone https://github.com/hujianbest/devflow.git ~/devflow
-cd /path/to/your-component-repo
-ln -s ~/devflow/skills .opencode-skills   # or add ~/devflow/skills as an extra skills root
+# Clone DevFlow into the OpenCode user config directory.
+git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
+
+# Install DevFlow skills, agents, and commands into OpenCode's global directories.
+mkdir -p ~/.config/opencode/skills ~/.config/opencode/agents ~/.config/opencode/commands
+cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
+cp ~/.config/opencode/devflow/agents/*.md ~/.config/opencode/agents/
+cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 ```
 
 ### Option B — Vendored
@@ -28,9 +34,14 @@ ln -s ~/devflow/skills .opencode-skills   # or add ~/devflow/skills as an extra 
 ```bash
 cd /path/to/your-component-repo
 git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git --squash main
+
+mkdir -p .opencode/skills .opencode/agents .opencode/commands
+cp -R .devflow/skills/* .opencode/skills/
+cp .devflow/agents/*.md .opencode/agents/
+cp .devflow/commands/devflow*.md .opencode/commands/
 ```
 
-Then point OpenCode at `.devflow/skills/`.
+The vendored option keeps DevFlow project-scoped. Update the copied `.opencode/` resources when you update `.devflow`.
 
 ### Verify discovery
 
@@ -39,7 +50,7 @@ List the DevFlow skills you can see, and tell me which one you would load
 if I asked to start a new feature.
 ```
 
-The agent should list the core skills (`using-devflow`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-ship`, `devflow-fix`), the language/domain extensions (`<language>-coding-standards` skills such as `c-coding-standards` and `cpp-coding-standards`, plus `embedded-development`, `automotive-development`), and the tooling skill `coding-standards-creator`, picking `using-devflow` as the entry.
+The agent should list the core skills (`using-devflow`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-ship`, `devflow-fix`), the language/domain extensions (`<language>-coding-standards` skills such as `c-coding-standards` and `cpp-coding-standards`, plus `embedded-development`, `automotive-development`), and the tooling skill `coding-standards-creator`, picking `using-devflow` as the entry. Slash commands such as `/devflow`, `/devflow-specify`, and `/devflow-review` should also be available after the `commands/` files are installed.
 
 ## How it works
 
@@ -98,3 +109,5 @@ If your agent skips any of the above, fix the agent — do not relax the rule.
 | Agent "reviews" its own design inline | Self-review | Discard it; require `devflow-review` to dispatch an independent subagent |
 | Tests written after implementation | TDD violation | Delete the implementation, restart from RED (`devflow-tdd` Iron Law) |
 | Skills not discovered | `skills/` not on the skills root | Verify the symlink / config |
+| DevFlow slash commands are missing | `commands/` files were not installed | Copy `commands/devflow*.md` into the OpenCode `commands/` directory |
+| Review or build cannot dispatch a DevFlow subagent | `agents/` files were not installed | Copy `agents/*.md` into the OpenCode `agents/` directory |
