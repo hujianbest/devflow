@@ -47,15 +47,15 @@ DevFlow 提供 slash-style 阶段入口，作为很薄的平台适配层。真�
 
 ## 快速开始
 
-让你的 Agent Skills runtime 指向本仓库的 `skills/` 目录，或把 DevFlow vendor 到目标项目中。OpenCode 细节见 [docs/guides/opencode-setup.md](docs/guides/opencode-setup.md)；Cursor、Claude Code 等支持 Agent Skills 的运行时也适用同一模型。
+把 DevFlow 安装到 OpenCode 的用户级 skills 目录后，所有项目都可以自动发现这些技能。OpenCode 会从 `~/.config/opencode/skills/*/SKILL.md` 加载全局 skills；更多细节见 [docs/guides/opencode-setup.md](docs/guides/opencode-setup.md)。
 
 ```bash
-# 方案 A：作为旁路 skill pack
-git clone https://github.com/hujianbest/devflow.git ~/devflow
-cd /path/to/your-repo && ln -s ~/devflow/skills .opencode-skills
+# 克隆 DevFlow 到 OpenCode 用户配置目录
+git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
 
-# 方案 B：vendor 进你的仓库
-git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git --squash main
+# 把全部 DevFlow skills 安装到 OpenCode 全局 skills 目录
+mkdir -p ~/.config/opencode/skills
+cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
 ```
 
 试一下：

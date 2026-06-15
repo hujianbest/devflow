@@ -47,15 +47,15 @@ DevFlow provides slash-style phase entries as a thin platform adapter. The autho
 
 ## Quick Start
 
-Point your Agent Skills runtime at this repository's `skills/` directory, or vendor DevFlow into the target project. OpenCode setup details are in [docs/guides/opencode-setup.md](docs/guides/opencode-setup.md); the same model applies to runtimes that support Agent Skills, including Cursor and Claude Code.
+Install DevFlow into OpenCode's user-level skills directory so every project can discover it automatically. OpenCode loads global skills from `~/.config/opencode/skills/*/SKILL.md`; setup details are in [docs/guides/opencode-setup.md](docs/guides/opencode-setup.md).
 
 ```bash
-# Option A: keep DevFlow as a sibling skill pack
-git clone https://github.com/hujianbest/devflow.git ~/devflow
-cd /path/to/your-repo && ln -s ~/devflow/skills .opencode-skills
+# Clone DevFlow into the OpenCode user config directory
+git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
 
-# Option B: vendor DevFlow into your repository
-git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git --squash main
+# Install all DevFlow skills into OpenCode's global skills directory
+mkdir -p ~/.config/opencode/skills
+cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
 ```
 
 Try it:
