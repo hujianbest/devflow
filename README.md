@@ -105,7 +105,7 @@ At workflow start DevFlow records one run mode: `attended` by default, where rev
 
 ## All Skills
 
-DevFlow currently ships 17 core skills: 7 phase skills, 9 quality overlays, and 1 tooling skill.
+DevFlow currently ships 17 bundled skills: 7 phase skills, several quality overlays, and 1 tooling skill. Quality overlays are discovered by convention and by their descriptions, so new overlays can be added without changing the phase skills.
 
 ### Phase Skills
 
@@ -124,14 +124,8 @@ DevFlow currently ships 17 core skills: 7 phase skills, 9 quality overlays, and 
 | Skill | What it does | Use when |
 |-------|--------------|----------|
 | [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | Language-neutral clean code standards: naming, functions, control flow, errors, comments, refactoring | Writing, refactoring, or reviewing implementation and test code |
-| [c-coding-standards](skills/c-coding-standards/SKILL.md) | C-specific rules for ownership, memory/resources, buffers, integers, macros, headers, and error returns | Work touches C source, headers, or C tests |
-| [cpp-coding-standards](skills/cpp-coding-standards/SKILL.md) | C++ rules for RAII, ownership signatures, class design, errors, templates, and ABI | Work touches C++ source, classes, templates, or C++ tests |
-| [java-coding-standards](skills/java-coding-standards/SKILL.md) | Java rules for null/Optional, equals/hashCode contracts, resources, exceptions, immutability, generics, and concurrency | Work touches Java source, records, or JUnit tests |
-| [python-coding-standards](skills/python-coding-standards/SKILL.md) | Python rules for mutable defaults, type hints, EAFP exceptions, context managers, identity/equality, dataclasses, and imports | Work touches Python modules, packages, or pytest tests |
-| [embedded-development](skills/embedded-development/SKILL.md) | Embedded constraints around memory, interrupts, real time, hardware boundaries, and evidence | Firmware, drivers, HAL, RTOS, or constrained-device work |
-| [automotive-development](skills/automotive-development/SKILL.md) | Automotive constraints around ASIL, vehicle lifecycle, SOA, DTC, SELinux, and cross-ECU coordination | ECU, domain-controller, vehicle-service, or platform work |
-| [frontend-development](skills/frontend-development/SKILL.md) | Frontend constraints around component architecture, state/rendering, async states, frontend-backend integration (API client layer), styling/responsive, motion performance, performance budget, accessibility, and client-side safety | Component, page, state, form, integration, or Web UI work |
-| [backend-development](skills/backend-development/SKILL.md) | Backend constraints around layering, config/secrets, API contracts, error model, data consistency, idempotency, authz, resilience (timeout/retry/circuit breaker), rate limiting, background jobs, observability, and production readiness | API, service/repository, database, or server-side work |
+| `<language>-coding-standards` skills | Language-level rules, idioms, tooling discipline, and examples | Work touches that language's source, tests, or build scripts; discovered by naming convention |
+| `<domain>-development` / domain skills | Domain-specific design constraints, implementation red lines, and evidence requirements | Work context matches a domain skill's frontmatter description |
 
 ### Tooling
 
@@ -139,7 +133,7 @@ DevFlow currently ships 17 core skills: 7 phase skills, 9 quality overlays, and 
 |-------|--------------|----------|
 | [coding-standards-creator](skills/coding-standards-creator/SKILL.md) | Converts internal team coding standards into a new `<language>-coding-standards` skill | A team needs to add or revise a language standard |
 
-Language standards extend by convention: work touching language X can load `<x>-coding-standards` when present. New language skills follow the shared [structural contract](skills/coding-standards-creator/references/coding-standards-skill-contract.md), so phase skills do not need to be rewritten for each language.
+Language standards extend by convention: work touching language X can load `<x>-coding-standards` when present. New language skills follow the shared [structural contract](skills/coding-standards-creator/references/coding-standards-skill-contract.md), so phase skills do not need to be rewritten for each language. Domain skills trigger from their own frontmatter descriptions; a new domain skill becomes part of the Quality Stack by clearly describing its context, boundaries, and near-misses.
 
 ---
 
@@ -198,14 +192,8 @@ devflow/
 │   ├── devflow-ship/               # DoD, promotion, closeout
 │   ├── devflow-fix/                # Defect path
 │   ├── devflow-clean-code/         # Language-neutral clean code
-│   ├── c-coding-standards/         # C overlay
-│   ├── cpp-coding-standards/       # C++ overlay
-│   ├── java-coding-standards/      # Java overlay
-│   ├── python-coding-standards/    # Python overlay
-│   ├── embedded-development/       # Embedded overlay
-│   ├── automotive-development/     # Automotive overlay
-│   ├── frontend-development/       # Frontend overlay
-│   ├── backend-development/        # Backend overlay
+│   ├── *-coding-standards/         # Language overlays, discovered by naming convention
+│   ├── *-development/              # Domain overlays, discovered by description
 │   └── coding-standards-creator/   # Language-standard generator
 ├── commands/                       # Slash-style phase entries
 ├── agents/                         # devflow-reviewer and devflow-implementer personas

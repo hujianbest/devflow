@@ -128,7 +128,7 @@ fail_timer: free(buf);
 }
 ```
 
-C++ 中等价物是 RAII（见 `cpp-coding-standards`），不需要此模式。
+支持确定性析构的语言通常用 RAII / scope guard 等惯用形态，不需要此模式；具体写法以适用语言规范为准。
 
 ## 9. 用查表替代分支链（Replace Conditional with Table）
 

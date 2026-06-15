@@ -1,6 +1,6 @@
 ---
 name: devflow-clean-code
-description: 在编写、修改或重构任何实现代码与测试代码时使用；TDD implementer 进入 GREEN/REFACTOR 和返回 clean_code_check 时必须作为通用基准加载。也在代码评审需要内在质量判据，或发现命名混乱、函数过长、嵌套过深、直接变异状态、类型/契约含混、错误处理散乱等代码异味时使用。语言无关的整洁代码标准；语言细则见对应的 <language>-coding-standards 技能（如 c-coding-standards、cpp-coding-standards），框架/语言规范叠加在本技能之上，不能替代本技能。
+description: 在编写、修改或重构任何实现代码与测试代码时使用；TDD implementer 进入 GREEN/REFACTOR 和返回 clean_code_check 时必须作为通用基准加载。也在代码评审需要内在质量判据，或发现命名混乱、函数过长、嵌套过深、直接变异状态、类型/契约含混、错误处理散乱等代码异味时使用。语言无关的整洁代码标准；语言细则见对应的 <language>-coding-standards 技能，领域或框架规范按各自 description 叠加在本技能之上，不能替代本技能。
 ---
 
 # DevFlow Clean Code（第三层）
@@ -11,7 +11,7 @@ description: 在编写、修改或重构任何实现代码与测试代码时使�
 
 人能持续低成本地审查 AI 的产出（human-on-the-loop 能成立），靠的就是这一层。所以"整洁"不是美学偏好，是协作姿态的前提。
 
-本文是语言无关的共享地板，不是某个框架的详细剧本；TDD implementer 的 REFACTOR 证据与 `clean_code_check` 以本文为通用基准。语言细则在对应的 `<language>-coding-standards` 技能（现有 `c-coding-standards` / `cpp-coding-standards`，可按同一契约扩展），它们叠加在本文之上而不是替代本文。示例用 C/C++ 写，原则通用；遇到 TypeScript/JavaScript、React、后端 API 等场景时，再加载对应专项技能。
+本文是语言无关的共享地板，不是某个框架的详细剧本；TDD implementer 的 REFACTOR 证据与 `clean_code_check` 以本文为通用基准。语言细则在对应的 `<language>-coding-standards` 技能中，领域或框架规则由命中 description 的专项技能承载；它们叠加在本文之上而不是替代本文。示例用 C/C++ 写，原则通用；遇到特定语言、框架或工程领域时，再加载适用的扩展技能。
 
 Robert C. Martin 的 Clean Code 在 DevFlow 中落成一个操作准则：**通过测试、消除重复、表达设计意图、保留最少必要实体**。这不是追求漂亮代码；这是让代码在正确、可读、可改、可测和可长期持有之间保持平衡。
 
@@ -203,7 +203,7 @@ items.push(newItem);
 
 - **检查每个可失败调用**。忽略返回值必须显式且有理由：`(void)log_write(...);  /* 日志失败不影响主路径 */`
 - **错误处理不喧宾夺主**：用卫语句/早返回让错误路径短促清晰，主路径保持直线。
-- **失败时资源必须回收**。C 的多资源获取用集中清理出口（goto cleanup 模式，见 `c-coding-standards`）；C++ 用 RAII（见 `cpp-coding-standards`）。
+- **失败时资源必须回收**。使用当前语言的惯用资源管理形态；例如无自动析构的语言常用集中清理出口，支持确定性析构的语言优先用 RAII / scope guard，具体写法以适用的语言规范技能为准。
 - **不吞错误**：捕获/拦截了错误就必须处理（恢复、降级、上报）之一；空的 catch / 只打日志然后当没发生，按 critical 处理。
 - 错误信息带上下文：报「config block 3 CRC mismatch (got 0x1A2B, want 0x3C4D)」而不是「verify failed」。
 - 公共边界的错误要稳定：HTTP/API/CLI/SDK 返回一致的错误形状与状态码/错误码；内部异常、第三方错误和栈细节不要原样泄漏给用户侧契约。

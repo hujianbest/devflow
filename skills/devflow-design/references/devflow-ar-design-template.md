@@ -5,7 +5,7 @@
 - 本模板用于 `devflow-design` 产出组件根下的工作项级设计 `features/<id>/design.md`（或团队覆盖路径），并在 `devflow-ship` 收尾时 promote 到组件根下 `docs/ar-designs/AR<id>-<slug>.md`（或团队覆盖路径）。
 - 正式交付件必须删除模板说明、示例业务内容和任何占位符；不得残留 `AI提示`、`TBD`、`{DATE}`、变量替换规则等模板痕迹。
 - 测试设计必须是本文档章节，不得拆成独立 `test-design.md`。
-- 本模板采用团队 AR 设计作业结构：AR 概述、动态行为、功能点分解、实现设计、适用领域场景设计、重构设计、测试设计、高质量设计增补、模板修订记录均为必填骨架。MDC / SELinux 等车载领域内容仅在启用 `automotive-development` 时填写；通用嵌入式风险内容由 `embedded-development` 提供。
+- 本模板采用团队 AR 设计作业结构：AR 概述、动态行为、功能点分解、实现设计、适用领域场景设计、重构设计、测试设计、高质量设计增补、模板修订记录均为必填骨架。MDC / SELinux、实时性、资源受限、前后端集成等领域内容只在命中对应领域技能 description 时填写；未命中的领域写明 N/A 与判定依据。
 - 第 7 章「高质量设计增补」承载 `devflow-design` 的核心质量判断（接口契约六项、错误模型、数据所有权、简单性检验），填写判据见 `devflow-design/SKILL.md` 对应章节；微小修改可按 `using-devflow` 裁剪规则精简其他章节，但第 6、7 章不可省。
 
 ## 1. AR 概述（必要）
@@ -161,7 +161,7 @@ stop
 
 ### 4.7 适用领域场景设计（按领域约束启用）
 
-默认 DevFlow Core 不强制 MDC / SELinux 场景。若 work item 启用 `automotive-development`，则按下列车载领域场景填写；若只启用 `embedded-development`，填写通用嵌入式风险场景或明确 N/A。回答“不涉及”时必须给出判定依据。
+默认 DevFlow Core 不强制任何具体领域场景。若 work item 命中某个领域开发技能的 description，则按该技能的风险维度填写本节；未命中的领域写 N/A。回答“不涉及”时必须给出判定依据。
 
 #### 4.7.1 并发场景分析
 

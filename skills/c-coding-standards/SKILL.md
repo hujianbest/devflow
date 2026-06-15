@@ -1,6 +1,6 @@
 ---
 name: c-coding-standards
-description: 在编写、修改或评审 C 代码（源文件、头文件、C 单元测试）时使用。提供指针所有权、内存与资源、缓冲区、整数、宏、头文件、错误返回的具体规则与正反例。C++ 规则见 cpp-coding-standards。
+description: 在编写、修改或评审 C 代码（.c 源文件、.h 头文件、C 单元测试、C ABI 边界）时使用。提供指针所有权、手动内存与资源释放、缓冲区容量、整数转换、宏、头文件、错误返回的具体规则与正反例。只适用于 C 语言；其他语言或 C++ 代码使用对应语言自己的 coding-standards 技能。
 ---
 
 # C Coding Standards
@@ -45,7 +45,7 @@ mode_entry_t *e = malloc(sizeof(mode_entry_t *));  /* ❌ 经典事故：分配�
 ```
 
 - 结构体含指针成员时提供成对的 `xxx_create`/`xxx_destroy`，destroy 负责全部深层释放且可安全接受 NULL
-- 嵌入式语境：动态分配是否允许、允许在哪个阶段（仅初始化期 vs 运行期）由设计声明（见 `embedded-development`）；运行期热路径默认禁用
+- 资源受限或实时语境：动态分配是否允许、允许在哪个阶段（仅初始化期 vs 运行期）由设计声明；命中领域技能时以该领域的内存和实时性约束为准
 
 ## 缓冲区与字符串
 

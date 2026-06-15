@@ -1,6 +1,6 @@
 ---
 name: coding-standards-creator
-description: 在需要为某种编程语言新建或修订 coding-standards 技能时使用：把团队内部编码规范文档转化为符合 DevFlow 形态的 <language>-coding-standards 技能（如 java-coding-standards、python-coding-standards），或把新的团队规则并入既有语言技能。不用于编写业务代码或直接做代码评审。
+description: 在需要为某种编程语言新建或修订 coding-standards 技能时使用：把团队内部编码规范文档转化为符合 DevFlow 形态的 <language>-coding-standards 技能，或把新的团队规则并入既有语言技能。不用于编写业务代码或直接做代码评审。
 ---
 
 # Coding Standards Creator
@@ -16,14 +16,14 @@ description: 在需要为某种编程语言新建或修订 coding-standards 技�
 | 大而全，几百条平铺 | 上下文预算有限：高频高危进 SKILL.md，长尾进 references/ |
 | 常只写"禁止 X" | 必须补"用什么替代"，否则模型会发明自己的替代品 |
 
-产出必须符合 `references/coding-standards-skill-contract.md`（结构契约）；骨架直接从 `references/coding-standards-skill-template.md` 起步。现有的 `c-coding-standards` / `cpp-coding-standards` 是已验收的参考实现，动笔前先读其中一份。
+产出必须符合 `references/coding-standards-skill-contract.md`（结构契约）；骨架直接从 `references/coding-standards-skill-template.md` 起步。需要参考既有实现时，选择一个已存在且与目标语言形态最接近的 `<language>-coding-standards` 技能读取，不在本技能里固定依赖具体语言名称。
 
 ## 工作流
 
 ### 1. 收集输入
 
 - **团队规范文档**（必需）：任意格式；记录版本/修订号作为 Source 锚点
-- **目标语言**：决定技能名 `<language>-coding-standards`（小写、连字符，如 `java-coding-standards`、`python-coding-standards`）
+- **目标语言**：决定技能名 `<language>-coding-standards`（小写、连字符；语言标识用项目内约定的短名）
 - **工具链事实**：编译器/解释器版本、linter、格式化工具、静态分析、测试框架——技能的「工具链」节需要真实命令与基线
 - **代码样例**（可选但强烈建议）：团队真实代码风格，让正反例贴近实际而不是教科书
 
@@ -35,7 +35,7 @@ description: 在需要为某种编程语言新建或修订 coding-standards 技�
 |---|---|---|
 | **语言级规则** | 离开这门语言就不成立（所有权写法、异常/GC 语义、语言陷阱、惯用法、语言专属工具链） | 收录进新技能 |
 | 通用整洁代码规则 | 任何语言都成立（函数单一职责、注释解释 why、死代码清理） | **不收录**——已在 `devflow-clean-code`；技能里写一行引用即可。例外：通用规则的语言特化形态（如 Python 的 PEP 8 命名具体约定）算语言级 |
-| 领域规则 | 绑定工程领域而非语言（中断上下文限制、内存预算、ASIL） | 不收录——归属 `embedded-development` / `automotive-development` 等领域技能；发现领域技能缺这条时单独提出 |
+| 领域规则 | 绑定工程领域而非语言（中断上下文限制、内存预算、ASIL、端到端交互、服务契约等） | 不收录——归属命中 description 的领域技能；发现适用领域技能缺这条时单独提出，若尚无对应领域技能则建议新建 |
 | 流程规则 | 评审流程、提交规范、分支策略、文档要求 | 不收录——不属于 coding-standards；提示用户其归属（AGENTS.md / 团队流程文档） |
 
 归属判定输出一张**映射表**（团队规则编号 → 归属 → 去向），交人确认后再写技能。拿不准的条目标注存疑，不要静默丢弃。
@@ -111,4 +111,4 @@ description: 在需要为某种编程语言新建或修订 coding-standards 技�
 |---|---|
 | `references/coding-standards-skill-contract.md` | `<language>-coding-standards` 的结构契约：命名、边界、规则写法、消费点、验收清单 |
 | `references/coding-standards-skill-template.md` | 新技能的可拷贝骨架 |
-| `../c-coding-standards/SKILL.md`、`../cpp-coding-standards/SKILL.md` | 已验收的参考实现 |
+| 既有 `<language>-coding-standards` 技能 | 可选参考实现；按目标语言相近性选择，不在 creator 中固定依赖具体名称 |

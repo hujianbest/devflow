@@ -219,7 +219,7 @@ int mode_set(mode_t mode);
 - [ ] 方案取舍有推荐有理由；单方案写了「为什么不是 X」
 - [ ] 测试设计覆盖全部验收标准，含异常/边界/回归用例与 mock 边界
 - [ ] traceability.md 已填组件设计章节 / 工作项设计章节 / 测试设计用例列
-- [ ] 适用的语言规范（`<language>-coding-standards`，如 `c-coding-standards`/`cpp-coding-standards`）与领域约束（`embedded-development`/`automotive-development`）已读取并体现在契约里
+- [ ] 适用的语言规范（`<language>-coding-standards`）与领域开发技能已读取并体现在契约里；领域技能按各自 description 触发，不依赖固定枚举
 
 ## 支撑参考
 

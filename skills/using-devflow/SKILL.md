@@ -158,13 +158,12 @@ features/<id>-<slug>/
 | `devflow-review` | 独立评审规格/设计/测试/代码 | 每个阶段产物完成后 |
 | `devflow-ship` | DoD 核验、promotion 长期资产、closeout | 评审闭环后的收尾 |
 | `devflow-fix` | 复现 → 根因 → 最小修复 | 缺陷、回归、线上问题 |
-| `<language>-coding-standards` | 语言级规则与惯用法（现有 `c-coding-standards`、`cpp-coding-standards`、`java-coding-standards`、`python-coding-standards`） | 工作项含对应语言的代码 |
-| `embedded-development` | 嵌入式领域约束（内存/中断/实时性/资源） | 嵌入式工作项 |
-| `automotive-development` | 车载领域约束（ASIL/SOA/诊断/整车生命周期） | 车载工作项 |
-| `frontend-development` | 前端领域约束（组件架构/状态/数据四态/前后端集成/样式响应式/动效性能/性能/可访问性/客户端安全） | 前端/Web UI 工作项 |
-| `backend-development` | 后端领域约束（分层/配置机密/API 契约/错误模型/一致性/幂等/鉴权/弹性容错/限流/后台任务/可观测性/生产就绪） | 后端/服务端工作项 |
+| `<language>-coding-standards` 扩展 | 语言级规则与惯用法 | 工作项含对应语言的代码；按命名约定发现 |
+| 领域开发扩展 | 领域特有质量约束、设计红线与验证证据 | 工作项命中某领域 skill 的 description 触发条件 |
 | `coding-standards-creator` | 把团队编码规范转化为新的语言规范技能 | 需要新建或修订某语言的 coding-standards 时 |
 
-语言与领域技能是**叠加约束**：它们在规格、设计、实现、评审各阶段被对应技能引用，自身不是流程阶段。
+语言与领域技能是**叠加约束**：它们在规格、设计、实现、评审各阶段被对应技能消费，自身不是流程阶段。
 
-**语言规范的发现按命名约定**：工作项触及语言 X 的代码 → 叠加 `<x>-coding-standards`（存在时）。约定让新增语言（如 `java-coding-standards`、`python-coding-standards`）无需改动任何阶段技能即可接入；技能尚不存在而团队有该语言规范时，用 `coding-standards-creator` 生成。所有语言技能遵循同一份结构契约（`coding-standards-creator/references/coding-standards-skill-contract.md`）。
+**语言规范的发现按命名约定**：工作项触及语言 X 的代码 → 叠加 `<x>-coding-standards`（存在时）。新增语言技能只要遵循同一份结构契约（`coding-standards-creator/references/coding-standards-skill-contract.md`），无需改动任何阶段技能即可接入；技能尚不存在而团队有该语言规范时，用 `coding-standards-creator` 生成。
+
+**领域技能的发现按 description**：工作项的业务/技术语境命中某个领域开发技能的 frontmatter description 时，加载该领域技能并把它加入 Quality Stack。核心 DevFlow 不维护领域技能枚举；新增领域技能时，应把触发词、适用边界、易混淆场景写进该技能自己的 description，让入口、实现、评审和收尾都通过“适用领域技能”这一通用类别消费它。

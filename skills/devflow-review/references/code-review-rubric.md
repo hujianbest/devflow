@@ -23,7 +23,7 @@
 ### 并发与生命周期（适用时）
 
 - [ ] 共享数据访问受保护；锁顺序一致；临界区精简
-- [ ] 中断上下文限制遵守（无阻塞调用/动态分配，见 `embedded-development`）
+- [ ] 中断上下文限制遵守（无阻塞调用/动态分配；具体规则见适用的领域开发技能）
 - [ ] 跨边界指针的存活期符合设计的所有权约定；无悬垂风险
 
 ### 整洁标准（按 devflow-clean-code）
@@ -48,8 +48,8 @@
 
 ### 语言与领域规则
 
-- [ ] 适用语言的 `<language>-coding-standards` 规则已过（如 C 的所有权注释/宏纪律、C++ 的 RAII/规则五、Java 的 null/Optional 与异常链、Python 的可变默认参数与 EAFP；按 diff 涉及的语言加载对应技能）
-- [ ] 领域约束（`embedded-development` / `automotive-development` / `frontend-development` / `backend-development`）适用项有实现或显式 N/A
+- [ ] 适用语言的 `<language>-coding-standards` 规则已过；按 diff 涉及的语言加载对应技能
+- [ ] 命中 description 的领域开发技能已加载；适用项有实现或显式 N/A，未命中的领域有不适用理由
 
 ## Verdict 指引
 

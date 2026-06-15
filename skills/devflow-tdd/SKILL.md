@@ -225,7 +225,7 @@ EXPECT_EQ(MODE_NORMAL, fake_event_queue_last().payload.mode);
 - [ ] mock 只用于真实边界；没有 test-only 后门
 - [ ] REFACTOR 没有改变行为；清理留在任务范围内；若为 `N/A`，plan.md 写明已对照 `devflow-clean-code` 五维判据自检的理由
 - [ ] plan.md 任务状态与 traceability.md 对应行已更新；本任务已提交
-- [ ] implementer 返回的 `loaded_skills` 覆盖 Quality Stack；`devflow-clean-code` 与适用的语言/领域规范（coding-standards / embedded / automotive）已在实现中遵循
+- [ ] implementer 返回的 `loaded_skills` 覆盖 Quality Stack；`devflow-clean-code`、适用的 `<language>-coding-standards` 与命中 description 的领域开发技能已在实现中遵循
 - [ ] 若来自 R3 返工：每条 open finding 已映射到返工队列，Resolution 已回填，修复证据已记录，下一步是 R3 复审而不是 ship
 
 ## 支撑参考

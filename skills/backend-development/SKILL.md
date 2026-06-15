@@ -1,6 +1,6 @@
 ---
 name: backend-development
-description: 在后端/服务端工作项（HTTP/REST/GraphQL API、服务与仓库层、数据库访问、缓存、鉴权、限流、后台任务、可观测性、配置与机密、弹性容错、生产就绪）的规格、设计、实现或评审中使用，涉及接口契约、分层与依赖方向、配置与机密、错误模型、数据一致性、幂等、认证授权、依赖超时重试熔断、过载保护、优雅停机时。前端/UI 见 frontend-development；前后端集成的客户端侧见 frontend-development 的 API 客户端层维度；车载 SOA 服务的整车专属约束见 automotive-development；语言级规则见适用 `<language>-coding-standards`。
+description: 在后端/服务端工作项（HTTP/REST/GraphQL API、服务与仓库层、数据库访问、缓存、鉴权、限流、后台任务、可观测性、配置与机密、弹性容错、生产就绪）的规格、设计、实现或评审中使用，涉及接口契约、分层与依赖方向、配置与机密、错误模型、数据一致性、幂等、认证授权、依赖超时重试熔断、过载保护、优雅停机时。只承载服务端/API 领域约束；客户端/UI、行业专属服务或其他相邻领域规则由命中 description 的领域技能叠加，语言级规则见适用 `<language>-coding-standards`。
 ---
 
 # Backend Development

@@ -1,6 +1,6 @@
 ---
 name: cpp-coding-standards
-description: 在编写、修改或评审 C++ 代码（类、模板、RAII、智能指针、C++ 测试）时使用。提供资源管理、所有权签名、类设计、错误策略、模板纪律与 ABI 的具体规则与正反例。C 规则见 c-coding-standards。
+description: 在编写、修改或评审 C++ 代码（.cpp/.cc/.hpp、类、模板、RAII、智能指针、C++ 测试、C++ ABI 边界）时使用。提供资源管理、所有权签名、类设计、错误策略、模板纪律与 ABI 的具体规则与正反例。只适用于 C++；C 或其他语言代码使用对应语言自己的 coding-standards 技能。
 ---
 
 # C++ Coding Standards

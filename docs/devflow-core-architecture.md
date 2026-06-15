@@ -33,11 +33,9 @@ skills/
   devflow-review/            # 独立评审：四类 rubric（spec/design/test/code）
   devflow-ship/              # 收尾：DoD 核验 + promotion 长期资产 + closeout
   devflow-fix/               # 缺陷修复：复现 → 根因 → 最小修复
-  c-coding-standards/        # 语言扩展：C 规则与惯用法
-  cpp-coding-standards/      # 语言扩展：C++ 规则与惯用法
+  *-coding-standards/        # 语言扩展：按命名约定发现
   coding-standards-creator/  # 工具：把团队编码规范转化为新的 <language>-coding-standards
-  embedded-development/      # 领域扩展：嵌入式约束
-  automotive-development/    # 领域扩展：车载约束
+  *-development/             # 领域扩展：按 description 发现
 ```
 
 三类 skill：
@@ -46,11 +44,11 @@ skills/
 - **叠加 skill**（clean-code、语言、领域）：提供贯穿各阶段的质量约束与判据，被阶段 skill 引用，自身不是阶段。
 - **工具 skill**（coding-standards-creator）：生成与维护扩展技能本身，不参与工作项流程。
 
-依赖方向：阶段 skill 可以引用叠加 skill 与 `using-devflow` 的约定；叠加 skill 之间按「通用 → 语言 → 领域」单向引用（如 `cpp-coding-standards` 建立在 `devflow-clean-code` 之上）；不存在反向依赖。
+依赖方向：阶段 skill 只引用叠加 skill 的通用类别与 `using-devflow` 的发现约定；语言扩展之间、领域扩展之间不互相点名依赖。叠加 skill 可以声明自己建立在 `devflow-clean-code` 之上，但跨扩展协作靠触发描述和 Quality Stack 组合完成，而不是在已有 skill 中维护具体扩展清单。
 
 ### 语言规范的扩展机制
 
-语言规范按 `<language>-coding-standards` 命名约定接入（现有 c/cpp，规划 java/python 等）。扩展性由三件事保证：
+语言规范按 `<language>-coding-standards` 命名约定接入。扩展性由三件事保证：
 
 1. **约定式引用**：所有阶段 skill、rubric、DoD、命令只写「适用的 `<language>-coding-standards`」，不枚举具体语言——新增语言零改动接入。
 2. **结构契约**：每个语言技能满足同一份契约（`coding-standards-creator/references/coding-standards-skill-contract.md`）：命名、frontmatter 触发条件、只收语言级规则的边界、规则三要素（可判定 + 事故类 + 正反例）、规模上限、消费点、evals。

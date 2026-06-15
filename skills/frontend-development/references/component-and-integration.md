@@ -99,4 +99,4 @@ export const api = {
 | GraphQL | GraphQL Code Generator | codegen 保证 |
 | 简单内部应用 | 共享类型包 + 契约测试兜底 | 手写 + 测试保证 |
 
-后端侧契约纪律见 `backend-development` 的 API 契约维度。
+服务端侧契约纪律由适用的 API/服务端领域技能覆盖。

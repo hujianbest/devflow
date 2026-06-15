@@ -43,7 +43,7 @@ public class MarketNotFoundMapper implements ExceptionMapper<MarketNotFoundExcep
 }
 ```
 
-错误响应的 HTTP 契约（状态码、错误信封、字段级细节）属 `backend-development` 领域，框架层只负责接入点与映射。
+错误响应的 HTTP 契约（状态码、错误信封、字段级细节）属服务端/API 领域约束，框架层只负责接入点与映射；命中相应领域技能时叠加其规则。
 
 ## 配置
 

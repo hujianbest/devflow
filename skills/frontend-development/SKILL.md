@@ -1,6 +1,6 @@
 ---
 name: frontend-development
-description: 在前端/Web UI 工作项（组件、页面、组件架构、状态管理、数据获取、前后端集成与 API 客户端层、表单、交互、样式与响应式、动效、可访问性、前端性能）的规格、设计、实现或评审中使用，涉及组件边界与组合、渲染与状态归属、加载/错误/空态、API 客户端与错误归一、设计令牌与响应式、动效性能、性能预算、a11y、客户端安全边界时。服务端 API 契约与持久化见 backend-development；语言级规则见适用 `<language>-coding-standards`。
+description: 在前端/Web UI 工作项（组件、页面、组件架构、状态管理、数据获取、前后端集成与 API 客户端层、表单、交互、样式与响应式、动效、可访问性、前端性能）的规格、设计、实现或评审中使用，涉及组件边界与组合、渲染与状态归属、加载/错误/空态、API 客户端与错误归一、设计令牌与响应式、动效性能、性能预算、a11y、客户端安全边界时。只承载客户端/UI 领域约束；服务端 API、持久化或其他相邻领域规则由命中 description 的领域技能叠加，语言级规则见适用 `<language>-coding-standards`。
 ---
 
 # Frontend Development
@@ -95,7 +95,7 @@ const orders = await api.get<Order[]>('/orders');   // 基址/令牌/错误都�
 // api 内：4xx → 映射文案不重试；5xx → 退避重试；401 → 刷新或跳登录
 ```
 
-- **证据**：API 客户端层的错误映射/重试/401 处理有单测；契约/类型一致性由 codegen 或契约测试保证（后端侧见 `backend-development`）。客户端层结构、错误码→文案映射表、类型一致性方案见 [`references/component-and-integration.md`](references/component-and-integration.md)。
+- **证据**：API 客户端层的错误映射/重试/401 处理有单测；契约/类型一致性由 codegen 或契约测试保证，服务端侧契约由适用的 API/服务端领域技能覆盖。客户端层结构、错误码→文案映射表、类型一致性方案见 [`references/component-and-integration.md`](references/component-and-integration.md)。
 
 ## 性能预算
 
@@ -148,7 +148,7 @@ useEffect(() => {
 ## 表单与校验
 
 - **设计定**：字段校验规则、提交态（pending/disabled）、错误展示位置与时机。
-- **实现红线**：受控输入有单一数据源；提交期间禁用按钮防重复提交；**客户端校验只为体验，不替代服务端校验**（安全与权威校验在 `backend-development`）。
+- **实现红线**：受控输入有单一数据源；提交期间禁用按钮防重复提交；**客户端校验只为体验，不替代服务端校验**（安全与权威校验由适用的服务端/API 领域技能覆盖）。
 - **证据**：校验分支（合法/非法/边界）有测试；重复提交被阻止有覆盖。
 
 ## 样式与响应式

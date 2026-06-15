@@ -105,7 +105,7 @@ DF:     `devflow-review` 用独立上下文评审测试和代码。`devflow-ship
 
 ## 全部 Skills
 
-DevFlow 当前包含 17 个核心 skills：7 个阶段技能、9 个质量叠加技能、1 个工具技能。
+DevFlow 当前包含 17 个随包发布的 skills：7 个阶段技能、若干质量叠加技能、1 个工具技能。质量叠加技能按约定和 description 发现，后续可以继续扩展，不需要改阶段技能。
 
 ### 阶段技能
 
@@ -124,14 +124,8 @@ DevFlow 当前包含 17 个核心 skills：7 个阶段技能、9 个质量叠加
 | Skill | 做什么 | 什么时候用 |
 |-------|--------|------------|
 | [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | 语言无关的整洁代码标准：命名、函数、控制流、错误处理、注释、重构 | 编写、重构或评审实现代码与测试代码 |
-| [c-coding-standards](skills/c-coding-standards/SKILL.md) | C 规则：所有权、内存/资源、缓冲区、整数、宏、头文件、错误返回 | 工作触及 C 源码、头文件或 C 测试 |
-| [cpp-coding-standards](skills/cpp-coding-standards/SKILL.md) | C++ 规则：RAII、所有权签名、类设计、错误策略、模板纪律、ABI | 工作触及 C++ 源码、类、模板或 C++ 测试 |
-| [java-coding-standards](skills/java-coding-standards/SKILL.md) | Java 规则：null/Optional、equals/hashCode 契约、资源管理、异常策略、不可变、泛型、并发 | 工作触及 Java 源码、record 或 JUnit 测试 |
-| [python-coding-standards](skills/python-coding-standards/SKILL.md) | Python 规则：可变默认参数、类型注解、EAFP 异常、上下文管理器、身份/相等、dataclass、导入 | 工作触及 Python 模块、包或 pytest 测试 |
-| [embedded-development](skills/embedded-development/SKILL.md) | 嵌入式约束：内存、中断、实时性、硬件边界、证据策略 | 固件、驱动、HAL、RTOS 或资源受限设备工作 |
-| [automotive-development](skills/automotive-development/SKILL.md) | 车载约束：ASIL、整车生命周期、SOA、DTC、SELinux、跨 ECU 协同 | ECU、域控、车载服务或整车平台工作 |
-| [frontend-development](skills/frontend-development/SKILL.md) | 前端约束：组件架构与边界、状态与渲染、数据四态、前后端集成（API 客户端层）、样式与响应式、动效性能、性能预算、可访问性、客户端安全 | 组件、页面、状态、表单、集成或 Web UI 工作 |
-| [backend-development](skills/backend-development/SKILL.md) | 后端约束：分层与依赖方向、配置与机密、API 契约、错误模型、数据一致性、幂等、鉴权、弹性容错（超时/重试/熔断）、限流、后台任务、可观测性、生产就绪 | API、服务/仓库层、数据库或服务端工作 |
+| `<language>-coding-standards` 技能 | 语言级规则、惯用法、工具链纪律与正反例 | 工作触及对应语言的源码、测试或构建脚本；按命名约定发现 |
+| `<domain>-development` / 领域开发技能 | 领域特有设计约束、实现红线与验证证据 | 工作项语境命中某领域技能的 description |
 
 ### 工具技能
 
@@ -139,7 +133,7 @@ DevFlow 当前包含 17 个核心 skills：7 个阶段技能、9 个质量叠加
 |-------|--------|------------|
 | [coding-standards-creator](skills/coding-standards-creator/SKILL.md) | 把团队内部编码规范转化为新的 `<language>-coding-standards` skill | 团队需要新增或修订某语言规范 |
 
-语言规范按约定扩展：工作触及语言 X，就加载已存在的 `<x>-coding-standards`。新增语言技能遵循同一份[结构契约](skills/coding-standards-creator/references/coding-standards-skill-contract.md)，所以阶段技能不需要为每种语言改写。
+语言规范按约定扩展：工作触及语言 X，就加载已存在的 `<x>-coding-standards`。新增语言技能遵循同一份[结构契约](skills/coding-standards-creator/references/coding-standards-skill-contract.md)，所以阶段技能不需要为每种语言改写。领域技能按各自 frontmatter description 触发；新增领域技能只要把适用语境、边界和易混淆场景写清楚，就能作为 Quality Stack 的一部分被消费。
 
 ---
 
@@ -198,14 +192,8 @@ devflow/
 │   ├── devflow-ship/               # DoD、promotion、closeout
 │   ├── devflow-fix/                # 缺陷路径
 │   ├── devflow-clean-code/         # 语言无关 Clean Code
-│   ├── c-coding-standards/         # C 叠加约束
-│   ├── cpp-coding-standards/       # C++ 叠加约束
-│   ├── java-coding-standards/      # Java 叠加约束
-│   ├── python-coding-standards/    # Python 叠加约束
-│   ├── embedded-development/       # 嵌入式叠加约束
-│   ├── automotive-development/     # 车载叠加约束
-│   ├── frontend-development/       # 前端叠加约束
-│   ├── backend-development/        # 后端叠加约束
+│   ├── *-coding-standards/         # 语言级叠加约束，按命名约定发现
+│   ├── *-development/              # 领域开发叠加约束，按 description 发现
 │   └── coding-standards-creator/   # 语言规范生成器
 ├── commands/                       # slash-style 阶段入口
 ├── agents/                         # devflow-reviewer / devflow-implementer 子代理角色

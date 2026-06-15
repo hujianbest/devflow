@@ -1,10 +1,10 @@
 # `<language>-coding-standards` 结构契约
 
-> 配套 `coding-standards-creator`。任何语言编码规范技能（无论生成还是手写）都必须满足本契约；`c-coding-standards` 与 `cpp-coding-standards` 是参考实现。契约存在的目的：让每个语言技能都能被 DevFlow 各阶段以同一种方式消费，新增语言不需要改动任何阶段技能。
+> 配套 `coding-standards-creator`。任何语言编码规范技能（无论生成还是手写）都必须满足本契约。契约存在的目的：让每个语言技能都能被 DevFlow 各阶段以同一种方式消费，新增语言不需要改动任何阶段技能。
 
 ## 1. 命名与布局
 
-- 目录与 frontmatter `name` 一致：`<language>-coding-standards`，全小写、连字符（`java-coding-standards`、`python-coding-standards`、`cpp-coding-standards`）
+- 目录与 frontmatter `name` 一致：`<language>-coding-standards`，全小写、连字符；`<language>` 使用项目内约定的语言标识
 - 布局：
 
 ```text
@@ -20,10 +20,10 @@ description 只写触发条件，模式：
 
 ```yaml
 description: 在编写、修改或评审 <语言> 代码（<源文件/测试/构建脚本等具体形态>）时使用。
-  提供 <3-5 个核心主题> 的具体规则与正反例。<易混淆的相邻语言> 规则见 <相邻技能名>。
+  提供 <3-5 个核心主题> 的具体规则与正反例。只适用于 <语言>；其他语言代码使用对应语言自己的 coding-standards 技能。
 ```
 
-要点：含语言名与典型文件类型等触发词；与相邻语言互写负触发（C 与 C++、Java 与 Kotlin）；不总结技能内部流程。
+要点：含语言名与典型文件类型等触发词；写清适用边界与相邻语言的负触发，但不要引用具体相邻技能名称；不总结技能内部流程。
 
 ## 3. 职责边界
 
@@ -88,7 +88,7 @@ description: 在编写、修改或评审 <语言> 代码（<源文件/测试/构
 
 ## 8. evals 要求
 
-`evals/evals.json` ≥3 个场景，覆盖该语言最高危的事故类。每个场景：一段诱导模型违规的 prompt（含一个看似合理的理由）+ expected 列出技能应触发的拒绝/修正行为。参考 `c-coding-standards/evals/evals.json`。
+`evals/evals.json` ≥3 个场景，覆盖该语言最高危的事故类。每个场景：一段诱导模型违规的 prompt（含一个看似合理的理由）+ expected 列出技能应触发的拒绝/修正行为。需要参考时，选择一个既有 `<language>-coding-standards` 的 evals，按目标语言改写。
 
 ## 9. 验收清单
 
