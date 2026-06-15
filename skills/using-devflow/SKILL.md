@@ -160,7 +160,7 @@ features/<id>-<slug>/
 | `devflow-fix` | 复现 → 根因 → 最小修复 | 缺陷、回归、线上问题 |
 | `<language>-coding-standards` | 语言级规则与惯用法（现有 `c-coding-standards`、`cpp-coding-standards`、`java-coding-standards`、`python-coding-standards`） | 工作项含对应语言的代码 |
 | `embedded-development` | 嵌入式领域约束（内存/中断/实时性/资源） | 嵌入式工作项 |
-| `automotive-development` | 车载领域约束（ASIL/SOA/诊断/整车生命周期） | 车载工作项 |
+| `automotive-coding-standards` | 车载领域约束（ASIL/SOA/诊断/整车生命周期） | 车载工作项 |
 | `frontend-development` | 前端领域约束（组件架构/状态/数据四态/前后端集成/样式响应式/动效性能/性能/可访问性/客户端安全） | 前端/Web UI 工作项 |
 | `backend-development` | 后端领域约束（分层/配置机密/API 契约/错误模型/一致性/幂等/鉴权/弹性容错/限流/后台任务/可观测性/生产就绪） | 后端/服务端工作项 |
 | `coding-standards-creator` | 把团队编码规范转化为新的语言规范技能 | 需要新建或修订某语言的 coding-standards 时 |

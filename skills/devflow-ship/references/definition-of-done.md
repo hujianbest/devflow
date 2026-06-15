@@ -24,7 +24,7 @@
 |---|---|
 | 整洁代码 | `devflow-clean-code` |
 | 语言编码规范 | 适用的 `<language>-coding-standards`，工作项涉及的每种语言一行（如 `c-coding-standards`、`cpp-coding-standards`、`java-coding-standards`、`python-coding-standards`） |
-| 领域约束 | 适用的领域技能各一行：`embedded-development` / `automotive-development` / `frontend-development` / `backend-development`（适用时） |
+| 领域约束 | 适用的领域技能各一行：`embedded-development` / `automotive-coding-standards` / `frontend-development` / `backend-development`（适用时） |
 
    任一 `critical-open` → 阻塞关闭；`documented-debt` 必须有可定位的登记与去向；`N/A` 必须说明为什么该约束不适用
 10. 静态分析新增项已修复或带理由抑制；无未解释的 critical 项

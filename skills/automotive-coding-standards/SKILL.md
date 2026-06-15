@@ -1,9 +1,9 @@
 ---
-name: automotive-development
+name: automotive-coding-standards
 description: 在车载软件工作项（ECU、域控、车载服务、整车平台）的规格、设计、实现或评审中使用，涉及功能安全/ASIL、车载 SOA 服务、DTC/诊断、整车启动/休眠/唤醒、SELinux 或跨 ECU 协同时。通用嵌入式约束见 embedded-development；通用服务接口契约见 backend-development；语言级规则见适用 `<language>-coding-standards`。
 ---
 
-# Automotive Development
+# Automotive Coding Standards
 
 ## 总览
 

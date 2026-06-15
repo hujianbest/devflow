@@ -305,7 +305,7 @@ DevFlow 2.0 的基本想法是通用的：三层质量模型 + human-on-the-loop
 | `c-coding-standards` | C 语言规则与惯用法 |
 | `cpp-coding-standards` | C++ 规则与惯用法 |
 | `embedded-development` | 嵌入式约束 |
-| `automotive-development` | 车载领域约束 |
+| `automotive-coding-standards` | 车载领域约束 |
 
 第三类是工具技能：
 

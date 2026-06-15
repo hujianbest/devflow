@@ -6,7 +6,7 @@
       "prompt": "Use DevFlow for an automotive embedded C++ work item that changes a service contract.",
       "expected": [
         "starts from devflow-specify because no spec.md exists",
-        "identifies cpp-coding-standards, embedded-development, and automotive-development as applicable overlay constraints",
+        "identifies cpp-coding-standards, embedded-development, and automotive-coding-standards as applicable overlay constraints",
         "treats overlay skills as constraints inside phases, not as phases"
       ]
     },

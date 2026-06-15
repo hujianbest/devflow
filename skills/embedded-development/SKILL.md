@@ -1,6 +1,6 @@
 ---
 name: embedded-development
-description: 在嵌入式工作项（固件、驱动、HAL、RTOS 任务、中断处理、资源受限服务）的规格、设计、实现或评审中使用，涉及内存预算、中断上下文、实时性、硬件交互、资源生命周期或目标平台差异时。车载专属约束见 automotive-development；语言级规则见适用 `<language>-coding-standards`（如 `c-coding-standards`）。
+description: 在嵌入式工作项（固件、驱动、HAL、RTOS 任务、中断处理、资源受限服务）的规格、设计、实现或评审中使用，涉及内存预算、中断上下文、实时性、硬件交互、资源生命周期或目标平台差异时。车载专属约束见 automotive-coding-standards；语言级规则见适用 `<language>-coding-standards`（如 `c-coding-standards`）。
 ---
 
 # Embedded Development
