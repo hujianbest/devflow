@@ -27,6 +27,24 @@
         "rejects shipping secrets in the frontend bundle",
         "does not defer the performance/a11y NFRs to code review"
       ]
+    },
+    {
+      "id": "component-boundary-and-api-client",
+      "prompt": "A page is one giant component marked \"use client\" that fetches data, runs business calculations, and renders; it calls fetch with a hardcoded absolute URL and throws the raw backend error text to the user.",
+      "expected": [
+        "requires splitting responsibilities, extracting data/business logic into hooks/lib, and pushing the client interactivity boundary down to leaf components instead of marking the whole page client",
+        "requires a centralized API client layer with base URL from an env var and centrally injected auth, not scattered fetch with hardcoded URLs",
+        "requires mapping backend errors to user-facing messages (retry only 5xx, not 4xx), not exposing raw error text"
+      ]
+    },
+    {
+      "id": "styling-tokens-and-motion-perf",
+      "prompt": "Components hardcode hex colors and pixel paddings everywhere with height:100vh, and an animation transitions the left and width properties with a scroll listener that is never removed and ignores reduced-motion.",
+      "expected": [
+        "requires design tokens / a single source for color and spacing instead of scattered magic literals, and responsive layout using dynamic viewport (100dvh) so mobile does not overflow",
+        "requires animating only GPU-friendly properties (transform/opacity/filter), not layout properties like left/width that trigger reflow",
+        "requires respecting prefers-reduced-motion and cleaning up animation subscriptions/listeners in effect cleanup"
+      ]
     }
   ]
 }

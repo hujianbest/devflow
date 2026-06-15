@@ -128,8 +128,8 @@ DevFlow 当前包含 17 个核心 skills：7 个阶段技能、9 个质量叠加
 | [python-coding-standards](skills/python-coding-standards/SKILL.md) | Python 规则：可变默认参数、类型注解、EAFP 异常、上下文管理器、身份/相等、dataclass、导入 | 工作触及 Python 模块、包或 pytest 测试 |
 | [embedded-development](skills/embedded-development/SKILL.md) | 嵌入式约束：内存、中断、实时性、硬件边界、证据策略 | 固件、驱动、HAL、RTOS 或资源受限设备工作 |
 | [automotive-development](skills/automotive-development/SKILL.md) | 车载约束：ASIL、整车生命周期、SOA、DTC、SELinux、跨 ECU 协同 | ECU、域控、车载服务或整车平台工作 |
-| [frontend-development](skills/frontend-development/SKILL.md) | 前端约束：状态与渲染、数据四态、性能预算、可访问性、客户端安全 | 组件、页面、状态、表单或 Web UI 工作 |
-| [backend-development](skills/backend-development/SKILL.md) | 后端约束：API 契约、数据一致性、幂等、鉴权、限流、可观测性 | API、服务/仓库层、数据库或服务端工作 |
+| [frontend-development](skills/frontend-development/SKILL.md) | 前端约束：组件架构与边界、状态与渲染、数据四态、前后端集成（API 客户端层）、样式与响应式、动效性能、性能预算、可访问性、客户端安全 | 组件、页面、状态、表单、集成或 Web UI 工作 |
+| [backend-development](skills/backend-development/SKILL.md) | 后端约束：分层与依赖方向、配置与机密、API 契约、错误模型、数据一致性、幂等、鉴权、弹性容错（超时/重试/熔断）、限流、后台任务、可观测性、生产就绪 | API、服务/仓库层、数据库或服务端工作 |
 
 ### 工具技能
 
