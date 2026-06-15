@@ -7,7 +7,7 @@ Thanks for your interest in DevFlow. This document describes how to contribute t
 DevFlow is intentionally narrow:
 
 - It targets the **development stage**: from an accepted requirement through specification, design, TDD implementation, and independent review.
-- It is organized as **phase skills** (`devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-review`, `devflow-ship`, `devflow-fix`, plus the `using-devflow` entry), **overlay skills** (`devflow-clean-code`, the `<language>-coding-standards` family such as `c-coding-standards` / `cpp-coding-standards` / `java-coding-standards` / `python-coding-standards`, and domain constraints such as `embedded-development` / `automotive-coding-standards` / `frontend-development` / `backend-development`), and **tooling skills** (`coding-standards-creator`).
+- It is organized as **phase skills** (`devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-review`, `devflow-ship`, `devflow-fix`, plus the `using-devflow` entry), **overlay skills** (`devflow-clean-code`, the `<language>-coding-standards` family such as `c-coding-standards` / `cpp-coding-standards` / `java-coding-standards` / `python-coding-standards`, and the `<domain>-development` family `embedded-development` / `automotive-development` / `frontend-development` / `backend-development`), and **tooling skills** (`coding-standards-creator`).
 - New language standards are created with `coding-standards-creator` and must satisfy its structural contract (`skills/coding-standards-creator/references/coding-standards-skill-contract.md`); phase skills reference language standards by convention, so adding a language must not require touching them.
 - It does **not** cover product discovery, system / integration / acceptance testing, release operations, or runtime incident response.
 
@@ -63,7 +63,7 @@ The validator checks markdown links, skill frontmatter, the expected skill set, 
 
 ## Repository hygiene
 
-- Skill directories: phase skills are `devflow-<verb/noun>`; language coding standards are `<language>-coding-standards`; domain constraints use established domain names such as `embedded-development`, `automotive-coding-standards`, `frontend-development`, and `backend-development`. Reference files are `kebab-case.md`.
+- Skill directories: phase skills are `devflow-<verb/noun>`; coding standards are `<language>-coding-standards`; domain constraints are `<domain>-development`. Reference files are `kebab-case.md`.
 - Packaged skills must not reference repo-level `docs/` files (they must be deployable standalone).
 - Don't add editor-specific directories at the repository root unless part of a deliberate integration release.
 

@@ -37,7 +37,7 @@ skills/
   cpp-coding-standards/      # 语言扩展：C++ 规则与惯用法
   coding-standards-creator/  # 工具：把团队编码规范转化为新的 <language>-coding-standards
   embedded-development/      # 领域扩展：嵌入式约束
-  automotive-coding-standards/    # 领域扩展：车载约束
+  automotive-development/    # 领域扩展：车载约束
 ```
 
 三类 skill：

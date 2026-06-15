@@ -25,7 +25,7 @@ EXPECTED_SKILLS = {
     "python-coding-standards",
     "coding-standards-creator",
     "embedded-development",
-    "automotive-coding-standards",
+    "automotive-development",
     "frontend-development",
     "backend-development",
 }

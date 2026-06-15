@@ -12,7 +12,7 @@
 - 其上游工件（评审设计给 spec；评审测试给 design 的测试设计表；评审代码给 design + spec）
 - 对应 rubric（`skills/devflow-review/references/` 下四份之一）
 - 代码评审时的 `devflow-clean-code`
-- 适用的语言/领域技能（按 diff 涉及的语言加载 `<language>-coding-standards`，如 c/cpp；领域加载 `embedded-development` / `automotive-coding-standards` / `frontend-development` / `backend-development`）
+- 适用的语言/领域技能（按 diff 涉及的语言加载 `<language>-coding-standards`，如 c/cpp；领域加载 embedded/automotive-development）
 
 ## 纪律
 

@@ -39,7 +39,7 @@ List the DevFlow skills you can see, and tell me which one you would load
 if I asked to start a new feature.
 ```
 
-The agent should list the core skills (`using-devflow`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-ship`, `devflow-fix`), the language/domain extensions (`<language>-coding-standards` skills such as `c-coding-standards` and `cpp-coding-standards`, plus `embedded-development`, `automotive-coding-standards`), and the tooling skill `coding-standards-creator`, picking `using-devflow` as the entry.
+The agent should list the core skills (`using-devflow`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-ship`, `devflow-fix`), the language/domain extensions (`<language>-coding-standards` skills such as `c-coding-standards` and `cpp-coding-standards`, plus `embedded-development`, `automotive-development`), and the tooling skill `coding-standards-creator`, picking `using-devflow` as the entry.
 
 ## How it works
 
@@ -72,7 +72,7 @@ FIX       devflow-fix            → fix.md, then back through TDD + R3
 
 The run mode (`attended` / `unattended`) is confirmed once at workflow start and recorded in plan.md; `unattended` removes human pauses but never removes reviews, records, or critical-finding blocking.
 
-Overlay skills (`devflow-clean-code`, the applicable `<language>-coding-standards`, and domain constraints such as `embedded-development` / `automotive-coding-standards` / `frontend-development` / `backend-development`) are consumed inside these phases; they are constraints, not phases. New language standards are generated from internal team documents via `coding-standards-creator`.
+Overlay skills (`devflow-clean-code`, the applicable `<language>-coding-standards`, `embedded/automotive-development`) are consumed inside these phases; they are constraints, not phases. New language standards are generated from internal team documents via `coding-standards-creator`.
 
 ### Reviewer subagents
 
