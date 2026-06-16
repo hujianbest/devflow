@@ -85,9 +85,9 @@ specify → R1 review → design → R2 review → tdd（叠加 clean-code/语�
 
 ## 5. 角色分离
 
-- 作者不自审：评审由 `devflow-review` 派发独立 subagent（角色定义 `agents/devflow-reviewer.md`）执行。
+- 作者不自审：评审由 `devflow-review` 派发独立 subagent `devflow-reviewer`（agent name: `devflow-reviewer`，角色定义见 `agents/devflow-reviewer.md`）执行。
 - 评审者不动手修：评审产出 findings 与 verdict，修改由作者执行。
-- 实现默认隔离：`devflow-tdd` 在 runtime 支持时逐任务派发全新上下文的 implementer subagent（角色定义 `agents/devflow-implementer.md`），输入为打包的 Context Pack 而非聊天历史，防止长会话上下文漂移。
+- 实现默认隔离：`devflow-tdd` 在 runtime 支持时逐任务派发全新上下文的 implementer subagent `devflow-implementer`（agent name: `devflow-implementer`，角色定义见 `agents/devflow-implementer.md`），输入为打包的 Context Pack 而非聊天历史，防止长会话上下文漂移。
 - 人做最终把关：规格确认、设计确认、评审 verdict 闭环、DoD 核验后的关闭都需要人。
 - DevFlow 不替团队角色拍板业务方向、优先级、验收阈值、架构边界。
 

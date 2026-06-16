@@ -85,9 +85,20 @@ The run mode (`attended` / `unattended`) is confirmed once at workflow start and
 
 Overlay skills (`devflow-clean-code`, the applicable `<language>-coding-standards`, and domain skills whose descriptions match the work item) are consumed inside these phases; they are constraints, not phases. New language standards are generated from internal team documents via `coding-standards-creator`; new domain skills join by describing their trigger context in frontmatter.
 
-### Reviewer subagents
+### DevFlow subagents
 
-`devflow-review` dispatches an **independent subagent** seeded with `agents/devflow-reviewer.md` plus the matching rubric from `skills/devflow-review/references/`. The reviewer is read-only on the artifact under review: it returns findings + verdict, never edits. The human confirms the verdict.
+DevFlow ships two subagent definitions under `agents/`:
+
+| Agent file | OpenCode agent name | Dispatched by | Role |
+|---|---|---|---|
+| `agents/devflow-implementer.md` | `devflow-implementer` | `devflow-tdd` (BUILD phase) | Executes one RED→GREEN→REFACTOR task from a packed Context Pack |
+| `agents/devflow-reviewer.md` | `devflow-reviewer` | `devflow-review` (R1/R2/R3 gates) | Independent read-only reviewer; returns findings + verdict |
+
+Each file carries a YAML frontmatter with `description`, `mode: subagent`, and `permission` — these are required for OpenCode to register and discover the agent via its `task` tool.
+
+**How dispatch works on OpenCode**: when a DevFlow skill says "dispatch the `devflow-implementer` subagent", the primary agent (Build) invokes the built-in `task` tool with the agent name `devflow-implementer` and a prompt containing the Context Pack. OpenCode matches the name against registered subagents and spawns a fresh context. The `description` in the agent frontmatter is what lets the model pick the right subagent — without it, OpenCode cannot route the dispatch.
+
+`devflow-review` dispatches an **independent subagent** named `devflow-reviewer`, seeded with the agent definition plus the matching rubric from `skills/devflow-review/references/`. The reviewer is read-only on the artifact under review (`edit: deny` in frontmatter): it returns findings + verdict, never edits. The human confirms the verdict.
 
 ## Agent expectations
 
@@ -110,4 +121,5 @@ If your agent skips any of the above, fix the agent — do not relax the rule.
 | Tests written after implementation | TDD violation | Delete the implementation, restart from RED (`devflow-tdd` Iron Law) |
 | Skills not discovered | `skills/` not on the skills root | Verify the symlink / config |
 | DevFlow slash commands are missing | `commands/` files were not installed | Copy `commands/devflow*.md` into the OpenCode `commands/` directory |
-| Review or build cannot dispatch a DevFlow subagent | `agents/` files were not installed | Copy `agents/*.md` into the OpenCode `agents/` directory |
+| Review or build dispatches a generic subagent instead of the DevFlow agent | Agent file missing required frontmatter (`description`, `mode: subagent`) | Ensure `agents/*.md` files have YAML frontmatter; re-copy into OpenCode's `agents/` directory |
+| OpenCode cannot find `devflow-implementer` / `devflow-reviewer` | `agents/` files were not installed to OpenCode's discovery path | Copy `agents/*.md` into `~/.config/opencode/agents/` (global) or `.opencode/agents/` (project) |
