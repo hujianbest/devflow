@@ -28,7 +28,7 @@ description: 在规格、设计、测试或代码需要独立评审时使用：�
 
 ### 2. 以独立上下文执行
 
-派发 subagent（或开新会话）执行评审，输入只给：被评审产物、它的上游工件（评审设计给 spec，评审代码给 design + diff）、对应 rubric、代码评审时的 `devflow-clean-code`、适用的 coding-standards / 领域技能。**不给**作者的推理过程和聊天历史。
+派发 `devflow-reviewer` subagent（agent name: `devflow-reviewer`，角色定义见 `agents/devflow-reviewer.md`；OpenCode 通过 `task` 工具传入 agent name，task prompt 为评审输入）执行评审，输入只给：被评审产物、它的上游工件（评审设计给 spec，评审代码给 design + diff）、对应 rubric、代码评审时的 `devflow-clean-code`、适用的 coding-standards / 领域技能。**不给**作者的推理过程和聊天历史。
 
 ### 3. 产出 findings 与 verdict
 
@@ -64,7 +64,7 @@ R3 的 `需修改` 默认回 `devflow-tdd`：测试弱就先补强或重写会�
 
 ### 4. 落盘评审记录（必做，与评审同时发生）
 
-记录写入同一组件根/工件根下 `features/<id>/reviews/<目标>-review-<日期>.md`（或团队覆盖路径），同一目标的复审追加轮次后缀（`-r2`、`-r3`）。每份记录包含：评审对象（含版本/commit）、findings 表（**含 Resolution 列**、分类、建议返工阶段）、verdict、抽查记录（如做了 mutation 自检，写明改了哪行、哪个测试红了）。格式见 repo 根目录 `agents/devflow-reviewer.md` 的输出模板。
+记录写入同一组件根/工件根下 `features/<id>/reviews/<目标>-review-<日期>.md`（或团队覆盖路径），同一目标的复审追加轮次后缀（`-r2`、`-r3`）。每份记录包含：评审对象（含版本/commit）、findings 表（**含 Resolution 列**、分类、建议返工阶段）、verdict、抽查记录（如做了 mutation 自检，写明改了哪行、哪个测试红了）。格式见 `agents/devflow-reviewer.md` 的输出模板。
 
 ### 5. Findings 闭环（作者侧职责）
 
