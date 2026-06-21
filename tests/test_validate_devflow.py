@@ -115,6 +115,44 @@ def test_packaged_skills_cannot_reference_repository_design_docs(tmp_path):
     assert any("docs/devflow-core-architecture.md" in error for error in result)
 
 
+def test_agent_missing_frontmatter_is_caught(tmp_path):
+    validator = load_validator()
+    agents = tmp_path / "agents"
+    agents.mkdir()
+    (agents / "bare.md").write_text("# Agent\nNo frontmatter.\n", encoding="utf-8")
+
+    result = validator.validate_agent_frontmatter(tmp_path)
+
+    assert any("missing YAML frontmatter" in e for e in result)
+
+
+def test_agent_missing_description_is_caught(tmp_path):
+    validator = load_validator()
+    agents = tmp_path / "agents"
+    agents.mkdir()
+    (agents / "nodesc.md").write_text(
+        "---\nmode: subagent\n---\n# Agent\n", encoding="utf-8"
+    )
+
+    result = validator.validate_agent_frontmatter(tmp_path)
+
+    assert any("missing description" in e for e in result)
+
+
+def test_agent_valid_frontmatter_passes(tmp_path):
+    validator = load_validator()
+    agents = tmp_path / "agents"
+    agents.mkdir()
+    (agents / "good.md").write_text(
+        "---\ndescription: A good agent\nmode: subagent\npermission:\n  edit: deny\n---\n# Agent\n",
+        encoding="utf-8",
+    )
+
+    result = validator.validate_agent_frontmatter(tmp_path)
+
+    assert result == []
+
+
 def test_repository_passes_validation():
     validator = load_validator()
 

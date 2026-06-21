@@ -129,6 +129,29 @@ def validate_skill_frontmatter(root: Path = ROOT) -> list[str]:
     return errors
 
 
+def validate_agent_frontmatter(root: Path = ROOT) -> list[str]:
+    """Agent files under agents/ must carry OpenCode-discoverable frontmatter."""
+    errors: list[str] = []
+    agents_dir = root / "agents"
+    if not agents_dir.exists():
+        return [f"{agents_dir}: agents directory is missing"]
+    for agent in agents_dir.glob("*.md"):
+        text = agent.read_text(encoding="utf-8", errors="ignore")
+        if not text.startswith("---\n"):
+            errors.append(f"{agent}: missing YAML frontmatter (OpenCode requires description + mode)")
+            continue
+        end = text.find("\n---", 4)
+        if end == -1:
+            errors.append(f"{agent}: unterminated YAML frontmatter")
+            continue
+        frontmatter = text[4:end]
+        if "\ndescription:" not in f"\n{frontmatter}":
+            errors.append(f"{agent}: missing description (required for OpenCode task tool dispatch)")
+        if "\nmode:" not in f"\n{frontmatter}":
+            errors.append(f"{agent}: missing mode (subagent agents need mode: subagent)")
+    return errors
+
+
 def validate_skill_set(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     skills_root = root / "skills"
@@ -209,6 +232,7 @@ def run_all(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     errors.extend(validate_markdown_links(root))
     errors.extend(validate_skill_frontmatter(root))
+    errors.extend(validate_agent_frontmatter(root))
     errors.extend(validate_skill_set(root))
     errors.extend(validate_no_legacy_references(root))
     errors.extend(validate_no_skill_design_doc_references(root))

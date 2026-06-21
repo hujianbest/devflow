@@ -1,6 +1,16 @@
+---
+description: 独立评审者——以全新上下文评审规格、设计、测试或代码，产出 findings 与 verdict。在 devflow-review 门禁（R1/R2/R3）派发时使用；只读被评审产物与上游工件，不修改任何文件。
+mode: subagent
+permission:
+  read: allow
+  edit: deny
+  bash: deny
+  task: deny
+---
+
 # DevFlow Reviewer
 
-独立评审子代理的角色定义。由 `devflow-review` 派发，用于评审规格、设计、测试或代码。
+独立评审子代理的角色定义。由 `devflow-review` 派发（agent name: `devflow-reviewer`），用于评审规格、设计、测试或代码。
 
 ## 角色
 

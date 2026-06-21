@@ -56,7 +56,9 @@ TDD 把"正确"从主观判断变成可执行、可复现的事实。核心原�
 
 ## 执行模式：必须派发 implementer subagent
 
-runtime 支持 subagent 时，**每个任务必须派发一个全新上下文的 implementer subagent**（角色定义见 repo 根目录 `agents/devflow-implementer.md`）执行；父会话不得在主上下文里直接写测试或实现。新上下文只依赖打包的输入工作，天然防止长会话的上下文漂移，也强制设计工件可冷读。
+runtime 支持 subagent 时，**每个任务必须派发一个全新上下文的 implementer subagent**（agent name: `devflow-implementer`，角色定义见 `agents/devflow-implementer.md`）执行；父会话不得在主上下文里直接写测试或实现。新上下文只依赖打包的输入工作，天然防止长会话的上下文漂移，也强制设计工件可冷读。
+
+> **Runtime dispatch**：不同 runtime 用不同机制派发 subagent。OpenCode 通过 `task` 工具，传入 agent name `devflow-implementer`，task prompt 即 Context Pack。其他 runtime 按各自等价机制执行。无法按 agent name 定向派发的 runtime（例如只能内联 system prompt 而无法注册具名 subagent），按下文退化为 controller-direct。
 
 主会话只做 controller：解析工件、选择唯一任务、组装 Context Pack、调用 subagent、消费返回、更新 plan.md / traceability.md、提交、再选择下一任务。只有 runtime 明确没有 subagent 能力时，才允许退化为 controller-direct；退化时必须在 plan.md 当前任务下记录 `执行模式: controller-direct` 与原因（例如“当前 runtime 无 subagent 工具”）。任务很小、单文件、赶时间、上下文已经足够，都不是跳过 subagent 的理由。
 
@@ -65,7 +67,7 @@ runtime 支持 subagent 时，**每个任务必须派发一个全新上下文的
 - 任务 ID 与对应测试设计用例（Case ID、场景、预期结果）
 - design.md 相关章节（接口契约、错误模型摘录）与允许触碰的文件范围
 - 测试/构建命令
-- 必须加载/遵循的角色定义：`agents/devflow-implementer.md`
+- 派发的 subagent：`devflow-implementer`（OpenCode `task` 工具的 agent name；角色定义见 `agents/devflow-implementer.md`）
 - **Quality Stack**：`required_skill_files` 列出必须读取的 skill 文件路径，至少包含 `skills/devflow-tdd/SKILL.md`、`skills/devflow-clean-code/SKILL.md`，以及按触碰文件发现到的适用 `<language>-coding-standards` 与领域技能；同时写明每个技能在本任务中的用途（循环纪律、通用 clean-code 自检、语言/领域约束）。只传路径与用途，不复制技能正文。
 - 返回契约：`DONE`（附 `loaded_skills`、RED/GREEN/REFACTOR 证据行与按 `devflow-clean-code` 五维契约填写的 `clean_code_check`）/ `NEEDS_CONTEXT`（缺关键输入或 Quality Stack，回来重新打包）/ `BLOCKED`（越界或设计问题，附原因）
 

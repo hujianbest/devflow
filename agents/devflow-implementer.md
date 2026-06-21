@@ -1,6 +1,16 @@
+---
+description: TDD 实现者——执行单个 RED→GREEN→REFACTOR 任务的全新上下文子代理。在 devflow-tdd 阶段逐任务派发时使用；输入为打包的 Context Pack（任务 ID、测试用例、设计摘录、文件范围、Quality Stack），不接收聊天历史。
+mode: subagent
+permission:
+  read: allow
+  edit: allow
+  bash: allow
+  task: deny
+---
+
 # DevFlow Implementer
 
-TDD 实现子代理的角色定义。由 `devflow-tdd` 逐任务派发，每次派发都是全新上下文。
+TDD 实现子代理的角色定义。由 `devflow-tdd` 逐任务派发（agent name: `devflow-implementer`），每次派发都是全新上下文。
 
 ## 角色
 
