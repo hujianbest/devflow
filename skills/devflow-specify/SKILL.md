@@ -162,8 +162,8 @@ Impact、Affected Spec Section、Current Behavior 和 Semantics To Preserve 只�
 
 每个变更记录使用稳定 `DS-xxx`，并指向稳定 canonical Spec Section ID：
 
-- `delta-spec.md` 按 OpenSpec 风格分为 `ADDED / MODIFIED / REMOVED / RENAMED`
-  需求区；组件目的或边界变化放在单独的“组件目的变更”区。
+- `delta-spec.md` 分为 `ADDED / MODIFIED / REMOVED / RENAMED` 需求区；
+  组件目的或边界变化放在单独的“组件目的变更”区。
 - `ADDED`：给出新的稳定 section ID 和符合 `component-spec-template.md` 的完整需求块。
 - `MODIFIED`：指明目标 ID、最小字段/子节选择器、基线摘录或 digest、
   局部替换内容和完整局部结果；修改整个需求时给出完整结果块。明确写出

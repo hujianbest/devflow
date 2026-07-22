@@ -130,7 +130,7 @@
       ]
     },
     {
-      "id": "openspec-style-component-and-delta-shape",
+      "id": "canonical-and-delta-have-distinct-shapes",
       "prompt": "The author writes component spec as a collection of delta operations and puts ADDED, MODIFIED, REMOVED, and RENAMED records together in one generic operations chapter.",
       "expected": [
         "keeps specs/spec.md as current Purpose plus Requirements and Scenarios without delta markers",

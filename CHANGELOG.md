@@ -6,216 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-### 2.6 — 组件当前真相、Delta 交付与完整归档
-
-#### Changed — 交付件契约（breaking）
-
-- 组件当前规格与设计统一为 `specs/spec.md`、`specs/design.md`；活动 AR 位于 `specs/changes/ARXXX-<topic>/`，完成后整体移动到 `specs/archive/YYYY-MM-DD-ARXXX-<topic>/`。
-- 工作项工件改为 `change.json`、`srs.md`、`delta-spec.md`、`delta-design.md`、`tasks.md`、`traceability.md`、`reviews/`、`closeout.md`。`change.json` 承载阶段门禁，`tasks.md` 只承载任务和 TDD 证据。
-- 移除现行 `features/` 与 `docs/ar-*` promotion 模型，不提供旧布局兼容或自动迁移。
-- 当前组件规格模板命名为 `component-spec-template.md`；组件规格与规格增量模板使用中文自然语言。SRS 将功能性需求（FR/IFR）、非功能性需求（NFR）和可验证约束拆为独立章节。
-- 需求粒度拆分与 NFR QAS 五要素改为 `devflow-specify` / SRS / R1 的内联硬规则，删除两份重复 reference；领域化 NFR 示例不再占用核心规格上下文。
-- SRS 收敛为问题/目标/来源、范围、FR/IFR、NFR QAS、CON、假设和待确认问题；change 身份与模式只在 `change.json`，Impact/目标章节/当前行为/保留语义只在 `delta-spec.md`，作者自检只在 skill/rubric。
-- 组件规格采用 OpenSpec 风格的“目的 + 当前需求 + 场景”结构；规格增量按 ADDED/MODIFIED/REMOVED/RENAMED 需求分区，并保留 DevFlow 的稳定 ID、来源、QAS、局部修改保留条款和缺陷 N/A。
-- `component-design-template.md` 恢复原 component design 第 1–8 章，仅增加 canonical baseline frontmatter 与新路径语义；原第 9 章质量判断迁入 review rubric。`delta-design-template.md` 恢复原 AR design 第 1–6、8 章，将原第 7 章替换为 Delta Design 基线、操作、选择器、保留条款、冲突与同步信息；质量判断同样由 R2 reviewer 承担。
-
-#### Added — `devflow-init`
-
-- 新增既有组件基线初始化 skill 与 `/devflow-init` 命令。既有组件缺少 baseline-ready 的 canonical spec/design 时，所有常规开发入口先阻塞并路由 init。
-- init 从源码、测试、接口、配置和构建资料逆向生成组件基线，坚持“澄清而不臆造”；未知业务意图、阈值和设计理由必须追问或保持显式 unknown。
-- 新增组件不经过 init，首次 delta 在归档时创建首版 canonical 文档。
-
-#### Changed — Agent 驱动同步与归档
-
-- `devflow-ship` 按 OpenSpec OPSX 思路由主控 Agent 理解 delta 并智能编辑 canonical 文档，保留未涉及内容；独立 reviewer 复核 Git diff 后再由人确认。
-- DevFlow 仍保留硬门禁：任务、R1/R2/R3、Resolution、traceability、DoD、canonical sync 复核任一未闭环均阻塞，不允许警告后继续、跳过同步或带未完成任务归档。
-
-### 2.5 — 对比 minimax-ai/skills 充实前后端领域技能
-
-对标开源 `MiniMax-AI/Skills` 的 `frontend-dev` / `fullstack-dev`（覆盖维度更全、含 references/ 渐进披露），把 DevFlow 原本偏薄的前后端领域技能扩充到能有效指导 AI 前后端开发的程度。仍保留 DevFlow 的差异化形态（规格/设计定→实现红线→证据 + 合理化反驳 + 自检清单，被 `devflow-review` rubric 与 `devflow-ship` DoD 消费），不引入 minimax 的"脚手架式 MANDATORY WORKFLOW"——领域技能是叠加约束而非流程阶段。
-
-#### Changed — `backend-development`
-
-- 新增维度：**分层与依赖方向**（控制器/服务/仓库分层，业务层不依赖 HTTP 类型）、**配置与机密**（集中校验 fail-fast、机密不硬编码不入库）、**错误模型**（类型化领域错误 + 统一边界映射，区分操作型/编程型）、**弹性与依赖容错**（跨进程调用超时、幂等瞬时失败才退避重试、熔断与降级）、**后台任务与异步**（移出请求路径、幂等任务、重试到死信）、**生产就绪**（liveness/readiness、SIGTERM 优雅停机、CORS 显式来源 + 安全头）。
-- 每条新红线配最小 ❌/✅ 正反例；合理化反驳与自检清单同步扩充；顶部加维度速览。
-- 新增 references：`api-and-contract.md`（资源建模、状态码语义、错误信封、分页/过滤/排序、版本与弃用、契约测试）、`resilience-and-jobs.md`（超时/重试/退避抖动/熔断/隔离、后台任务与死信、优雅停机时序、健康/就绪探针、CORS 与安全头）。
-
-#### Changed — `frontend-development`
-
-- 新增维度：**组件架构与边界**（职责拆分、交互边界下沉、组合优于透传、业务进 hook/lib）、**前后端集成与 API 客户端层**（env 基址、集中注入令牌、错误码→文案映射、只 5xx 重试、跨边界类型一致）、**样式与响应式**（设计令牌单一来源、移动优先、动态视口、暗色经令牌）、**动效与运动性能**（只动 GPU 属性、尊重 prefers-reduced-motion、订阅清理与隔离）。
-- 每条新红线配最小 ❌/✅ 正反例；合理化反驳与自检清单同步扩充；顶部加维度速览。
-- 新增 references：`component-and-integration.md`（组件分层、组合/上下文、状态就近、服务端/客户端边界、API 客户端层、错误码→文案映射、跨边界类型一致性）、`styling-and-motion.md`（设计令牌、响应式断点、GPU 友好属性、清理与隔离、reduced-motion）。
-
-#### Changed — 注册与文档
-
-- `frontend-development` / `backend-development` 的 frontmatter 触发条件与 evals 扩充新维度场景（各 +2）。
-- README（中英）质量叠加表一行描述、`using-devflow` 技能地图一句话更新以反映扩充后的维度。
-
-### 2.4 — 新增 Java/Python 语言规范与前后端领域技能（蒸馏自 ECC）
-
-将开源 ECC 项目（`affaan-m/ECC`）的相关技能蒸馏为 DevFlow 形态——把目录式 pattern 清单改写为可判定规则 + 针对的事故类 + 正反例，并裁剪到上下文预算内：
-
-#### Added — 语言编码规范（叠加技能）
-
-- **`java-coding-standards`**：蒸馏自 ECC `java-coding-standards`，提炼为语言级规则——null/Optional、equals/hashCode 与集合契约、try-with-resources、异常策略（保留 cause/不吞）、不可变与封装、泛型、并发、数值/字符串陷阱。框架专属约定（Spring/Quarkus）下沉到 `references/framework-conventions.md`，保持 SKILL.md 为语言级。含 evals 与 framework reference。
-- **`python-coding-standards`**：蒸馏自 ECC `python-patterns` / `python-testing`，提炼为语言级规则——可变默认参数、类型注解、EAFP 异常、上下文管理器、身份/相等（is/==）、dataclass、导入与 PEP 8 命名、并发（GIL/async）。含 evals。
-- 两者遵循 `coding-standards-creator` 的结构契约，按命名约定自动被各阶段发现，无需改动阶段技能。
-
-#### Added — 前后端领域技能（叠加技能）
-
-- **`frontend-development`**：蒸馏自 ECC `frontend-patterns` / `frontend-a11y`，按领域技能形态（规格/设计定什么、实现红线、验证证据）承载前端维度——状态与渲染、数据四态、性能预算（Web Vitals）、可访问性、表单与校验、错误隔离与客户端安全。含 evals 与合理化反驳。
-- **`backend-development`**：蒸馏自 ECC `backend-patterns` / `api-design`，承载后端维度——API 契约、数据访问与一致性、幂等与并发、认证授权、缓存与失效、限流与过载、可观测性。含 evals 与合理化反驳。
-
-#### Changed — 领域技能形态对齐 ECC 实践：注入具体性
-
-参考 ECC 的领域技能写法（`latency-critical-systems`、`healthcare-phi-compliance` 及其 SKILL 模板要求 Code Examples + Anti-Patterns）：DevFlow 既有领域技能（embedded/automotive）原为纯叙述、无具体产物，可执行性弱。四个领域技能统一升级——保留 DevFlow 的差异化价值（规格/设计定→实现红线→证据的阶段前置模型 + 合理化反驳，被 `devflow-review` rubric 与 `devflow-ship` DoD 消费），并吸收 ECC 的具体性：
-
-- 每条高价值红线配**最小 ❌/✅ 代码或图示**（embedded 的 ISR 最小形态 / volatile vs 原子 / 轮询超时；automotive 的安全参数 modify 上抛 / 生命周期四态表；frontend 的四态+竞态 / 语义按钮+aria / XSS；backend 的状态码语义 / N+1 / 幂等键 / 越权 / 共享存储限流）。
-- 每个技能新增**自检清单**（与 coding-standards 技能一致，对齐 ECC 的 Skill Checklist 理念）。
-- `automotive-development` 新增"决策归属：先判定再动手"上抛判定模型（类比 ECC 的可执行心智模型），并把通用服务契约纪律引用 `backend-development`，本节只保留车载专属约束。
-- embedded/automotive description 增加跨域与语言技能负触发，与新领域技能触发条件对齐。
-
-#### Changed — 注册与文档
-
-- `scripts/validate_devflow.py` 的 `EXPECTED_SKILLS` 纳入四个新技能（防误删）。
-- README（中英）质量叠加表、项目结构树、技能计数（13 → 17：7 阶段 + 9 叠加 + 1 工具）更新；`using-devflow` 技能地图补充语言与前后端领域技能。
-
-### 2.3 — 真实流程验证反馈：评审门禁、plan.md、评审记录闭环
-
-针对真实开发流程验证发现的三个不符合预期点（只在 code 后才 review 且全程无停顿；tasks.md 信息不足以支撑中断恢复；评审问题与解决过程未落盘）：
-
-#### Changed — 评审成为必经门禁，运行模式启动时确认
-
-- 工作流改为 **specify → R1 review → design → R2 review → tdd → R3 review → ship**：每个阶段产物完成后必须经 `devflow-review` 独立评审并落盘记录，通过前不进入下一阶段。删除 2.0 中"可用 devflow-review 预审"的可选措辞（验证表明它会被模型解读为可跳过）。
-- 新增**运行模式**，工作流启动时向用户确认一次并记入 plan.md：`attended`（默认，每个评审后人工确认再继续）/ `unattended`（连续执行便于长时间运行）。`unattended` 只移除人工停顿：独立评审、记录落盘、critical findings 阻塞返工照常，人事后统一审计 `reviews/`。
-- specify/design/tdd 各技能与 commands 的前置/后置检查改为按 plan.md 门禁表 + reviews/ 记录核验。
-
-#### Changed — tasks.md 升级为 plan.md（中断恢复的单一入口）
-
-- 恢复 `devflow-tdd/references/plan-template.md`（融合 1.x task-plan 模板与 superpowers 计划结构）：运行模式与门禁状态表、固定的「恢复指引」节、**自包含任务**（用例锚点含 Given/When/Then 摘要、精确文件路径、RED/GREEN 步骤与验证命令、完成定义、证据行）、风险与债务登记。
-- 生命周期：specify 建骨架（运行模式+门禁表）→ design 评审通过后 tdd 细化任务 → 执行期实时更新勾选与证据。标准：**全新会话只读 spec+design+plan 即可从任意断点继续**；"同上/见聊天记录"式任务按违规处理。
-
-#### Changed — 评审记录与 Resolution 闭环硬性化
-
-- `devflow-review` 新增不变量：**没有记录的评审等于没有评审**。每轮评审落盘 `reviews/<目标>-review-<日期>.md`（复审加 `-r2` 轮次），findings 表含 **Resolution 列**。
-- 作者按 findings 返工后必须逐条回写 Resolution（修复+commit / 人接受+理由 / 登记债务+去向）；critical/important 未闭环不放行；复审核对 Resolution 与实际 diff。
-- `devflow-ship` DoD 对应强化：R1/R2/R3 记录齐全、Resolution 全闭环、plan.md 门禁表与 reviews/ 一致（造假按 critical）。
-- `agents/devflow-reviewer.md` 输出模板更新：轮次、Resolution 列、人工确认节。
-
-### 2.2 — Coding standards 扩展机制与 creator 工具
-
-为语言编码规范的横向扩展（规划 java/python 等）建立机制：
-
-#### Added
-
-- **`coding-standards-creator`（新工具技能）**：把团队内部编码规范文档转化为符合 DevFlow 形态的 `<language>-coding-standards` 技能。核心工作流：逐条归属判定（语言级收录 / 通用引用 `devflow-clean-code` 不复制 / 领域规则移交领域技能 / 流程规则剔除并提示归属）→ 规则提炼三要素（可判定 + 针对的事故类 + 目标语言正反例；"禁止 X"必补替代）→ 按契约生成 → 接入注册 → 归属映射表交人验收。纪律：团队规则与 DevFlow 默认冲突时团队优先且显式标注；不发明团队规则（补充建议须标注待确认）。
-- **结构契约** `references/coding-standards-skill-contract.md`：所有语言技能的统一标准——命名约定、frontmatter 触发条件模式、只收语言级规则的边界（三不收）、规则写法三要素、规模上限与 progressive disclosure、五个消费点、evals 要求、验收清单。附可拷贝骨架 `coding-standards-skill-template.md`。
-- 校验脚本：`<language>-coding-standards` 命名模式检查；新语言技能无需注册即合法，采纳后建议加入 `EXPECTED_SKILLS` 防误删。
-
-#### Changed
-
-- **约定式引用替代语言枚举**：`devflow-design`/`devflow-clean-code`/`devflow-review` code rubric/`devflow-ship` DoD/commands/agents 中的 `c-coding-standards`/`cpp-coding-standards` 硬编码改为「适用的 `<language>-coding-standards`」约定（c/cpp 作为示例保留）——新增语言零改动接入。
-- `using-devflow` 技能地图改为约定行 + 发现规则；DoD 约束审计表改为"每种语言一行"。
-
-### 2.1 — Restore必要能力（最小流程表面积）
-
-2.0 重写后经讨论确认以下 1.x 能力必要，以新的形态恢复：
-
-#### Added
-
-- **`devflow-ship`（新阶段技能）**：收尾 = DoD 核验 + 追溯终验 + promotion + closeout。`references/definition-of-done.md` 按三层组织核验项（含微小修改 / 缺陷工作项的裁剪规则）；`references/promotion-checklist.md` 规定长期资产（`docs/ar-specs/`、`docs/ar-designs/`、`docs/component-design.md`）的同步对象与最小清理规则：保留原模板主体，只移除 Open Questions、过程笔记和评审应答。恢复 `/devflow-ship` 命令。
-- **组件级设计（团队开发流程要求）**：`devflow-design` 升级为两级设计——影响组件边界时必须先修订 `component-design-draft.md` 并经模块架构师确认，工作项设计只引用组件基线。恢复两份企业级模板（`devflow-component-design-template.md`、`devflow-ar-design-template.md`）并增补「高质量设计增补」章节（接口契约六项、错误模型、数据所有权、简单性检验 / 边界检验、错误与降级总策略、抽象与演进成本），替代原 design-template.md。
-- **追溯矩阵 `traceability.md`**：作为 spec-design-code 一致性的显式约束。specify 初始化（需求/Change Type/上游锚点列），design / tdd 逐阶段补列，review 抽查（design/code rubric 新增检查项），ship 终验。模板在 `devflow-specify/references/traceability-template.md`。
-- **极简证据纪律**：tasks.md 每个完成任务必须带 RED/GREEN 证据行（命令 + 关键输出摘要 + commit 锚点），替代 1.x 的 evidence/ 目录与多文件格式；test-review rubric 对应检查。
-- **implementer subagent 默认执行模式**：恢复精简版 `agents/devflow-implementer.md`；`devflow-tdd` 在 runtime 支持时默认逐任务派发全新上下文 subagent（输入为 Context Pack 而非聊天历史），防上下文漂移；无 subagent 时退化为当前会话执行，纪律不变。
-
-#### 原则不变
-
-恢复的是**能力**而非 1.x 样板形态：仍无 router、无 progress.md 状态机、无 handoff YAML、无 profile/execution-mode。流程仍为 specify → design → tdd → review → ship 单链 + fix 旁路。
-
-### 2.0 — Rewrite: minimal process, maximal substance
-
-调研了 skill 编写的业界实践（Anthropic Agent Skills 指南、superpowers 等）并审计了 1.x 全部内容后的结论：约半数篇幅是流程样板（对象契约、handoff 字段、canonical 节点、profile/execution-mode），而声称是核心的第三层（clean-design/clean-code/语言规范）反而最薄、几乎没有可模仿的正反例。2.0 据此重写：**流程最小化、内容最大化**，目标对齐理念文档的一句话——SDD 范式下生成 Clean Code 的代码，而不是仅仅能运行的代码。
-
-#### Changed — 架构
-
-- 13 个 canonical 流程节点 + router + meta 收敛为 **6 个阶段技能 + 5 个叠加技能**：
-  - 阶段：`using-devflow`（入口）、`devflow-specify`、`devflow-design`、`devflow-tdd`、`devflow-review`、`devflow-fix`。
-  - 叠加：`devflow-clean-code`、`c-coding-standards`、`cpp-coding-standards`、`embedded-development`、`automotive-development`。
-- 工件模型简化为 `features/<id>/`: `spec.md`、`design.md`、`tasks.md`、`reviews/`（缺陷为 `fix.md`）；进度恢复按工件存在性与确认状态判断（恢复表在 `using-devflow`）。
-- 全部技能改为「规则 + 正反例代码 + 合理化反驳 + 自检清单」的写法；frontmatter description 改为纯触发条件（CSO 实践）。
-
-#### Added — 高价值内容
-
-- `devflow-design`（新）：一句话职责测试、按变化理由划分模块、耦合的可操作判断表、抽象纪律（rule of three、单实现接口）、接口契约六项、错误模型三件事、数据所有权、方案取舍、测试设计表。
-- `devflow-clean-code`（重写）：命名规则表、函数拆分步骤、卫语句、错误处理写法、注释 why-not-what、重复与死代码，全部带 before/after；新增 `references/refactoring-catalog.md`（10 种异味的识别特征 + 手法 + 示例）。
-- `devflow-tdd`（重写自 tdd-implementation）：Iron Law、RED/GREEN/REFACTOR 各步带好坏代码对比、mutation 自检、合理化反驳表；新增 `references/test-quality.md`（断言强度升级表、命名、fixture、mock 边界）。
-- `c-coding-standards` / `cpp-coding-standards`（重写）：从检查点清单变为具体规则与正反例（指针所有权注释约定、goto cleanup、snprintf 截断检测、宏陷阱→static inline、RAII、所有权签名表、规则零/五、`[[nodiscard]]`、pImpl 等）。
-- `devflow-review`（合并 5 个 review 节点）：统一评审协议（独立上下文、findings 三级、人最终把关）+ 四份 rubric（spec/design/test/code），rubric 以「这东西哪里会骗我」组织。
-- `embedded-development` / `automotive-development`（重写）：从"对 13 个节点的投射"改为按维度给出「规格/设计定什么、实现红线、验证证据」。
-
-#### Removed
-
-- `devflow-router`、`devflow-spec-review`、`devflow-component-design(-review)`、`devflow-ar-design(-review)`、`devflow-tdd-implementation`、`devflow-test-review`、`devflow-code-review`、`devflow-completion-gate`、`devflow-finalize`、`devflow-problem-fix`、`devflow-clean-design`（内容并入 `devflow-design`）。
-- `progress.md` 多字段状态、handoff YAML、Workflow Profile、Execution Mode、canonical 节点机制、HTML closeout 报告、`agents/devflow-implementer.md`、`/devflow-ship`。
-- `docs/devflow-internal-quality.md`（第三层不再是参考模型，而是实打实的技能内容）。
-- 1.x 的高价值内容全部保留并强化：EARS/BDD/QAS/Change Type 基线/粒度启发式（specify）、Two Hats/TDD 纪律（tdd）、评审 rule 思想（review rubrics）、复现/根因模板（fix）。
-
-### Changed — DevFlow Core architecture
-
-- Reframed DevFlow around the three quality layers from `docs/devflow-philosophy.md`: SDD for intent correctness, TDD for functional correctness, and a rewritten internal-quality layer for design/code quality.
-- Added `docs/devflow-core-architecture.md` as the implementation architecture bridge from philosophy to skills, including core workflow, extension skills, platform adapters, and v1 artifact compatibility.
-- Added `docs/devflow-internal-quality.md` as the new third-layer reference model. The operational third-layer skills are now `devflow-clean-design` and `devflow-clean-code`.
-- Removed the old `devflow-design-craft`, `devflow-coding-craft`, and `devflow-test-craft` skill files from the active skill set.
-- Added first extension skills:
-  - `c-coding-standards`
-  - `cpp-coding-standards`
-  - `embedded-development`
-  - `automotive-development`
-- Updated `using-devflow` and `devflow-router` so coding standards and domain constraints are discovered as non-canonical constraints. They never become `Current Stage` or `Next Action Or Recommended Skill`.
-
-### Migration — craft layer removal
-
-- `devflow-design-craft`: generic design quality moves to `devflow-clean-design`; generic embedded content moves to `embedded-development`; automotive-specific content moves to `automotive-development`.
-- `devflow-coding-craft`: generic code quality moves to `devflow-clean-code`; C rules move to `c-coding-standards`; C++ rules move to `cpp-coding-standards`.
-- `devflow-test-craft`: removed; test effectiveness moves back to the second-layer TDD / `devflow-test-review` system and is no longer treated as third-layer internal quality.
-
-### Added — flexible review command
-
-- `commands/devflow-review.md` (`/devflow-review`) — a **flexible review entry** that takes the user's request, picks the matching review skill(s) (`devflow-spec-review`, `devflow-component-design-review`, `devflow-ar-design-review`, `devflow-test-review`, `devflow-code-review`), and runs an **independent** review to produce review content. It has two run modes:
-  - **standalone (默认)** — runs on any target the user names (file / dir / diff / draft), with no work-item / `progress.md` / gate coupling required; the command dispatches the independent `devflow-reviewer` subagent directly (as an upstream leaf, per the dispatch protocol's "router or upstream leaf") and returns the review content to the user.
-  - **in-flow** — when part of a work item, `devflow-router` dispatches the reviewer, consumes the verdict into the sequential `test-review → code-review` gate, and forms the canonical handoff.
-  - The one invariant is an **independent reviewer (never author / parent self-review)**; the command never authors or modifies artifacts. Aligned `agents/devflow-reviewer.md` (standalone/ad-hoc dispatch inputs), `commands/README.md` (rule "不内联自审" now covers router or upstream-leaf dispatch), both READMEs, and the 2.0 design spec.
-- **Craft lens wired into the design-review nodes** — `devflow-component-design-review` and `devflow-ar-design-review` now carry an explicit `## 质量透镜（Craft）` section (design-craft for component-design-review; design-craft + test-craft for ar-design-review), matching the existing `devflow-code-review` / `devflow-test-review` craft sections. This makes the 2.0 claim "design / build / review nodes carry a craft section" true for the design reviewers and gives `/devflow-review` an accurate craft mapping. (`devflow-spec-review` has no craft lens.)
-- **Relaxed invocation exclusivity on commands and agents** — commands and agents are independently invocable; the docs no longer assert that a subagent may *only* be dispatched by a specific node. Dropped "dispatched ONLY by" / "Invoke directly: never" / "仅由 … 派发" / "必须由 devflow-router 派发" / "唯一编排权威" framing from `agents/devflow-reviewer.md`, `agents/devflow-implementer.md`, `commands/devflow-review.md`, `commands/devflow-design.md`, `commands/devflow-specify.md`, `commands/devflow-build.md`, and `commands/README.md`. The **behavioral** invariants are unchanged: reviewers stay independent of the author (no self-review) and never modify artifacts; the implementer always works from an Implementer Context Pack and never edits AR design / task plan / task-board order.
-
-### Removed — SR / requirement-analysis sub-track
-
-- DevFlow now processes **implementation work items only** (`AR` / `DTS` / `CHANGE`). The subsystem-requirement (`SR`) analysis sub-track and the `requirement-analysis` profile are removed. An AR may still reference an upstream `SR` / `IR` as an optional traceability anchor, but `SR` is no longer a DevFlow-processed work item.
-- Removed the **sub-track (子街区) split** entirely: there is one implementation flow. Legal profiles are now `standard` / `component-impact` / `hotfix` / `lightweight` (dropped `requirement-analysis`); the "no cross-sub-track switching" rules are gone.
-- `devflow-finalize` now performs **implementation closeout only**; the `analysis` closeout type, `AR Breakdown Candidates` delivery, and SR-specific promotion paths are removed (including in `promotion-checklist.md`, the closeout markdown template, and the HTML report template).
-- `devflow-component-design` is now triggered **only** by an AR reaching `component-impact`; the SR-triggered branch is removed. `devflow-completion-gate` drops its SR exclusion note.
-- Removed the `Owning Subsystem` canonical field, SR work-item-type rows, `Affected Components` / `AR Breakdown Candidates` / `Subsystem Scope` spec sections, and the SR rubric group (`S5-SR` / `S7-SR` / `S8-SR` / `Group SR`) from `devflow-specify`, `devflow-spec-review`, their reference contracts/templates, the shared work-item / progress / traceability templates, the reviewer persona, and the router profile/route map.
-
-### Added — DevFlow 2.0 craft layer
-
-- **Craft quality lenses** — three new peer skills that encode senior-engineer judgment (with concrete tells and counter-examples, localized to embedded C/C++):
-  - `devflow-design-craft` — simplicity-first, abstraction discipline (Rule of Three), interface contracts (Hyrum's Law, error semantics, boundary validation), SOLID/GRASP tells, embedded defensive design, quality design-options.
-  - `devflow-coding-craft` — Rule 0 simplicity, thin vertical slices, scope discipline (Chesterton's Fence), readability/naming, embedded defensive coding.
-  - `devflow-test-craft` — test pyramid + test sizes, state-not-interaction testing, DAMP over DRY, mock discipline (real>fake>stub>mock), coverage types.
-  - These are **lenses, not flow nodes**: invoked inside `devflow-ar-design` / `devflow-component-design` / `devflow-tdd-implementation` / `devflow-code-review` / `devflow-test-review`; they never write `progress`/handoff, never produce a verdict, and never change the flow topology.
-- A **"DevFlow 共同约定" (shared conventions) section inside the `using-devflow` meta-skill** — the single source of truth for artifact layout, `progress.md` fields, handoff fields, profiles, execution modes, the canonical node list, read-on-presence, and promotion rules. Every other skill references this section instead of carrying its own copy.
-- `docs/devflow-2.0-design-spec.md` — the DevFlow 2.0 design spec: analysis of `addyosmani/agent-skills` (especially the `using-agent-skills` ↔ skills relationship), diagnosis of DevFlow 1.0's design/coding-craft gap, and the 2.0 target architecture.
-
-### Changed — DevFlow 2.0
-
-- `using-devflow` rewritten as a true meta-skill: **discovery tree** (now indicating which craft lens to overlay at each phase) + **behavior constitution** (the always-on Core Operating Behaviors) + an explicit **three-layer relationship** (meta discovers / router routes / craft raises quality).
-- The duplicated `## 本地 DevFlow 约定` boilerplate (artifact layout, progress fields, handoff fields) was removed from all 13 canonical skills and replaced with a one-line reference to the `using-devflow` "DevFlow 共同约定" section — every `SKILL.md` shrank by ~55–65 lines, restoring progressive disclosure.
-- Design / build / review nodes now carry an explicit `## 质量透镜（Craft）` section that names which craft lens to overlay at which workflow step.
-
-### Preserved
-
-- All DevFlow process discipline is unchanged: artifact-first recovery, role-separated independent reviewers, gated TDD with fail-first evidence, requirement-to-code traceability, team-role boundaries, and the embedded C/C++ risk dimensions. Canonical node names and `progress.md`/handoff fields stay stable for backward compatibility with existing `features/<id>/` artifacts.
+### Added
+
+- Added `devflow-init` to establish reviewed canonical baselines for existing components without inventing unknown requirements or design intent.
+- Added `devflow-ship` for Definition of Done checks, semantic canonical sync, independent sync review, human confirmation, closeout, and whole-change archival.
+- Added `change.json` as the structured source for change identity, component mode, immutable base revision, risk profile, artifact graph, gates, and archive state.
+- Added Java and Python coding-standard overlays, frontend and backend domain overlays, and `coding-standards-creator`.
+- Added repository validators and per-skill eval scenarios.
+
+### Changed
+
+- DevFlow is runtime-agnostic; platform commands are thin adapters over Markdown skills.
+- The lifecycle is `baseline preflight → specify → R1 → design → R2 → TDD → R3 → canonical sync review → human confirmation → closeout → archive`.
+- Component truth lives in `specs/spec.md` and `specs/design.md`. Active changes live in
+  `specs/changes/ARXXX-<topic>/` and completed changes move intact to
+  `specs/archive/YYYY-MM-DD-ARXXX-<topic>/`.
+- Change delivery uses `srs.md`, `delta-spec.md`, `delta-design.md`, `tasks.md`,
+  `traceability.md`, `reviews/`, and `closeout.md`. Delta operations use stable targets and
+  `ADDED / MODIFIED / REMOVED / RENAMED` semantics.
+- `tasks.md` contains only implementation tasks and RED/GREEN/REFACTOR evidence; review facts and findings Resolution live in `reviews/`.
+- Specification, design, test/code, and canonical sync reviews use independent read-only reviewer contexts. Authors resolve findings and reviewers verify the resolution.
+- Language and domain skills are additive constraints discovered by convention; they do not alter lifecycle topology.
+- Defect work uses the same canonical, delta, TDD, review, sync, and archive contract, with evidence-backed N/A only when the corresponding canonical semantics are unchanged.
+
+### Removed
+
+- Removed the v1 router, canonical-node graph, progress/handoff schemas, promotion model, and split closeout mechanisms.
+- Removed alternate artifact roots and path aliases. The current layout is a breaking contract and has no automatic migration.
+- Removed active redesign narratives, superseded intermediate layouts, and obsolete workflow illustrations from user-facing instructions.
 
 ## [1.0.0] — 2026-05-09
 

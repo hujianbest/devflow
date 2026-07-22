@@ -151,17 +151,6 @@ Resolution 有空项时不得复审为通过。复审必须核对 Resolution 与
 - R3：为 2-3 个关键测试定义 mutation 并核验主控 Agent 提供的隔离执行证据；reviewer 不编辑工作树。优先读错误路径、资源路径和行为回归。
 - sync：逐条建立 delta operation → canonical diff 映射，再反查每段 canonical diff 都有 delta 来源；对未涉及章节做语义保留抽查。
 
-## 风险信号
-
-- 作者会话自己给 verdict；
-- reviewer 获得编辑或 shell 权限；
-- 只评 delta，不读 canonical 基线；
-- 评审记录未落盘却更新 `change.json` 为 passed；
-- critical/important 的 Resolution 为空或与实际 diff 不符；
-- 把 base revision 后的并行变化当作 reviewer 可自行解释的内容；
-- canonical sync 只检查“新增内容出现了”，不检查误删、冲突和 spec-design 一致性；
-- 以 delta 为 `N/A`、diff 为空或运行模式为 `unattended` 为由跳过评审。
-
 ## 支撑参考
 
 | 文件 | 用途 |

@@ -10,7 +10,7 @@ DevFlow 维护两类真相：
 - `specs/spec.md` 与 `specs/design.md` 是组件当前规格和当前设计的唯一 canonical baseline。
 - `specs/changes/ARXXX-<topic>/` 只记录一次变更的增量、任务、证据和评审；关闭后完整移动到 `specs/archive/`。
 
-采用 clean break。只接受本技能定义的目录，不解析别名、不迁移旧布局、不允许路径覆盖，也不在组件根与 `specs/` 之间插入工件目录。
+工件拓扑是封闭集合。只接受下述目录和文件名，不解析路径别名、不允许路径覆盖，也不在组件根与 `specs/` 之间插入工件层。
 
 ## 每个入口必须执行 baseline preflight
 
@@ -25,50 +25,15 @@ DevFlow 维护两类真相：
 
 canonical 文档的 `baseline-ready` 不是文件存在的同义词。它表示 provenance 完整、影响契约或架构边界的 unknown 已关闭、独立 reviewer 已通过且人已最终确认。
 
-## 唯一目录契约
+## 交付结构与状态
 
-```text
-<component-root>/
-└── specs/
-    ├── spec.md
-    ├── design.md
-    ├── changes/
-    │   └── ARXXX-<topic>/
-    │       ├── change.json
-    │       ├── srs.md
-    │       ├── delta-spec.md
-    │       ├── delta-design.md
-    │       ├── tasks.md
-    │       ├── traceability.md
-    │       ├── reviews/
-    │       └── closeout.md
-    └── archive/
-        └── YYYY-MM-DD-ARXXX-<topic>/
-```
+[交付结构契约](references/delivery-contract.md) 是路径、字段、状态枚举和归档不变量的唯一权威；使用 [change.json 模板](references/change-template.json) 创建 manifest。
 
-目录和文件名不可裁剪。低风险变更可以缩短内容，但仍要保留结构化身份、delta、证据、评审、同步和关闭门禁。完整字段、状态枚举和归档不变量见 [交付结构契约](references/delivery-contract.md)。
+- `change.json` 保存身份、模式、不可变 `baseRevision`、profile、artifact graph、门禁和归档状态。
+- `tasks.md` 只保存任务、依赖和 RED/GREEN/REFACTOR 证据。
+- `reviews/` 保存评审事实与 Resolution；gate 只在对应记录闭环后更新。
 
-## `change.json` 是恢复入口
-
-`change.json` 是以下状态的唯一结构化来源：
-
-- 变更身份与组件身份；
-- `componentMode`、不可变的 `baseRevision` 与运行模式；
-- 风险 profile、选择理由和附加证据要求；
-- artifact graph：路径、状态与依赖；
-- baseline preflight、R1、R2、R3、canonical sync、closeout 等门禁；
-- 活动或已归档状态及归档目标。
-
-使用 [有效 JSON 模板](references/change-template.json) 创建文件，并在开始工作前替换所有模板值。字段语义以 [交付结构契约](references/delivery-contract.md) 为准。
-
-硬规则：
-
-1. `componentMode` 与 `baseRevision` 必填。`baseRevision` 是变更开始时目标组件所在仓库的不可变版本标识；同步 canonical 前用它识别并行变化，不能为了消除冲突而改写。
-2. 恢复时先读 `change.json`，再核对其声明的工件和评审记录。聊天记忆不参与状态裁决。
-3. 磁盘与 manifest 冲突时阻塞、展示差异并修正真正错误的一方；不得静默选择更方便的状态。
-4. `tasks.md` 只包含实现任务、依赖、RED/GREEN/REFACTOR 进度与证据。不得在其中复制身份、profile、artifact 状态、阶段门禁或归档状态。
-5. `reviews/` 保存评审事实和 findings resolution；它不能替代 `change.json` 的 gate 状态。只有评审记录存在且 findings 闭环后，才更新对应 gate。
-6. 不能唯一确定下一步时询问，不通过猜测修改 manifest。
+恢复时先读 `change.json`，再核对磁盘工件和评审记录。两者冲突或下一步不唯一时阻塞并展示差异；聊天记忆不参与状态裁决。
 
 ## 风险 profile
 
@@ -136,20 +101,9 @@ baseline preflight
 
 ## Canonical sync 与归档
 
-主控 Agent 在 R1、R2、R3、追溯和 DoD 闭环后：
-
-1. 读取 `change.json.baseRevision`、`srs.md`、两份 delta、两份 canonical 文档和 base revision 之后的 Git diff。
-2. 按规格稳定 ID、组件设计章节/实体键和操作类型智能合并；保留 delta 未涉及内容。
-3. 遇到目标语义不唯一、canonical 已并行变化或操作会误删未涉及语义时，阻塞并询问，不覆盖。
-4. 有正文变化的 canonical 先置 draft 并重置 review/confirmation metadata；N/A 未修改文档不重写 metadata。
-5. 只展示 `specs/spec.md` 与 `specs/design.md` 的候选 diff。
-6. 派发独立 reviewer 检查 delta 完整吸收、既有语义保留、冲突和 spec-design 一致性；记录写入 `reviews/`。
-7. reviewer 通过后向人展示 canonical diff；只有人确认后才把实际修改文档及其 artifact 恢复为 baseline-ready、把 sync gate 标为 `passed`。
-8. 写实并重读 `closeout.md`，把 closeout artifact/gate 更新为 complete/passed；失败则 blocked。
-9. 确认归档目标不存在、全部任务完成、findings 闭环且所有硬门禁通过后，将整个 AR 目录原样移动到 `specs/archive/YYYY-MM-DD-ARXXX-<topic>/`。
-10. 更新归档后目录内的 `change.json.archive`，展示完整 Git diff，再进入常规 CI。
-
-不得警告后继续、跳过 sync、带未完成任务归档，或用破坏性 Git 操作掩盖失败。运行环境不能实际编辑或移动文件时，归档保持阻塞。
+R1、R2、R3、追溯和 DoD 闭环后，读取 `devflow-ship` 及其
+`sync-archive-protocol.md`。该协议唯一负责并行变化预检、语义同步、canonical-only
+diff、独立复核、人工确认、closeout 和整目录归档。运行环境不能完成文件操作时保持阻塞。
 
 ## 恢复路由
 
@@ -172,12 +126,16 @@ baseline preflight
 
 ## 行为准则
 
-1. 不默默补全业务规则、设计理由、错误语义或验收阈值。
-2. 方案有风险就直接指出证据、影响和替代方案。
-3. 只修改本变更声明的范围；发现旁路问题只记录。
-4. 用测试、构建、diff、评审记录和追溯证明，不用“看起来完成”代替证据。
-5. 作者不自审；独立 reviewer 不替作者修。
-6. 语言规范与领域技能是各阶段的叠加约束，不是额外生命周期节点。触及语言 X 时加载可用的 `<x>-coding-standards`；语境命中领域技能 description 时加载该技能。
+所有 DevFlow 技能遵循：
+
+1. 不补全没有来源的业务规则、设计理由、错误语义或验收阈值；缺失或冲突时列出事实并询问。
+2. 发现方案风险时说明证据、影响和可行替代方案。
+3. 选择满足规格的最简单方案，不为未来猜想增加抽象。
+4. 只修改本变更声明的范围；旁路问题只记录，不顺手修复。
+5. 用测试、构建、diff、评审记录和追溯证明结果。
+6. 作者不自审；每个阶段由独立上下文评审并落盘记录。运行模式只决定是否在评审后等待人工确认。
+
+语言规范与领域技能是各阶段的叠加约束，不是额外生命周期节点。触及语言 X 时加载可用的 `<x>-coding-standards`；语境命中领域技能 description 时加载该技能。
 
 ## 技能地图
 

@@ -1,4 +1,4 @@
-"""Lightweight repository checks for DevFlow 2.0 architecture boundaries."""
+"""Lightweight repository checks for DevFlow architecture boundaries."""
 
 from __future__ import annotations
 
@@ -112,7 +112,7 @@ REQUIRED_CONTRACT_TOKENS = {
 # EXPECTED_SKILLS once adopted, to guard against accidental deletion.
 CODING_STANDARDS_NAME = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*-coding-standards$")
 
-# Skills and mechanisms removed in 2.0; they must not resurface in active text.
+# Active instructions must use only the current skill and lifecycle contract.
 LEGACY_SKILL_NAMES = {
     "devflow-router",
     "devflow-spec-review",

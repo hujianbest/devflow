@@ -1,6 +1,6 @@
 # DevFlow Core Architecture
 
-> 本文定义 DevFlow 从核心理念到 skill、工件和角色的架构映射。详细交付契约见 [`devflow-delivery-contract-redesign.md`](devflow-delivery-contract-redesign.md)。
+> 本文定义 DevFlow 从核心理念到 skill、工件和角色的架构映射。字段、状态、路径与归档规则见 [`delivery-contract.md`](../skills/using-devflow/references/delivery-contract.md)。
 
 ## 1. 架构目标
 
@@ -29,7 +29,7 @@ skills/
   using-devflow/             # 入口、baseline preflight、恢复与工件契约
   devflow-init/              # 既有组件缺基线时，从代码逆向建立 canonical 文档
   devflow-specify/           # srs + delta-spec + traceability 初始化
-  devflow-design/            # 原企业 AR/component 内容骨架 + delta 控制契约 + 测试设计
+  devflow-design/            # 工程设计、delta 变换契约与测试设计
   devflow-tdd/               # tasks 驱动的 RED→GREEN→REFACTOR
   devflow-review/            # R1/R2/R3 与 canonical sync 独立评审
   devflow-ship/              # DoD、Agent 智能同步、closeout、archive
@@ -76,11 +76,11 @@ skills/
 | `reviews/` | 独立评审的 findings、Resolution 与 verdict |
 | `closeout.md` | DoD、canonical diff、债务、确认和归档摘要 |
 
-这是 clean break 契约。现行 skill 不读取旧版工件目录或分散的长期资产布局，也不提供自动迁移。
+工件拓扑是封闭集合：canonical、活动变更和归档都直接位于组件根的 `specs/` 下，不接受替代根、路径别名或额外工件层。
 
 ## 5. Baseline Preflight
 
-开始或恢复工作时先读取 `change.json`：
+开始或恢复工作时先创建或读取 `change.json`：
 
 - `componentMode: existing`：`specs/spec.md` 与 `specs/design.md` 必须同时存在且为 `baseline-ready`；否则只允许进入 `devflow-init`。
 - `componentMode: new`：不执行 init；首次 delta 可从空基线创建两份 canonical 文档。
@@ -100,7 +100,7 @@ specify → R1 → design → R2 → tdd → R3 → ship
 
 门禁状态只存在 `change.json`；任务状态和 RED/GREEN/REFACTOR 证据只存在 `tasks.md`。恢复时先读 `change.json` 确定阶段，再读 `tasks.md` 确定任务断点，并用 `reviews/` 校验状态没有漂移。
 
-运行模式仍为 `attended` 或 `unattended`。后者只移除阶段间人工停顿，不移除独立评审、critical 阻塞、记录或最终人工确认。
+运行模式分为 `attended` 和 `unattended`。后者只移除阶段间人工停顿，不移除独立评审、critical 阻塞、记录或最终人工确认。
 
 ## 7. Canonical Sync 与 Archive
 
@@ -114,7 +114,7 @@ specify → R1 → design → R2 → tdd → R3 → ship
 6. 人确认后把实际修改的 canonical 恢复为 baseline-ready，写实并核验 closeout。
 7. closeout gate 通过后，将 AR 整体移动到日期前缀的 archive 目录。
 
-DevFlow 不提供“警告后继续”、跳过 sync 或带未完成任务归档。Git diff 与历史负责审计、冲突发现和恢复，不使用专用合并脚本或破坏性 reset。
+DevFlow 不提供“警告后继续”、跳过 sync 或带未完成任务归档。同步使用普通文件编辑，Git diff 与历史负责审计、冲突发现和恢复；禁止破坏性 reset。
 
 ## 8. 角色分离
 

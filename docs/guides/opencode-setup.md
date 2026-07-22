@@ -71,9 +71,9 @@ OpenCode reads each skill's YAML frontmatter `description` (triggering condition
 ### Lifecycle mapping
 
 ```text
-PREFLIGHT using-devflow           → check componentMode and canonical baseline
+PREFLIGHT using-devflow           → create/read change.json; check componentMode and canonical baseline
 INIT      devflow-init            → specs/spec.md + specs/design.md (existing components only)
-SPECIFY   devflow-specify         → change.json + srs.md + delta-spec.md + traceability.md
+SPECIFY   devflow-specify         → srs.md + delta-spec.md + traceability.md
 R1        devflow-review          → reviews/r1-review-*.md
 DESIGN    devflow-design          → delta-design.md
 R2        devflow-review          → reviews/r2-review-*.md

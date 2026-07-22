@@ -23,8 +23,6 @@ DevFlow 是一层可复用的工作流能力，面向在真实软件项目中使
 - **内置独立评审门禁**：规格、设计、测试和代码都会经过明确的 review gate，并保留作者隔离与 findings 记录。
 - **适配真实项目约束**：语言规范和领域叠加约束让同一套流程可以覆盖后端、前端、嵌入式、车载、安全关键等不同类型的工程工作。
 
-![DevFlow workflow loop](docs/asserts/devflow-2-workflow-loop-v3.png)
-
 ---
 
 ## 命令
@@ -109,7 +107,7 @@ DF:     `devflow-review` 用独立上下文评审测试和代码。`devflow-ship
 
 ## 全部 Skills
 
-DevFlow 当前包含 18 个随包发布的 skills：8 个工作流/入口技能、若干质量叠加技能、1 个工具技能。质量叠加技能按约定和 description 发现，后续可以继续扩展，不需要改阶段技能。
+DevFlow 包含工作流/入口技能、质量叠加技能和工具技能。质量叠加技能按约定和 description 发现，增加叠加技能不改变阶段技能。
 
 ### 阶段技能
 
@@ -188,7 +186,7 @@ SKILL.md
 
 ```text
 devflow/
-├── skills/                         # 18 个随包 skills
+├── skills/                         # 工作流、质量、语言与领域 skills
 │   ├── using-devflow/              # 入口与恢复规则
 │   ├── devflow-init/               # 既有组件基线初始化
 │   ├── devflow-specify/            # SRS、delta spec 与追溯
@@ -206,8 +204,6 @@ devflow/
 ├── docs/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md
-│   ├── devflow-delivery-contract-redesign.md
-│   ├── devflow-internal-quality.md
 │   ├── guides/
 │   └── asserts/
 ├── scripts/                        # 仓库一致性检查

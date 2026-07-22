@@ -141,19 +141,15 @@ baseline preflight -> specify -> R1 review -> design -> R2 review -> tdd -> R3 r
 fix -> R1/R2 review -> tdd -> R3 review -> ship
 ```
 
-![DevFlow 2.0 工作流闭环](docs/asserts/devflow-2-workflow-loop-v3.png)
-
-图 3：DevFlow 2.0 的阶段工作流，R1/R2/R3 是必经评审门禁；缺陷修复从 fix 进入，但 SRS 与 delta/N/A 仍先经过 R1/R2，再进入 TDD 与 R3。
-
 ### baseline preflight：既有组件先有当前真相
 
-每个工作项先读取 `change.json` 的 `componentMode`。既有组件必须已经具备 baseline-ready 的 `specs/spec.md` 和 `specs/design.md`；缺任一文档就先进入 `devflow-init`，从代码、测试、接口和配置逆向建立基线。
+每个工作项先创建或读取 `change.json`，确认其中的 `componentMode`。既有组件必须已经具备 baseline-ready 的 `specs/spec.md` 和 `specs/design.md`；缺任一文档就先进入 `devflow-init`，从代码、测试、接口和配置逆向建立基线。
 
 init 坚持 **澄清而不臆造**：可验证事实写证据，业务意图与设计理由不清楚就追问，无法确认的内容保持 unknown。新增组件不走 init，由首次 delta 建立 canonical 文档。
 
 ### specify：把意图写成可测试规格
 
-`devflow-specify` 负责写 `srs.md` 与 `delta-spec.md`，并初始化 `change.json`、`tasks.md` 和 `traceability.md`。它要做的不是整理需求描述，而是把模糊输入变成可评审、可测试、可追溯的增量需求和规格变化。
+`devflow-specify` 负责写 `srs.md` 与 `delta-spec.md`，并初始化 `tasks.md` 和 `traceability.md`。它要做的不是整理需求描述，而是把模糊输入变成可评审、可测试、可追溯的增量需求和规格变化。
 
 这个阶段完成后，不能直接进入设计。它必须经过 R1 规格评审。
 
@@ -203,10 +199,6 @@ AI 开发还有一个常见问题：上下文很脆。一个工作项不一定�
 DevFlow 把状态和任务分开：`change.json` 记录组件模式、运行模式、profile、阶段门禁和工件路径；`tasks.md` 记录自包含任务、RED / GREEN / REFACTOR 证据行和返工队列。
 
 恢复时先读 `change.json` 决定阶段，再读 `tasks.md` 决定任务断点，并用 `reviews/` 核对门禁没有漂移。一个全新会话不需要依赖聊天记忆。
-
-![工件证据链与冷启动恢复](docs/asserts/devflow-2-artifact-evidence-chain.png)
-
-图 4：`change.json` 和 `tasks.md` 分别承载阶段状态与任务证据，其他工件共同形成需求、设计、测试、代码和证据之间的追溯关系。
 
 这意味着任务不能写成“同上”“见聊天记录”“继续实现剩余部分”。每个任务都要自包含：
 
@@ -320,7 +312,7 @@ DevFlow 2.0 的基本想法是通用的：三层质量模型 + human-on-the-loop
 |---|---|
 | `coding-standards-creator` | 把团队内部编码规范转化为新的 `<language>-coding-standards` 技能 |
 
-语言规范按 `<language>-coding-standards` 的命名约定扩展。也就是说，如果未来团队要接入 Java、Python 或其他语言，不需要改 DevFlow 主流程；只要新语言技能遵循结构契约，就能被设计、实现、评审和 DoD 当作叠加约束使用。
+语言规范按 `<language>-coding-standards` 的命名约定扩展。任何遵循结构契约的语言技能都能被设计、实现、评审和 DoD 当作叠加约束使用，不改变 DevFlow 主流程。
 
 这就是 DevFlow 2.0 的边界：主流程保持通用，语言和领域规则按场景加载，不把所有细节塞进一条流程里。
 
@@ -390,39 +382,3 @@ Clean Code 与软件设计让 AI 产出的代码值得长期持有。
 独立评审、`change.json`、`tasks.md`、`traceability.md`、`reviews/`、`closeout.md` 这些机制，最后都指向同一个目标：让人站在环上，以可承受的成本掌控 AI 产出。
 
 DevFlow 的价值不在于制造更多流程，而在于让每一步留下的证据更有用，让每一份代码更值得被下一个人、下一个 Agent 接手。
-
----
-
-## 附录：配图生成提示词
-
-本文配图使用 GPT Image 2 生成。为保持风格统一，所有图片都采用现代技术博客信息图风格，16:9 横图，蓝、绿、灰为主色，少量橙色表示风险或门禁。
-
-### 图 1：AI Coding 的三类失败
-
-```text
-现代技术博客信息图，16:9 横图，干净专业，蓝绿灰主色，少量橙色表示风险。主题：AI Coding 的三类失败。左侧是一个简洁的 AI agent 图标收到“一句话需求”，箭头直接指向代码窗口；代码窗口分叉成三个橙色风险卡片，中文短标签分别是“做错了事”“做得不对”“做得不好”。每张卡片下面用很短的中文词组：需求靠猜、缺少验证、能跑但烂。画面简洁、留白充足、无复杂小字、不要卡通化。
-```
-
-### 图 2：DevFlow 三层质量模型
-
-```text
-现代技术博客信息图，16:9 横图，干净专业，蓝绿灰主色。主题：DevFlow 三层质量模型。画面中心是由外到内或自上而下的三层结构，中文短标签：第一层 SDD：意图正确；第二层 TDD：功能正确；第三层 Clean Code：内在质量。旁边以细线连接到三个失败模式：做错了事、做得不对、做得不好。底部小字标题：DevFlow 2.0 三层质量模型。少文字、清晰层次、适合技术博客。
-```
-
-### 图 3：DevFlow 2.0 工作流闭环
-
-```text
-现代技术博客信息图，16:9 横图，干净专业，蓝绿灰主色，橙色仅用于 review gate。主题：DevFlow 2.0 工作流闭环。请使用极少文字，只保留清晰中文短标签，不要英文小字。水平主流程：specify 写增量规格 -> R1 评审 -> design 写增量设计 -> R2 评审 -> tdd 测试驱动 -> R3 评审 -> ship 同步与归档 -> 完成。R1/R2/R3 用橙色门禁图标表示。下方缺陷路径：fix 缺陷分析 -> R1/R2 验证 delta 或 N/A -> tdd 测试驱动 -> R3 评审 -> ship 同步与归档。右上角一个 human-on-the-loop 图标：人站在环上，AI 在环内。注意：ship 不是发布上线，不要火箭。画面简洁、线条清楚、适合技术博客。
-```
-
-### 图 4：工件证据链与冷启动恢复
-
-```text
-现代技术博客信息图，16:9 横图，干净专业，蓝绿灰主色。主题：工件证据链与冷启动恢复。画面是一个文档网络：change.json、srs.md、delta-spec.md、delta-design.md、tasks.md、traceability.md、reviews/、closeout.md。change.json 标注“阶段状态”，tasks.md 标注“任务与证据”。左侧有新会话 AI agent 图标，箭头先指向 change.json，再流向 tasks.md 当前任务。用细线表示需求、设计、测试、代码、证据之间的追溯关系。中文短标签，少文字，不要复杂表格。
-```
-
-### 图 5：角色分离协作图
-
-```text
-现代技术博客信息图，16:9 横图，干净专业，蓝绿灰主色，橙色强调边界。主题：DevFlow 角色分离协作。画面中心是 controller，左侧连接 implementer subagent（只执行一个任务、Context Pack），右侧连接 reviewer subagent（独立评审、不修改），上方是 human reviewer 站在环上把关。用清晰箭头表达：controller 向 implementer 派发任务、implementer 返回证据；controller 向 reviewer 派发评审、reviewer 返回 findings / verdict；human 确认关键结果。中文短标签：作者不自审、评审者不修、人在环上。少文字、技术博客风格。
-```

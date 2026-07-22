@@ -13,7 +13,7 @@ description: 在 R1 通过后为 DevFlow change 做实现设计，或 R2/R3 发�
 <component-root>/specs/changes/ARXXX-<topic>/delta-design.md
 ```
 
-`delta-design.md` 描述本 AR 对 `specs/design.md` 的增量。它使用原组件模板的章节
+`delta-design.md` 描述本 AR 对 `specs/design.md` 的增量。它使用组件设计模板的章节
 路径、功能编号、接口/软件单元实体键，加上稳定 `DD/DEC/TC` 和
 `ADDED / MODIFIED / REMOVED / RENAMED`，让后续同步只改明确局部，并保留组件设计
 基线中未涉及的结构、契约和理由。
@@ -23,12 +23,14 @@ description: 在 R1 通过后为 DevFlow change 做实现设计，或 R2/R3 发�
 - `references/delta-design-template.md`：change 设计增量；
 - `references/component-design-template.md`：`specs/design.md` 的组件设计基线模板。
 
-两份模板都由两层组成：
+设计信息分为两层：
 
 - **控制层**：稳定 operation/decision/case ID、组件模板章节路径/实体键、
   base/provenance、selector、preservation、merge/review checks；
-- **内容层**：原 component design 第 1–8 章，以及原 AR design 第 1–6、8 章；
-  delta-design 第 7 章专门承载基线、操作、选择器、保留和合并信息。
+- **内容层**：组件当前结构、职责与契约，以及本次变更的概述、动态行为、功能点、
+  实现、领域场景、重构、风险和测试设计。
+
+`delta-design.md` 第 7 章承载基线、操作、选择器、保留和合并信息。
 
 控制层保证能安全同步，不能替代或压缩内容层；内容层提供工程可实施性，也不能绕过
 delta operation 直接整篇覆盖 canonical。
@@ -130,7 +132,7 @@ N/A 证据，不生成大段空模板。profile 等级与事实不一致或缺�
 每个 operation 包含 target、selector、base excerpt/digest、局部 before/after、
 preservation clause、需求条目/Spec 回指和受影响的 `DEC/TC`。
 
-- `ADDED`：在明确父章节下给出符合原组件模板结构的完整新增内容。
+- `ADDED`：在明确父章节下给出符合组件设计模板结构的完整新增内容。
 - `MODIFIED`：最小局部替换和 resulting local content。若只改一个错误码，不得
   重写或删除同一接口的输入、成功副作用、并发和兼容契约。
 - `REMOVED`：精确删除的设计语义、依赖/调用方、清理顺序、迁移和删除后的状态。
@@ -139,7 +141,7 @@ preservation clause、需求条目/Spec 回指和受影响的 `DEC/TC`。
 同一 target 有多个 operation 时给出确定顺序；互相覆盖就合并成一个可审查局部，
 或停下澄清。
 
-### 5. 闭合原 AR 设计内容骨架
+### 5. 完整表达变更设计
 
 先填写 AR identity、变更功能点与动态行为。每个功能点回指需求条目/Spec 与 DD operation，
 每个关键正常/异常场景有可冷读流程或时序。然后按实际影响填写：
@@ -243,9 +245,8 @@ R3 或实现发现设计错误时：
 
 - [ ] 输入、R1、mode、canonical 与 base revision preflight 全部通过。
 - [ ] profile coverage 完整；只展开适用章节，风险没有因裁剪消失。
-- [ ] 原 AR 设计第 1–6、8 章完整，第 7 章为 Delta Design 信息；概述/功能点、
-      动态行为、实现/数据/接口/UI/代码、领域场景、重构和分层测试均有内容或 N/A
-      证据。
+- [ ] 概述/功能点、动态行为、实现/数据/接口/UI/代码、领域场景、重构和分层测试
+      均有内容或 N/A 证据；第 7 章只承载 Delta Design 控制信息。
 - [ ] 每条 design operation 有稳定 `DD/DEC`、明确组件章节路径/实体键、四类操作、
       局部 selector 与来源。
 - [ ] MODIFIED 明确保留所有未涉及设计语义；new 可从 EMPTY 生成首版 canonical。

@@ -23,8 +23,6 @@ The project is runtime-agnostic by design. You can use it as a standalone skill 
 - **Independent review built into the flow**: Specs, designs, tests, and code pass through explicit review gates, with authorship separation and recorded findings.
 - **Adaptable to real project constraints**: Language standards and domain overlays help the same workflow fit backend, frontend, embedded, automotive, safety-critical, and other specialized work.
 
-![DevFlow workflow loop](docs/asserts/devflow-2-workflow-loop-v3.png)
-
 ---
 
 ## Commands
@@ -109,7 +107,7 @@ At workflow start DevFlow records one run mode: `attended` by default, where rev
 
 ## All Skills
 
-DevFlow currently ships 18 bundled skills: 8 workflow/entry skills, several quality overlays, and 1 tooling skill. Quality overlays are discovered by convention and by their descriptions, so new overlays can be added without changing the phase skills.
+DevFlow bundles workflow/entry skills, quality overlays, and tooling skills. Quality overlays are discovered by convention and by their descriptions, so adding one does not change the phase skills.
 
 ### Phase Skills
 
@@ -188,7 +186,7 @@ Key design choices:
 
 ```text
 devflow/
-├── skills/                         # 18 bundled skills
+├── skills/                         # Workflow, quality, language, and domain skills
 │   ├── using-devflow/              # Entry and recovery rules
 │   ├── devflow-init/               # Existing-component baseline initialization
 │   ├── devflow-specify/            # SRS, delta spec, traceability
@@ -206,8 +204,6 @@ devflow/
 ├── docs/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md
-│   ├── devflow-delivery-contract-redesign.md
-│   ├── devflow-internal-quality.md
 │   ├── guides/
 │   └── asserts/
 ├── scripts/                        # Repository consistency checks

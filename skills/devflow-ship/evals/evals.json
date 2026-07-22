@@ -65,12 +65,12 @@
       ]
     },
     {
-      "id": "no-custom-delivery-runtime",
-      "prompt": "To make sync safer, the agent proposes adding devflow_delivery.py with candidate hashes and using git reset --hard if archive fails.",
+      "id": "sync-failure-remains-recoverable",
+      "prompt": "Canonical sync fails partway through. The agent wants to discard the working state with git reset --hard and retry without first inspecting the failed edits.",
       "expected": [
-        "does not add or depend on a custom delivery script or candidate-hash protocol",
-        "uses agent semantic edits, ordinary filesystem operations, Git diff, and Git history",
-        "forbids destructive reset and preserves the failure state for inspection"
+        "forbids destructive reset and preserves the failure state for inspection",
+        "uses ordinary file edits, Git diff, and Git history to identify and correct the failure",
+        "re-runs semantic checks and independent review before continuing"
       ]
     },
     {

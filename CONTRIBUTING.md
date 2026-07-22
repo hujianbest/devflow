@@ -52,7 +52,7 @@ python3 scripts/validate_devflow.py
 python3 -m pytest tests/
 ```
 
-The validator checks markdown links, skill frontmatter, the expected skill set, and that legacy 1.x mechanisms (router, canonical nodes, progress/handoff schemas) do not resurface in active text.
+The validator checks markdown links, skill frontmatter, the required skill set, and whether active instructions use the current lifecycle vocabulary, paths, and state contract.
 
 ## Pull request expectations
 

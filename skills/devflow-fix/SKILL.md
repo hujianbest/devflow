@@ -137,17 +137,6 @@ SRS；会写测试或实现的 TDD 从门禁通过后开始。
 - 所有 findings 的 Resolution 闭环后进入 `devflow-ship`。
 - Ship 仍执行完整 DoD、canonical sync review、人工确认、closeout 和 archive。两份 delta N/A 时 canonical diff 应为空，但 sync review 不能省略。
 
-## 风险信号
-
-- 没有复现记录或 RED 就出现实现 diff；
-- 根因只写“空指针”“越界”等发生位置，没有为什么；
-- DTS 直接当作 change 目录身份，或缺 AR 身份时自行编号；
-- 仅凭“只是 bug”把 delta 写成 N/A；
-- 修复 diff 混入重构、格式化、依赖升级或邻近问题；
-- 用重试、sleep、放宽阈值或弱断言让现象消失；
-- N/A 后跳过 R3、sync review 或 ship；
-- 把 gate 状态写进 `tasks.md`，造成双重状态来源。
-
 ## 自检
 
 - [ ] SRS 只包含缺陷问题、目标、来源、范围和目标需求
@@ -162,4 +151,4 @@ SRS；会写测试或实现的 TDD 从门禁通过后开始。
 
 | 文件 | 用途 |
 |---|---|
-| `references/fix-template.md` | 缺陷 change 的 SRS、delta、tasks 写法 |
+| `references/fix-template.md` | 标准 SRS、delta、tasks 之上的缺陷补充结构 |

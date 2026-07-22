@@ -1,184 +1,69 @@
-# 缺陷 Change 工件模板
+# 缺陷 Change 补充结构
 
-> 缺陷沿用 `specs/changes/ARXXX-<topic>/` 的标准工件。下列片段分别写入现有 `srs.md`、两份 delta 和 `tasks.md`；不要另建平行说明文件。
+缺陷使用标准 change 工件，不创建平行说明文件：
 
-## srs.md 缺陷章节
+- `srs.md`：`devflow-specify/references/srs-template.md`
+- `delta-spec.md`：`devflow-specify/references/delta-spec-template.md`
+- `delta-design.md`：`devflow-design/references/delta-design-template.md`
+- `tasks.md`：`devflow-tdd/references/tasks-template.md`
 
-```markdown
-# <缺陷标题> — 软件需求规格
+本文件只定义缺陷额外需要的内容。两份 delta 的 frontmatter 均保留
+`manifest: change.json`。
 
-## 1. 问题与目标
+## srs.md 补充内容
 
-- 当前问题：
-- 目标结果：
-- 工作项来源：<DTS / 事故 / 报告锚点>
-- 整体成功标准：
+在问题、目标、范围和需求中写明：
 
-## 2. 范围与非范围
+- DTS、事故或报告来源；
+- 可重复观察的实际行为；
+- canonical 规定的预期行为；
+- 修复后的可观察成功标准；
+- 明确非范围。
 
-### 2.1 范围
+需求仍使用标准 `FR/IFR/NFR/CON` 结构和可直接形成 RED 的验收场景。
 
-- <范围条目>
-
-### 2.2 非范围
-
-- `EXC-001`：
-
-## 3. 功能性需求
-
-### 3.1 FR-001 <恢复组件规格行为>
-- 需求陈述：当 <缺陷触发条件> 时，组件必须满足 <组件规格 ID 的既有语义>。
-- 验收标准：
-  - Given <复现环境>；When <触发>；Then <正确结果及不应发生的副作用>。
-- 来源：<DTS 锚点> + `specs/spec.md#<stable-id>`
-```
-
-## delta-spec.md
-
-纯实现偏离且行为基线不变：
-
-```markdown
----
-documentType: change-delta-spec
-manifest: change.json
-canonicalBase:
-  path: specs/spec.md
-  baselineRevision: <revision>
-  contentDigest: <digest>
-  workingTree: clean | <recorded-digest>
-provenance:
-  srs: srs.md@<revision-or-digest>
-  capturedAt: <ISO-8601>
----
-
-# 规格增量
+## delta-spec.md 判断
 
 ## 无规格变化（仅缺陷恢复适用）
 
-- Canonical target: specs/spec.md#<stable-id>
-- 需求条目: FR-001
-- 结论: 当前 canonical 已准确规定预期行为，本修复不改变可观察契约。
-- 违反证据: <实际行为与 canonical 的差异>
-- 不变项: <接口/错误语义/状态机/默认值/阈值/兼容承诺>
-- Preservation clause: specs/spec.md 全部语义保持不变。
-- 验证义务: `AC-xxx` / `NFR-xxx QAS` / `CON-xxx Verification`；具体 `TC-xxx` 在 delta-design 中建立。
-```
+仅在 canonical 已准确规定目标行为时使用：
 
-行为需要改变时，使用标准稳定 ID 操作，不得写 N/A：
+- 需求条目与 canonical stable ID；
+- 实际行为违反 canonical 的证据；
+- 行为、接口、错误、状态、阈值和兼容承诺均不变的逐项结论；
+- `specs/spec.md` 全部语义保持不变的 preservation clause；
+- 来自 Acceptance、QAS 或 Verification 的回归义务。
 
-```markdown
 ## MODIFIED 需求
 
-### DS-001 [MODIFIED] <SPEC-stable-id> <标题>
+任何可观察契约变化都使用标准 delta operation，完整填写 target、selector、base、
+result、preservation、兼容/迁移和回归义务；不得写 N/A。
 
-- 需求条目: `FR-001`
-- Selector: <字段/子节稳定 ID>
-- Base excerpt or digest: <最小基线内容>
-- Replace:
-  - <被替换的现行语义>
-- With:
-  - <批准的新语义>
-- Resulting local content:
-  - <合并后的完整局部>
-- Preservation clause:
-  - 保留该 stable ID 的所有其他语义和全部 sibling sections。
-- Regression semantics:
-  - <必须继续成立的行为与 Acceptance>
-- Compatibility / migration:
-```
+## delta-design.md 判断
 
-完整 frontmatter、N/A/operation 结构仍使用
-`devflow-specify/references/delta-spec-template.md`，不能只复制上述片段。
+设计不变时写有证据的 N/A，并保留：
 
-## delta-design.md
+- canonical design 章节或实体锚点；
+- 结构、依赖、接口、错误模型、所有权和时序均不变的结论；
+- 证明实现恢复到 canonical 契约的唯一 Case Index。
 
-设计基线也不变：
+根因要求设计变化时使用标准 `DD-xxx` 与
+`ADDED / MODIFIED / REMOVED / RENAMED` operation，完整表达方案、契约、风险、
+回退和测试设计。
 
-```markdown
----
-documentType: change-delta-design
-manifest: change.json
-canonicalBase:
-  path: specs/design.md
-  baselineRevision: <revision>
-  contentDigest: <digest>
-  workingTree: clean | <recorded-digest>
-provenance:
-  deltaSpec: delta-spec.md@<revision-or-digest>
-  canonicalSpec: specs/spec.md@<revision-or-digest>
-  capturedAt: <ISO-8601>
----
+## tasks.md 缺陷分析
 
-# 设计增量
+在标准 tasks 结构中增加：
 
-## N/A — no canonical design change
+- 环境：版本、平台和配置；
+- 最小复现步骤及预期/实际；
+- 日志、core、trace 或观测证据；
+- 复现稳定性；
+- 带证据的因果链、直接原因和根本原因；
+- 现有测试缺口、波及范围及已排除假设；
+- 最小安全修复范围、非范围和回退策略。
 
-- Canonical target: specs/design.md#<stable-id>
-- 需求条目 / Spec source: FR-001 / <SPEC-stable-id>
-- 结论: 当前设计已正确，本修复只恢复实现一致性。
-- 不变项: <结构/依赖/接口/错误模型/所有权/时序>
-- Preservation clause: specs/design.md 全部语义保持不变。
-- Test strategy: 下列 Case 证明实现恢复到 canonical 契约，不改变设计。
+首个修复 Case 必须先稳定复现缺陷。任务仍按标准 RED→GREEN→REFACTOR 结构填写允许
+文件、命令、完成定义和证据。
 
-## Case Index
-
-| Case ID | 需求条目 | Spec Section | Design Section | Given/When/Then | Expected result | Level | Coverage type | Verification |
-|---|---|---|---|---|---|---|---|---|
-| TC-001 | FR-001 | <SPEC-ID> | <章节路径 / 功能编号 / 接口或软件单元实体键> | <复现摘要> | <canonical 预期> | unit / integration | regression | <command> |
-```
-
-若根因要求设计变化，完整使用
-`devflow-design/references/delta-design-template.md`，以 `DD-xxx` 和
-`ADDED / MODIFIED / REMOVED / RENAMED` 记录稳定 ID、selector、before/after、
-preservation clause、规格来源、测试设计和回退。
-
-## tasks.md 修复任务
-
-```markdown
-## 缺陷分析与复现证据
-
-- 环境：<版本/提交、平台、配置>
-- 现象 / 影响 / 严重度：
-- 最小复现：
-
-| 步骤 | 操作/输入 | 预期 | 实际 |
-|---|---|---|---|
-| 1 |  |  |  |
-
-- 日志 / core / trace：
-- 复现稳定性：stable / flaky(<频率>) / unreproduced
-- 因果链（每步带证据）：
-- 直接原因：
-- 根本原因：
-- 现有测试缺口：
-- 波及范围：
-- 已排除假设及证据：
-- 最小安全修复范围：
-- 显式非范围：
-- 回退策略：
-
-### T1 <复现并修复>
-
-- Status: pending / in-progress / blocked / done
-- Covers: FR-001
-- Case IDs: TC-001
-- 允许文件:
-  - 测试: `<path>`
-  - 实现: `<path>`
-- 非范围:
-- 步骤:
-  - [ ] RED: 写自动化复现测试；运行 `<command>`，确认因目标缺陷失败
-  - [ ] GREEN: 最小修复；运行 `<full-suite-command>`，确认全绿且无新增警告
-  - [ ] REFACTOR: 对照 clean-code 检视任务范围；每步保持全绿，或写 N/A 理由
-  - [ ] 更新 traceability，登记同类风险，保存证据
-- 证据:
-  - RED: `<command>` → `<关键失败>` @ `<code anchor>`
-  - GREEN: `<command>` → `<通过摘要>` @ `<code anchor>`
-  - REFACTOR: `<摘要 + 验证>` / N/A（<无任务内异味理由>）
-```
-
-本片段必须放入 `devflow-tdd/references/tasks-template.md` 的完整 Sources、Execution
-Cursor、Case Coverage Audit、Evidence 与 Resume 结构中，不能作为简化版 tasks
-文件单独使用。
-
-N/A 只能表达 canonical 无变化，不能替代复现、任务证据、评审、同步复核或收尾。
+N/A 只表示 canonical 无变化，不豁免复现、R1/R2、TDD、R3、canonical sync 或收尾。

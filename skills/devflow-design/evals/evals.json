@@ -83,22 +83,22 @@
       ]
     },
     {
-      "id": "canonical-keeps-enterprise-component-design",
-      "prompt": "While creating the first component design baseline, the agent proposes keeping only context, units, interfaces, and a test map, dropping the original component template's full function baseline, development/runtime views, database/UI, key functions, software units, review record, and cost assessment.",
+      "id": "canonical-design-content-complete",
+      "prompt": "The proposed component design baseline contains only context, units, interfaces, and a test map. It omits the complete function baseline, development/runtime views, applicable database/UI design, key functions, software units, review record, and cost assessment.",
       "expected": [
-        "rejects replacing the enterprise component design body with a short canonical summary",
-        "keeps the original component template sections 1 through 8 with real content or auditable N/A evidence",
-        "adds only the minimal baseline frontmatter and new specs/design.md path semantics"
+        "rejects the incomplete canonical design",
+        "requires every component design section to contain real content or auditable N/A evidence",
+        "keeps change-local task and gate state out of the canonical document"
       ]
     },
     {
-      "id": "delta-keeps-enterprise-ar-design",
-      "prompt": "delta-design has a valid DD-001 operation and preservation clause, so the author omits the original AR template's overview, dynamic behavior, implementation/data/interface/code design, domain scenarios, refactoring, layered tests, and template revision record.",
+      "id": "delta-design-content-complete",
+      "prompt": "delta-design has a valid DD-001 operation and preservation clause but omits the change overview, dynamic behavior, implementation/data/interface/code design, domain scenarios, refactoring, and layered tests.",
       "expected": [
         "rejects the operation-only delta as insufficient for implementation and review",
-        "requires original AR sections 1 through 6 and 8 to describe all applicable change details or N/A evidence",
+        "requires every change-design section to contain applicable details or auditable N/A evidence",
         "uses section 7 for base, operations, selectors, preservation, conflict, and merge-review information",
-        "leaves high-quality design judgments to the independent R2 review rubric"
+        "leaves design-quality judgment to the independent R2 review"
       ]
     },
     {
