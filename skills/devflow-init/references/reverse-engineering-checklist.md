@@ -1,140 +1,140 @@
-# Read-only reverse-engineering checklist
+# 只读逆向分析清单
 
-Use this checklist to establish evidence for an existing component baseline. It does not authorize business-code edits, generated-output refreshes, deployments, migrations or stateful environment probes.
+使用本清单为既有组件基线建立证据。它不授权修改业务代码、刷新生成产物、执行部署或迁移，也不授权探测会改变环境状态的内容。
 
-## 1. Scope and snapshot
+## 1. 范围与快照
 
-- [ ] Resolve one `<component-root>`.
-- [ ] Obtain explicit `componentMode: existing`.
-- [ ] Record an immutable source revision.
-- [ ] If an active AR exists, verify its `change.json.baseRevision` without changing it.
-- [ ] Identify whether `specs/spec.md`, `specs/design.md`, both or neither need work.
-- [ ] If only one is missing or draft, mark the other read-only and use it for cross-checking.
-- [ ] List ignored, generated, vendored and inaccessible areas.
-- [ ] Record tool or permission limitations before drawing conclusions.
+- [ ] 解析出唯一的 `<component-root>`。
+- [ ] 获得明确的 `componentMode: existing`。
+- [ ] 记录不可变的 source revision。
+- [ ] 如果存在活动 AR，核验其 `change.json.baseRevision`，但不得修改。
+- [ ] 确认 `specs/spec.md`、`specs/design.md` 是需要处理其中一份、两份，还是都不需要。
+- [ ] 如果仅有一份缺失或处于 draft，将另一份标为只读并用于交叉检查。
+- [ ] 列出已忽略、生成、第三方引入和无法访问的区域。
+- [ ] 在得出结论前记录工具或权限限制。
 
-## 2. Existing descriptions
+## 2. 既有说明
 
-- [ ] Component overview, ownership and boundaries.
-- [ ] Upstream requirements and acceptance criteria.
-- [ ] API guides, operational procedures and support contracts.
-- [ ] Architecture or decision records.
-- [ ] Release, upgrade, compatibility and deprecation notes.
-- [ ] Known debt, incidents and limitations.
+- [ ] 组件概述、所有权和边界。
+- [ ] 上游需求和验收标准。
+- [ ] API 指南、运维流程和支持约定。
+- [ ] 架构记录或决策记录。
+- [ ] 发布、升级、兼容性和弃用说明。
+- [ ] 已知技术债、事故和限制。
 
-For every statement, record a `/` path and section anchor. “Documented” does not mean “current”; compare its revision and claims with other evidence.
+每项陈述都要记录使用 `/` 的路径和章节锚点。“已有文档记录”不等于“当前仍然有效”；应将文档的 revision 和陈述与其他证据对照。
 
-## 3. Public API, IDL and schemas
+## 3. 公开 API、IDL 与 schema
 
-- [ ] Exported functions, services, routes, messages and events.
-- [ ] Inputs, outputs, units, ranges, defaults and optionality.
-- [ ] Error codes and observable failure behavior.
-- [ ] Sync/async semantics, ordering and idempotency.
-- [ ] Version negotiation, compatibility and deprecation markers.
-- [ ] Data schemas, persistence formats and migration definitions.
-- [ ] Known providers and consumers.
+- [ ] 导出的函数、服务、路由、消息和事件。
+- [ ] 输入、输出、单位、范围、默认值和可选性。
+- [ ] 错误码和外部可观察的失败行为。
+- [ ] 同步与异步语义、顺序和幂等性。
+- [ ] 版本协商、兼容性和弃用标记。
+- [ ] 数据 schema、持久化格式和迁移定义。
+- [ ] 已知的提供方和使用方。
 
-An interface definition verifies shape and declared constraints. Consumer obligations, business meaning and compatibility duration remain unknown unless separately sourced.
+接口定义只能证明接口形状和其中声明的约束。除非有其他来源，否则使用方义务、业务含义和兼容期限仍为 unknown。
 
-## 4. Tests
+## 4. 测试
 
-- [ ] Unit, component, integration, contract, end-to-end and regression tests.
-- [ ] Fixtures, golden files, snapshots and property tests.
-- [ ] Positive, boundary, invalid-input and failure-path cases.
-- [ ] Timing, capacity, resource and concurrency assertions.
-- [ ] Mocks or fakes that reveal expected collaborators.
-- [ ] Disabled, flaky or quarantined tests and stated reasons.
-- [ ] Gaps between public paths and test coverage.
+- [ ] 单元测试、组件测试、集成测试、契约测试、端到端测试和回归测试。
+- [ ] Fixture、golden file、快照和属性测试。
+- [ ] 正常、边界、无效输入和失败路径用例。
+- [ ] 时序、容量、资源和并发相关断言。
+- [ ] 能体现预期协作者的 mock 或 fake。
+- [ ] 被禁用、不稳定或隔离的测试，以及记录的原因。
+- [ ] 公开调用路径与测试覆盖之间的缺口。
 
-Record test name and assertion anchor. A passing or existing test verifies current encoded expectation; it does not prove that expectation is the intended requirement.
+记录测试名称和断言锚点。通过的测试或已有测试只能证明当前已编码的预期，不能证明该预期就是目标需求。
 
-## 5. Source
+## 5. 源码
 
-- [ ] Public entry points and adapters.
-- [ ] Internal units and responsibility boundaries.
-- [ ] Dependency direction and external integrations.
-- [ ] State machines, transitions and invariants.
-- [ ] Validation and error translation.
-- [ ] Data ownership, lifetime and persistence.
-- [ ] Threads, tasks, callbacks, locks, queues and ordering.
-- [ ] Resource acquisition, limits, exhaustion and release.
-- [ ] Retry, timeout, cancellation, recovery and degradation.
-- [ ] Logging, metrics, tracing and health reporting.
-- [ ] Startup, shutdown and partial-initialization rollback.
+- [ ] 公开入口和适配器。
+- [ ] 内部单元和职责边界。
+- [ ] 依赖方向和外部集成。
+- [ ] 状态机、状态转换和不变量。
+- [ ] 校验和错误转换。
+- [ ] 数据所有权、生命周期和持久化。
+- [ ] 线程、任务、回调、锁、队列和执行顺序。
+- [ ] 资源获取、上限、耗尽和释放。
+- [ ] 重试、超时、取消、恢复和降级。
+- [ ] 日志、指标、链路追踪和健康状态报告。
+- [ ] 启动、关闭和部分初始化失败后的回滚。
 
-Record symbol and line/range anchors where practical. Source verifies current structure and behavior, not intent, rationale or stability commitment.
+可行时记录符号及行号或范围锚点。源码只能证明当前结构和行为，不能证明意图、设计理由或稳定性承诺。
 
-## 6. Configuration
+## 6. 配置
 
-- [ ] Configuration keys, types and defaults.
-- [ ] Environment variables and secret references.
-- [ ] Feature flags and conditional behavior.
-- [ ] Validation, precedence and reload semantics.
-- [ ] Platform, locale and environment conditions.
-- [ ] Values that look like thresholds or budgets.
+- [ ] 配置键、类型和默认值。
+- [ ] 环境变量和密钥引用。
+- [ ] Feature flag 和条件行为。
+- [ ] 校验、优先级和重载语义。
+- [ ] 平台、区域设置和环境条件。
+- [ ] 看似阈值或预算的数值。
 
-Treat configured numbers as current values. Ask before declaring them required acceptance thresholds.
+配置中的数字只能作为当前值。在将其声明为必需的验收阈值前，应先向相关人员确认。
 
-## 7. Build and dependencies
+## 7. 构建与依赖
 
-- [ ] Build entry points, targets and output artifacts.
-- [ ] Source generation and generated-file ownership.
-- [ ] Compile flags, platform variants and feature switches.
-- [ ] Direct and transitive runtime dependencies.
-- [ ] Packaging, signing and version metadata.
-- [ ] Test/build separation and required toolchains.
+- [ ] 构建入口、目标和输出产物。
+- [ ] 源码生成方式和生成文件的所有权。
+- [ ] 编译标志、平台变体和功能开关。
+- [ ] 直接及传递的运行时依赖。
+- [ ] 打包、签名和版本元数据。
+- [ ] 测试与构建的隔离方式，以及所需工具链。
 
-Read definitions only. Do not run a command that may rewrite lock files, generated code or caches required to remain untouched.
+只读取定义。不得运行可能改写锁文件、生成代码或必须保持不变的缓存的命令。
 
-## 8. Deployment and operations
+## 8. 部署与运维
 
-- [ ] Deployment units, topology and environment variants.
-- [ ] Startup order, readiness, liveness and shutdown.
-- [ ] Storage, network, service-account and permission dependencies.
-- [ ] Rollout, rollback and migration definitions.
-- [ ] Scaling, replication and failover declarations.
-- [ ] Monitoring, alerting and operational limits.
+- [ ] 部署单元、拓扑和环境变体。
+- [ ] 启动顺序、就绪检查、存活检查和关闭流程。
+- [ ] 存储、网络、服务账号和权限依赖。
+- [ ] 发布、回滚和迁移定义。
+- [ ] 扩缩容、复制和故障切换声明。
+- [ ] 监控、告警和运行限制。
 
-A deployment file verifies declared configuration, not actual runtime state in every environment. Do not deploy or mutate an environment during init.
+部署文件只能证明其中声明的配置，不能证明所有环境的实际运行状态。init 期间不得部署或修改环境。
 
-## 9. Evidence normalization
+## 9. 证据规范化
 
-For each fact, capture:
+每项事实记录以下内容：
 
-| Field | Required content |
+| 字段 | 必填内容 |
 |---|---|
-| Fact ID | Stable local ID |
-| Statement | One atomic claim |
-| Class | `verifiable`, `human-confirmed`, or `unknown` |
-| Source | Revision plus `/` path, symbol/test/config/section anchor, or human confirmation ID |
-| Scope | Conditions, platform, build variant or environment |
-| Normative disposition | observed-only, required, excluded or undecided |
-| Conflict | Conflicting source or none |
+| 事实 ID | 稳定的本地 ID |
+| 陈述 | 一项不可再拆分的事实 |
+| 分类 | `verifiable`、`human-confirmed` 或 `unknown` |
+| 来源 | Revision 加 `/` 路径，以及符号、测试、配置或章节锚点；也可以是人工确认 ID |
+| 适用范围 | 条件、平台、构建变体或环境 |
+| 规范性归类 | `observed-only`、`required`、`excluded` 或 `undecided` |
+| 冲突 | 相互冲突的来源；没有则写“无” |
 
-- [ ] Split claims that need different classes.
-- [ ] Do not use confidence adjectives as a substitute for a class.
-- [ ] Preserve conflicting evidence; do not select a winner without authority.
-- [ ] Keep the evidence ledger in the canonical document provenance sections; do not add a new component-root artifact.
+- [ ] 需要使用不同分类的陈述已拆分。
+- [ ] 没有用置信度形容词代替事实分类。
+- [ ] 保留相互冲突的证据；未经授权，不得自行选择其中一项作为结论。
+- [ ] 证据台账保存在 canonical 文档的 provenance 章节中；不得在组件根目录新增产物。
 
-## 10. Blocking questions
+## 10. 阻塞问题
 
-- [ ] Component responsibility and ownership are confirmed.
-- [ ] Externally observable behavior and error semantics are confirmed.
-- [ ] Interface consumers and compatibility commitments are confirmed where material.
-- [ ] Security, privacy and safety boundaries are confirmed.
-- [ ] Required performance, real-time, capacity and resource thresholds are confirmed.
-- [ ] Persistence, migration, concurrency and recovery guarantees are confirmed.
-- [ ] Source conflicts affecting contract or architecture are resolved.
-- [ ] Every blocking question names an owner and the decision it blocks.
+- [ ] 组件职责和所有权已确认。
+- [ ] 外部可观察行为和错误语义已确认。
+- [ ] 对契约有实质影响时，接口使用方和兼容性承诺已确认。
+- [ ] 安全、隐私和功能安全边界已确认。
+- [ ] 必需的性能、实时性、容量和资源阈值已确认。
+- [ ] 持久化、迁移、并发和恢复保证已确认。
+- [ ] 影响契约或架构的来源冲突已解决。
+- [ ] 每个 blocking 问题都写明责任人及其阻塞的决策。
 
-Ask questions in small related groups. Include verified context and impact, but do not imply a preferred answer without evidence.
+将相关问题分成小组逐组询问。问题中应包含已验证的上下文和影响；没有证据时，不得暗示某个答案更合适。
 
-## 11. Final consistency
+## 11. 最终一致性
 
-- [ ] Every canonical normative statement has human confirmation.
-- [ ] Every observed-only statement is visibly non-normative.
-- [ ] Every design element maps to a specification ID or is labeled implementation detail.
-- [ ] Every specification ID has design coverage or an explicit no-design-impact rationale.
-- [ ] Names, units, ranges, defaults, states and errors agree across both documents.
-- [ ] Both documents cite the same source revision.
-- [ ] No blocking unknown remains before independent review.
+- [ ] Canonical 文档中的每项规范性陈述都经过人工确认。
+- [ ] 每项 `observed-only` 陈述都明确标为非规范性内容。
+- [ ] 每个设计元素都映射到 specification ID，或标为实现细节。
+- [ ] 每个 specification ID 都有对应设计，或有明确的“无设计影响”说明。
+- [ ] 两份文档中的名称、单位、范围、默认值、状态和错误保持一致。
+- [ ] 两份文档引用相同的 source revision。
+- [ ] 进入独立评审前，不存在任何 blocking unknown。

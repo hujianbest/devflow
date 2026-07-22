@@ -1,122 +1,122 @@
-# Canonical baseline review checklist
+# Canonical 基线评审清单
 
-This review is independent: the reviewer did not author the canonical draft, receives no hidden author reasoning, and does not edit the reviewed files.
+本评审必须独立进行：评审者未参与 canonical 草稿的编写，无法接触作者未记录的推理，也不得编辑被评审文件。
 
-## Review input
+## 评审输入
 
-- [ ] Exact source revision.
-- [ ] New or revised canonical draft.
-- [ ] Other canonical document used for cross-checking.
-- [ ] Source/provenance index with fact classification and confirmation anchors.
-- [ ] Human questions, answers, confirmer and scope.
-- [ ] Remaining unknowns and their blocking classification.
-- [ ] If only one document was missing, a clear statement that the existing document was not modified.
+- [ ] 准确的 source revision。
+- [ ] 新增或修订后的 canonical 草稿。
+- [ ] 用于交叉检查的另一份 canonical 文档。
+- [ ] 包含事实分类和确认锚点的来源（provenance）索引。
+- [ ] 人工问题与回答，以及确认人和确认范围。
+- [ ] 剩余 unknown 及其阻塞分类。
+- [ ] 如果仅缺少一份文档，需明确说明未修改已有文档。
 
-If evidence cannot be read at the recorded revision, return `blocked`; do not review from summaries alone.
+如果无法读取所记录 revision 对应的证据，返回 `blocked`；不得只依据摘要开展评审。
 
-## 1. Provenance
+## 1. 来源追溯
 
-- [ ] Every material claim has a source or explicit `unknown`.
-- [ ] File anchors use `/` and include symbols, tests, keys or sections where practical.
-- [ ] Evidence scope records platform, build variant and environment conditions.
-- [ ] Generated, vendored, stale or conflicting sources are identified.
-- [ ] Human-confirmed claims include confirmer, time and confirmation scope.
-- [ ] No source is cited more broadly than it proves.
+- [ ] 每项实质性陈述都有来源，或明确标为 `unknown`。
+- [ ] 文件锚点使用 `/`，并在可行时包含符号、测试、配置键或章节。
+- [ ] 证据的适用范围记录了平台、构建变体和环境条件。
+- [ ] 已标识生成的、第三方引入的、过期的或相互冲突的来源。
+- [ ] 人工确认的陈述包含确认人、确认时间和确认范围。
+- [ ] 对来源的引用范围没有超出其实际证明范围。
 
-## 2. Fact classification
+## 2. 事实分类
 
-- [ ] Every fact is exactly `verifiable`, `human-confirmed` or `unknown`.
-- [ ] Inference and confidence language do not act as hidden fourth classes.
-- [ ] Current implementation facts are not automatically written as requirements.
-- [ ] Tests are treated as encoded expectations, not unquestionable business intent.
-- [ ] Constants and measured behavior are not promoted to required thresholds without human confirmation.
-- [ ] Design structure is separated from unverified rationale.
-- [ ] Error behavior is separated from unverified semantic or compatibility commitments.
+- [ ] 每项事实都且仅归为 `verifiable`、`human-confirmed` 或 `unknown`。
+- [ ] 推断或置信度措辞没有被当作隐藏的第四种分类。
+- [ ] 当前实现事实没有被自动写成需求。
+- [ ] 测试被视为已编码的预期，而不是不容质疑的业务意图。
+- [ ] 未经人工确认，没有把常量或实测行为提升为必需阈值。
+- [ ] 设计结构与未经验证的设计理由已分开描述。
+- [ ] 错误行为与未经验证的语义或兼容性承诺已分开描述。
 
-Any invented intent, reason, threshold, historical decision or owner is a blocking finding.
+任何凭空编造的意图、理由、阈值、历史决策或责任人，都属于阻塞性问题。
 
-## 3. Canonical specification
+## 3. Canonical 规格
 
-- [ ] Scope, non-scope, responsibility and consumers are explicit.
-- [ ] Stable requirement IDs are unique and usable by future deltas.
-- [ ] Functional/interface requirements have observable scenarios; quality requirements have complete QAS; constraints have executable verification.
-- [ ] Interface inputs, outputs, units, ranges, errors, ordering and compatibility are explicit or unknown.
-- [ ] Quality requirements preserve stimulus source, stimulus, environment, response and confirmed response measure.
-- [ ] Observed-only behavior is visibly separate from confirmed requirements.
-- [ ] Blocking unknowns cover unresolved contract decisions.
+- [ ] 范围、非范围、职责和使用方均已明确。
+- [ ] 稳定的 requirement ID 唯一，且可供后续 delta 使用。
+- [ ] 功能和接口需求有可观察场景，质量需求有完整 QAS，约束有可执行的验证方式。
+- [ ] 接口的输入、输出、单位、范围、错误、顺序和兼容性已明确，或标为 unknown。
+- [ ] 质量需求完整保留刺激源、刺激、环境、响应和经确认的响应度量。
+- [ ] 仅观察到的行为与已确认需求有明显区分。
+- [ ] Blocking unknown 已覆盖所有尚未解决的契约决策。
 
-## 4. Canonical design
+## 4. Canonical 设计
 
-- [ ] Component template chapter paths, function numbers, interface/software-unit row keys and base excerpts can uniquely address future deltas.
-- [ ] Component boundary, internal units and dependency direction match evidence.
-- [ ] Interface realization matches canonical specification semantics.
-- [ ] State, data ownership, lifecycle and persistence are explicit.
-- [ ] Concurrency, ordering, resource limits and exhaustion behavior are explicit or unknown.
-- [ ] Error translation, recovery, degradation and failure-state guarantees are explicit or unknown.
-- [ ] Build, configuration and deployment claims stay within what definitions prove.
-- [ ] Test seams and known coverage gaps are recorded.
-- [ ] Full function baseline, development/runtime views, key functions and software-unit details are reconstructed or explicitly unknown.
-- [ ] Database/persistence, UI, interfaces, applicable domain scenarios and software cost sections contain evidence or auditable N/A.
-- [ ] Reviewer has evaluated responsibility boundaries, error/degradation, ownership/lifecycle and abstraction/evolution cost from chapters 1–8; no separate “high-quality design” chapter is required.
-- [ ] No rationale or trade-off is fabricated to complete the template.
+- [ ] 组件模板的章节路径、功能编号、接口或软件单元表格行键和基线摘录，可以唯一定位后续 delta 的修改对象。
+- [ ] 组件边界、内部单元和依赖方向与证据一致。
+- [ ] 接口实现与 canonical 规格中的语义一致。
+- [ ] 状态、数据所有权、生命周期和持久化均已明确。
+- [ ] 并发、顺序、资源上限和资源耗尽行为已明确，或标为 unknown。
+- [ ] 错误转换、恢复、降级和失败状态保证已明确，或标为 unknown。
+- [ ] 构建、配置和部署相关陈述没有超出定义文件能够证明的范围。
+- [ ] 已记录测试接缝和已知覆盖缺口。
+- [ ] 已还原完整功能基线、开发与运行时视图、关键功能和软件单元细节，无法还原的内容已明确标为 unknown。
+- [ ] 数据库与持久化、UI、接口、适用的领域场景和软件成本章节包含证据，或包含可审计的 N/A 说明。
+- [ ] 评审者已结合第 1～8 章检查职责边界、错误与降级、所有权与生命周期，以及抽象和演进成本；无需另设“高质量设计”章节。
+- [ ] 没有为填满模板而虚构设计理由或取舍。
 
-## 5. Spec-design consistency
+## 5. 规格与设计一致性
 
-- [ ] Every normative specification ID maps to a component design chapter/entity anchor, no-design-impact statement or blocking gap.
-- [ ] Every externally observable design behavior maps back to a specification ID.
-- [ ] Names, types, units, ranges, defaults and optionality agree.
-- [ ] State and error semantics agree.
-- [ ] Ownership, lifecycle and compatibility claims agree.
-- [ ] Both documents use the same source revision and component identity.
-- [ ] If only one document was created, it does not silently redefine the existing document.
+- [ ] 每个规范性 specification ID 都映射到组件设计的章节或实体锚点、无设计影响说明，或明确的阻塞缺口。
+- [ ] 每项外部可观察的设计行为都能反向映射到 specification ID。
+- [ ] 名称、类型、单位、范围、默认值和可选性一致。
+- [ ] 状态和错误语义一致。
+- [ ] 所有权、生命周期和兼容性相关陈述一致。
+- [ ] 两份文档使用相同的 source revision 和组件标识。
+- [ ] 如果只创建了一份文档，该文档没有暗中重新定义已有文档。
 
-## 6. Unknown triage
+## 6. Unknown 分级
 
-- [ ] Contract, ownership, threshold, safety/security, persistence, concurrency, recovery and architecture unknowns are blocking.
-- [ ] Non-blocking unknowns truly cannot alter the current contract or design boundary.
-- [ ] Every unknown states impact, owner and next question.
-- [ ] Conflicting sources remain visible until an authorized human resolves them.
+- [ ] 契约、所有权、阈值、功能安全、信息安全、持久化、并发、恢复和架构方面的 unknown 均按 blocking 处理。
+- [ ] Non-blocking unknown 确实不会改变当前契约或设计边界。
+- [ ] 每个 unknown 都写明影响、责任人和下一步需确认的问题。
+- [ ] 在获得授权的人员解决冲突前，相互冲突的来源始终保留在记录中。
 
-## Verdict
+## 评审结论
 
-Use one verdict:
+只能使用以下一种结论：
 
-- `passed`: no blocking finding or unknown; provenance and cross-consistency are sufficient for human confirmation.
-- `rework`: evidence exists and the author can correct classification, coverage or consistency.
-- `blocked`: required evidence, authority, tool access or human decision is missing.
+- `passed`：没有阻塞性问题或 blocking unknown；来源追溯和交叉一致性足以进入人工确认。
+- `rework`：已有足够证据，作者可以修正分类、覆盖范围或一致性问题。
+- `blocked`：缺少必要证据、决策权限、工具访问能力或人工决策。
 
-Record:
+按以下格式记录：
 
 ```markdown
-## Baseline review record
+## 基线评审记录
 
-- Reviewer:
-- Independence basis:
-- Reviewed source revision:
-- Reviewed document revision / hash:
-- Verdict: passed / rework / blocked
-- Findings:
-  - BR-001:
-- Resolution:
-  - BR-001:
-- Remaining non-blocking unknowns:
+- 评审者：
+- 独立性依据：
+- 已评审的 source revision：
+- 已评审文档的 revision / hash：
+- 结论：passed / rework / blocked
+- 发现的问题：
+  - BR-001：
+- 处理结果：
+  - BR-001：
+- 剩余 non-blocking unknown：
 ```
 
-Put the record in the generated document's `Baseline review and confirmation` section.
-When init is routed from an active AR, a full record is mandatory at
-`specs/changes/ARXXX-<topic>/reviews/baseline-init-review-YYYY-MM-DD[-rN].md`;
-both canonical documents and `change.json.gates.baselinePreflight.evidence` point to it.
-Only standalone init with no active AR may keep the record solely inside the canonical documents.
+将记录写入生成文档的 `Baseline review and confirmation` 章节。
+如果 init 由活动 AR 路由而来，必须将完整记录保存到
+`specs/changes/ARXXX-<topic>/reviews/baseline-init-review-YYYY-MM-DD[-rN].md`；
+两份 canonical 文档及 `change.json.gates.baselinePreflight.evidence` 都应指向该记录。
+只有在没有活动 AR 的独立 init 中，才可以仅在 canonical 文档内保存评审记录。
 
-## Human confirmation
+## 人工确认
 
-After `passed`, present the canonical content or diff, provenance summary, review record and remaining non-blocking unknowns to a human.
+结论为 `passed` 后，向相关人员展示 canonical 内容或 diff、来源摘要、评审记录和剩余 non-blocking unknown。
 
-- [ ] Human confirmation is explicit, not inferred from silence or an earlier request to run init.
-- [ ] Confirmation names the documents and scope.
-- [ ] Confirmation identity and time are recorded.
-- [ ] Only generated or repaired draft documents are marked `baseline-ready`.
-- [ ] When both documents were generated, both are updated together.
-- [ ] Any late content change invalidates the verdict and requires re-review.
+- [ ] 人工确认必须明确给出，不能根据沉默或此前要求执行 init 的指令推断。
+- [ ] 确认内容写明所确认的文档和范围。
+- [ ] 已记录确认人和确认时间。
+- [ ] 只有本次生成或修复的草稿文档会被标记为 `baseline-ready`。
+- [ ] 如果两份文档均由本次生成，则同时更新两份文档。
+- [ ] 评审完成后的任何内容变更都会使结论失效，必须重新评审。
 
-Without independent pass plus explicit human confirmation, `baselineStatus` remains `draft`.
+未同时获得独立评审通过和明确的人工确认时，`baselineStatus` 必须保持 `draft`。
