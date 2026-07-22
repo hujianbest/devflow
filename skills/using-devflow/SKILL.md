@@ -1,169 +1,199 @@
 ---
 name: using-devflow
-description: DevFlow 工作流的入口。在以下情况使用：开始一个新的开发任务、不确定当前该做规格/设计/实现中的哪一步、需要从已有工件恢复进度、或用户提到 DevFlow / 规范驱动开发 / 高质量开发流程时。
+description: DevFlow 交付工作流入口。开始或恢复变更、判断规格/设计/实现/评审/归档下一步、处理缺失组件基线，或用户提到 DevFlow、规范驱动开发、AR 交付时使用。每次入口都先执行组件模式与 canonical baseline preflight。
 ---
 
 # 使用 DevFlow
 
-## DevFlow 是什么
+DevFlow 维护两类真相：
 
-DevFlow 把「产出高质量代码」拆成由外到内的三层质量。第一、二层有阶段技能承载；第三层是贯穿设计、实现、评审的质量约束：
+- `specs/spec.md` 与 `specs/design.md` 是组件当前规格和当前设计的唯一 canonical baseline。
+- `specs/changes/ARXXX-<topic>/` 只记录一次变更的增量、任务、证据和评审；关闭后完整移动到 `specs/archive/`。
 
-| 层 | 回答的问题 | 失败模式（无此层时） | 承载技能 |
-|---|---|---|---|
-| **第一层 SDD** | 做的是不是对的事？ | 需求含糊 → 模型靠猜 → 做错了事 | `devflow-specify` |
-| **第二层 TDD** | 功能被证明正确了吗？ | 代码未验证 → 留一堆 BUG 给人 | `devflow-tdd` |
-| **第三层 Clean Code** | 代码本身写得好吗？ | 能跑但烂 → 难维护、难审查、难演进 | `devflow-clean-code` + `<language>-coding-standards` + 领域技能 |
+采用 clean break。只接受本技能定义的目录，不解析别名、不迁移旧布局、不允许路径覆盖，也不在组件根与 `specs/` 之间插入工件目录。
 
-前两层保证外部质量（做对的事、做对），第三层保证内在质量（做好）。`devflow-design` 是设计阶段：它通过结构、接口契约、错误模型和测试设计为第三层奠基；实现和评审时仍必须叠加 `devflow-clean-code` 与适用语言/领域技能。三层不是三个产物，而是同一份代码的三个维度。目标一句话：**SDD 范式下生成 Clean Code 的代码，而不是仅仅能运行的代码。**
+## 每个入口必须执行 baseline preflight
 
-协作姿态是 **human-on-the-loop**：具体的活由 AI 干，人站在环上审查关键产物（规格、设计、测试、代码）。因此每个阶段的产物都必须**可冷读、可审查**——这是所有技能共同的硬要求。
+开始、恢复、规格、设计、实现、缺陷修复、评审、同步和归档前，都先执行以下检查。`devflow-init` 也从同一判定开始，只是它是既有组件基线不合格时的修复入口。
 
-## 工作流
+1. **解析组件根。** 用户给出目录时以该目录为准；否则用仓库约定识别目标组件。目标仍不唯一就询问，不在当前工作目录猜测。
+2. **定位变更。** 新 AR 创建 `specs/changes/ARXXX-<topic>/` 与可解析的 `change.json`；续作先读 `change.json`，再核对磁盘工件。没有明确 AR 的独立初始化可暂不创建变更目录。
+3. **确认组件模式。** `change.json.componentMode` 必须是 `new` 或 `existing`。字段缺失、人与仓库证据冲突或无法判断时立即阻塞并询问；不得根据“目录存在”“有一些代码”等单一信号自行推断。
+4. **检查既有组件。** `existing` 要求 `specs/spec.md` 和 `specs/design.md` 同时存在，且两份文档都明确标记 `baselineStatus: baseline-ready`。任一缺失、仍为 draft、缺 provenance、独立评审未通过、人工未确认或有 blocking unknown，均把 `change.json.gates.baselinePreflight.status` 记为 `blocked`，停止后续阶段并路由 `devflow-init`。
+5. **检查新增组件。** `new` 不运行 `devflow-init`。canonical 文档可以不存在；首个 `delta-spec.md` 与 `delta-design.md` 必须完整到能从空基线生成首版 `specs/spec.md` 与 `specs/design.md`。若仓库证据显示这可能是既有组件，先询问。
+6. **记录结果。** 有活动变更时，只在上述事实可核后更新 `change.json.gates.baselinePreflight`。不能读取或写入必需工件时保持阻塞，不在聊天里宣称通过。
+
+canonical 文档的 `baseline-ready` 不是文件存在的同义词。它表示 provenance 完整、影响契约或架构边界的 unknown 已关闭、独立 reviewer 已通过且人已最终确认。
+
+## 唯一目录契约
 
 ```text
-需求/任务到达 ──→ [0] 确认运行模式（见下）
-    |
-    v
-[1] devflow-specify     写 spec.md + plan.md 骨架 + 初始化 traceability.md
-    |
-[R1] devflow-review     独立评审规格 → 记录到 reviews/ ──[人工确认]──
-    v
-[2] devflow-design      影响组件边界时先修订 component-design-draft.md；
-    |                   写 design.md：职责、接口契约、错误模型、测试设计
-[R2] devflow-review     独立评审设计 → 记录到 reviews/ ──[人工确认]──
-    v
-[3] devflow-tdd         细化 plan.md 任务计划；按测试设计逐用例
-    |                   RED→GREEN→REFACTOR；默认逐任务派发 implementer
-    |                   subagent；plan.md 记进度与证据行；叠加
-    |                   devflow-clean-code 与适用语言/领域规范技能
-[R3] devflow-review     独立评审测试与代码 → 记录到 reviews/ ──[人工确认]──
-    |                   ├─ 需修改：回 devflow-tdd 定向返工，回填 Resolution 后复审
-    |                   └─ 重新设计：回 devflow-design / devflow-specify 修正上游工件
-    v                   （同一 R 节点最多自动返工复审 3 轮，仍不通过则升级人裁决）
-[4] devflow-ship        DoD 核验 + 追溯终验 + promotion 长期资产 + closeout
-    |                   ── 人确认关闭 ──
-    v
-完成
+<component-root>/
+└── specs/
+    ├── spec.md
+    ├── design.md
+    ├── changes/
+    │   └── ARXXX-<topic>/
+    │       ├── change.json
+    │       ├── srs.md
+    │       ├── delta-spec.md
+    │       ├── delta-design.md
+    │       ├── tasks.md
+    │       ├── traceability.md
+    │       ├── reviews/
+    │       └── closeout.md
+    └── archive/
+        └── YYYY-MM-DD-ARXXX-<topic>/
 ```
 
-**评审是必经节点，不是可选预审**：每个阶段产物完成后必须经 `devflow-review` 独立评审并把记录写入 `reviews/`，评审通过（且按运行模式获得人工确认）之前不进入下一阶段。跳过任何一个 R 节点直接进入下一阶段，都是流程违规。
+目录和文件名不可裁剪。低风险变更可以缩短内容，但仍要保留结构化身份、delta、证据、评审、同步和关闭门禁。完整字段、状态枚举和归档不变量见 [交付结构契约](references/delivery-contract.md)。
 
-### 轻量状态机
+## `change.json` 是恢复入口
 
-DevFlow 不维护独立路由器或额外状态文件；`plan.md` 的门禁表、任务状态、`reviews/` 记录就是可恢复状态。恢复或续作时按下面语义解释门禁：
+`change.json` 是以下状态的唯一结构化来源：
+
+- 变更身份与组件身份；
+- `componentMode`、不可变的 `baseRevision` 与运行模式；
+- 风险 profile、选择理由和附加证据要求；
+- artifact graph：路径、状态与依赖；
+- baseline preflight、R1、R2、R3、canonical sync、closeout 等门禁；
+- 活动或已归档状态及归档目标。
+
+使用 [有效 JSON 模板](references/change-template.json) 创建文件，并在开始工作前替换所有模板值。字段语义以 [交付结构契约](references/delivery-contract.md) 为准。
+
+硬规则：
+
+1. `componentMode` 与 `baseRevision` 必填。`baseRevision` 是变更开始时目标组件所在仓库的不可变版本标识；同步 canonical 前用它识别并行变化，不能为了消除冲突而改写。
+2. 恢复时先读 `change.json`，再核对其声明的工件和评审记录。聊天记忆不参与状态裁决。
+3. 磁盘与 manifest 冲突时阻塞、展示差异并修正真正错误的一方；不得静默选择更方便的状态。
+4. `tasks.md` 只包含实现任务、依赖、RED/GREEN/REFACTOR 进度与证据。不得在其中复制身份、profile、artifact 状态、阶段门禁或归档状态。
+5. `reviews/` 保存评审事实和 findings resolution；它不能替代 `change.json` 的 gate 状态。只有评审记录存在且 findings 闭环后，才更新对应 gate。
+6. 不能唯一确定下一步时询问，不通过猜测修改 manifest。
+
+## 风险 profile
+
+创建变更时，根据范围、接口、数据、并发、安全、部署和可逆性选择 profile，并把证据化理由写入 `change.json.profile`。参考 [风险 profiles](references/risk-profiles.md)。
+
+profile 只增加审查深度、领域 reviewer 和证据，不得删除：
+
+- baseline preflight；
+- `srs.md`、两份 delta、`tasks.md`、`traceability.md`；
+- R1、R2、R3 独立评审；
+- canonical sync diff 与独立复核；
+- 人工确认、DoD 和硬归档门禁。
+
+profile 无法可靠选择且选择会改变所需 reviewer 或证据时，列出触发信号并请人确认。
+
+## 生命周期
+
+```text
+baseline preflight
+  → devflow-specify: srs.md + delta-spec.md + traceability.md
+  → R1 独立规格评审
+  → devflow-design: delta-design.md
+  → R2 独立设计评审
+  → devflow-tdd: tasks.md + RED/GREEN/REFACTOR 证据
+  → R3 独立测试与代码评审
+  → canonical sync: 智能合并两份 delta
+  → 独立 sync reviewer
+  → 人确认 canonical diff
+  → closeout.md + 完整归档
+```
+
+### 阶段边界
+
+- `srs.md`：本 AR 的来源、目标、范围、非范围和增量需求。
+- `delta-spec.md`：相对 `specs/spec.md` 的规格操作；`new` 的首次变更以空基线解释。
+- `delta-design.md`：相对 `specs/design.md` 的设计操作；由已确认的 delta spec 驱动。
+- delta spec 使用规格稳定 ID；delta design 使用组件模板章节路径、功能编号、接口/软件
+  单元实体键和 base 摘要。两者都使用稳定 operation ID 与 `ADDED`、`MODIFIED`、
+  `REMOVED`、`RENAMED`，并声明前置语义和结果，禁止用整篇替换掩盖删除。
+- `traceability.md`：需求条目 → Spec Section → Design Section/Case → Task → Code/Test → Evidence。
+- `tasks.md`：仅任务和实现证据。
+- `reviews/`：R1、R2、R3、复审与 canonical sync 复核记录。
+- `closeout.md`：DoD、同步摘要、遗留债务、人工确认和最终归档路径。
+
+### Gate 语义
+
+`change.json.gates.*.status` 只使用：
 
 | 状态 | 含义 | 下一步 |
 |---|---|---|
-| `pending` | 该阶段产物已就绪但尚未独立评审 | 去 `devflow-review` 执行对应 R 门禁 |
-| `passed` | 评审 verdict 已通过；attended 下还要看人工确认列 | 确认列为 yes / N/A 时进入下一阶段；为 no 时呈人确认 |
-| `rework` | 评审已打回，仍有未闭环 findings | 先回作者阶段定向返工，回填 Resolution 后再复审 |
+| `pending` | 前置条件未齐或尚未评审 | 完成声明的前置工件或发起对应评审 |
+| `blocked` | 缺事实、工具能力、基线或人工决策 | 解决明确 blocker；不得越过 |
+| `rework` | reviewer 已给出未闭环 findings | 回责任阶段修复并写 Resolution，再复审 |
+| `passed` | 必需记录与确认均满足 | 进入依赖该 gate 的下一节点 |
 
-R1 `rework` 默认回 `devflow-specify`；R2 `rework` 默认回 `devflow-design`；R3 `rework` 默认回 `devflow-tdd`。只有评审明确指出规格漏洞、设计方向错误、工件间漂移需要改上游时，才回更上游阶段。`pending` 和 `rework` 不能混用：`pending` 是去评审，`rework` 是先修再评审。
+`attended` 在 reviewer 通过后停下让人确认；`unattended` 可连续执行到必须由人决定的点。两种模式都保留独立评审、记录、critical blocker、canonical diff 人工确认和归档确认。运行模式只记录在 `change.json`。
 
-### Todo 投影规则
+### 回溯
 
-当需要生成 todo / 计划 / 执行队列时，把上面的生命周期按节点原样投影：阶段节点、R 门禁节点、ship 节点都是一级待办。`devflow-specify` 完成只表示 spec/traceability/plan 骨架就绪，下一条待办必须是 R1 `devflow-review`；`devflow-design` 完成只表示 design 就绪，下一条待办必须是 R2 `devflow-review`。`devflow-tdd` 内部的多个任务不是多个人工确认节点：任务 `DONE` 后只要 plan.md 能唯一选择下一任务，就继续执行。R3 打回时，下一条待办必须是 `devflow-tdd` 定向返工与回填 Resolution，随后才是 `devflow-review` 复审；不得把 `rework` 当成“立刻再评审”。`attended` 的人工确认附着在对应 R 节点 verdict 之后，不替代独立评审，也不发生在评审之前；`unattended` 只移除人工停顿，不移除任何 R 节点。
+- R1 rework 回 `devflow-specify`。
+- R2 rework 回 `devflow-design`；若根因是规格缺口，先回规格并重开受影响 gate。
+- R3 rework 回 `devflow-tdd`；若代码暴露规格或设计错误，先修正 delta 并重开受影响 gate。
+- reviewer 不在评审上下文中替作者修改产物。作者修复后逐条回填 Resolution，再由独立上下文复审。
+- 同一 gate 自动返工三轮仍未通过，停止并把剩余 findings、证据和需要的专家决策交给人。
 
-### 运行模式（工作流启动时确认一次）
+## Canonical sync 与归档
 
-启动工作流时**先问用户一次**：「评审通过后是否需要停下呈人确认，还是连续执行到必须人工决策的点？」并把答案记入 plan.md 头部：
+主控 Agent 在 R1、R2、R3、追溯和 DoD 闭环后：
 
-| 模式 | 行为 |
+1. 读取 `change.json.baseRevision`、`srs.md`、两份 delta、两份 canonical 文档和 base revision 之后的 Git diff。
+2. 按规格稳定 ID、组件设计章节/实体键和操作类型智能合并；保留 delta 未涉及内容。
+3. 遇到目标语义不唯一、canonical 已并行变化或操作会误删未涉及语义时，阻塞并询问，不覆盖。
+4. 有正文变化的 canonical 先置 draft 并重置 review/confirmation metadata；N/A 未修改文档不重写 metadata。
+5. 只展示 `specs/spec.md` 与 `specs/design.md` 的候选 diff。
+6. 派发独立 reviewer 检查 delta 完整吸收、既有语义保留、冲突和 spec-design 一致性；记录写入 `reviews/`。
+7. reviewer 通过后向人展示 canonical diff；只有人确认后才把实际修改文档及其 artifact 恢复为 baseline-ready、把 sync gate 标为 `passed`。
+8. 写实并重读 `closeout.md`，把 closeout artifact/gate 更新为 complete/passed；失败则 blocked。
+9. 确认归档目标不存在、全部任务完成、findings 闭环且所有硬门禁通过后，将整个 AR 目录原样移动到 `specs/archive/YYYY-MM-DD-ARXXX-<topic>/`。
+10. 更新归档后目录内的 `change.json.archive`，展示完整 Git diff，再进入常规 CI。
+
+不得警告后继续、跳过 sync、带未完成任务归档，或用破坏性 Git 操作掩盖失败。运行环境不能实际编辑或移动文件时，归档保持阻塞。
+
+## 恢复路由
+
+每次续作先执行 preflight，再按 `change.json` 与实物核对结果选择唯一下一步：
+
+| 首个未通过条件 | 路由 |
 |---|---|
-| `attended`（默认） | R 节点通过后停下，把评审记录与 verdict 呈给人；TDD 任务之间不因 attended 停顿；可由 AI 修复的 findings 仍先自动返工复审，不把修文、补测试、改代码的细节抛给人决策 |
-| `unattended` | R 节点后不停顿连续执行，便于长时间运行；遇到缺业务事实、规格/设计不可决策、专家裁决、3 轮仍不通过时才停下 |
+| `componentMode` 或目标组件不明确 | 询问用户 |
+| `existing` baseline 不合格 | `devflow-init` |
+| SRS 或 delta spec 未就绪，或 R1 rework | `devflow-specify` |
+| R1 待评审 | `devflow-review` R1 |
+| delta design 未就绪，或 R2 rework | `devflow-design` |
+| R2 待评审 | `devflow-review` R2 |
+| 实现任务未完成，或 R3 rework | `devflow-tdd` |
+| R3 待评审 | `devflow-review` R3 |
+| canonical sync 未通过 | `devflow-ship` 的同步与复核步骤 |
+| 仅 closeout 或 archive 未完成 | `devflow-ship` |
 
-**`unattended` 只移除人工停顿，不移除任何质量动作**：独立评审照做、评审记录照写、critical findings 照样阻塞（返工修复并复审，而不是带病推进）、DoD 照核验。所有评审记录留存在 `reviews/`，供人事后统一审计。用户未明确回答时按 `attended` 执行；模式记录后，恢复执行的会话沿用 plan.md 中的模式，不重新猜测。无论哪种模式，TDD 任务完成后都按 plan.md 自动续跑到下一个唯一可执行任务；只有 `devflow-specify` / `devflow-design` 中无法由 AI 决定的业务规则、验收阈值、架构边界、专家取舍，TDD 任务队列无法唯一判定，以及自动返工达到 3 轮上限，才需要向人提问。
-
-旁路：**缺陷修复**走 `devflow-fix`（复现 → 根因 → 最小修复），其中修复实现仍回到 TDD（先写复现缺陷的失败测试），修复后的测试与代码同样经 R3 评审，收尾同样经 `devflow-ship`。
-
-阶段允许回溯：写测试时发现规格漏洞就回去补规格；实现时发现设计错误就回去改设计。回溯时更新对应工件并让受影响的评审重新进行，不要让代码与工件漂移。
-
-### 何时可以裁剪
-
-- **微小修改**（几行、无接口变化、风险低）：spec 可压缩成 plan.md 里的一段验收标准，design 可省略（R1/R2 随之合并入 R3），但 TDD、R3 评审与 clean code 不裁剪。
-- **纯重构**（行为不变）：不需要 spec/design，但必须有覆盖现有行为的测试先行，且代码评审（R3）照做。
-- 拿不准时不裁剪。裁剪的是**文档量**，永远不是**质量门槛**（测试先行、证据行、独立评审与记录、人工确认（attended 模式）、DoD 核验、整洁标准）。微小修改的 DoD 裁剪规则见 `devflow-ship` 的 Definition of Done。
-
-## 工件约定
-
-### 路径解析纪律
-
-DevFlow 工件路径一律相对于**目标组件仓库根目录**解析，而不是相对于当前会话所在目录或 DevFlow skills 仓库。开始、恢复、评审、实现、收尾前都先确定组件根：
-
-1. 用户显式给出组件目录时，以该目录为组件根；
-2. 否则读取当前仓库根的 `AGENTS.md` / 团队约定，若声明目标组件根或路径覆盖则遵循；
-3. 仍无法确定时，使用当前工作目录所在的组件仓库根；如果当前目录不是目标组件仓库，先停下询问。
-
-默认 `features/` 与 `docs/` 都是组件根下的相对路径：`<component-root>/features/...`、`<component-root>/docs/...`。组件仓库根 `AGENTS.md` 可以覆盖这些相对路径与模板约定；覆盖后所有阶段必须使用覆盖路径，不再回退到默认根目录路径。产出前先在回复或 plan.md 头部写明解析出的组件根与工件根，避免把工件误建到上级仓库根。
-
-每个工作项一个目录（`AR<id>`/`DTS<id>`/`CHANGE<id>` 或团队等价编号）：
-
-```text
-features/<id>-<slug>/
-  spec.md                     # 规格（devflow-specify 产出）
-  traceability.md             # 追溯矩阵：spec-design-code 一致性约束（specify 初始化，逐阶段补列）
-  component-design-draft.md   # 组件级设计修订（影响组件边界时，devflow-design 产出）
-  design.md                   # 工作项级设计（devflow-design 产出）
-  plan.md                     # 执行计划：运行模式、阶段门禁状态、任务拆解与证据行；
-                              #   中断恢复的单一入口（specify 建骨架，tdd 细化并维护）
-  reviews/                    # 评审记录：每轮一份，findings + resolution 闭环（devflow-review 产出）
-  closeout.md                 # 收尾记录（devflow-ship 产出）
-```
-
-长期资产在组件根下 `docs/`（`component-design.md`、`ar-specs/`、`ar-designs/`，或团队覆盖路径），由 `devflow-ship` 在收尾时从过程工件 promotion，平时各阶段只读。
-
-恢复进度时**先读 `plan.md`**（运行模式 + 阶段门禁状态 + 当前任务），再按工件状态校验，不依赖聊天记忆：
-
-| 磁盘状态 | 下一步 |
-|---|---|
-| 目录不存在 / spec.md 缺失 | `devflow-specify`（启动时确认运行模式） |
-| R1 为 `rework`，或 spec 评审有未闭环 critical/important findings | `devflow-specify` 定向修复；缺业务事实时只问最小问题；修复后回填 Resolution 并复审 |
-| spec.md 存在，R1 为 `pending` 或 reviews/ 无 spec 评审记录 | `devflow-review`（R1） |
-| R1 verdict 通过但 attended 人工确认列为 no | 呈人确认 R1 评审记录；同意后再进入 `devflow-design` |
-| R1 已通过且确认完成，design.md 缺失（含组件边界受影响但组件设计未修订） | `devflow-design` |
-| R2 为 `rework`，或 design 评审有未闭环 critical/important findings | `devflow-design` 定向修复；需要架构/专家裁决时停下；修复后回填 Resolution 并复审 |
-| design.md 存在，R2 为 `pending` 或 reviews/ 无 design 评审记录 | `devflow-review`（R2） |
-| R2 verdict 通过但 attended 人工确认列为 no | 呈人确认 R2 评审记录；同意后再进入 `devflow-tdd` |
-| R2 已通过且确认完成，plan.md 有未完成任务 | `devflow-tdd`（进入连续任务循环，从 plan.md 第一个唯一可执行的未完成任务继续） |
-| R3 为 `rework`，或测试/代码评审有未闭环 critical/important findings | `devflow-tdd` 定向返工；回填 Resolution 后复审，最多自动循环 3 轮 |
-| 任务全部完成，R3 为 `pending` 或 reviews/ 缺测试/代码评审记录 | `devflow-review`（R3） |
-| R3 verdict 通过但 attended 人工确认列为 no | 呈人确认 R3 评审记录；同意后再进入 `devflow-ship` |
-| 评审 verdict 为 `重新设计` 或 findings 指向规格/设计漂移 | 回 `devflow-design` / `devflow-specify` 修正上游工件，并重新经过受影响的 R 门禁 |
-| 全部门禁通过，closeout.md 缺失 | `devflow-ship` |
-
-工件与聊天记忆冲突时，以工件为准。组件仓库根 `AGENTS.md` 可以覆盖路径与模板约定。
+工件状态冲突、多个节点同时看似可执行或依赖不完整时，不自行挑一个；先报告可核事实与最小澄清问题。
 
 ## 行为准则
 
-适用于所有 DevFlow 技能，不可协商：
-
-1. **不默默补全模糊需求。** 实现任何非平凡内容前显式列出假设，请人确认或写入 spec。最常见的失败是做错假设并在未经检查下继续推进。
-2. **困惑时停下，不猜。** 遇到冲突需求、不一致工件、缺失阈值：指出具体困惑，提出澄清问题或交回对应负责人。
-3. **方案有问题就说。** 不当 yes-machine：直接指出问题、量化缺点、给替代方案；对方知情后仍坚持则执行。
-4. **强制简单。** 完成前自问：能用更少代码吗？抽象配得上它引入的复杂度吗？资深工程师会不会说「为什么不直接……」？
-5. **范围纪律。** 只改任务要求改的。路过的问题登记，不顺手修；不删不理解的代码；不在 spec 外加功能。
-6. **验证，而非声称。** 「看起来对」永远不够。完成的依据是通过的测试、构建输出、评审记录。
-7. **作者不自审，阶段必评审。** 每个阶段产物完成后必须经独立上下文（subagent 或新会话）评审并落盘记录；attended 模式下人工确认后才进入下一阶段，unattended 模式下评审与记录照做、critical 照样阻塞。
+1. 不默默补全业务规则、设计理由、错误语义或验收阈值。
+2. 方案有风险就直接指出证据、影响和替代方案。
+3. 只修改本变更声明的范围；发现旁路问题只记录。
+4. 用测试、构建、diff、评审记录和追溯证明，不用“看起来完成”代替证据。
+5. 作者不自审；独立 reviewer 不替作者修。
+6. 语言规范与领域技能是各阶段的叠加约束，不是额外生命周期节点。触及语言 X 时加载可用的 `<x>-coding-standards`；语境命中领域技能 description 时加载该技能。
 
 ## 技能地图
 
-| 技能 | 一句话 | 何时读 |
-|---|---|---|
-| `devflow-specify` | 把意图写成可测试的规格 | 开始新工作项、规格被评审打回 |
-| `devflow-design` | 做出值得长期持有的软件设计；为第三层奠定结构、契约、错误模型和测试设计 | 规格确认后、设计被打回、实现中发现设计问题 |
-| `devflow-tdd` | 用 RED→GREEN→REFACTOR 证明功能正确 | 设计确认后的全部实现期 |
-| `devflow-clean-code` | 把代码写整洁：覆盖简洁、可靠、可维护、可测试、高性能的内在质量 | 写代码、REFACTOR 与代码评审时必读 |
-| `devflow-review` | 独立评审规格/设计/测试/代码 | 每个阶段产物完成后 |
-| `devflow-ship` | DoD 核验、promotion 长期资产、closeout | 评审闭环后的收尾 |
-| `devflow-fix` | 复现 → 根因 → 最小修复 | 缺陷、回归、线上问题 |
-| `<language>-coding-standards` 扩展 | 语言级规则与惯用法 | 工作项含对应语言的代码；按命名约定发现 |
-| 领域开发扩展 | 领域特有质量约束、设计红线与验证证据 | 工作项命中某领域 skill 的 description 触发条件 |
-| `coding-standards-creator` | 把团队编码规范转化为新的语言规范技能 | 需要新建或修订某语言的 coding-standards 时 |
+| 技能 | 用途 |
+|---|---|
+| `devflow-init` | 为缺失或未就绪 canonical baseline 的既有组件做只读逆向初始化 |
+| `devflow-specify` | 写本 AR 的 SRS 与 delta spec |
+| `devflow-design` | 写本 AR 的 delta design 与测试设计 |
+| `devflow-tdd` | 按任务执行 RED→GREEN→REFACTOR 并留证据 |
+| `devflow-clean-code` | 约束实现与重构质量 |
+| `devflow-review` | 独立执行 R1、R2、R3 与 sync 复核 |
+| `devflow-ship` | canonical sync、DoD、closeout 与归档 |
+| `devflow-fix` | 缺陷复现、根因与最小修复；仍受同一 preflight 和门禁约束 |
 
-语言与领域技能是**叠加约束**：它们在规格、设计、实现、评审各阶段被对应技能消费，自身不是流程阶段。
+## 直接参考
 
-**语言规范的发现按命名约定**：工作项触及语言 X 的代码 → 叠加 `<x>-coding-standards`（存在时）。新增语言技能只要遵循同一份结构契约（`coding-standards-creator/references/coding-standards-skill-contract.md`），无需改动任何阶段技能即可接入；技能尚不存在而团队有该语言规范时，用 `coding-standards-creator` 生成。
-
-**领域技能的发现按 description**：工作项的业务/技术语境命中某个领域开发技能的 frontmatter description 时，加载该领域技能并把它加入 Quality Stack。核心 DevFlow 不维护领域技能枚举；新增领域技能时，应把触发词、适用边界、易混淆场景写进该技能自己的 description，让入口、实现、评审和收尾都通过“适用领域技能”这一通用类别消费它。
+- [交付结构契约](references/delivery-contract.md)
+- [change.json 有效模板](references/change-template.json)
+- [风险 profiles](references/risk-profiles.md)

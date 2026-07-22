@@ -1,27 +1,36 @@
 # traceability.md 模板
 
-使用说明：`devflow-specify` 初始化组件根下 `features/<id>-<slug>/traceability.md`（或团队覆盖后的等价路径），此后各阶段**只追加自己负责的列**：specify 填需求与上游锚点，design 填设计章节与测试设计用例，tdd 填任务/代码/测试/证据。它是 spec-design-code 一致性的显式约束：任何一列对不上，说明工件之间已经漂移。`devflow-review` 抽查它，`devflow-ship` 关闭前终验它。
+使用说明：写入
+`<component-root>/specs/changes/ARXXX-<topic>/traceability.md`。列名和顺序固定，
+不得把 operation type、owner 或门禁状态插入主链。需要补充的信息放在“备注”。
+各阶段只填写自己负责的锚点，不删除已有锚点。
 
 ```markdown
-# <Work Item ID> 追溯矩阵
+# ARXXX Traceability
 
-- 工作项类型: AR / DTS / CHANGE
-- 工作项 ID:
-- 所属组件:
+- Change: `ARXXX-<topic>`
+- Component:
+- Last verified against: `change.json@<revision-or-digest>`
 
-## 追溯行
+## Traceability Chain
 
-| 需求条目 | Change Type | 上游锚点 | 组件设计章节 | 设计章节 | 测试设计用例 | 任务（可多个） | 代码文件/函数 | 测试代码 | 验证证据 |
-|---|---|---|---|---|---|---|---|---|---|
-| FR-001 | modify | SR-1234 §3.2 | §6.2.1 | §4.2 / §7.1 | TC-001, TC-002 | T1 | src/mode.c:mode_set | test/mode_test.cpp | plan.md#T1 |
-|  |  |  |  |  |  |  |  |  |  |
+| 需求条目 | Spec Section | Design Section/Case | Task | Code/Test | Evidence |
+|---|---|---|---|---|---|
+| `srs.md#FR-001` | `SPEC-FR-001` (`delta-spec.md#DS-001`) | `TBD(design)` | `TBD(tdd)` | `TBD(tdd)` | `TBD(tdd)` |
 
-## 备注
+## Notes
 
-- 每条核心 FR/NFR/IFR/可测 CON 一行；ASM/EXC 不作为实现追溯行，放入备注或范围说明。CON 无法运行时验证时，验证证据列写构建/静态分析/配置检查证据，不能空着。
-- 某列不适用时标 `N/A` 并简述理由（如纯内部修改无组件设计章节）。
-- `modify` / `remove` 行必须能从基线追溯到回归 / 删除语义的验证证据。
-- 测试设计用例必须能在 design.md 测试设计章节找到对应条目，形成双向锚点。
-- 一条需求拆到多个任务时，任务列写多个 plan 锚点（如 `plan.md#T1, plan.md#T3`），不要只填最后一个任务。
-- 跨组件工作项在每个受影响组件仓库内分别维护，本文件只覆盖当前组件视角。
+- 每条 `FR-xxx`、`IFR-xxx`、`NFR-xxx` 和可测 `CON-xxx` 至少一行。
+- 一条需求条目对应多个 Design Case 或 Task 时可拆成多行，但前两列必须重复，
+  使每条路径都能独立冷读；不得在单元格写“同上”。
+- specify 填前两列；design 填 `Design Section/Case`；tdd 填后三列。
+- `Spec Section` 使用目标 canonical stable ID，并在括号中保留 delta operation 锚点。
+- `Design Section/Case` 同时给出组件设计章节路径/功能编号/接口或软件单元实体键、
+  `DEC-xxx` 和 `TC-xxx`。
+- `Code/Test` 同时列实现与测试的精确路径/符号；只有其中一项适用时写带理由的 `N/A`。
+- `Evidence` 指向 `tasks.md` 中实际 RED/GREEN/REFACTOR 输出或其他可复核工件，
+  不能只写“测试通过”。
+- `TBD(stage)` 只允许在负责阶段尚未开始时存在。对应阶段完成后仍有 TBD，
+  该阶段门禁不得进入评审。
+- `ASM-xxx`、`EXC-xxx` 不进入主链；必要说明放在本节。
 ```

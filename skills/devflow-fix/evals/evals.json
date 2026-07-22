@@ -2,30 +2,75 @@
   "skill": "devflow-fix",
   "scenarios": [
     {
+      "id": "defect-uses-standard-change-root",
+      "prompt": "A DTS-884 crash arrives. The agent wants to create a standalone DTS folder and a special defect document.",
+      "expected": [
+        "requires or resolves an ARXXX-topic change identity without inventing one",
+        "uses specs/changes/ARXXX-topic with change.json, srs.md, deltas, tasks.md, traceability, and reviews",
+        "records DTS-884 as a source anchor in SRS rather than a parallel lifecycle"
+      ]
+    },
+    {
       "id": "no-blind-patch",
-      "prompt": "A crash report arrives without reproduction steps; the agent wants to patch the suspected line immediately.",
+      "prompt": "A crash report has no reproducible steps; the suspected null check looks obvious, so the agent proposes patching it.",
       "expected": [
-        "requires reproduction (or documented exclusion of hypotheses) before any fix",
-        "refuses to ship a blind patch for an unreproduced issue",
-        "records environment and evidence"
+        "requires stable reproduction or documented hypothesis exclusion before editing implementation",
+        "records environment, expected versus actual behavior, and evidence in srs.md",
+        "does not ship a guessed patch"
       ]
     },
     {
-      "id": "root-cause-three-levels",
-      "prompt": "The agent writes 'root cause: null pointer dereference' and proceeds to fix.",
+      "id": "root-cause-needs-evidence-chain",
+      "prompt": "The analysis says only 'root cause: out-of-bounds access' and moves directly to implementation.",
       "expected": [
-        "rejects a where-it-happened answer as the root cause",
-        "requires direct cause, root cause (why it was written wrong / why tests missed it), and blast radius",
-        "records excluded hypotheses with evidence"
+        "rejects the failure location as an incomplete root cause",
+        "requires direct cause, root cause, blast radius, why tests missed it, and excluded hypotheses",
+        "links each causal step to evidence"
       ]
     },
     {
-      "id": "fix-is-tdd",
-      "prompt": "The agent fixes the bug and verifies manually, adding no test.",
+      "id": "behavior-unchanged-delta-na",
+      "prompt": "The implementation violates an existing timeout guarantee, while specs/spec.md and specs/design.md already describe the correct behavior and structure.",
       "expected": [
-        "requires a failing reproduction test before the fix (RED)",
-        "answers 'why did existing tests miss this' and closes the gap",
-        "keeps the fix within the declared minimal boundary; behavior changes route to specify"
+        "allows both deltas to state N/A only with canonical stable IDs and evidence that behavior and design remain unchanged",
+        "requires a failing reproduction test and tasks.md RED/GREEN/REFACTOR evidence",
+        "still requires recorded R1/R2 validation, R3, canonical sync review, and ship"
+      ]
+    },
+    {
+      "id": "design-changes-behavior-does-not",
+      "prompt": "The public behavior remains correct, but the root cause is a flawed ownership rule in canonical design.",
+      "expected": [
+        "allows delta-spec N/A with evidence",
+        "requires a real delta-design operation instead of declaring all deltas N/A",
+        "routes through design review before TDD implementation"
+      ]
+    },
+    {
+      "id": "contract-change-is-not-restoration",
+      "prompt": "The proposed fix changes the error code and timeout threshold because that is easier than meeting the existing canonical contract.",
+      "expected": [
+        "rejects N/A and treats the proposal as an observable behavior change",
+        "requires delta-spec and delta-design operations with compatibility analysis",
+        "does not weaken tests or canonical expectations to make the patch pass"
+      ]
+    },
+    {
+      "id": "r1-r2-before-defect-build",
+      "prompt": "The defect is reproducible and both deltas are justified N/A. The controller wants to write the failing test immediately, then review the N/A decisions after implementation.",
+      "expected": [
+        "allows read-only reproduction evidence to refine the SRS but does not start TDD writes",
+        "requires recorded R1 and R2 validation of the delta/N/A decisions first",
+        "starts build only after the SRS, deltaSpec, and deltaDesign artifacts are accepted"
+      ]
+    },
+    {
+      "id": "fix-is-tdd-and-minimal",
+      "prompt": "The bug is fixed manually; the diff also formats neighboring files and no automated reproduction test was added.",
+      "expected": [
+        "requires a reproduction test that fails before the fix and passes afterward",
+        "removes unrelated formatting and keeps the declared minimal file boundary",
+        "records real evidence in tasks.md and closes traceability"
       ]
     }
   ]

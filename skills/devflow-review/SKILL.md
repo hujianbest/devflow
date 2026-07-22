@@ -1,121 +1,173 @@
 ---
 name: devflow-review
-description: 在规格、设计、测试或代码需要独立评审时使用：阶段产物完成后的把关、人要求 review、或对既有产物做专项检查时。评审必须由作者之外的独立上下文执行，产出 findings 与 verdict。
+description: 在 DevFlow 的 R1、R2、R3 或 canonical sync 需要独立评审时使用；也用于复审已有 findings。评审者始终只读，以新上下文核对变更工件、canonical 基线、测试和代码，返回可落盘的 findings、Resolution 槽位与 verdict。
 ---
 
 # DevFlow 评审
 
-## 总览
+## 不变量
 
-评审是 human-on-the-loop 的支点：AI 生产，独立评审暴露问题，人做最终把关。它是工作流的**必经节点**：specify、design、tdd 每个阶段产物完成后都经评审（R1/R2/R3，见 `using-devflow` 工作流），通过前不进入下一阶段。三条不变量：
+评审是阶段门禁，不是作者自检。始终遵守：
 
-1. **作者不自审。** 写产物的会话/agent 不能给自己出 verdict。评审由独立 subagent 或新会话执行——它没有作者的写作记忆，只能依赖产物本身，这正是"可冷读"的检验方式。
-2. **评审者不动手修。** 评审产出 findings 和 verdict，修改由作者根据 findings 执行。裁判不下场。
-3. **没有记录的评审等于没有评审。** 每轮评审必须在 `reviews/` 落盘一份记录；findings 的修复过程必须回写同一份记录（resolution 闭环）。口头说"评审过了"而 `reviews/` 里没有对应文件与闭环记录，按未评审处理。
+1. **作者不自审**：派发独立 `devflow-reviewer`，只提供磁盘工件、代码或 Git diff、rubric，不提供作者聊天历史。
+2. **reviewer 只读**：不得编辑工件、代码、评审文件或 `change.json`。reviewer 返回完整记录，由主控 Agent 原样写入当前 change 的 `reviews/`。
+3. **记录与状态分离**：findings、Resolution 和 verdict 保存在 `reviews/`；门禁状态只更新到 `change.json`；任务进度和 TDD 证据只保存在 `tasks.md`。
+4. **没有落盘记录就没有评审**：聊天里的“通过”不能推进门禁。
+5. **问题不能凭空消失**：返工后逐条回填原记录的 Resolution，复审再对照实际 diff 核验。
 
-评审不是流程仪式。一次好的评审 = 带着「这东西哪里会骗我」的怀疑去读：规格会在哪里被两种人读出两种意思？测试会放过哪种错误实现？代码哪里在对读者撒谎？
+## 路径与输入预检
 
-## 工作流
+先确定组件根和唯一活动 change：
 
-### 1. 确定目标与 rubric
+```text
+<component-root>/specs/
+  spec.md
+  design.md
+  changes/ARXXX-<topic>/
+    change.json
+    srs.md
+    delta-spec.md
+    delta-design.md
+    tasks.md
+    traceability.md
+    reviews/
+```
 
-| 评审目标 | Rubric | 关注核心 |
-|---|---|---|
-| spec.md | `references/spec-review-rubric.md` | 可测试性、变更风险显式、无走私的实现细节 |
-| design.md（及 component-design-draft.md，如适用） | `references/design-review-rubric.md` | 契约完整、复杂度有理由、测试设计覆盖、追溯一致 |
-| 测试 | `references/test-review-rubric.md` | 断言强度、覆盖映射、mock 边界、RED 证据 |
-| 代码 | `references/code-review-rubric.md` + `devflow-clean-code` | 正确性、与设计一致、整洁标准、语言/领域规则 |
+先读 `change.json`，从中取得 change 身份、`componentMode`、base revision、当前门禁和 artifact 路径。目录名、manifest 身份或磁盘工件不一致时阻塞并让主控 Agent 澄清，不自行选择另一个 change。
 
-### 2. 以独立上下文执行
+`componentMode: existing` 要求 `specs/spec.md` 与 `specs/design.md` 均为可用基线；缺失或仍为 draft 时阻塞并转 `devflow-init`。`componentMode: new` 允许 canonical 尚不存在，此时 R1/R2 要验证 delta 能从空基线生成首版 canonical。模式缺失、冲突或无法判断时向人追问。
 
-派发 `devflow-reviewer` subagent（agent name: `devflow-reviewer`，角色定义见 `agents/devflow-reviewer.md`；OpenCode 通过 `task` 工具传入 agent name，task prompt 为评审输入）执行评审，输入只给：被评审产物、它的上游工件（评审设计给 spec，评审代码给 design + diff）、对应 rubric、代码评审时的 `devflow-clean-code`、适用的 coding-standards / 领域技能。**不给**作者的推理过程和聊天历史。
+## 四类门禁
 
-### 3. 产出 findings 与 verdict
+| 门禁 | 被评审对象 | 必需上游 | Rubric | 核心问题 |
+|---|---|---|---|---|
+| R1 | `srs.md` + `delta-spec.md` | `change.json`、`specs/spec.md` 或空基线 | `references/spec-review-rubric.md` | 本次需求是否可测试，规格增量是否相对 canonical 正确且完整 |
+| R2 | `delta-design.md` | 已通过 R1 的 SRS/规格增量、`specs/spec.md`、`specs/design.md` 或空基线 | `references/design-review-rubric.md` | 设计增量是否满足规格且不与 canonical 冲突 |
+| R3 | 测试 + 实现 diff | SRS、两份 delta、canonical、`tasks.md`、`traceability.md` | test + code rubrics | 测试是否证明增量行为，实现是否符合批准的规格与设计 |
+| canonical sync | canonical 前后版本及仅 canonical 的 Git diff | SRS、两份 delta、base revision、R1-R3 记录 | `references/sync-review-rubric.md` | delta 是否完整吸收、既有语义是否保留、是否冲突、spec-design 是否一致 |
 
-每条 finding：`位置 + 问题 + 为什么是问题 + 严重级 + 分类 + 建议返工阶段`。
+R1/R2 遇到有理由的 `N/A` delta 仍要评审其“不需要 canonical 变化”的结论；`N/A` 不是跳过记录的理由。canonical sync 即使 Git diff 为空也必须复核 N/A 理由和 canonical 未被误改。
 
-| 严重级 | 含义 | 例 |
-|---|---|---|
-| `critical` | 不修不能继续：会导致做错事、留 bug 或不可审 | 验收标准不可测试；测试断言放过 mutation；错误路径资源泄漏 |
-| `important` | 完成前应修 | 边界用例缺失；函数职责混杂；命名误导 |
-| `minor` | 建议改进 | 措辞、风格微调 |
+## 执行协议
 
-| 分类 | 含义 | 处理 |
-|---|---|---|
-| `LLM-FIXABLE` | 信息已足够，作者可按 finding 定向修复 | 不问人，回对应作者阶段修复并复审 |
-| `USER-INPUT` | 缺业务事实、优先级、验收阈值、外部来源确认 | 只问 finding 指向的最小问题，拿到回答后再修 |
-| `TEAM-EXPERT` | 需要模块架构师、资深工程师或团队规则裁决 | 把问题封装成 1-2 个具体决策点上抛，不在评审或作者阶段擅自决定 |
+### 1. 组装只读 Review Pack
 
-verdict 三选一：
+主控 Agent 为 reviewer 提供：
 
-- `通过`：无 critical/important，或仅剩已被人接受的 minor
-- `需修改`：findings 可定向修复，修复后复审
-- `重新设计`：问题出在上游（规格漏洞、设计方向错误），打回对应阶段
+- 门禁名称、change 根、`change.json` 中相关 base revision；
+- 表中要求的完整工件，canonical 同时提供当前内容和可取得的 base 内容；
+- R3 的实现/测试 diff、实际测试输出、主控 Agent 在隔离副本中产生的 mutation 证据和 `tasks.md` 证据；
+- sync 的同步前 canonical、同步后 canonical、`git diff -- specs/spec.md specs/design.md` 输出；
+- 对应 rubric；代码评审另加 `devflow-clean-code` 与适用语言/领域规则；
+- 复审时提供上一轮记录及实际返工 diff。
 
-建议返工阶段按问题本质填写：
+不要只给摘要。缺少关键输入时 reviewer 返回 `BLOCKED` 和缺项，不猜测 verdict。
+
+### 2. 派发独立 reviewer
+
+使用 `devflow-reviewer` 的全新上下文。主控 Agent 不得把自己的判断包装成 reviewer 结论，也不得让 reviewer 直接修正文档或代码。
+
+### 3. 产出可执行 finding
+
+每条 finding 必须包含：
+
+`位置 + 问题 + 为什么有风险 + 严重级 + 分类 + 建议返工阶段 + 可执行方向 + Resolution 槽位`
+
+严重级：
+
+| 严重级 | 含义 |
+|---|---|
+| `critical` | 会做错行为、破坏既有语义、产生不可验证结果或使归档不可审 |
+| `important` | 交付前必须修复，但不构成立即错误 |
+| `minor` | 不阻塞的局部改进 |
+
+分类：
+
+| 分类 | 处理 |
+|---|---|
+| `LLM-FIXABLE` | 信息充分，回作者阶段定向修复 |
+| `USER-INPUT` | 缺业务事实、阈值、优先级或来源确认，只问最小问题 |
+| `TEAM-EXPERT` | 需要架构、领域或团队规则裁决，封装成具体决策点 |
+
+verdict 只能是：
+
+- `通过`：无未闭环 critical/important；
+- `需修改`：方向明确，可定向返工；
+- `重新设计`：问题来自上游意图、边界或设计方向；
+- `阻塞`：关键输入缺失、模式/基线冲突，无法形成可信评审。
+
+### 4. 落盘与门禁更新
+
+主控 Agent 将 reviewer 返回原样写到：
+
+```text
+specs/changes/ARXXX-<topic>/reviews/r1-review-YYYY-MM-DD.md
+specs/changes/ARXXX-<topic>/reviews/r2-review-YYYY-MM-DD.md
+specs/changes/ARXXX-<topic>/reviews/r3-review-YYYY-MM-DD.md
+specs/changes/ARXXX-<topic>/reviews/canonical-sync-review-YYYY-MM-DD.md
+```
+
+同门禁复审在日期后加 `-r2`、`-r3`。随后主控 Agent 才更新 `change.json` 的记录路径与状态：失败为 `blocked/rework`；reviewer 通过后，attended 的 R1-R3 仍等人工确认，canonical sync 在任何运行模式下都等最终 canonical diff 人工确认，满足后才写 `passed`。
+
+gate 通过时同步更新工件状态：
+
+- R1 passed：`artifacts.srs.status` 与 `artifacts.deltaSpec.status` 写为 `accepted`；
+- R2 passed：`artifacts.deltaDesign.status` 写为 `accepted`；
+- R3 passed：确认 TDD 已把 `artifacts.tasks` 与 `artifacts.traceability` 写为 `complete`，评审者不替 TDD 伪造；
+- canonical sync 经 reviewer 与人确认 passed：实际修改的 canonical artifact 写为 `baseline-ready`，未修改的 N/A canonical 保持原状态。
+
+工件只有在对应最终记录存在、critical/important Resolution 闭环且所需人工确认完成后才能 accepted/passed。评审文件、artifact 状态与 gate 不一致时按未闭环处理。
+
+### 5. Findings 闭环
+
+作者侧按 finding 本质返工：
 
 | 问题本质 | 返工阶段 |
 |---|---|
-| 规格不可测试、缺业务事实、Change Type / Existing Behavior 错 | `devflow-specify` |
-| 设计契约、错误模型、测试设计、组件边界错误 | `devflow-design` |
-| R3 中的测试断言、RED 证据、实现 bug、代码整洁问题 | `devflow-tdd` |
+| SRS、验收、规格 delta 或业务基线错误 | `devflow-specify` |
+| 设计 delta、接口契约、错误模型或测试设计错误 | `devflow-design` |
+| 测试、证据、实现或整洁代码问题 | `devflow-tdd` |
+| canonical 合并结果与明确 delta 不一致 | `devflow-ship` 重新同步 |
 
-R3 的 `需修改` 默认回 `devflow-tdd`：测试弱就先补强或重写会失败的测试，代码问题就用 RED/GREEN/REFACTOR 或纯 REFACTOR 修复。只有 finding 明确证明规格或设计工件本身错误，才回 `devflow-specify` / `devflow-design`。
+每条 critical/important 的 Resolution 必须是以下之一：
 
-### 4. 落盘评审记录（必做，与评审同时发生）
+- 修复摘要 + 代码/工件锚点 + 验证证据；
+- 人明确接受不修 + 理由 + 确认人；
+- 登记为债务 + 可定位去向（仅在不影响当前语义和门禁时允许）。
 
-记录写入同一组件根/工件根下 `features/<id>/reviews/<目标>-review-<日期>.md`（或团队覆盖路径），同一目标的复审追加轮次后缀（`-r2`、`-r3`）。每份记录包含：评审对象（含版本/commit）、findings 表（**含 Resolution 列**、分类、建议返工阶段）、verdict、抽查记录（如做了 mutation 自检，写明改了哪行、哪个测试红了）。格式见 `agents/devflow-reviewer.md` 的输出模板。
+Resolution 有空项时不得复审为通过。复审必须核对 Resolution 与实际变更，并在新记录中引用上一轮。R3 的普通问题先回 `devflow-tdd`；canonical sync 问题由主控 Agent 修正 delta 或合并结果后重新派发 reviewer。
 
-### 5. Findings 闭环（作者侧职责）
+同一门禁最多自动返工复审 3 轮。第 3 轮仍有 critical/important，停止自动循环，向人呈现剩余问题、既有证据与最小决策点。
 
-verdict 为 `需修改`/`重新设计` 时，作者按 findings 返工，并**逐条回写**原评审记录的 Resolution 列：
+### 6. 人工确认
 
-- 修复了：怎么改的 + commit 锚点
-- 人接受不修：理由 + 谁接受的
-- 升级为债务：登记去向（plan.md 债务节 / 新工作项）
+- `attended`：R1/R2/R3 通过后呈人确认，再由主控 Agent 更新 `change.json`；canonical sync 通过后仍不能归档，最终 canonical diff 必须单独获得人工确认。
+- `unattended`：R1/R2/R3 不停顿，但独立评审、记录、critical 阻塞不减少；最终 canonical diff 与归档始终需要人工确认。
 
-返工顺序：
+## Reviewer 抽查重点
 
-1. 先收集 `USER-INPUT` 与 `TEAM-EXPERT` 的答案；同一决策面合并成最少问题，不把整份评审记录丢给人。
-2. 再修 `LLM-FIXABLE` findings；只改 finding 指向的行、章节、测试或代码，不借机重写无关内容。
-3. 回填每条 finding 的 Resolution 后发起复审（新轮次记录）。
-
-全部 critical/important 有 resolution 后才能复审。**Resolution 列有空着的 critical/important，门禁不算通过**——`devflow-ship` 的 DoD 会核验这一点。复审必须核对上一轮 Resolution 与实际 diff 一致；问题不能在新记录里“凭空消失”。
-
-同一 R 节点最多自动返工复审 3 轮。第 3 轮仍有未闭环 critical/important，或持续出现新的同级问题，停止自动循环，把剩余问题、已修证据和需要人裁决的具体问题呈给人。
-
-### 6. 人工确认（按运行模式）
-
-- `attended`（默认）：把评审记录与 verdict 呈给人，**人同意后才进入下一阶段**；人的否决/接受意见记入评审文件。
-- `unattended`：不停顿，但本技能的其余动作一项不少——独立评审、落盘记录、critical 阻塞返工与复审照常执行；人工确认列记 `N/A(unattended)`，供人事后统一审计 `reviews/`。
-
-在 plan.md 门禁表更新本轮门禁状态与记录路径：`pending` 表示等待评审，`passed` 表示评审通过，`rework` 表示必须先回作者阶段修复。R3 评审为 `rework` 时，下一步是 `devflow-tdd`，不是再次直接评审，也不是进入 `devflow-ship`。
-
-## 评审者纪律
-
-- 按 rubric 逐项过，不凭整体印象打分；rubric 之外发现的问题照样列出
-- 每条 critical/important finding 给出**具体位置**和**可执行的修复方向**，不写"质量有待提高"
-- 抽查重于通读：测试评审必做 2-3 个关键用例的 mutation 自检；代码评审优先读错误路径与资源路径——那是问题密度最高的地方
-- 不确定的判断标注"待人裁决"，不假装确定
-- 发现产物间漂移（代码与 design 不符、测试与 spec 不符）→ 一律 critical：要么改产物，要么改工件，不允许默默不一致
+- R1：逐个 delta 操作核对 target ID 和 canonical 旧语义；确认未把修改伪装成新增。
+- R2：逐条核对 SRS → delta spec → delta design，确认测试 Case ID 双向覆盖。
+- R3：为 2-3 个关键测试定义 mutation 并核验主控 Agent 提供的隔离执行证据；reviewer 不编辑工作树。优先读错误路径、资源路径和行为回归。
+- sync：逐条建立 delta operation → canonical diff 映射，再反查每段 canonical diff 都有 delta 来源；对未涉及章节做语义保留抽查。
 
 ## 风险信号
 
-- 作者会话自己宣布"评审通过"
-- 声称评审完成但 `reviews/` 没有对应记录文件（= 未评审）
-- findings 修复后没有回写 Resolution，复审记录里问题"凭空消失"
-- findings 全是 minor 措辞建议，对错误路径、断言强度、契约完整性只字不提（评审走过场）
-- verdict 为"需修改"但 findings 没有一条具体到位置
-- 评审者直接动手改了代码
-- attended 模式下未经人确认就进入下一阶段；或以"unattended"为由省掉评审/记录本身
-- 同一产物三轮评审仍在打回 → 停止循环，升级人裁决方向问题
-- R3 `需修改` 后停在评审上下文里自修，或直接复审而没有作者阶段的 Resolution 与证据
+- 作者会话自己给 verdict；
+- reviewer 获得编辑或 shell 权限；
+- 只评 delta，不读 canonical 基线；
+- 评审记录未落盘却更新 `change.json` 为 passed；
+- critical/important 的 Resolution 为空或与实际 diff 不符；
+- 把 base revision 后的并行变化当作 reviewer 可自行解释的内容；
+- canonical sync 只检查“新增内容出现了”，不检查误删、冲突和 spec-design 一致性；
+- 以 delta 为 `N/A`、diff 为空或运行模式为 `unattended` 为由跳过评审。
 
 ## 支撑参考
 
 | 文件 | 用途 |
 |---|---|
-| `references/spec-review-rubric.md` | 规格评审检查项 |
-| `references/design-review-rubric.md` | 设计评审检查项 |
-| `references/test-review-rubric.md` | 测试评审检查项 |
-| `references/code-review-rubric.md` | 代码评审检查项 |
+| `references/spec-review-rubric.md` | R1：SRS 与规格增量 |
+| `references/design-review-rubric.md` | R2：设计增量 |
+| `references/test-review-rubric.md` | R3：测试与证据 |
+| `references/code-review-rubric.md` | R3：实现与代码质量 |
+| `references/sync-review-rubric.md` | canonical sync 语义复核 |

@@ -1,41 +1,68 @@
 # Definition of Done
 
-> 配套 `devflow-ship`。工作项关闭前的完成定义，人在最后把关时的固定核验清单。每项核验写结论：满足 / 缺口 + 返工去向。
+> 配套 `devflow-ship`。每项必须写 `passed + 证据`；`failed`、`pending`、无证据的 `N/A` 或 accepted warning 都阻塞 closeout 与 archive。
 
-## 第一层 SDD：意图正确
+## A. 身份、模式与工件
 
-1. `spec.md` 存在且 R1 门禁通过；本轮实现范围与 spec 范围一致（没有 spec 外的功能混进来）
-2. spec 评审记录存在（`reviews/`），critical/important findings 的 **Resolution 列已逐条回填**（修复+commit / 人接受+理由 / 债务+去向）
-3. blocking Open Questions 全部闭合（答案已写回 spec），没有被悄悄遗忘的待决项
+1. `change.json` 的 ID/topic 与 `specs/changes/ARXXX-<topic>/` 一致，`componentMode`、profile、artifact 图、base revision、gates 和 archive 元数据结构完整。
+2. `componentMode: existing` 时，`specs/spec.md` 与 `specs/design.md` 均存在且为 `baseline-ready`；`componentMode: new` 时，两份 delta 能从空基线生成完整首版 canonical。
+3. `srs.md`、`delta-spec.md`、`delta-design.md`、`tasks.md`、`traceability.md`、`reviews/` 均存在且相互引用一致。
+4. 生命周期状态只在 `change.json`，任务状态和 TDD 证据只在 `tasks.md`；两者没有重复或冲突的状态来源。
 
-## 第二层 TDD：功能正确
+## B. SDD 与独立评审
 
-4. `plan.md` 全部任务为 done；每个任务带 RED/GREEN 证据行（命令、关键输出、commit 锚点），证据是本轮真实产生的；门禁状态表与 reviews/ 实际记录一致
-5. spec 每条验收标准（含 NFR 的 Response Measure）有对应**通过**的测试；`modify` 条目有回归测试、`remove` 条目有删除后语义测试的通过记录
-6. 完整测试套件在最终代码上全绿；构建无新增警告
-7. R1/R2/R3 全部评审记录存在于 `reviews/`，最终 verdict 为通过，findings 全部有 Resolution；attended 模式下各门禁均有人工确认记录，unattended 模式下已把 `reviews/` 全量呈给人做事后审计
+5. SRS 的范围/非范围、FR/IFR Acceptance、NFR 完整 QAS、CON Verification、错误路径和 Source 已闭合，无 blocking unknown。
+6. R1 最终记录存在且通过；`delta-spec.md` 相对 canonical spec/空基线正确，critical/important findings 的 Resolution 全部有效。
+7. R2 最终记录存在且通过；`delta-design.md` 相对 canonical design/spec 或空基线正确，测试设计覆盖全部增量需求，Resolution 全部有效。
+8. 缺陷若声明 delta N/A，R1/R2 已独立验证 canonical 的预期行为和设计确实无需变化；不能用 N/A 省略记录。
 
-## 第三层 Clean Code：内在质量
+## C. TDD、实现与 R3
 
-8. 实现与 `design.md`（及组件设计，如适用）一致；所有偏离已回写工件并重新确认
-9. 适用约束审计逐项标注状态（`clean` / `documented-debt` / `critical-open` / `N/A`+理由），并给出证据引用（任务 REFACTOR 证据、implementer `clean_code_check`、R3 finding/resolution、静态分析输出、review 摘要、commit、或债务登记）。只写 `clean` 没有证据，按缺口处理：
+9. `tasks.md` 全部任务为 done；每个任务有真实 RED/GREEN/REFACTOR 命令、关键输出和代码锚点。
+10. 所有 Case ID 均有测试；每条 FR/IFR Acceptance、NFR 完整 QAS 和 CON Verification 都有通过的测试或静态/构建证据；修改/删除有回归或删除后语义测试。
+11. 缺陷复现测试在修复前因目标缺陷失败、修复后通过；delta N/A 不降低此要求。
+12. 完整测试套件在最终代码上全绿，构建无新增警告，静态分析新增问题已修复或有精确理由。
+13. R3 测试+代码最终记录存在且通过；mutation 抽查、错误/资源路径和范围 diff 已检查，所有 critical/important Resolution 闭合。
+14. 实现只覆盖 SRS/delta 范围，并与批准的 delta-design 及 canonical 基线一致；任何偏离已回上游修订并重新评审。
 
-| 约束项 | 来源 |
+## D. Clean Code 与约束证据
+
+15. `devflow-clean-code`、每种适用语言的 `<language>-coding-standards` 和命中的领域技能均有证据状态：
+
+| 状态 | 要求 |
 |---|---|
-| 整洁代码 | `devflow-clean-code` |
-| 语言编码规范 | 适用的 `<language>-coding-standards`，工作项涉及的每种语言一行 |
-| 领域约束 | 命中 description 的领域开发技能各一行；未命中的相邻领域不用列，除非评审要求说明 N/A |
+| `clean` | 引用任务 REFACTOR、R3、静态分析或代码锚点 |
+| `documented-debt` | 不影响本次语义，且有可定位 issue/change 去向 |
+| `N/A` | 说明为何不适用 |
+| `critical-open` | 直接阻塞 |
 
-   任一 `critical-open` → 阻塞关闭；`documented-debt` 必须有可定位的登记与去向；`N/A` 必须说明为什么该约束不适用
-10. 静态分析新增项已修复或带理由抑制；无未解释的 critical 项
+只写 `clean` 而无证据按缺口处理。
 
-## 一致性与追溯
+## E. 追溯与 Resolution
 
-11. `traceability.md` 链路闭合：每条需求 → 设计章节 → 测试用例 → 代码/测试文件 → 证据；`N/A` 有理由
-12. 触及组件边界的工作项：组件设计修订已经模块架构师确认，promotion 已规划
+16. `traceability.md` 中每条核心需求均以需求条目 → Spec Section → Design Section/Case → Task → Code/Test → Evidence 全链路闭合。
+17. 任一 N/A 都有具体理由和 canonical/证据锚点；无理由空列或为赶进度补 N/A 均为 critical。
+18. `reviews/` 每轮记录可追溯；上一轮 critical/important 不会在复审中无 Resolution 消失；最终记录与 `change.json` gate 状态一致。
+19. 债务均不改变本次已批准语义，并有 owner 与可定位去向；“后续优化”不是去向。
 
-## 裁剪说明
+## F. Canonical Sync
 
-- 微小修改（按 `using-devflow` 裁剪规则省略了 spec/design）：第 1-3、8 项替换为「plan.md 中的验收标准已全部有通过测试」；其余各项**不降低**。
-- 缺陷工作项（DTS）：第 1-3 项替换为「fix.md 的复现/根因/修复边界完整，复现测试先失败后通过」；其余各项不降低。
-- 紧急不等于绕过：任何情况下证据要求（4-7、10）与一致性要求（8、11）不可裁剪。
+20. 主控 Agent 已读取 SRS、两份 delta、同步前 canonical 和 base revision；base 后并行变化、工作树既有改动及语义歧义均已由人明确处理。
+21. delta 的每个 `ADDED / MODIFIED / REMOVED / RENAMED` 均映射到 canonical Git diff；所有 canonical diff hunk 都有 delta 来源。
+22. 未涉及的规格稳定 ID、组件设计章节/实体行、约束和契约保持语义不变；删除仅来自明确 `REMOVED`。
+23. `specs/spec.md` 与 `specs/design.md` 无冲突、重复、占位符或悬空引用，且 spec-design 一致。
+24. canonical-only Git diff 已展示；独立只读 canonical sync review 记录存在于同一 `reviews/`，最终 verdict 通过，Resolution 全部闭合。
+25. 实际修改或新建的 canonical 在同步时先置 draft；其 `baselineRevision` 等于不可变的 `change.json.baseRevision`，`baselineChange` 指向当前 change；sync review 与人工确认后，`independentReview`、`humanConfirmation`、provenance/revision log 和 `baselineStatus: baseline-ready` 与真实记录一致。N/A 未修改文档未被无故重写 metadata。
+26. 两份 delta 均 N/A 或 canonical diff 为空时，sync review 仍验证了 N/A、无误改和 spec-design 一致性。
+
+## G. 人工确认、Closeout 与 Archive
+
+27. 无论 attended/unattended，人已明确确认最终 canonical diff、DoD 结果和 archive 目标；确认人、时间和范围可核。
+28. `closeout.md` 按模板记录 DoD、四个最终 review、sync 摘要、验证、债务和确认；移动后 archive 内副本的归档结果已回填。
+29. `specs/archive/YYYY-MM-DD-ARXXX-<topic>/` 在移动前不存在；目标命名与日期/change 身份一致。
+30. 整个活动 change 目录使用标准 move/rename 原样移动；源目录不保留副本，archive 内工件齐全，canonical 留在 `specs/` 根；移动后归档内 manifest 的 `archive.status`、确认人和时间已写实。
+31. 移动后完整 Git diff 已展示，正常 CI/验证已进入执行；失败现场未使用破坏性 reset 清理。
+
+## 缺陷裁剪边界
+
+行为与设计基线不变时，两份 delta 可明确 N/A；可裁剪的是 delta 内容量，不是 SRS、复现测试、tasks 证据、R1/R2 对 N/A 的验证、R3、traceability、canonical sync review、DoD 或最终人工确认。

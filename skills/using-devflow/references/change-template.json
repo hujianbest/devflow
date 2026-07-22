@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "1.0",
+  "changeId": "AR000",
+  "topic": "replace-me",
+  "component": "replace-me",
+  "componentRoot": ".",
+  "componentMode": "existing",
+  "baseRevision": "REPLACE_WITH_IMMUTABLE_REVISION",
+  "executionMode": "attended",
+  "profile": {
+    "name": "standard",
+    "risk": "low",
+    "reasons": [
+      "REPLACE_WITH_EVIDENCE_BASED_REASON"
+    ],
+    "requiredEvidence": [
+      "unit-tests",
+      "integration-tests"
+    ],
+    "requiredReviewers": [
+      "independent-generalist"
+    ]
+  },
+  "artifacts": {
+    "canonicalSpec": {
+      "scope": "component",
+      "path": "specs/spec.md",
+      "status": "unchecked",
+      "dependsOn": []
+    },
+    "canonicalDesign": {
+      "scope": "component",
+      "path": "specs/design.md",
+      "status": "unchecked",
+      "dependsOn": [
+        "canonicalSpec"
+      ]
+    },
+    "srs": {
+      "scope": "change",
+      "path": "srs.md",
+      "status": "not-started",
+      "dependsOn": [
+        "canonicalSpec",
+        "canonicalDesign"
+      ]
+    },
+    "deltaSpec": {
+      "scope": "change",
+      "path": "delta-spec.md",
+      "status": "not-started",
+      "dependsOn": [
+        "srs"
+      ]
+    },
+    "deltaDesign": {
+      "scope": "change",
+      "path": "delta-design.md",
+      "status": "not-started",
+      "dependsOn": [
+        "deltaSpec"
+      ]
+    },
+    "tasks": {
+      "scope": "change",
+      "path": "tasks.md",
+      "status": "not-started",
+      "dependsOn": [
+        "deltaDesign"
+      ]
+    },
+    "traceability": {
+      "scope": "change",
+      "path": "traceability.md",
+      "status": "not-started",
+      "dependsOn": [
+        "srs",
+        "deltaSpec",
+        "deltaDesign"
+      ]
+    },
+    "reviews": {
+      "scope": "change",
+      "path": "reviews/",
+      "status": "not-started",
+      "dependsOn": []
+    },
+    "closeout": {
+      "scope": "change",
+      "path": "closeout.md",
+      "status": "not-started",
+      "dependsOn": [
+        "tasks",
+        "traceability",
+        "reviews"
+      ]
+    }
+  },
+  "gates": {
+    "baselinePreflight": {
+      "status": "pending",
+      "evidence": [],
+      "reviewRecords": [],
+      "humanConfirmation": "not-required"
+    },
+    "r1": {
+      "status": "pending",
+      "evidence": [],
+      "reviewRecords": [],
+      "humanConfirmation": "pending"
+    },
+    "r2": {
+      "status": "pending",
+      "evidence": [],
+      "reviewRecords": [],
+      "humanConfirmation": "pending"
+    },
+    "r3": {
+      "status": "pending",
+      "evidence": [],
+      "reviewRecords": [],
+      "humanConfirmation": "pending"
+    },
+    "canonicalSync": {
+      "status": "pending",
+      "evidence": [],
+      "reviewRecords": [],
+      "humanConfirmation": "pending"
+    },
+    "closeout": {
+      "status": "pending",
+      "evidence": [],
+      "reviewRecords": [],
+      "humanConfirmation": "pending"
+    }
+  },
+  "archive": {
+    "status": "active",
+    "target": null,
+    "confirmedBy": null,
+    "archivedAt": null
+  }
+}

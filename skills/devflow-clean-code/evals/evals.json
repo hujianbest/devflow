@@ -129,7 +129,7 @@
     },
     {
       "id": "ship-dod-clean-code-audit-missing",
-      "prompt": "All tests pass and R3 review says passed, but plan.md has no clean-code constraint audit and the implementer never recorded a concrete clean_code_check for the final task.",
+      "prompt": "All tests pass and R3 review says passed, but tasks.md has no clean-code constraint audit and the implementer never recorded a concrete clean_code_check for the final task.",
       "expected": [
         "does not allow devflow-ship to close on tests and verdict alone",
         "requires clean-code audit evidence or a documented-debt/critical-open/N/A status with reasons",

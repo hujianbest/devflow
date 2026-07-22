@@ -34,6 +34,7 @@ DevFlow provides slash-style phase entries as a thin platform adapter. The autho
 | What you're doing | Command | Skill | Key principle |
 |-------------------|---------|-------|---------------|
 | Enter or resume DevFlow | `/devflow` | `using-devflow` | Recover from artifacts |
+| Initialize an existing component | `/devflow-init` | `devflow-init` | Clarify rather than fabricate |
 | Define what to build | `/devflow-specify` | `devflow-specify` | Spec before code |
 | Plan how to build it | `/devflow-design` | `devflow-design` | Design before implementation |
 | Build with tests | `/devflow-build` | `devflow-tdd` | RED -> GREEN -> REFACTOR |
@@ -53,9 +54,11 @@ Install DevFlow into OpenCode's user-level skills directory so every project can
 # Clone DevFlow into the OpenCode user config directory
 git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
 
-# Install all DevFlow skills into OpenCode's global skills directory
-mkdir -p ~/.config/opencode/skills
+# Install all DevFlow skills, agents, and commands
+mkdir -p ~/.config/opencode/skills ~/.config/opencode/agents ~/.config/opencode/commands
 cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
+cp ~/.config/opencode/devflow/agents/*.md ~/.config/opencode/agents/
+cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 ```
 
 Try it:
@@ -66,7 +69,7 @@ I want to add a retry mechanism to the notifications component.
 Clarify the requirements first; do not jump straight to code.
 ```
 
-Project overrides: create an `AGENTS.md` with a `## Project overrides` section at the target repository root to override artifact paths and templates. Without it, built-in defaults apply.
+Project overrides may add constraints and template requirements through `AGENTS.md`, but the artifact roots stay fixed under the component's `specs/` directory.
 
 ---
 
@@ -76,27 +79,28 @@ Project overrides: create an `AGENTS.md` with a `## Project overrides` section a
 You:    Use DevFlow from this repo. Add rate limiting to the notifications API.
         Do not jump straight to code.
 
-DF:     Starts with `using-devflow`, confirms the run mode, resolves the target
-        component root, then routes into `devflow-specify` because no approved
-        spec exists.
+DF:     Starts with `using-devflow`, resolves the component root, and checks
+        change.json. An existing component without baseline-ready spec.md and
+        design.md is routed to `devflow-init`; a new component can continue.
 
 You:    Continue with DevFlow once the spec is ready.
 
-DF:     Runs an independent `devflow-review` gate. If the spec passes and the
-        run mode allows progress, `devflow-design` writes component/work-item
-        design, interface contracts, error model, and test design.
+DF:     `devflow-specify` writes srs.md and delta-spec.md. After R1,
+        `devflow-design` writes delta-design.md with contracts, error model,
+        decisions, risks, and test design.
 
 You:    Build the approved design.
 
-DF:     `devflow-tdd` refines `plan.md`, implements one task at a time with
+DF:     `devflow-tdd` refines `tasks.md`, implements one task at a time with
         RED -> GREEN -> REFACTOR evidence, applies `devflow-clean-code` plus
         language/domain standards, and updates evidence lines on disk.
 
 You:    Verify and close the work.
 
 DF:     `devflow-review` checks tests and code from an independent context.
-        `devflow-ship` runs the Definition of Done, promotes durable docs, and
-        writes `closeout.md` for human final confirmation.
+        `devflow-ship` runs the DoD, intelligently syncs both deltas into
+        specs/spec.md and specs/design.md, reviews the canonical diff, then
+        moves the complete AR from specs/changes/ to specs/archive/.
 ```
 
 At workflow start DevFlow records one run mode: `attended` by default, where review verdicts pause for human confirmation, or `unattended`, where long sessions keep moving while independent reviews, records, critical-finding stops, and later human audit still remain mandatory.
@@ -105,18 +109,19 @@ At workflow start DevFlow records one run mode: `attended` by default, where rev
 
 ## All Skills
 
-DevFlow currently ships 17 bundled skills: 7 phase skills, several quality overlays, and 1 tooling skill. Quality overlays are discovered by convention and by their descriptions, so new overlays can be added without changing the phase skills.
+DevFlow currently ships 18 bundled skills: 8 workflow/entry skills, several quality overlays, and 1 tooling skill. Quality overlays are discovered by convention and by their descriptions, so new overlays can be added without changing the phase skills.
 
 ### Phase Skills
 
 | Skill | What it does | Use when |
 |-------|--------------|----------|
 | [using-devflow](skills/using-devflow/SKILL.md) | Entry, workflow map, artifact conventions, recovery rules, behavior rules | Starting, resuming, or asking what DevFlow should do next |
-| [devflow-specify](skills/devflow-specify/SKILL.md) | Turns intent into a testable spec with EARS, BDD acceptance, NFR QAS, and traceability | A feature/change needs requirements before design or code |
-| [devflow-design](skills/devflow-design/SKILL.md) | Produces component/work-item design, boundaries, contracts, error model, tradeoffs, and test design | An approved spec needs technical design |
+| [devflow-init](skills/devflow-init/SKILL.md) | Reverse-engineers baseline spec/design from an existing component without inventing unknown intent | An existing component lacks baseline-ready canonical documents |
+| [devflow-specify](skills/devflow-specify/SKILL.md) | Produces a testable SRS and delta spec with EARS, BDD acceptance, NFR QAS, and traceability | A feature/change needs requirements before design or code |
+| [devflow-design](skills/devflow-design/SKILL.md) | Produces a delta design with boundaries, contracts, error model, tradeoffs, and test design | An approved delta spec needs technical design |
 | [devflow-tdd](skills/devflow-tdd/SKILL.md) | Implements with RED -> GREEN -> REFACTOR, task evidence, assertion quality, and mock-boundary discipline | Design is approved and implementation starts |
 | [devflow-review](skills/devflow-review/SKILL.md) | Independently reviews specs, designs, tests, or code with findings and verdicts | A phase artifact is ready to pass a gate |
-| [devflow-ship](skills/devflow-ship/SKILL.md) | Checks Definition of Done, promotes long-term assets, and writes closeout | Reviews are closed and engineering work is ready to finish |
+| [devflow-ship](skills/devflow-ship/SKILL.md) | Checks DoD, intelligently syncs canonical docs, writes closeout, and archives the change | Reviews are closed and engineering work is ready to finish |
 | [devflow-fix](skills/devflow-fix/SKILL.md) | Handles defects through reproduction, root cause, minimal fix boundary, and TDD repair | A regression, bug, hotfix, or shipped-behavior defect appears |
 
 ### Quality Overlays
@@ -149,7 +154,7 @@ DevFlow is not a prompt collection. It is a small, evidence-based workflow for g
 | Internal quality | Clean Code overlays | Keeps code readable, simple, maintainable, and reviewable |
 | Review | Independent gates | Keeps authorship and judgment separate |
 | Recovery | Artifact-first state | Lets another agent or human resume from files, not chat memory |
-| Closeout | DoD and promotion | Records what changed, what passed, and which docs became durable assets |
+| Closeout | DoD, canonical sync, archive | Updates the current truth and preserves the complete change history |
 
 DevFlow's collaboration stance is **human-on-the-loop**: the AI does the work, and humans review the key artifacts and decisions. See [docs/devflow-philosophy.md](docs/devflow-philosophy.md) and [docs/devflow-core-architecture.md](docs/devflow-core-architecture.md).
 
@@ -174,7 +179,7 @@ Key design choices:
 
 - **Minimal process.** DevFlow keeps the phase artifacts, human checkpoints, TDD discipline, and independent reviews that produce quality.
 - **Maximal substance.** The body of each skill is engineering judgment: rules, examples, failure modes, checklists, and review rubrics.
-- **Evidence over memory.** Progress is recovered from `plan.md`, `reviews/`, `traceability.md`, and the artifact files themselves.
+- **Evidence over memory.** Phase state comes from `change.json`; task progress comes from `tasks.md`; reviews and traceability verify both.
 - **Authors do not self-review.** The agent that creates an artifact does not approve it.
 
 ---
@@ -183,13 +188,14 @@ Key design choices:
 
 ```text
 devflow/
-├── skills/                         # 17 core skills
+├── skills/                         # 18 bundled skills
 │   ├── using-devflow/              # Entry and recovery rules
-│   ├── devflow-specify/            # Testable specs and traceability
-│   ├── devflow-design/             # Component/work-item design
+│   ├── devflow-init/               # Existing-component baseline initialization
+│   ├── devflow-specify/            # SRS, delta spec, traceability
+│   ├── devflow-design/             # Delta design and test design
 │   ├── devflow-tdd/                # Test-first implementation
 │   ├── devflow-review/             # Independent review gates
-│   ├── devflow-ship/               # DoD, promotion, closeout
+│   ├── devflow-ship/               # DoD, canonical sync, archive
 │   ├── devflow-fix/                # Defect path
 │   ├── devflow-clean-code/         # Language-neutral clean code
 │   ├── *-coding-standards/         # Language overlays, discovered by naming convention
@@ -200,6 +206,7 @@ devflow/
 ├── docs/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md
+│   ├── devflow-delivery-contract-redesign.md
 │   ├── devflow-internal-quality.md
 │   ├── guides/
 │   └── asserts/
@@ -209,7 +216,23 @@ devflow/
 └── README.zh-CN.md
 ```
 
-Per-work-item artifacts live in the target component repository, normally under `features/<id>-<slug>/`: `spec.md`, `traceability.md`, `design.md`, `plan.md`, `reviews/`, and `closeout.md` or `fix.md`. Long-term assets such as `docs/component-design.md`, `docs/ar-specs/`, and `docs/ar-designs/` are promoted during `devflow-ship`.
+Component truth and change history live together under the target component's `specs/` directory:
+
+```text
+specs/
+├── spec.md
+├── design.md
+├── changes/ARXXX-<topic>/
+│   ├── change.json
+│   ├── srs.md
+│   ├── delta-spec.md
+│   ├── delta-design.md
+│   ├── tasks.md
+│   ├── traceability.md
+│   ├── reviews/
+│   └── closeout.md
+└── archive/YYYY-MM-DD-ARXXX-<topic>/
+```
 
 ---
 

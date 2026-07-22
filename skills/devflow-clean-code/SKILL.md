@@ -33,7 +33,7 @@ Robert C. Martin 的 Clean Code 在 DevFlow 中落成一个操作准则：**通�
 
 | 模式 | 入口 | 动作 | 产出 |
 |---|---|---|---|
-| 实现期 REFACTOR | `devflow-tdd` GREEN 后 | 在全绿基础上检查本任务触碰范围，消除本任务引入的异味；每个小重构后跑测试 | plan.md 的 REFACTOR 证据行 + implementer `clean_code_check` |
+| 实现期 REFACTOR | `devflow-tdd` GREEN 后 | 在全绿基础上检查本任务触碰范围，消除本任务引入的异味；每个小重构后跑测试 | tasks.md 的 REFACTOR 证据行 + implementer `clean_code_check` |
 | R3 返工 | `devflow-review` 代码评审打回 | 把 finding 映射到 `devflow-tdd` 返工队列；纯整洁问题走绿灯重构，测试弱/行为错回 RED/GREEN | Resolution 回填 + 复审 |
 | 纯重构 | 用户明确要求行为不变清理 | 先建立全绿基线；源代码重构与测试代码重构分批进行，任一批次都保持行为不变 | 小批次提交 + 全量验证 |
 | 评审消费 | R3 code review 或专项 clean-code review | 评审者按本文与 `references/quality-dimensions.md` 判定 finding 严重级；评审者不动手修 | `reviews/` finding + verdict |
@@ -292,7 +292,7 @@ const stats = await fetchStats();
 ## 范围与提交纪律
 
 - **一个 diff 一个目的**：行为变更、重构、格式化分开提交。评审者无法在 500 行混合 diff 里分辨哪个变化是有意的。
-- 只改任务要求改的。路过发现的问题：登记（issue / plan.md 债务登记节），不顺手修。
+- 只改任务要求改的。路过发现的问题：登记（issue / tasks.md 债务登记节），不顺手修。
 - **童子军规则的边界**：触碰范围内的小清理（改个错字命名、删几行死代码）值得做且随手做；超出触碰范围、或清理本身值得独立评审 → 登记。
 - 不删不理解的代码、不"顺手统一"无关文件的风格。
 

@@ -66,8 +66,8 @@
 
 ## 评审视角速查（供 devflow-review 使用）
 
-- 每条验收标准 / 测试设计用例都有对应测试；modify 有回归用例，remove 有删除语义用例
-- 每个 NFR 的 Response Measure 有可量化验证（latency 直方图、size 输出、leak 报告等）
+- 每条 FR/IFR Acceptance、NFR QAS、CON Verification / `TC-xxx` 都有对应测试或明确的静态/构建证据；`MODIFIED` 有保留语义回归用例，`REMOVED` 有删除后语义用例
+- 每个 NFR 验证保留 Stimulus Source、Stimulus、Environment、Response 与 Response Measure 的完整语境，并有量化或可判定结果（latency 直方图、size 输出、leak 报告等）
 - RED 证据存在：测试曾经失败且失败原因正确
 - 抽查 2-3 个关键测试做 mutation 自检
 - 无永远成功的测试（无断言、断言恒真、只靠 printf 人工观察）

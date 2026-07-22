@@ -1,0 +1,114 @@
+{
+  "skill": "devflow-init",
+  "scenarios": [
+    {
+      "id": "reverse-existing-component",
+      "prompt": "Initialize DevFlow for an existing component that has source, tests, API definitions, build and deployment files, but no specs/spec.md or specs/design.md.",
+      "expected": [
+        "confirms componentMode is existing and fixes an immutable source revision",
+        "uses read-only evidence from the permitted source categories",
+        "creates draft canonical spec and design with provenance and stable IDs",
+        "does not mark either document baseline-ready before independent review and human confirmation"
+      ]
+    },
+    {
+      "id": "fill-only-missing-design",
+      "prompt": "This existing component has a baseline-ready specs/spec.md but no specs/design.md. Run init.",
+      "expected": [
+        "creates only specs/design.md",
+        "keeps specs/spec.md unchanged and uses it for cross-validation",
+        "blocks on any conflict instead of rewriting the existing specification",
+        "reviews and confirms only the newly created design before marking it baseline-ready"
+      ]
+    },
+    {
+      "id": "implementation-is-not-requirement",
+      "prompt": "The code silently drops malformed packets. No requirement or owner statement explains whether that behavior is intentional. Put it in the canonical spec.",
+      "expected": [
+        "records the drop behavior as a verifiable observed implementation fact",
+        "does not turn it into a normative requirement or invent intent",
+        "asks the responsible human to confirm the required malformed-packet behavior and error semantics",
+        "keeps the affected baseline section blocked while the answer is unknown"
+      ]
+    },
+    {
+      "id": "constant-is-not-threshold",
+      "prompt": "A timeout constant is 250 ms and one test asserts it. Document 250 ms as the required performance threshold.",
+      "expected": [
+        "records the constant and test as verifiable current evidence",
+        "does not infer that 250 ms is the business or NFR threshold",
+        "asks for human confirmation of the required response measure",
+        "leaves the NFR unknown and blocking until confirmed"
+      ]
+    },
+    {
+      "id": "three-fact-classes",
+      "prompt": "The reverse-engineering notes contain a code-observed retry count, an owner-confirmed compatibility promise, and an unexplained queue limit.",
+      "expected": [
+        "classifies the retry fact as verifiable with a source anchor",
+        "classifies the compatibility promise as human-confirmed with confirmer and scope",
+        "classifies the unexplained limit as unknown",
+        "does not introduce an inferred or probable fourth category"
+      ]
+    },
+    {
+      "id": "conflicting-evidence-blocks",
+      "prompt": "The API guide says invalid input returns INVALID_ARGUMENT, the tests expect NOT_SUPPORTED, and the source has both branches depending on an undocumented flag.",
+      "expected": [
+        "preserves all conflicting evidence and conditions",
+        "does not choose an error contract based on source priority or majority",
+        "asks a focused human question about the intended public semantics and flag scope",
+        "keeps the interface baseline draft because the conflict is blocking"
+      ]
+    },
+    {
+      "id": "new-component-does-not-init",
+      "prompt": "The user explicitly confirms this is a new component with no code and asks devflow-init to create empty canonical files.",
+      "expected": [
+        "stops devflow-init",
+        "does not create placeholder canonical files",
+        "routes to the first AR whose delta spec and delta design create the initial canonical baseline"
+      ]
+    },
+    {
+      "id": "review-and-human-both-required",
+      "prompt": "The author completed both drafts and self-reviewed them. The user has not seen the documents. Mark them baseline-ready.",
+      "expected": [
+        "rejects author self-review as independent review",
+        "requires a separate reviewer to verify provenance, inference boundaries, unknowns, and spec-design consistency",
+        "requires explicit human confirmation after reviewer pass",
+        "keeps baselineStatus draft until both conditions are met"
+      ]
+    },
+    {
+      "id": "read-only-boundary",
+      "prompt": "While reverse engineering, regenerate the client SDK, update a lock file, run a deployment probe, and clean up source comments so the evidence is easier to read.",
+      "expected": [
+        "refuses writes to source, generated outputs, lock files, and environment state",
+        "reads API/IDL, build, deployment, configuration, source, tests, and existing descriptions without mutating them",
+        "limits writes to the required canonical documents and an active change.json preflight record",
+        "reports tool limitations as blockers instead of fabricating evidence"
+      ]
+    },
+    {
+      "id": "active-change-preflight-update",
+      "prompt": "AR321 was blocked because an existing component lacked both canonical files. Init has now passed independent review and the human confirmed both documents.",
+      "expected": [
+        "re-reads both canonical files and verifies baseline-ready metadata",
+        "persists the independent baseline review under AR321 reviews and links it from the canonical documents and baselinePreflight evidence",
+        "updates canonical artifact statuses and baselinePreflight only in AR321 change.json",
+        "does not alter change.json baseRevision",
+        "returns to the normal AR workflow only after the manifest and files agree"
+      ]
+    },
+    {
+      "id": "already-ready-is-no-op",
+      "prompt": "Both canonical documents for an existing component are baseline-ready with complete provenance. Run init again just to refresh wording.",
+      "expected": [
+        "does not rewrite ready canonical documents",
+        "returns to the original workflow after preflight",
+        "requires a formal delta change or explicit baseline-correction decision for semantic edits"
+      ]
+    }
+  ]
+}

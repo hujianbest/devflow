@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### 2.6 — 组件当前真相、Delta 交付与完整归档
+
+#### Changed — 交付件契约（breaking）
+
+- 组件当前规格与设计统一为 `specs/spec.md`、`specs/design.md`；活动 AR 位于 `specs/changes/ARXXX-<topic>/`，完成后整体移动到 `specs/archive/YYYY-MM-DD-ARXXX-<topic>/`。
+- 工作项工件改为 `change.json`、`srs.md`、`delta-spec.md`、`delta-design.md`、`tasks.md`、`traceability.md`、`reviews/`、`closeout.md`。`change.json` 承载阶段门禁，`tasks.md` 只承载任务和 TDD 证据。
+- 移除现行 `features/` 与 `docs/ar-*` promotion 模型，不提供旧布局兼容或自动迁移。
+- 当前组件规格模板命名为 `component-spec-template.md`；组件规格与规格增量模板使用中文自然语言。SRS 将功能性需求（FR/IFR）、非功能性需求（NFR）和可验证约束拆为独立章节。
+- 需求粒度拆分与 NFR QAS 五要素改为 `devflow-specify` / SRS / R1 的内联硬规则，删除两份重复 reference；领域化 NFR 示例不再占用核心规格上下文。
+- SRS 收敛为问题/目标/来源、范围、FR/IFR、NFR QAS、CON、假设和待确认问题；change 身份与模式只在 `change.json`，Impact/目标章节/当前行为/保留语义只在 `delta-spec.md`，作者自检只在 skill/rubric。
+- 组件规格采用 OpenSpec 风格的“目的 + 当前需求 + 场景”结构；规格增量按 ADDED/MODIFIED/REMOVED/RENAMED 需求分区，并保留 DevFlow 的稳定 ID、来源、QAS、局部修改保留条款和缺陷 N/A。
+- `component-design-template.md` 恢复原 component design 第 1–8 章，仅增加 canonical baseline frontmatter 与新路径语义；原第 9 章质量判断迁入 review rubric。`delta-design-template.md` 恢复原 AR design 第 1–6、8 章，将原第 7 章替换为 Delta Design 基线、操作、选择器、保留条款、冲突与同步信息；质量判断同样由 R2 reviewer 承担。
+
+#### Added — `devflow-init`
+
+- 新增既有组件基线初始化 skill 与 `/devflow-init` 命令。既有组件缺少 baseline-ready 的 canonical spec/design 时，所有常规开发入口先阻塞并路由 init。
+- init 从源码、测试、接口、配置和构建资料逆向生成组件基线，坚持“澄清而不臆造”；未知业务意图、阈值和设计理由必须追问或保持显式 unknown。
+- 新增组件不经过 init，首次 delta 在归档时创建首版 canonical 文档。
+
+#### Changed — Agent 驱动同步与归档
+
+- `devflow-ship` 按 OpenSpec OPSX 思路由主控 Agent 理解 delta 并智能编辑 canonical 文档，保留未涉及内容；独立 reviewer 复核 Git diff 后再由人确认。
+- DevFlow 仍保留硬门禁：任务、R1/R2/R3、Resolution、traceability、DoD、canonical sync 复核任一未闭环均阻塞，不允许警告后继续、跳过同步或带未完成任务归档。
+
 ### 2.5 — 对比 minimax-ai/skills 充实前后端领域技能
 
 对标开源 `MiniMax-AI/Skills` 的 `frontend-dev` / `fullstack-dev`（覆盖维度更全、含 references/ 渐进披露），把 DevFlow 原本偏薄的前后端领域技能扩充到能有效指导 AI 前后端开发的程度。仍保留 DevFlow 的差异化形态（规格/设计定→实现红线→证据 + 合理化反驳 + 自检清单，被 `devflow-review` rubric 与 `devflow-ship` DoD 消费），不引入 minimax 的"脚手架式 MANDATORY WORKFLOW"——领域技能是叠加约束而非流程阶段。

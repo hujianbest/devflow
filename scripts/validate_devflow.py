@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 EXPECTED_SKILLS = {
     "using-devflow",
+    "devflow-init",
     "devflow-specify",
     "devflow-design",
     "devflow-tdd",
@@ -28,6 +29,81 @@ EXPECTED_SKILLS = {
     "automotive-development",
     "frontend-development",
     "backend-development",
+}
+
+EXPECTED_COMMANDS = {
+    "devflow.md",
+    "devflow-init.md",
+    "devflow-specify.md",
+    "devflow-design.md",
+    "devflow-build.md",
+    "devflow-review.md",
+    "devflow-ship.md",
+    "devflow-fix.md",
+}
+
+REQUIRED_CONTRACT_TOKENS = {
+    "skills/using-devflow/SKILL.md": (
+        "specs/changes/",
+        "change.json",
+        "componentMode",
+        "devflow-init",
+    ),
+    "skills/devflow-init/SKILL.md": (
+        "澄清而不臆造",
+        "baseline-ready",
+        "specs/spec.md",
+        "specs/design.md",
+    ),
+    "skills/devflow-specify/SKILL.md": ("srs.md", "delta-spec.md", "change.json"),
+    "skills/devflow-specify/references/component-spec-template.md": (
+        "## 1. 目的",
+        "## 2. 需求",
+        "### SPEC-FR-001",
+        "#### 场景",
+        "### SPEC-NFR-001",
+        "#### 质量属性场景",
+        "### SPEC-CON-001",
+        "#### 验证场景",
+        "## 3. 来源追溯",
+        "## 4. 未知项",
+        "## 5. 修订与确认",
+    ),
+    "skills/devflow-specify/references/delta-spec-template.md": (
+        "## 组件目的变更",
+        "## ADDED 需求",
+        "## MODIFIED 需求",
+        "## REMOVED 需求",
+        "## RENAMED 需求",
+        "RENAMED → REMOVED → MODIFIED → ADDED",
+        "同一规格 ID 不得同时出现在互斥分区",
+        "完整需求块",
+        "删除原因",
+        "## 无规格变化",
+    ),
+    "skills/devflow-fix/references/fix-template.md": (
+        "## MODIFIED 需求",
+        "## 无规格变化（仅缺陷恢复适用）",
+        "manifest: change.json",
+    ),
+    "skills/devflow-design/SKILL.md": ("delta-design.md", "specs/design.md"),
+    "skills/devflow-tdd/SKILL.md": ("tasks.md", "change.json"),
+    "skills/devflow-review/SKILL.md": ("reviews/", "canonical"),
+    "skills/devflow-ship/SKILL.md": ("specs/archive/", "closeout.md", "canonical"),
+    "skills/devflow-fix/SKILL.md": ("specs/changes/", "tasks.md"),
+    "INTRODUCTION.md": ("devflow-init", "delta-spec.md", "tasks.md", "canonical sync"),
+    "docs/devflow-core-architecture.md": (
+        "specs/changes/",
+        "change.json",
+        "devflow-init",
+        "Canonical Sync",
+    ),
+    "docs/guides/opencode-setup.md": (
+        "reviews/r1-review-*.md",
+        "reviews/r2-review-*.md",
+        "reviews/r3-review-*.md",
+        "devflow-init",
+    ),
 }
 
 # Language standards follow the `<language>-coding-standards` naming convention and
@@ -65,6 +141,12 @@ LEGACY_MECHANISM_PHRASES = [
     "Implementer Context Pack",
     "canonical node",
     "canonical 节点",
+    "features/",
+    "docs/ar-specs/",
+    "docs/ar-designs/",
+    "component-design-draft.md",
+    "plan.md",
+    "promotion",
 ]
 
 LINK_PATTERN = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
@@ -79,15 +161,21 @@ def iter_markdown_files(root: Path):
 
 
 def iter_active_markdown_files(root: Path):
-    """Active text = skills, commands, agents, READMEs (not docs history / CHANGELOG)."""
+    """Active instructions and user docs, excluding explicit history / changelog."""
     for sub in ("skills", "commands", "agents"):
         base = root / sub
         if base.exists():
             yield from (p for p in base.rglob("*.md"))
-    for name in ("README.md", "README.zh-CN.md"):
+    for name in ("README.md", "README.zh-CN.md", "INTRODUCTION.md"):
         path = root / name
         if path.exists():
             yield path
+    guides = root / "docs" / "guides"
+    if guides.exists():
+        yield from guides.rglob("*.md")
+    core_architecture = root / "docs" / "devflow-core-architecture.md"
+    if core_architecture.exists():
+        yield core_architecture
 
 
 def validate_markdown_links(root: Path = ROOT) -> list[str]:
@@ -171,6 +259,65 @@ def validate_skill_set(root: Path = ROOT) -> list[str]:
     return errors
 
 
+def validate_command_set(root: Path = ROOT) -> list[str]:
+    errors: list[str] = []
+    commands_root = root / "commands"
+    if not commands_root.exists():
+        return [f"{commands_root}: commands directory is missing"]
+
+    present = {p.name for p in commands_root.glob("devflow*.md")}
+    for missing in sorted(EXPECTED_COMMANDS - present):
+        errors.append(f"commands/{missing}: expected command is missing")
+    return errors
+
+
+def validate_delivery_contract(root: Path = ROOT) -> list[str]:
+    errors: list[str] = []
+    for relative_path, tokens in REQUIRED_CONTRACT_TOKENS.items():
+        path = root / relative_path
+        if not path.exists():
+            errors.append(f"{path}: delivery contract file is missing")
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for token in tokens:
+            if token not in text:
+                errors.append(f"{path}: missing delivery contract token {token}")
+    return errors
+
+
+def validate_spec_template_shape(root: Path = ROOT) -> list[str]:
+    errors: list[str] = []
+
+    component_path = root / "skills/devflow-specify/references/component-spec-template.md"
+    if component_path.exists():
+        text = component_path.read_text(encoding="utf-8", errors="ignore")
+        ordered = ("## 1. 目的", "## 2. 需求", "#### 场景", "## 3. 来源追溯")
+        positions = [text.find(token) for token in ordered]
+        if any(position < 0 for position in positions) or positions != sorted(positions):
+            errors.append(f"{component_path}: Purpose/Requirements/Scenario/Provenance order is invalid")
+
+    delta_path = root / "skills/devflow-specify/references/delta-spec-template.md"
+    if delta_path.exists():
+        text = delta_path.read_text(encoding="utf-8", errors="ignore")
+        headings = (
+            "## 组件目的变更",
+            "## ADDED 需求",
+            "## MODIFIED 需求",
+            "## REMOVED 需求",
+            "## RENAMED 需求",
+            "## 无规格变化",
+        )
+        for heading in headings:
+            if text.count(heading) != 1:
+                errors.append(f"{delta_path}: expected exactly one heading {heading}")
+        if "`new` 必填" not in text:
+            errors.append(f"{delta_path}: new component Purpose must be mandatory")
+        if "RENAMED → REMOVED → MODIFIED → ADDED" not in text:
+            errors.append(f"{delta_path}: deterministic operation order is missing")
+
+    return errors
+
+
 def find_legacy_references(text: str) -> list[str]:
     found: list[str] = []
     for name in sorted(LEGACY_SKILL_NAMES):
@@ -184,7 +331,9 @@ def find_legacy_references(text: str) -> list[str]:
 
 def validate_no_legacy_references(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
-    for path in iter_active_markdown_files(root):
+    active_paths = list(iter_active_markdown_files(root))
+    active_paths.extend(root.glob("skills/*/evals/*.json"))
+    for path in active_paths:
         text = path.read_text(encoding="utf-8", errors="ignore")
         for hit in find_legacy_references(text):
             errors.append(f"{path}: legacy reference remains: {hit}")
@@ -234,6 +383,9 @@ def run_all(root: Path = ROOT) -> list[str]:
     errors.extend(validate_skill_frontmatter(root))
     errors.extend(validate_agent_frontmatter(root))
     errors.extend(validate_skill_set(root))
+    errors.extend(validate_command_set(root))
+    errors.extend(validate_delivery_contract(root))
+    errors.extend(validate_spec_template_shape(root))
     errors.extend(validate_no_legacy_references(root))
     errors.extend(validate_no_skill_design_doc_references(root))
     errors.extend(validate_eval_json(root))

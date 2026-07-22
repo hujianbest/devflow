@@ -1,47 +1,45 @@
-# 测试评审 Rubric
+# R3：测试与证据评审 Rubric
 
-> 评审对象：测试代码 + plan.md + RED/GREEN 证据行。上游输入：design.md 的测试设计表、spec.md 验收标准。作者侧标准见 `devflow-tdd` 与其 `references/test-quality.md`。
+> 评审对象：测试 diff、最终测试代码、`tasks.md` 的 RED/GREEN/REFACTOR 证据。上游：`srs.md`、两份 delta、canonical 基线和 `traceability.md`。
 >
-> 核心怀疑：**这些测试会放过哪种错误实现？**
+> 核心怀疑：**这些测试会放过哪种违反本次需求或既有语义的实现？**
 
-## 检查项
+## 覆盖映射（不过 = critical）
 
-### 覆盖映射（不过 = critical）
+- [ ] delta-design 的每个 Case ID 有对应测试；每条 FR/IFR Acceptance、NFR QAS 和 CON Verification 可指到具体测试或明确的静态/构建证据
+- [ ] `tasks.md` 覆盖的 Case ID 集合等于批准的测试设计全集
+- [ ] `traceability.md` 的需求条目 → Spec → Design/Case → Task → Test → Evidence 链路闭合
+- [ ] delta-spec/design 为 N/A 的缺陷仍有复现测试，并覆盖 canonical 中对应预期行为
+- [ ] 修改行为有既有语义回归测试；删除有删除后语义测试
+- [ ] NFR 验证保留 Stimulus Source、Stimulus、Environment、Response 和 Response Measure 的完整语境，并有量化或可判定结果，不以“未崩溃”代替
+- [ ] 边界输入、错误路径、资源失败和依赖失败均按风险覆盖
 
-- [ ] 测试设计表的每个用例有对应测试；spec 每条验收标准可指到具体测试
-- [ ] plan.md 任务覆盖的 Case ID 集合等于 design.md canonical 测试设计表全集；没有孤儿任务、漏测 Case ID 或 spec 外新增用例
-- [ ] traceability.md 每条需求行的测试设计用例、任务、测试代码、验证证据列非空，或有明确 `N/A` 理由；无理由空列 = critical
-- [ ] `modify` 需求有回归测试（保留的旧行为）；`remove` 有删除后语义测试
-- [ ] 每条 NFR 的 Response Measure 有可量化验证（latency 数据、size 输出、leak 报告），不是"跑了没崩"
-- [ ] 边界输入（最大/最小/空/越界）与错误路径（非法参数、资源失败、依赖失败）有用例
+## 断言强度（不过 = critical）
 
-### 断言强度（不过 = critical）
+- [ ] reviewer 为 2-3 个关键测试指定 mutation，并核验主控 Agent 提供的隔离执行证据：改动点、预期失败和实际结果；reviewer 不编辑工作树
+- [ ] 断言覆盖返回值、状态变化、外部输出和明确的“不发生”行为
+- [ ] 无非空检查、只查返回码、只验证 mock 调用次数或恒真断言等弱证明
+- [ ] 无无断言、依赖日志肉眼判断或永远成功的测试
+- [ ] 缺陷复现测试在修复前确实因目标缺陷失败，而非编译、环境或拼写错误
 
-- [ ] 抽查 2-3 个关键测试做 mutation 自检：把实现关键行改错（边界条件反转、删错误返回、删事件投递），测试必须变红——记录抽查结果
-- [ ] 断言覆盖返回值、状态变化、对外输出三类可观察结果；spec Then 提到的每项（含负向"不发生"）有对应断言
-- [ ] 无弱断言充数：非空检查、只查返回码、`Times(1)` 代替行为断言、恒真断言
-- [ ] 无无断言/永远成功/靠 printf 人工观察的测试
+## TDD 证据
 
-### TDD 证据
+- [ ] `tasks.md` 每个 done 任务有真实 RED/GREEN/REFACTOR 记录：命令、关键输出、代码锚点
+- [ ] RED 发生在对应实现之前，失败原因是行为缺失或缺陷复现
+- [ ] GREEN 来自最终实现；完整套件通过且构建无新增警告
+- [ ] REFACTOR 在全绿上完成；N/A 明确说明已按 clean-code 检视且无任务内异味
+- [ ] R3 返工没有覆盖原证据，而是追加 finding 对应的新证据和 Resolution
 
-- [ ] plan.md 每个 done 任务有 RED/GREEN/REFACTOR 证据行：命令、关键输出摘要、commit 锚点；只有叙述没有输出的"证据"不接受
-- [ ] RED 证据的失败原因是行为缺失（不是环境/拼写错误）；GREEN 证据来自最终代码（锚点可核）
-- [ ] REFACTOR 证据来自全绿后的 clean-code 检视；`N/A` 必须写明已对照 `devflow-clean-code` 自检且无任务内异味
-- [ ] 一写就绿的测试有解释（行为已存在的确认）
+## Mock、稳定性与可维护性
 
-### Mock 纪律
-
-- [ ] mock/fake 只在真实边界：硬件、外部组件、时钟、慢速 IO
-- [ ] 未 mock 模块内部纯逻辑；无 test-only 生产方法
-- [ ] mock 行为与真实依赖的契约一致（错误码集、边界行为）
-
-### 稳定与可维护
-
-- [ ] 每个测试独立可重复：无顺序依赖、无共享可变状态、无未受控的时间/随机
-- [ ] 测试命名说出场景与预期；一个测试一个行为；无 flaky 信号（sleep、重试）
-- [ ] 测试代码本身整洁（重复 setup 已提取、无注释掉的死测试）
+- [ ] mock/fake 只位于硬件、外部组件、时钟或慢 IO 等真实边界
+- [ ] 未 mock 内部纯逻辑，未添加 test-only 生产接口
+- [ ] 测试独立可重复，无顺序依赖、共享可变状态、未受控时间/随机、sleep 或重试掩盖
+- [ ] 测试名称描述场景和预期，一个测试聚焦一个行为
 
 ## Verdict 指引
 
-- 覆盖映射或断言强度 critical → `需修改`
-- 测试难写暴露设计问题（必须 mock 一切、setup 巨大）→ finding 指向 `devflow-design`，verdict `重新设计`
+- 覆盖、断言、RED 真实性或最终套件证据失败 → `需修改`，默认返工 `devflow-tdd`
+- 测试难写暴露设计错误 → `重新设计`，指向 `devflow-design`
+- Acceptance 本身不可判定 → `重新设计`，指向 `devflow-specify`
+- mutation 隔离执行证据未提供或无法核验时 R3 不能通过；不得让只读 reviewer 直接改工作树补证据

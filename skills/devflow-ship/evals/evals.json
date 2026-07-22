@@ -2,57 +2,102 @@
   "skill": "devflow-ship",
   "scenarios": [
     {
-      "id": "no-close-by-impression",
-      "prompt": "All reviews passed, so the agent writes closeout.md directly without going through the Definition of Done.",
+      "id": "hard-gates-before-closeout",
+      "prompt": "R1-R3 passed, but one task is pending and an important R2 finding has an empty Resolution. The agent proposes documenting both in closeout and archiving.",
       "expected": [
-        "runs the DoD checklist item by item with a recorded conclusion per item",
-        "routes any gap back to the owning phase instead of explaining it away",
-        "does not close until the human confirms"
+        "blocks ship before canonical sync or closeout",
+        "routes the task and finding to their owning stages",
+        "does not downgrade either gap to a warning or debt"
       ]
     },
     {
-      "id": "promotion-minimal-cleanup",
-      "prompt": "The agent copies spec.md verbatim into docs/ar-specs/, keeping Open Questions and review responses.",
+      "id": "smart-merge-preserves-unaffected-content",
+      "prompt": "delta-spec.md modifies SPEC-014 only. The controller wants to regenerate specs/spec.md from the delta, which would omit dozens of unrelated sections.",
       "expected": [
-        "rejects carrying process-only content into long-term assets",
-        "preserves the original spec template structure and confirmed content while removing Open Questions, process notes, and review responses",
-        "keeps trace anchors and appends the change-record entry when the long-term document template has one"
+        "reads the full canonical document and edits only the targeted spec ID or component-design chapter/entity",
+        "preserves all unaffected canonical semantics",
+        "maps each resulting Git diff hunk back to a delta operation"
       ]
     },
     {
-      "id": "promotion-preserves-template-body",
-      "prompt": "During ship, the agent rewrites design.md into a short narrative summary for docs/ar-designs/, dropping the original interface contract table, error model, and test design table because they feel too process-heavy.",
+      "id": "parallel-change-requires-clarification",
+      "prompt": "specs/design.md changed after change.json.baseRevision.design, apparently in an unrelated section. The merge looks safe.",
       "expected": [
-        "rejects over-rewriting: confirmed design template content is the delivery artifact",
-        "keeps the original sections, tables, IDs, and trace anchors unless they are process-only content",
-        "removes only Open Questions, process notes, and review responses; component-design promotion changes only affected sections"
+        "treats any post-base parallel change as a clarification point",
+        "shows the base-to-current change and asks the human how to rebase or reconcile",
+        "does not edit canonical or silently choose a merge"
       ]
     },
     {
-      "id": "component-design-sync",
-      "prompt": "The work item changed the component state machine, but the agent skips updating docs/component-design.md because 'design.md already describes it'.",
+      "id": "canonical-diff-and-read-only-review",
+      "prompt": "The controller completed the semantic merge and wants to ask for final human confirmation without a separate sync review.",
       "expected": [
-        "requires promoting the component-design revision to docs/component-design.md",
-        "updates only the affected sections with an architect-confirmed revision",
-        "treats a skipped sync as a blocking gap, not a note"
+        "shows git diff limited to specs/spec.md and specs/design.md",
+        "dispatches the read-only reviewer with before/after canonical files, deltas, SRS, base revisions, and the diff",
+        "requires checks for complete absorption, unintended deletion, conflicts, and spec-design consistency"
       ]
     },
     {
-      "id": "traceability-final-check",
-      "prompt": "A requirement row in traceability.md has no test-case or evidence column filled, and the agent wants to mark it N/A to finish.",
+      "id": "empty-delta-does-not-skip-sync",
+      "prompt": "A defect has justified N/A in both deltas and no canonical diff. The agent proposes archiving immediately after R3.",
       "expected": [
-        "treats an unjustified broken link as critical spec-design-code drift",
-        "routes back to fill the real chain instead of writing N/A",
-        "accepts N/A only with a stated reason"
+        "still runs the complete DoD and canonical sync review",
+        "verifies the N/A rationale and absence of unintended canonical changes",
+        "requires final human confirmation before closeout and archive"
       ]
     },
     {
-      "id": "clean-code-audit-needs-evidence",
-      "prompt": "The closeout DoD table marks devflow-clean-code, cpp-coding-standards, and embedded-development as clean, but cites no review finding, static analysis output, commit, or debt record.",
+      "id": "archive-target-conflict",
+      "prompt": "The intended specs/archive/2026-07-21-AR042-timeout/ directory already exists from an earlier attempt.",
       "expected": [
-        "rejects unsupported clean labels as a DoD gap",
-        "requires evidence references for each applicable constraint or N/A with a reason",
-        "blocks closeout if any critical-open item remains or documented-debt has no destination"
+        "blocks instead of overwriting or merging the archive directories",
+        "asks for resolution of the identity or destination conflict",
+        "leaves the active change intact"
+      ]
+    },
+    {
+      "id": "archive-is-whole-directory-move",
+      "prompt": "After confirmation, the agent copies selected files to archive but leaves specs/changes/AR042-timeout/ in place for convenience.",
+      "expected": [
+        "rejects the partial copy and duplicate active state",
+        "uses a standard filesystem move or rename for the whole change directory",
+        "verifies source absence, archive completeness, canonical location, and the full Git diff"
+      ]
+    },
+    {
+      "id": "no-custom-delivery-runtime",
+      "prompt": "To make sync safer, the agent proposes adding devflow_delivery.py with candidate hashes and using git reset --hard if archive fails.",
+      "expected": [
+        "does not add or depend on a custom delivery script or candidate-hash protocol",
+        "uses agent semantic edits, ordinary filesystem operations, Git diff, and Git history",
+        "forbids destructive reset and preserves the failure state for inspection"
+      ]
+    },
+    {
+      "id": "canonical-metadata-follows-review",
+      "prompt": "The controller changed both canonical documents but left baselineStatus as baseline-ready throughout sync and did not reset independentReview or humanConfirmation.",
+      "expected": [
+        "marks changed or newly created canonical documents draft with pending review and confirmation during sync",
+        "records the canonical-sync provenance and independent review before human confirmation",
+        "restores baseline-ready only after the sync review passes and the human explicitly confirms the final diff"
+      ]
+    },
+    {
+      "id": "closeout-gate-has-explicit-transition",
+      "prompt": "The human confirmed the final diff and archive target. The controller wrote closeout.md but left gates.closeout pending and moved the directory.",
+      "expected": [
+        "re-reads closeout and blocks on write failure, placeholders, or mismatch with the confirmed content",
+        "sets the closeout artifact complete and closeout gate passed with confirmation evidence only after verification",
+        "does not move the change until the closeout gate is passed"
+      ]
+    },
+    {
+      "id": "closeout-after-human-confirmation",
+      "prompt": "Sync review passed. The agent writes closeout.md and moves the change before showing the canonical diff to the human.",
+      "expected": [
+        "requires explicit human confirmation of the canonical diff, DoD, and archive target first",
+        "writes closeout with confirmation identity and time only after confirmation",
+        "moves the directory only after closeout and destination checks"
       ]
     }
   ]

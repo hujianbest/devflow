@@ -1,229 +1,264 @@
 ---
 name: devflow-design
-description: 在规格确认后、写代码前做软件设计时使用；也在设计评审被打回、或实现中发现模块边界/接口契约/错误处理需要重新设计时使用。涵盖模块划分、接口契约、错误模型、数据所有权、方案取舍与测试设计。
+description: 在 R1 通过后为 DevFlow change 做实现设计，或 R2/R3 发现设计问题需要返工时使用。读取 canonical design 与 delta-spec，产出可局部合并的 delta-design.md，覆盖方案、契约、错误模型、风险、迁移和测试设计；不直接改写 canonical 文档或实现代码。
 ---
 
-# DevFlow 设计
+# DevFlow 增量设计
 
-## 总览
+## 目标
 
-设计回答的问题：**用什么结构来满足规格，让代码做对的同时也值得长期持有。** 一份好设计的检验标准：
+本阶段只产出：
 
-1. 拿着它，不看代码就能写出测试（接口契约完整）；
-2. 实现者不需要再做任何"发明"（结构决策已闭合）；
-3. 每个结构决策都能回答「为什么不是更简单的方案」（复杂度有理由）。
+```text
+<component-root>/specs/changes/ARXXX-<topic>/delta-design.md
+```
 
-**设计分两级**（团队开发流程要求）：
+`delta-design.md` 描述本 AR 对 `specs/design.md` 的增量。它使用原组件模板的章节
+路径、功能编号、接口/软件单元实体键，加上稳定 `DD/DEC/TC` 和
+`ADDED / MODIFIED / REMOVED / RENAMED`，让后续同步只改明确局部，并保留组件设计
+基线中未涉及的结构、契约和理由。
 
-| 级别 | 工件 | 何时需要 | 模板 |
-|---|---|---|---|
-| 组件级设计 | 组件根下 `features/<id>/component-design-draft.md` → ship 时 promote 到组件根下 `docs/component-design.md`（或团队覆盖路径） | 工作项影响组件边界：对外接口 / 组件依赖 / 状态机 / 组件职责变化，或组件设计基线缺失、过期 | `references/devflow-component-design-template.md` |
-| 工作项级设计 | 组件根下 `features/<id>/design.md`（或团队覆盖路径） | 每个工作项（微小修改可按 `using-devflow` 裁剪） | `references/devflow-ar-design-template.md` |
+模板：
 
-**硬性顺序**：影响组件边界时，必须**先**修订组件设计草稿并经评审与模块架构师确认，**再**写工作项设计；工作项设计只能引用组件基线（功能编号、接口契约、软件单元），不得重新定义组件级架构。组件根下 `docs/component-design.md`（或团队覆盖的组件设计基线）不存在而工作项触及组件边界 → 先补建组件设计，不要在工作项设计里"顺便"定义组件架构。
+- `references/delta-design-template.md`：change 设计增量；
+- `references/component-design-template.md`：`specs/design.md` 的组件设计基线模板。
 
-**设计的第一律：简单性。** 满足当前规格的最少结构就是好结构。每多一层间接、一个抽象、一个配置项，都要付出理解、测试和演进的复利成本。本文所有原则最终都服务于这一条。
+两份模板都由两层组成：
+
+- **控制层**：稳定 operation/decision/case ID、组件模板章节路径/实体键、
+  base/provenance、selector、preservation、merge/review checks；
+- **内容层**：原 component design 第 1–8 章，以及原 AR design 第 1–6、8 章；
+  delta-design 第 7 章专门承载基线、操作、选择器、保留和合并信息。
+
+控制层保证能安全同步，不能替代或压缩内容层；内容层提供工程可实施性，也不能绕过
+delta operation 直接整篇覆盖 canonical。
+
+## 前置门禁与输入
+
+开始前读取：
+
+1. `specs/changes/ARXXX-<topic>/change.json`
+2. `srs.md`
+3. `delta-spec.md`
+4. `traceability.md`
+5. existing 模式下的 `specs/spec.md` 与 `specs/design.md`
+
+`change.json.gates.r1.status` 必须为 `passed`；`executionMode=attended` 时还要求
+r1 的 `humanConfirmation=confirmed`。未满足时不设计。
+
+`componentMode: existing` 时，两份 canonical 必须仍为
+`baselineStatus: baseline-ready`。从不可变 `change.json.baseRevision` 比较当前
+canonical 与工作树；设计基线缺失、draft 或目标章节发生重叠变化时停止：基线问题
+转 `devflow-init`，并行变化先澄清。
+
+`componentMode: new` 时，两份 canonical 可以为 `EMPTY`，但 delta design 必须
+包含足以生成首版完整 canonical design 的 ADDED 内容。
+
+如果 mode 或 profile 的 `name/risk/reasons/requiredEvidence/requiredReviewers`
+缺失、冲突，不自行推断。
+
+## 设计不变量
+
+1. delta spec 决定“必须满足什么”；设计不得新增需求或改变验收阈值。
+2. 每个设计 operation 有稳定 `DD-xxx`，目标是组件设计模板中的章节路径与功能编号、
+   接口名、软件单元名或其他可核实体键，并用 base 摘要消除同名歧义；
+   关键选择有稳定 `DEC-xxx`；测试用例有稳定 `TC-xxx`。
+3. `MODIFIED` 只改 selector 指向的最小字段/子节。未列出的契约项、错误语义、
+   所有权、依赖、测试与理由保留。
+4. `RENAMED` 默认只改显示名称，必须提供 base 摘要、from/to 和引用更新范围；功能编号
+   等稳定业务键不随标题变化。
+5. 本阶段不改 `specs/design.md`；canonical 同步与冲突复核发生在后续关闭流程。
+6. 测试设计是 TDD 的唯一 Case 来源。任务不得发明 delta design 中不存在的 Case。
 
 ## 工作流
 
-1. **读 spec 与组件基线**：先读 plan.md 头部记录的组件根与工件根，或按 `using-devflow` 重新解析；读该组件根下已确认的 `spec.md` 和 `docs/component-design.md`（存在时，或团队覆盖路径），列出本变更触碰的既有模块与新增职责。
-2. **判定设计级别**：按 spec 的接口候选契约与影响面判断是否触及组件边界；触及 → 先按组件模板修订 `component-design-draft.md`，确认后再继续。
-3. **划分模块职责**（见下文 §职责与边界）。
-4. **设计接口契约与错误模型**（见 §接口契约、§错误模型）。
-5. **记录方案取舍**：有真实可选方案时写 2-3 个选项的对比；只有一个合理方案时写明其他方案为什么不成立（见 §方案取舍）。
-6. **写测试设计**：把 spec 的每条验收标准映射成测试用例表（见 §测试设计）。
-7. **更新追溯**：在组件根下 `features/<id>/traceability.md`（或团队覆盖路径）填入每条需求对应的组件设计章节 / 工作项设计章节 / 测试设计用例列。
-8. **自检**（文末清单）通过后只表示作者侧设计产物就绪，下一步必须进入 R2 门禁：派发 `devflow-review` 按 design rubric 做**独立评审**并落盘记录（必经节点）；评审 verdict 通过后，attended 模式再把评审记录与 verdict 呈人确认，并更新 plan.md 门禁表。**R2 门禁未通过（含 attended 下未确认）前不进入实现。**
+### 1. 建立影响集
 
-实现中发现设计有误：停下、回来改 design.md（必要时回到组件设计）、重新评审确认，不在代码里悄悄偏离。
-
-## 职责与边界
-
-### 一句话职责测试
-
-每个模块（文件/类/组件）的职责必须能用一句不含「和」「以及」的话说清。说不清，或者句子里有两个动词短语，就是两个职责。
+逐条读取 `delta-spec.md` operation，形成映射：
 
 ```text
-❌ ConfigManager：负责加载配置、校验配置、监听配置变化，以及把变化通知给订阅者
-✅ ConfigStore：持有当前生效配置，提供原子读取
-✅ ConfigLoader：从存储读取并校验配置块
-✅ ConfigNotifier：把配置变化分发给订阅者
+需求条目
+→ target Spec Section
+→ affected component design chapter/entity / Decisions
+→ required Design Case
 ```
 
-是否真的要拆成三个文件取决于规模——小就先放一个文件里，但**内部结构按职责组织**，这样将来拆分是搬运而不是手术。
+列出被触及的组件职责、依赖方向、接口、状态机、错误语义、数据所有权、
+资源预算和兼容承诺。existing 模式只读相关组件设计章节还不够时，继续读其依赖章节，
+直到局部 patch 的边界明确；不要凭标题猜上下文。
 
-### 按变化理由划分，而不是按技术层次
+### 2. 按 profile 展开
 
-判断两段代码该不该放一起：**它们是否因同一个理由而变化**。协议格式变化时要改的代码放一起；业务规则变化时要改的代码放一起。反例是「所有回调放 callbacks.c、所有结构体放 types.h」这类按形态分类——一次行为变更要横跨所有文件（霰弹式修改）。
+先读 `../using-devflow/references/risk-profiles.md`，按
+`change.json.profile.name`、`reasons`、`requiredEvidence` 和
+`requiredReviewers` 展开：
 
-### 耦合的可操作判断
+- 所有 profile 都保留 AR 内容骨架：概述/功能点、动态行为、实现设计、契约、
+  错误/所有权、代码影响、风险/迁移/回滚和测试设计；高质量判断由 R2 reviewer
+  根据这些正文和证据执行，不要求独立“高质量设计增补”章节。
+- `standard` 可压缩不适用正文，但每个骨架章节必须有实际内容或可审查的 N/A 证据；
+  仍要有回滚说明、单元/受影响集成测试和完整追溯。
+- `elevated` 在 core 上展开 reasons 命中的 API/协议/错误语义、数据迁移、状态机、
+  并发、性能/资源、部署回滚或多组件章节，并加入兼容性、失败路径、回滚、
+  集成/端到端和并行变化证据。
+- `critical` 继承 elevated，并展开命中的 security、safety、实时控制、硬件保护、
+  合规、不可逆迁移或重大生产风险；加入威胁/安全性分析、故障注入、恢复演练、
+  残余风险与发布窗口确认。
 
-「低耦合」不是感觉，按下面检查：
+具体维度由 profile reasons 和 delta 事实触发，例如 `api-compatibility`、
+`data-migration`、`concurrency`、`real-time`、`resource-constrained`、
+`security`、`safety`、`multi-component`、`ui`。未命中维度在 coverage 表写
+N/A 证据，不生成大段空模板。profile 等级与事实不一致或缺所需 reviewer/evidence
+时，先阻塞并修正 `change.json`；不得为少写章节而降级。
 
-| 检查 | 坏信号 | 动作 |
-|---|---|---|
-| 依赖方向 | 底层模块 include 上层头文件；两模块互相 include | 依赖必须单向：上层依赖下层、具体依赖抽象。互相依赖 → 提取第三方共同依赖或用回调/事件反转 |
-| 知识泄漏 | 调用方需要知道被调方的内部状态/调用顺序才能正确使用（"先调 init 再调 open，但 reset 之后要重新 init"） | 把时序约束收进模块内部，或用状态机显式拒绝非法顺序 |
-| 数据泥团 | 三四个参数总是结伴出现在多个签名里 | 提取成结构体，给这组数据一个名字 |
-| 特性依恋 | 一个函数大量读写另一个模块的数据，却几乎不碰自己模块的 | 函数搬到数据所在的模块 |
-| 扇出过大 | 一个模块 include / 调用 7-8 个以上其他模块 | 它在做协调器还是上帝模块？拆出子职责 |
-| 实现泄漏 | 公共头文件暴露内部结构体字段、私有函数、实现用的宏 | 头文件只放契约；内部细节进 .c / detail 命名空间 |
+### 3. 选择最简单可行方案
 
-### 内聚的可操作判断
+有多个真实可行方案时，用稳定 `DEC-xxx` 比较：
 
-模块内聚的检验：随机删掉模块里的一个函数，其余函数是否大概率也要跟着改？是 → 内聚好。模块里有一半函数和另一半函数互不引用、不共享数据 → 那是两个模块住在一个文件里。
+- 改动范围与依赖；
+- 契约和兼容影响；
+- 错误/恢复与回滚成本；
+- 性能、资源和适用 profile 风险；
+- 测试难度与长期维护成本。
 
-## 抽象纪律
+给出推荐、理由和否决原因。只有一个合理方案时，记录 `Single viable option`，
+并回答“为什么更简单的候选不满足当前 delta spec”。不能以“将来可能需要”为
+插件、策略层或配置点的唯一理由。第三个真实用例出现前，错误抽象通常比少量重复贵。
 
-**抽象必须由真实的重复或真实的变化轴支撑，不由想象支撑。**
+### 4. 写 delta operations
 
-- **Rule of three**：第三个真实用例出现前，重复通常比错误的抽象便宜。错误抽象一旦被依赖，纠正成本远高于消除重复。
-- **单实现接口是负债**：只有一个实现的 interface/抽象基类，在没有第二个真实实现（不含测试 mock 的伪需求）或明确的稳定契约要求前，就是纯开销。直接用具体类型。
-- **可配置性不是免费的**：每个"以后可能要改"的配置项/策略钩子/插件点，现在就要文档、测试和维护。spec 里没有的变化轴不要预留。
+每个 operation 包含 target、selector、base excerpt/digest、局部 before/after、
+preservation clause、需求条目/Spec 回指和受影响的 `DEC/TC`。
 
-```c
-/* ❌ 当前只需要写日志到文件，却设计了插件框架 */
-typedef struct {
-    int (*open)(void *ctx);
-    int (*write)(void *ctx, const log_entry_t *e);
-    int (*flush)(void *ctx);
-    int (*close)(void *ctx);
-} log_backend_ops_t;
-int log_register_backend(const log_backend_ops_t *ops, void *ctx);
+- `ADDED`：在明确父章节下给出符合原组件模板结构的完整新增内容。
+- `MODIFIED`：最小局部替换和 resulting local content。若只改一个错误码，不得
+  重写或删除同一接口的输入、成功副作用、并发和兼容契约。
+- `REMOVED`：精确删除的设计语义、依赖/调用方、清理顺序、迁移和删除后的状态。
+- `RENAMED`：列出实体键/base 摘要、from/to 与引用更新；正文默认不变。
 
-/* ✅ 满足当前规格的最少结构；将来真有第二个后端再提取接口，
-   届时已知道两个实现的真实差异，抽象才会切在正确的位置 */
-int log_file_open(const char *path);
-int log_file_write(const log_entry_t *e);
-```
+同一 target 有多个 operation 时给出确定顺序；互相覆盖就合并成一个可审查局部，
+或停下澄清。
 
-什么时候间接层**值得**引入：跨越所有权边界（隔离第三方库、硬件、协议栈，让它们可替换可仿真）；隔离真实的不稳定源（spec 明确说协议版本会变）；切断循环依赖。
+### 5. 闭合原 AR 设计内容骨架
 
-## SOLID 翻译表
+先填写 AR identity、变更功能点与动态行为。每个功能点回指需求条目/Spec 与 DD operation，
+每个关键正常/异常场景有可冷读流程或时序。然后按实际影响填写：
 
-SOLID 不是新增流程，也不是为了制造抽象。它是设计与重构时识别变化理由、依赖方向和契约稳定性的速查语言；每条都必须落回 DevFlow 的可检查问题。
+- 实现思路、流程、类/软件单元和包目录；
+- 数据库、文件持久化、数据迁移与回滚；
+- 接口、GUI/HMI、构建/多仓影响；
+- 并发、启动退出、休眠唤醒、可靠性、权限/SELinux 等适用领域场景；
+- 重构边界、软件成本影响和验证方式。
 
-| 原则 | DevFlow 判据 | 常见坏信号 | 默认动作 |
-|---|---|---|---|
-| SRP | 一个模块只有一个变化理由 | 职责句里出现“和/以及”；一次需求变更横跨无关职责 | 拆职责；规模还小时至少按职责组织内部结构 |
-| OCP | 真实变化轴有稳定扩展点 | 每加一种类型要改多处 switch / if 链和调用方 | 先确认变化轴真实，再提取表驱动、策略或多态 |
-| LSP | 替换实现不削弱接口契约 | 子实现改变错误语义、前置条件或失败后状态保证 | 收紧契约，拆接口；不成立时取消继承/抽象 |
-| ISP | 调用方只依赖自己使用的契约 | 公共头文件暴露大而全接口、内部字段、私有宏 | 拆小接口；隐藏内部字段与实现细节 |
-| DIP | 高层策略不依赖底层细节 | 上层知道硬件、协议、存储或第三方库调用细节 | 在真实边界引入端口/适配层；拒绝无第二用例的单实现接口 |
+这些章节只描述本 AR 的增量，但不等于只写摘要。每项变化必须回到 `DD-xxx`，不适用
+项给 N/A 证据；不能删掉章节来隐藏未分析的风险。
 
-## 接口契约
+#### 结构、职责与依赖
 
-接口契约描述**可观察行为**，不是函数名列表。每个对外接口（公共头文件函数、服务操作、协议消息）写全六项：
+每个新增/修改单元用一句不含“和/以及”的话描述职责。按变化理由聚合，依赖单向；
+公共契约不暴露私有字段、内部宏或隐含调用顺序。跨真实所有权边界时可用最小
+port/adapter；不要为单一实现制造抽象层。
 
-1. **输入与前置条件**：参数含义、单位、合法范围、NULL 语义、调用上下文限制（可否在中断里调）
-2. **输出与后置条件**：返回值、出参、成功后系统状态的变化
-3. **错误语义**：每个错误码什么条件下返回、出错后系统状态如何（见 §错误模型）
-4. **副作用**：写了什么状态、发了什么事件、持有了什么资源
-5. **并发与时序**（如适用）：线程安全性、可重入性、阻塞行为、超时
-6. **兼容性**（modify/remove 时）：旧调用方迁移策略、错误码集变化、废弃计划
+#### 接口契约
 
-```c
-/* ❌ 这不是契约，只是签名 */
-int mode_set(int mode);
+每个新增或语义变化接口覆盖：
 
-/* ✅ 可冷读的契约（最终落在头文件注释 + design.md）*/
-/**
- * 请求切换运行模式。线程安全；不可在中断上下文调用。
- *
- * @param mode  目标模式，必须是 MODE_NORMAL 或 MODE_SAFE。
- * @return OK              已接受请求；下一控制周期内完成切换并发出
- *                         ModeChanged 事件（见 design.md §事件语义）。
- *         ERR_INVALID_ARG mode 非法；内部状态不变，不发事件。
- *         ERR_BUSY        上一次切换尚未完成；调用方应退避重试。
- * 副作用：成功路径更新 mode 状态并向事件队列投递一条 ModeChanged。
- */
-int mode_set(mode_t mode);
-```
+1. 输入与前置条件；
+2. 输出与后置条件；
+3. 错误条件和失败后的状态保证；
+4. 副作用；
+5. 并发、可重入、阻塞和时序；
+6. 兼容、版本与迁移。
 
-接口设计的取向：**让误用难以编译通过、让正确用法成为唯一明显写法**。用枚举不用魔法 int；语义不同的量用不同类型（`duration_ms_t` 而不是裸 `uint32_t`）；需要配对调用的资源返回句柄并提供成对 API。
+局部变化可只在 operation 中替换一个契约项，但必须引用 canonical 其余五项并写
+preservation clause。新接口必须写全六项。
 
-## 错误模型
+回调注册类接口还必须写注销竞态：注销返回后是否可能仍有 in-flight callback、谁保证
+`ctx` 存活、何时才允许释放。缺失这些信息会形成 UAF 风险，不能用一般“线程安全”
+结论代替。
 
-错误处理是设计决策，不是实现时的临场发挥。设计阶段定三件事：
+#### 错误模型与所有权
 
-**1. 错误分类**——不同类别的处理策略不同：
+明确编程错误、可预期运行失败、环境/硬件故障和不可恢复内部矛盾的策略；说明错误在
+哪一边界翻译、由谁处理，以及失败时副作用回滚、保留还是进入明确中间态。
 
-| 类别 | 例子 | 策略 |
-|---|---|---|
-| 调用方编程错误 | 传 NULL、非法枚举、违反调用顺序 | 校验并返回明确错误码（或按项目约定 assert）；不进入降级逻辑 |
-| 可预期的运行时失败 | 资源暂不可用、队列满、超时、外部输入非法 | 返回错误码，调用方有明确的恢复/退避路径 |
-| 环境/硬件故障 | 存储损坏、外设无响应 | 进入设计好的降级模式，上报诊断事件 |
-| 不可恢复的内部矛盾 | 状态机进入"不可能"状态 | 按项目故障策略（安全状态/复位/记录后受控终止） |
+跨边界缓冲区、句柄、回调上下文要写谁分配、谁释放、调用返回后是否可用；
+部分初始化失败写反向清理顺序。
 
-**2. 传播策略**：错误在哪一层被翻译、哪一层被处理。底层错误码原样穿透到顶层是泄漏（调用方被迫了解三层之下的细节）；每层都包一遍是噪音。默认：**在模块边界翻译一次**（"flash 写失败" → "配置保存失败"），中间层只透传。
+#### 风险、迁移和回滚
 
-**3. 失败路径的状态保证**：每个可失败操作明确——失败后已发生的副作用是回滚、保留还是半完成？接口契约里写清。「出错后状态未定义」在评审中按 critical 处理。
+每项风险写触发、影响、降低措施、owner 和验证证据。所有行为/接口/数据变更都判断
+是否需要 rollout、兼容窗口、数据转换、回滚或清理；不适用时给可审查理由。
 
-## 数据所有权与生命周期
+### 6. 写分层测试设计
 
-每块跨边界的数据（缓冲区、句柄、回调上下文）在设计里明确三个问题：**谁分配、谁释放、指针在调用返回后是否仍可用**。
+建立唯一 Case Index。每个 `TC-xxx` 回指需求条目、Spec Section 和
+Design Section/Decision，并写：
 
-- 默认取向：**谁分配谁释放**；跨边界传递用复制或显式转移所有权（并在契约里写明）。
-- 回调注册类接口必须写明：注销后是否还可能被回调一次（in-flight callback）、ctx 指针的生命周期由谁保证。
-- 长生命周期模块持有外部传入指针 = 红色信号，改为复制或在契约中写明调用方必须保证的存活期。
+- Given/When/Then 摘要与精确预期；
+- level：unit / integration / simulation / system；
+- happy / boundary / error / regression / migration / profile-risk；
+- mock/fake 边界；
+- 验证命令或测量方法。
 
-## 方案取舍
+Case Index 之后按适用层展开单元、接口、业务/功能、异常/可靠性和 profile 风险覆盖；
+展开表不能新增 Case。涉及多因子时记录 pairwise/全遍历/指定组合，涉及代码逻辑时
+记录期望的语句/分支/路径覆盖；这些是设计目标，不伪装成运行证据。
 
-只在**真实存在多个合理方案**时写选项对比，每个方案至少回答：改动范围、复杂度、对既有调用方的兼容性、失败时回滚成本、长期维护影响。然后**给出推荐和理由**——列完选项不推荐等于把设计工作推给评审者。
+每条 FR/IFR 的 Acceptance 至少有正向和关键失败/边界 Case；每条 NFR Case 必须保留
+QAS 的 Stimulus Source、Stimulus、Environment、Response 与 Response Measure，而不
+只抄阈值；每条 CON 的 Verification 有对应 Case 或静态/构建验证。MODIFIED 有保留
+语义回归 Case，REMOVED 有删除后语义 Case。扩展表只能展开 Case Index 已存在的 ID，
+不能偷偷增加测试事实。
 
-只有一个合理方案时，写一段「为什么不是 X」：X 是评审者最可能问的替代方案（通常是"更简单的做法"或"更通用的做法"）。这不是形式——它强迫你检验自己是否真的考虑过更简单的路径。
+写不出 Case 表示 SRS/delta spec 不可测试，回 `devflow-specify` 修正并重新经过 R1。
 
-伪选项是常见造假：三个方案其实是同一方案的不同措辞，或者两个陪跑方案明显荒谬。评审会按风险信号处理。
+### 7. 更新追溯和 R2
 
-## 测试设计
+在 `traceability.md` 的 `Design Section/Case` 列填写组件模板章节路径/实体键与
+`DEC/TC` 锚点，不改列结构，不填写尚未产生的 Task/Code/Evidence。
 
-设计文档必须含测试设计章节——这是第一层规格通向第二层 TDD 的桥。把 spec 的每条验收标准映射成用例。**canonical 测试设计表只有一张**：工作项设计模板第 6.1 的 Case ID 汇总表（或等价表），它是 `devflow-tdd` 细化 plan 的唯一入口；第 6.2+ 子表只能展开步骤、mock、风险覆盖，不得引入无法回指到第 6.1 的新用例。
+自检通过后：
 
-| Case ID | 覆盖需求 | 场景（Given/When/Then 摘要） | 层级 | 预期结果 |
-|---|---|---|---|---|
-| TC-001 | FR-001 | SAFE 下 SetMode(NORMAL) → 切换+事件 | unit | 返回 OK；周期内 ModeChanged=NORMAL |
-| TC-002 | FR-001 | SetMode(非法值) → 拒绝 | unit | ERR_INVALID_ARG；状态与事件无变化 |
-| TC-003 | NFR-001 | 1000 次切换延迟测量 | integration | p95 ≤ 5ms（QAS 阈值） |
+- 将 `change.json.artifacts.deltaDesign.status` 置为 `ready-for-review`；
+- 将 `change.json.artifacts.traceability.status` 置为 `ready-for-review`；
+- 将 `change.json.gates.r2.status` 置为 `pending`；
+- 保留 `reviewRecords` 和历史 evidence，并加入本轮工件锚点；
+- 不由作者写 `passed`。
 
-规则：
+R2 返工只修改 finding 指向的 operation/decision/case 并回填 Resolution。
+如果返工改变了规格语义，停止设计，回 specify 和 R1，而不是在设计中走私需求。
 
-- 每条 FR/IFR 至少一个正向 + 一个异常/边界用例；每条 NFR 的 QAS Response Measure 对应一个可量化用例
-- `modify` 需求必须有回归用例（旧行为中要保留的部分）；`remove` 必须有删除后语义用例
-- 写明每个用例的层级（unit / integration / simulation）与 mock 边界：只 mock 硬件、外部组件、慢速依赖；内部纯逻辑不 mock
-- Case ID 必须稳定（`TC-xxx`），并能双向追溯：spec Acceptance → Case ID → plan 任务；组件级测试项如需引用，先映射到工作项级 `TC-xxx`
-- 写不出用例的需求 = 规格不可测试 → 回 `devflow-specify`
+## 实现中回溯
 
-这张表就是 `devflow-tdd` 的任务来源：实现时逐用例 RED→GREEN→REFACTOR。
+R3 或实现发现设计错误时：
 
-## 风险信号
+1. 在 `tasks.md` 标记当前任务 blocked；
+2. 在 delta design 新增或修订精确 operation；
+3. 更新受影响的 Case 与 traceability；
+4. 将 `gates.r2` 及受影响下游 gate 置回 `pending` 并重新独立评审；
+5. R2 通过后才恢复 TDD。
 
-- 工作项触及对外接口/依赖/状态机，却没有组件设计修订（在工作项设计里"顺便"改了组件架构）
-- 设计文档里只有结构图和文件清单，没有接口契约和错误语义（实现者仍然要猜）
-- 「错误处理：返回错误码」一笔带过（哪些错误码？出错后状态？谁恢复？）
-- 出现"以后可能需要"作为某个抽象层/配置项的唯一理由
-- 单实现接口、单子类继承、只被调用一次的"通用工具"
-- 方案对比是同一方案的三种措辞
-- 测试设计只有正向路径，或某条验收标准没有对应用例
-- 改了对外接口语义却没有兼容性章节
+## 自检
 
-## 自检清单
-
-- [ ] 设计级别判定正确：触及组件边界时组件设计草稿已先行修订并确认
-- [ ] 工作项设计只引用组件基线，未重新定义组件级架构
-- [ ] 每个新增/修改模块的职责能用一句话说清；按变化理由组织
-- [ ] 依赖方向单向；公共头文件无实现泄漏；无新增循环依赖
-- [ ] 每个抽象/间接层指得出真实用例或真实变化轴
-- [ ] 每个对外接口契约六项齐全（输入/输出/错误/副作用/并发/兼容）
-- [ ] 错误模型三件事已定：分类、传播策略、失败路径状态保证
-- [ ] 跨边界数据的分配/释放/存活期已明确
-- [ ] 方案取舍有推荐有理由；单方案写了「为什么不是 X」
-- [ ] 测试设计覆盖全部验收标准，含异常/边界/回归用例与 mock 边界
-- [ ] traceability.md 已填组件设计章节 / 工作项设计章节 / 测试设计用例列
-- [ ] 适用的语言规范（`<language>-coding-standards`）与领域开发技能已读取并体现在契约里；领域技能按各自 description 触发，不依赖固定枚举
+- [ ] 输入、R1、mode、canonical 与 base revision preflight 全部通过。
+- [ ] profile coverage 完整；只展开适用章节，风险没有因裁剪消失。
+- [ ] 原 AR 设计第 1–6、8 章完整，第 7 章为 Delta Design 信息；概述/功能点、
+      动态行为、实现/数据/接口/UI/代码、领域场景、重构和分层测试均有内容或 N/A
+      证据。
+- [ ] 每条 design operation 有稳定 `DD/DEC`、明确组件章节路径/实体键、四类操作、
+      局部 selector 与来源。
+- [ ] MODIFIED 明确保留所有未涉及设计语义；new 可从 EMPTY 生成首版 canonical。
+- [ ] 方案有推荐和理由，复杂度由当前 SRS 支撑。
+- [ ] 契约、错误模型、所有权、风险、迁移/回滚都已闭合或有明确 N/A 理由。
+- [ ] Case Index 覆盖全部 FR/IFR Acceptance、NFR 完整 QAS、CON Verification、回归和 profile 风险。
+- [ ] traceability 的 Design Section/Case 已回填，无本阶段 `TBD(design)`。
+- [ ] R2 只被置为 `pending`，canonical design 未在本阶段改写。
 
 ## 支撑参考
 
 | 文件 | 用途 |
 |---|---|
-| `references/devflow-ar-design-template.md` | 工作项级设计（design.md）模板，含「高质量设计增补」章节 |
-| `references/devflow-component-design-template.md` | 组件级设计模板，含「高质量设计增补」章节 |
+| `references/delta-design-template.md` | 本 AR 的设计增量、决策与 Case Index |
+| `references/component-design-template.md` | `specs/design.md` 组件设计基线 |
+| `../using-devflow/references/risk-profiles.md` | profile 触发器、附加证据与 reviewer |

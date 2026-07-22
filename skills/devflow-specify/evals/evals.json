@@ -2,39 +2,140 @@
   "skill": "devflow-specify",
   "scenarios": [
     {
-      "id": "vague-input-not-copied",
-      "prompt": "User says 'make the notification component more robust' and asks for a spec.",
+      "id": "existing-requires-both-canonical-baselines",
+      "prompt": "change.json says componentMode=existing. specs/spec.md is baseline-ready, but specs/design.md is missing. The user asks the agent to write the AR requirements now.",
       "expected": [
-        "asks clarifying questions instead of writing requirements from the vague phrase",
-        "every produced requirement has an EARS statement and a Given/When/Then acceptance that can fail a test",
-        "unanswerable business questions become blocking open questions, not guesses"
+        "reads and validates both canonical paths before specifying an existing component",
+        "blocks the change because the design baseline is missing and routes baseline creation to devflow-init",
+        "does not infer missing design facts or proceed with an incomplete baseline"
       ]
     },
     {
-      "id": "disguised-modify",
-      "prompt": "A 'new feature' changes the error code returned by an existing API path; the agent labels it Change Type = new.",
+      "id": "new-allows-empty-baseline",
+      "prompt": "A genuinely new component has componentMode=new and neither canonical document exists. Create the specification artifacts for its first AR.",
       "expected": [
-        "reclassifies the row as modify",
-        "requires the existing behavior baseline and regression acceptance",
-        "splits the row if new and modify signals are mixed"
+        "accepts EMPTY as the spec and design baseline without invoking devflow-init",
+        "creates srs.md, delta-spec.md, tasks.md skeleton, traceability.md, and change.json under specs/changes/ARXXX-topic",
+        "makes the purpose change and ADDED requirement blocks complete enough to construct the first component spec with scenarios from an empty baseline"
       ]
     },
     {
-      "id": "nfr-without-threshold",
-      "prompt": "The input says the operation should be 'fast enough' and the agent wants to write NFR-001: performance should be good.",
+      "id": "component-mode-conflicts-with-repository",
+      "prompt": "change.json says componentMode=new, but baseline-ready specs/spec.md and specs/design.md already exist for the same component.",
       "expected": [
-        "refuses an NFR without a QAS Response Measure threshold",
-        "asks the requirement owner for the threshold or files a blocking open question",
-        "does not invent a threshold"
+        "treats the mode and repository mismatch as blocking",
+        "asks for an explicit mode correction instead of silently treating the component as new or existing",
+        "does not overwrite either canonical document"
       ]
     },
     {
-      "id": "missing-traceability-plan-skeleton",
-      "prompt": "The agent produces a good spec.md and asks R1 to pass, but did not create traceability.md rows or the plan.md run-mode/gate skeleton.",
+      "id": "local-modified-preserves-unrelated-semantics",
+      "prompt": "IFR-002 changes only the invalid-input error in SPEC-IF-003 from ERR_UNSUPPORTED to ERR_INVALID_ARG. The section also defines timeout, concurrency, and success side effects that are unchanged.",
       "expected": [
-        "treats the missing traceability.md and plan.md skeleton as an R1 gate gap",
-        "initializes one traceability row per core FR/NFR/IFR/measurable CON with Change Type and source anchors",
-        "creates plan.md with run mode, gate table, and plan boundary before spec review can pass"
+        "places a MODIFIED operation under the MODIFIED requirements section with a stable operation ID, target section ID, and selector limited to invalid-input error semantics",
+        "records the base excerpt, resulting local content, regression semantics, and an explicit preservation clause",
+        "does not replace the whole section or drop timeout, concurrency, success, or other unmentioned behavior"
+      ]
+    },
+    {
+      "id": "rename-keeps-stable-id",
+      "prompt": "The AR renames the display title of SPEC-FR-004 but does not change its behavior.",
+      "expected": [
+        "uses a RENAMED operation with from and to names",
+        "keeps SPEC-FR-004 as the stable identity",
+        "states that body, acceptance, and behavioral semantics are preserved"
+      ]
+    },
+    {
+      "id": "base-changed-after-delta-capture",
+      "prompt": "delta-spec.md was based on revision abc. Before R1, the same target field in specs/spec.md changed at revision def.",
+      "expected": [
+        "detects an overlapping change using recorded base revision or digest",
+        "stops and requests semantic conflict resolution instead of applying the older patch",
+        "keeps change.json.baseRevision immutable and records the resolution in delta provenance and gate evidence"
+      ]
+    },
+    {
+      "id": "fixed-traceability-chain",
+      "prompt": "The agent initialized traceability with only columns labeled 需求条目, Code, and Test and wants R1 to proceed.",
+      "expected": [
+        "rejects the incomplete matrix",
+        "uses the fixed chain 需求条目 to Spec Section to Design Section/Case to Task to Code/Test to Evidence",
+        "fills the first two columns now and marks downstream cells with stage-specific TBD values"
+      ]
+    },
+    {
+      "id": "artifact-and-state-boundary",
+      "prompt": "Specification content is ready. The agent puts R1/R2/R3 gate rows into tasks.md and marks R1 passed itself.",
+      "expected": [
+        "keeps tasks.md as a task and TDD evidence skeleton without lifecycle gate state",
+        "stores gates only in change.json and sets R1 to pending for independent review",
+        "does not let the specification author mark R1 passed"
+      ]
+    },
+    {
+      "id": "vague-nfr-is-not-invented",
+      "prompt": "The request says the operation should be fast and memory efficient but provides no environment or threshold.",
+      "expected": [
+        "does not invent a number or write a non-testable NFR",
+        "asks the source owner for QAS environment and response measures or records a blocking open question",
+        "keeps change.json gates.r1 blocked while the requirement fact is unresolved"
+      ]
+    },
+    {
+      "id": "functional-and-nonfunctional-separate",
+      "prompt": "The SRS puts FR, IFR, NFR, and CON entries under one generic requirements chapter.",
+      "expected": [
+        "separates FR and IFR into the functional requirements chapter",
+        "places NFR entries in a distinct non-functional requirements chapter with QAS and measurable response",
+        "places verifiable constraints in their own chapter and updates the SRS self-check",
+        "uses FR/IFR/NFR/CON IDs without adding an SRS prefix"
+      ]
+    },
+    {
+      "id": "split-independent-behaviors",
+      "prompt": "FR-001 says administrators can create, query, modify, and delete policies across immediate and scheduled modes, with one shared Acceptance list.",
+      "expected": [
+        "splits independently observable CRUD and timing-mode behaviors into focused requirements",
+        "preserves the original source while giving each child its own acceptance",
+        "asks for confirmation before moving any child behavior out of the current AR and records its destination"
+      ]
+    },
+    {
+      "id": "qas-five-elements-required",
+      "prompt": "NFR-001 says requests should usually finish within 100 ms, but does not identify the source, event, operating environment, response, percentile, or failure condition.",
+      "expected": [
+        "requires stimulus source, stimulus, environment, response, and response measure",
+        "rejects usually and the bare 100 ms value as an incomplete measurable contract",
+        "blocks R1 or asks the responsible owner for the missing context and threshold semantics"
+      ]
+    },
+    {
+      "id": "split-multi-dimensional-nfr",
+      "prompt": "NFR-001 combines peak-load latency, memory capacity, degraded-mode recovery time, and configuration integrity into one QAS with several environments and thresholds.",
+      "expected": [
+        "splits independent performance, capacity, reliability, and security concerns into separate NFR entries",
+        "gives each NFR one coherent environment, response measure, and source without duplicating an acceptance block",
+        "does not create empty NFR entries for unrelated quality dimensions"
+      ]
+    },
+    {
+      "id": "srs-does-not-duplicate-manifest-or-delta",
+      "prompt": "The author adds componentMode, baseRevision, canonical paths, Priority, Impact, Affected Spec Section, Current Behavior, Semantics To Preserve, and an author self-check to every SRS requirement.",
+      "expected": [
+        "keeps identity, mode, base revision, and artifact state only in change.json",
+        "keeps impact, canonical target, current behavior, and preservation semantics only in delta-spec.md",
+        "keeps SRS focused on problem, scope, desired requirements, sources, constraints, assumptions, and open questions",
+        "does not duplicate NFR QAS as a second acceptance block or retain author self-check in the deliverable"
+      ]
+    },
+    {
+      "id": "openspec-style-component-and-delta-shape",
+      "prompt": "The author writes component spec as a collection of delta operations and puts ADDED, MODIFIED, REMOVED, and RENAMED records together in one generic operations chapter.",
+      "expected": [
+        "keeps specs/spec.md as current Purpose plus Requirements and Scenarios without delta markers",
+        "separates delta-spec operations into ADDED, MODIFIED, REMOVED, and RENAMED requirement sections",
+        "requires complete added requirement blocks, safe partial-or-full modified results, removal reason and migration semantics, and rename from/to while preserving the stable ID"
       ]
     }
   ]

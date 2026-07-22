@@ -55,6 +55,61 @@ def test_expected_skill_set_is_enforced(tmp_path):
     assert any("devflow-tdd" in error and "missing" in error for error in result)
 
 
+def test_expected_command_set_is_enforced(tmp_path):
+    validator = load_validator()
+    commands = tmp_path / "commands"
+    commands.mkdir()
+    for name in validator.EXPECTED_COMMANDS - {"devflow-init.md"}:
+        (commands / name).write_text("# command\n", encoding="utf-8")
+
+    result = validator.validate_command_set(tmp_path)
+
+    assert any("devflow-init.md" in error and "missing" in error for error in result)
+
+
+def test_delivery_contract_requires_canonical_tokens(tmp_path):
+    validator = load_validator()
+    for relative_path, tokens in validator.REQUIRED_CONTRACT_TOKENS.items():
+        path = tmp_path / relative_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("\n".join(tokens), encoding="utf-8")
+
+    using_devflow = tmp_path / "skills" / "using-devflow" / "SKILL.md"
+    using_devflow.write_text("specs/changes/\nchange.json\ndevflow-init\n", encoding="utf-8")
+
+    result = validator.validate_delivery_contract(tmp_path)
+
+    assert any("using-devflow" in error and "componentMode" in error for error in result)
+
+
+def test_spec_template_shape_requires_new_component_purpose(tmp_path):
+    validator = load_validator()
+    references = tmp_path / "skills" / "devflow-specify" / "references"
+    references.mkdir(parents=True)
+    (references / "component-spec-template.md").write_text(
+        "## 1. 目的\n## 2. 需求\n#### 场景\n## 3. 来源追溯\n",
+        encoding="utf-8",
+    )
+    (references / "delta-spec-template.md").write_text(
+        "\n".join(
+            (
+                "## 组件目的变更",
+                "## ADDED 需求",
+                "## MODIFIED 需求",
+                "## REMOVED 需求",
+                "## RENAMED 需求",
+                "## 无规格变化",
+                "RENAMED → REMOVED → MODIFIED → ADDED",
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    result = validator.validate_spec_template_shape(tmp_path)
+
+    assert any("Purpose must be mandatory" in error for error in result)
+
+
 def test_legacy_skill_directories_are_rejected(tmp_path):
     validator = load_validator()
     for name in validator.EXPECTED_SKILLS:
@@ -96,6 +151,12 @@ def test_legacy_references_are_detected_in_active_text():
     )
     assert "Next Action Or Recommended Skill" in validator.find_legacy_references(
         "write Next Action Or Recommended Skill into progress.md"
+    )
+    assert "features/" in validator.find_legacy_references(
+        "write current artifacts under features/AR123-demo"
+    )
+    assert "plan.md" in validator.find_legacy_references(
+        "recover task state from plan.md"
     )
     # New skill names that contain no legacy tokens pass clean.
     assert validator.find_legacy_references("use devflow-tdd and devflow-design") == []

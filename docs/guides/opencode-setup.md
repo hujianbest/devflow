@@ -10,7 +10,7 @@ DevFlow integrates with OpenCode through:
 - OpenCode's built-in `skill` tool, which automatically discovers any `SKILL.md` under `skills/`.
 - DevFlow subagents under `agents/`, used by review and implementation phases.
 - Slash-style commands under `commands/` for teams that prefer explicit phase entry.
-- An optional project-level `AGENTS.md` `## Project overrides` section in your component repository to override default artifact paths and templates. Default `features/` and `docs/` paths are resolved under the target component repository root, not the DevFlow skill-pack directory or a parent workspace.
+- An optional project-level `AGENTS.md` section for extra constraints and template requirements. Canonical docs, active changes, and archives always remain under the target component root's `specs/` directory.
 
 This is an **agent-driven** workflow: skills are selected automatically by intent. Slash commands are thin pointers, not a separate mechanism.
 
@@ -50,7 +50,7 @@ List the DevFlow skills you can see, and tell me which one you would load
 if I asked to start a new feature.
 ```
 
-The agent should list the core skills (`using-devflow`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-ship`, `devflow-fix`), any discovered language/domain extensions (`<language>-coding-standards` and domain development skills), and the tooling skill `coding-standards-creator`, picking `using-devflow` as the entry. Slash commands such as `/devflow`, `/devflow-specify`, and `/devflow-review` should also be available after the `commands/` files are installed.
+The agent should list the core skills (`using-devflow`, `devflow-init`, `devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-clean-code`, `devflow-review`, `devflow-ship`, `devflow-fix`), any discovered language/domain extensions, and `coding-standards-creator`, picking `using-devflow` as the normal entry. Slash commands including `/devflow-init` should be available after the command files are installed.
 
 ## How it works
 
@@ -61,7 +61,8 @@ OpenCode reads each skill's YAML frontmatter `description` (triggering condition
 | User says… | Agent loads |
 |---|---|
 | "Help me clarify AR12345" | `using-devflow` → `devflow-specify` |
-| "Continue AR12345" | `using-devflow` (recovers stage from the target component root's `features/AR12345-*/` artifacts) |
+| "Initialize docs for this existing component" | `using-devflow` → `devflow-init` |
+| "Continue AR12345" | `using-devflow` (recovers from `specs/changes/AR12345-*/change.json` and `tasks.md`) |
 | "Design the approved spec" | `devflow-design` (+ applicable language/domain skills) |
 | "Implement the next task" | `devflow-tdd` + `devflow-clean-code` (+ language/domain skills) |
 | "Review the tests / the code" | `devflow-review` (dispatches an independent reviewer subagent) |
@@ -70,18 +71,20 @@ OpenCode reads each skill's YAML frontmatter `description` (triggering condition
 ### Lifecycle mapping
 
 ```text
-SPECIFY   devflow-specify        → spec.md + traceability.md + plan.md skeleton
-R1        devflow-review         → reviews/spec-review-*.md   (human confirms in attended mode)
-DESIGN    devflow-design         → design.md (+ component-design-draft.md)
-R2        devflow-review         → reviews/design-review-*.md (human confirms in attended mode)
-BUILD     devflow-tdd            → code + tests, plan.md with task progress & evidence lines
+PREFLIGHT using-devflow           → check componentMode and canonical baseline
+INIT      devflow-init            → specs/spec.md + specs/design.md (existing components only)
+SPECIFY   devflow-specify         → change.json + srs.md + delta-spec.md + traceability.md
+R1        devflow-review          → reviews/r1-review-*.md
+DESIGN    devflow-design          → delta-design.md
+R2        devflow-review          → reviews/r2-review-*.md
+BUILD     devflow-tdd             → code + tests, tasks.md progress and evidence
                                    (dispatches implementer subagents by default)
-R3        devflow-review         → reviews/test-review-*.md, code-review-*.md
-SHIP      devflow-ship           → DoD check, promotion to component-root docs/, closeout.md
-FIX       devflow-fix            → fix.md, then back through TDD + R3
+R3        devflow-review          → reviews/r3-review-*.md
+SHIP      devflow-ship           → DoD, intelligent canonical sync, closeout, archive
+FIX       devflow-fix            → defect SRS/delta → R1/R2 → TDD + R3
 ```
 
-The run mode (`attended` / `unattended`) is confirmed once at workflow start and recorded in plan.md; `unattended` removes human pauses but never removes reviews, records, or critical-finding blocking.
+The run mode (`attended` / `unattended`) is confirmed once and recorded in `change.json`; `unattended` removes human pauses but never removes reviews, records, critical-finding blocking, canonical diff review, or final archive confirmation.
 
 Overlay skills (`devflow-clean-code`, the applicable `<language>-coding-standards`, and domain skills whose descriptions match the work item) are consumed inside these phases; they are constraints, not phases. New language standards are generated from internal team documents via `coding-standards-creator`; new domain skills join by describing their trigger context in frontmatter.
 
@@ -92,7 +95,7 @@ DevFlow ships two subagent definitions under `agents/`:
 | Agent file | OpenCode agent name | Dispatched by | Role |
 |---|---|---|---|
 | `agents/devflow-implementer.md` | `devflow-implementer` | `devflow-tdd` (BUILD phase) | Executes one RED→GREEN→REFACTOR task from a packed Context Pack |
-| `agents/devflow-reviewer.md` | `devflow-reviewer` | `devflow-review` (R1/R2/R3 gates) | Independent read-only reviewer; returns findings + verdict |
+| `agents/devflow-reviewer.md` | `devflow-reviewer` | `devflow-review` (R1/R2/R3 and canonical sync) | Independent read-only reviewer; returns findings + verdict |
 
 Each file carries a YAML frontmatter with `description`, `mode: subagent`, and `permission` — these are required for OpenCode to register and discover the agent via its `task` tool.
 
@@ -105,6 +108,7 @@ Each file carries a YAML frontmatter with `description`, `mode: subagent`, and `
 For DevFlow to work on OpenCode, the agent must follow the behavior rules in [`using-devflow`](../../skills/using-devflow/SKILL.md):
 
 - Surface assumptions before implementing; never silently fill in vague requirements.
+- For an existing component without baseline-ready canonical docs, stop and use `devflow-init`; clarify rather than fabricate.
 - Never write implementation code before a failing test exists (`devflow-tdd`).
 - Never let the authoring session review its own output.
 - Recover state from disk artifacts, not chat memory.
@@ -117,6 +121,7 @@ If your agent skips any of the above, fix the agent — do not relax the rule.
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | Agent jumps straight to code | `using-devflow` not loaded | Confirm `skills/` is on the skills root; ask the agent to load `using-devflow` |
+| Existing component starts an AR without canonical docs | Baseline preflight was skipped | Stop the AR and run `/devflow-init` |
 | Agent "reviews" its own design inline | Self-review | Discard it; require `devflow-review` to dispatch an independent subagent |
 | Tests written after implementation | TDD violation | Delete the implementation, restart from RED (`devflow-tdd` Iron Law) |
 | Skills not discovered | `skills/` not on the skills root | Verify the symlink / config |

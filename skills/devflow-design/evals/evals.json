@@ -2,66 +2,112 @@
   "skill": "devflow-design",
   "scenarios": [
     {
-      "id": "contract-incomplete",
-      "prompt": "The agent produces a design with a module diagram and file list, and writes 'error handling: return error codes'.",
+      "id": "existing-reads-canonical-and-delta",
+      "prompt": "An existing component has R1 passed. Design the change using only srs.md; the agent has not read specs/design.md or delta-spec.md.",
       "expected": [
-        "rejects the design as incomplete: interface contracts need all six items",
-        "requires the error model (classification, propagation, failure-path state guarantees)",
-        "requires data ownership for cross-boundary buffers"
+        "refuses to design from the SRS alone",
+        "reads baseline-ready canonical spec and design plus delta-spec and verifies their recorded revisions",
+        "derives affected design sections and decisions from the spec delta before writing delta-design.md"
+      ]
+    },
+    {
+      "id": "new-design-from-empty",
+      "prompt": "The first AR for componentMode=new has EMPTY canonical baselines and a complete ADDED delta-spec.",
+      "expected": [
+        "allows design without invoking baseline initialization",
+        "uses ADDED design operations with component-template chapter/entity targets and stable DD/DEC/TC IDs",
+        "makes the delta complete enough to construct the first canonical design from an empty baseline"
+      ]
+    },
+    {
+      "id": "local-contract-modification-preserves-fields",
+      "prompt": "The AR changes only the invalid-input error mapping for one row in section 6.1.3. Inputs, outputs, success side effects, timing, and compatibility remain unchanged.",
+      "expected": [
+        "writes a MODIFIED operation whose selector targets only the error contract field",
+        "includes base and resulting local content plus a preservation clause for all untouched contract fields",
+        "does not rewrite the whole interface section or silently remove existing semantics"
+      ]
+    },
+    {
+      "id": "canonical-changed-after-base",
+      "prompt": "delta-design is based on revision abc, but the same target decision in specs/design.md changed at revision def.",
+      "expected": [
+        "detects the overlapping canonical change",
+        "stops for semantic conflict resolution rather than overwriting the newer decision",
+        "does not advance R2 until base provenance is reconciled"
+      ]
+    },
+    {
+      "id": "profile-driven-expansion",
+      "prompt": "change.json profile is elevated. Its evidence-based reasons identify concurrency and real-time changes, and requiredEvidence asks for integration and repeatable timing results; security and data migration are not applicable.",
+      "expected": [
+        "always completes core and expands concurrency and real-time sections with risks and verification cases",
+        "records evidence-backed N/A entries for security and data-migration without generating empty boilerplate sections",
+        "maps profile reasons and required evidence to component chapter/entity anchors and Case IDs"
+      ]
+    },
+    {
+      "id": "profile-missing-or-inconsistent",
+      "prompt": "The SRS changes a safety-critical shutdown path, but change.json has no complete profile name, risk, reasons, requiredEvidence, or requiredReviewers.",
+      "expected": [
+        "treats the missing or inconsistent profile as blocking",
+        "asks for profile ownership, evidence, and reviewer decisions instead of silently choosing a low-risk shape",
+        "does not set R2 pending while the risk coverage contract is unresolved"
+      ]
+    },
+    {
+      "id": "design-core-content-complete",
+      "prompt": "The proposed delta-design contains a module diagram and file list but no options, full contract, error model, risks, migration decision, or test design.",
+      "expected": [
+        "rejects the design as incomplete",
+        "requires a justified option/decision plus contracts, failure-state guarantees, ownership, risks, migration or N/A evidence, and rollback",
+        "requires a stable Case Index covering all SRS acceptance and regression obligations"
       ]
     },
     {
       "id": "speculative-framework",
-      "prompt": "The spec needs file logging only, but the design introduces a pluggable backend interface 'for future backends'.",
+      "prompt": "The delta spec needs one file logger, but the design adds a plugin registry and backend abstraction solely for possible future backends.",
       "expected": [
-        "challenges the abstraction with no real second use case",
-        "recommends the minimal structure and notes where a future seam would go",
-        "asks 'why not simpler' as a design test"
+        "challenges abstractions that have no current requirement or real variation axis",
+        "records the simplest viable decision and why it satisfies the delta spec",
+        "does not use future-proofing alone to justify complexity"
       ]
     },
     {
-      "id": "test-design-mandatory",
-      "prompt": "The agent wants to skip the test design table because 'tests will be written during TDD anyway'.",
+      "id": "fixed-traceability-design-link",
+      "prompt": "delta-design is ready, but traceability still says TBD(design) and the designer wants R2 review.",
       "expected": [
-        "refuses: the test design table is the bridge from spec acceptance to TDD tasks",
-        "maps every acceptance criterion to a case with level and mock boundary",
-        "flags any requirement that cannot produce a test case as an untestable spec issue"
+        "blocks R2 readiness",
+        "fills Design Section/Case with component chapter/entity, DEC, and TC anchors for every row keyed by 需求条目",
+        "preserves the fixed 需求条目 to Spec Section to Design Section/Case to Task to Code/Test to Evidence chain"
       ]
     },
     {
-      "id": "solid-mixed-responsibilities",
-      "prompt": "A component design describes ConfigManager as loading config, validating schema, watching storage changes, notifying subscribers, and persisting defaults.",
+      "id": "canonical-keeps-enterprise-component-design",
+      "prompt": "While creating the first component design baseline, the agent proposes keeping only context, units, interfaces, and a test map, dropping the original component template's full function baseline, development/runtime views, database/UI, key functions, software units, review record, and cost assessment.",
       "expected": [
-        "flags SRP violation using the one-sentence responsibility test",
-        "splits responsibilities by reason to change instead of technical shape",
-        "allows small implementations to stay colocated only if internally organized by responsibility"
+        "rejects replacing the enterprise component design body with a short canonical summary",
+        "keeps the original component template sections 1 through 8 with real content or auditable N/A evidence",
+        "adds only the minimal baseline frontmatter and new specs/design.md path semantics"
       ]
     },
     {
-      "id": "solid-interface-pollution",
-      "prompt": "The design exposes a public sensor_t struct with calibration state, raw ADC fields, filter internals, and lifecycle flags because several callers might need them later.",
+      "id": "delta-keeps-enterprise-ar-design",
+      "prompt": "delta-design has a valid DD-001 operation and preservation clause, so the author omits the original AR template's overview, dynamic behavior, implementation/data/interface/code design, domain scenarios, refactoring, layered tests, and template revision record.",
       "expected": [
-        "flags ISP and implementation leakage in the public contract",
-        "requires callers to depend only on the APIs and data they actually use",
-        "moves internal fields behind an opaque handle or internal detail boundary"
+        "rejects the operation-only delta as insufficient for implementation and review",
+        "requires original AR sections 1 through 6 and 8 to describe all applicable change details or N/A evidence",
+        "uses section 7 for base, operations, selectors, preservation, conflict, and merge-review information",
+        "leaves high-quality design judgments to the independent R2 review rubric"
       ]
     },
     {
-      "id": "solid-dependency-boundary",
-      "prompt": "A high-level retry policy module directly calls flash_write(), spi_transfer(), and vendor_crc32() to make tests easier to wire.",
+      "id": "design-author-does-not-sync-or-pass",
+      "prompt": "After finishing delta-design, the author directly edits specs/design.md and marks R2 passed.",
       "expected": [
-        "flags DIP violation because high-level policy depends on hardware and vendor details",
-        "introduces a minimal adapter or port only at the real boundary",
-        "rejects unnecessary single-implementation abstractions outside real ownership boundaries"
-      ]
-    },
-    {
-      "id": "simpler-structure-reverse-check",
-      "prompt": "The spec only requires rejecting invalid SetMode values, but the design adds a mode plugin registry, dynamic hooks, and a configurable policy table because future modes may be added.",
-      "expected": [
-        "performs the reverse check: asks whether a simpler direct enum validation satisfies the current spec",
-        "rejects future-proofing as the only reason for a registry, hook, or policy abstraction",
-        "records the simpler recommended structure or requires explicit spec evidence for the variation axis"
+        "rejects direct canonical mutation during the design stage",
+        "marks only the deltaDesign artifact ready and R2 pending in change.json",
+        "leaves R2 verdict to an independent reviewer and canonical synchronization to the closeout flow"
       ]
     }
   ]

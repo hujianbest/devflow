@@ -34,6 +34,7 @@ DevFlow 提供 slash-style 阶段入口，作为很薄的平台适配层。真�
 | 你要做什么 | 命令 | 技能 | 核心原则 |
 |------------|------|------|----------|
 | 进入或恢复 DevFlow | `/devflow` | `using-devflow` | 从工件恢复 |
+| 初始化既有组件 | `/devflow-init` | `devflow-init` | 澄清而不臆造 |
 | 定义要做什么 | `/devflow-specify` | `devflow-specify` | 先 spec 再代码 |
 | 规划怎么做 | `/devflow-design` | `devflow-design` | 先设计再实现 |
 | 用测试构建 | `/devflow-build` | `devflow-tdd` | RED -> GREEN -> REFACTOR |
@@ -68,7 +69,7 @@ cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 先澄清需求，不要直接写代码。
 ```
 
-项目级覆盖：在目标仓库根目录创建带 `## Project overrides` 章节的 `AGENTS.md`，可覆盖工件路径与模板；不创建时使用内置默认值。
+项目级覆盖可以通过目标仓库根目录 `AGENTS.md` 增加约束和模板要求，但工件根固定在组件的 `specs/` 下。
 
 ---
 
@@ -78,25 +79,28 @@ cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 You:    使用本仓库的 DevFlow。给 notifications API 增加限流。
         不要直接写代码。
 
-DF:     从 `using-devflow` 进入，确认运行模式，解析目标组件根目录；
-        由于没有已批准 spec，路由到 `devflow-specify`。
+DF:     从 `using-devflow` 进入，解析组件根并读取 change.json。
+        既有组件缺少 baseline-ready 的 spec.md/design.md 时先进入
+        `devflow-init`；新增组件可以直接继续。
 
 You:    spec 完成后继续 DevFlow。
 
-DF:     运行独立的 `devflow-review` 门禁。规格通过且运行模式允许继续后，
-        `devflow-design` 写组件/工作项设计、接口契约、错误模型和测试设计。
+DF:     `devflow-specify` 写 srs.md 与 delta-spec.md。R1 通过后，
+        `devflow-design` 写 delta-design.md，明确契约、错误模型、决策、
+        风险和测试设计。
 
 You:    构建已批准的设计。
 
-DF:     `devflow-tdd` 细化 `plan.md`，一次实现一个任务，记录
+DF:     `devflow-tdd` 细化 `tasks.md`，一次实现一个任务，记录
         RED -> GREEN -> REFACTOR 证据，叠加 `devflow-clean-code`
         和适用语言/领域规范，并把证据行更新到磁盘。
 
 You:    验证并关闭工作。
 
 DF:     `devflow-review` 用独立上下文评审测试和代码。`devflow-ship`
-        执行 Definition of Done、promotion 长期文档资产，并写入
-        `closeout.md`，等待人工最终确认。
+        执行 DoD，把两份 delta 智能同步到 specs/spec.md 和
+        specs/design.md，复核 canonical diff，再把整个 AR 从
+        specs/changes/ 移到 specs/archive/。
 ```
 
 工作流启动时 DevFlow 只记录一次运行模式：默认 `attended`，评审 verdict 后停下给人确认；也可以选择 `unattended`，长时间连续执行，但独立评审、记录落盘、critical 阻塞和事后人工审计仍然保留。
@@ -105,18 +109,19 @@ DF:     `devflow-review` 用独立上下文评审测试和代码。`devflow-ship
 
 ## 全部 Skills
 
-DevFlow 当前包含 17 个随包发布的 skills：7 个阶段技能、若干质量叠加技能、1 个工具技能。质量叠加技能按约定和 description 发现，后续可以继续扩展，不需要改阶段技能。
+DevFlow 当前包含 18 个随包发布的 skills：8 个工作流/入口技能、若干质量叠加技能、1 个工具技能。质量叠加技能按约定和 description 发现，后续可以继续扩展，不需要改阶段技能。
 
 ### 阶段技能
 
 | Skill | 做什么 | 什么时候用 |
 |-------|--------|------------|
 | [using-devflow](skills/using-devflow/SKILL.md) | 入口、工作流地图、工件约定、恢复规则、行为准则 | 开始、恢复，或不确定 DevFlow 下一步该做什么 |
-| [devflow-specify](skills/devflow-specify/SKILL.md) | 把意图写成可测试规格：EARS、BDD 验收、NFR QAS、追溯矩阵 | 功能/变更需要先明确需求 |
-| [devflow-design](skills/devflow-design/SKILL.md) | 产出组件/工作项设计、边界、契约、错误模型、取舍和测试设计 | 规格已批准，需要技术设计 |
+| [devflow-init](skills/devflow-init/SKILL.md) | 从既有组件逆向建立 spec/design 基线，不臆造未知意图 | 既有组件缺少 baseline-ready canonical 文档 |
+| [devflow-specify](skills/devflow-specify/SKILL.md) | 产出可测试 SRS 与 delta spec：EARS、BDD 验收、NFR QAS、追溯矩阵 | 功能/变更需要先明确需求 |
+| [devflow-design](skills/devflow-design/SKILL.md) | 产出 delta design、边界、契约、错误模型、取舍和测试设计 | delta spec 已批准，需要技术设计 |
 | [devflow-tdd](skills/devflow-tdd/SKILL.md) | 用 RED -> GREEN -> REFACTOR 实现，记录任务证据，约束断言强度和 mock 边界 | 设计已批准，进入实现 |
 | [devflow-review](skills/devflow-review/SKILL.md) | 独立评审规格、设计、测试或代码，产出 findings 和 verdict | 阶段工件准备过门禁 |
-| [devflow-ship](skills/devflow-ship/SKILL.md) | 核验 Definition of Done，promotion 长期资产，写 closeout | 评审闭环，工程工作准备收尾 |
+| [devflow-ship](skills/devflow-ship/SKILL.md) | 核验 DoD、智能同步 canonical、写 closeout 并归档 | 评审闭环，工程工作准备收尾 |
 | [devflow-fix](skills/devflow-fix/SKILL.md) | 缺陷处理：复现、根因、最小修复边界、TDD 修复 | 遇到回归、bug、hotfix 或已发布行为缺陷 |
 
 ### 质量叠加技能
@@ -149,7 +154,7 @@ DevFlow 不是 prompt 集合，而是一套轻量、基于证据的工作流，�
 | Internal quality | Clean Code 叠加约束 | 保持代码可读、简单、可维护、可评审 |
 | Review | 独立门禁 | 分离作者身份和判断权 |
 | Recovery | 工件优先状态 | 让另一个 agent 或人能从文件恢复，而不是依赖聊天记忆 |
-| Closeout | DoD 与 promotion | 记录改了什么、通过了什么、哪些文档成为长期资产 |
+| Closeout | DoD、canonical sync、archive | 更新当前真相并保留完整变更历史 |
 
 DevFlow 的协作姿态是 **human-on-the-loop**：AI 做具体工作，人审查关键工件和决策。理念见 [docs/devflow-philosophy.md](docs/devflow-philosophy.md)，架构见 [docs/devflow-core-architecture.md](docs/devflow-core-architecture.md)。
 
@@ -174,7 +179,7 @@ SKILL.md
 
 - **流程最小化。** DevFlow 只保留能产生质量的阶段工件、人审把关点、TDD 纪律和独立评审。
 - **内容最大化。** 每个 skill 的主体是工程判断：规则、例子、失败模式、清单和评审 rubric。
-- **证据优先于记忆。** 进度从 `plan.md`、`reviews/`、`traceability.md` 和工件文件本身恢复。
+- **证据优先于记忆。** 阶段状态来自 `change.json`，任务进度来自 `tasks.md`，reviews 与 traceability 负责交叉验证。
 - **作者不自审。** 创建工件的 agent 不批准自己的工件。
 
 ---
@@ -183,13 +188,14 @@ SKILL.md
 
 ```text
 devflow/
-├── skills/                         # 17 个核心 skills
+├── skills/                         # 18 个随包 skills
 │   ├── using-devflow/              # 入口与恢复规则
-│   ├── devflow-specify/            # 可测试规格与追溯矩阵
-│   ├── devflow-design/             # 组件/工作项设计
+│   ├── devflow-init/               # 既有组件基线初始化
+│   ├── devflow-specify/            # SRS、delta spec 与追溯
+│   ├── devflow-design/             # delta design 与测试设计
 │   ├── devflow-tdd/                # 测试先行实现
 │   ├── devflow-review/             # 独立评审门禁
-│   ├── devflow-ship/               # DoD、promotion、closeout
+│   ├── devflow-ship/               # DoD、canonical sync、archive
 │   ├── devflow-fix/                # 缺陷路径
 │   ├── devflow-clean-code/         # 语言无关 Clean Code
 │   ├── *-coding-standards/         # 语言级叠加约束，按命名约定发现
@@ -200,6 +206,7 @@ devflow/
 ├── docs/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md
+│   ├── devflow-delivery-contract-redesign.md
 │   ├── devflow-internal-quality.md
 │   ├── guides/
 │   └── asserts/
@@ -209,7 +216,23 @@ devflow/
 └── README.md
 ```
 
-每个工作项的过程工件位于目标组件仓库，默认是 `features/<id>-<slug>/`：`spec.md`、`traceability.md`、`design.md`、`plan.md`、`reviews/`、`closeout.md` 或 `fix.md`。长期资产如 `docs/component-design.md`、`docs/ar-specs/`、`docs/ar-designs/` 在 `devflow-ship` 阶段 promotion。
+组件当前真相和变更历史统一位于目标组件的 `specs/`：
+
+```text
+specs/
+├── spec.md
+├── design.md
+├── changes/ARXXX-<topic>/
+│   ├── change.json
+│   ├── srs.md
+│   ├── delta-spec.md
+│   ├── delta-design.md
+│   ├── tasks.md
+│   ├── traceability.md
+│   ├── reviews/
+│   └── closeout.md
+└── archive/YYYY-MM-DD-ARXXX-<topic>/
+```
 
 ---
 

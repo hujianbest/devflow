@@ -1,10 +1,15 @@
 ---
-description: DevFlow 规格阶段——把需求澄清成可测试的规格，先规格后设计与代码
+description: DevFlow 规格阶段——在标准 change 目录产出可测试 SRS 与相对 canonical spec 的 delta
 ---
 
 执行 DevFlow 规格阶段。
 
-1. 新工作流启动时先按 `using-devflow` 确定目标组件根与工件根，再向用户确认运行模式（attended/unattended），一并记入 plan.md 头部。
-2. 读取 `skills/devflow-specify/SKILL.md` 并按其工作流执行：澄清 → 需求条目（EARS + Given/When/Then + Change Type）→ NFR QAS → 粒度检查 → traceability 与 plan.md 骨架 → 自检。
-3. 产出目标组件根下 `features/<id>-<slug>/spec.md`、`traceability.md`、`plan.md` 骨架（或团队覆盖路径）。业务方向、优先级、验收阈值的缺口列为 Open Questions 交回用户，不替用户拍板。
-4. 完成后进入 R1 门禁：`/devflow-review` 独立评审 spec 并落盘记录（必经节点）；attended 模式下经人确认后才进入设计。
+1. 解析组件根和 `specs/changes/ARXXX-<topic>/`，先创建或读取 `change.json`。AR 身份、topic、`componentMode`、profile 或运行模式缺失时向人询问，不自行推断。
+2. 执行 baseline preflight：
+   - existing 要求 `specs/spec.md` 与 `specs/design.md` 均为 `baseline-ready`，否则转 `/devflow-init`；
+   - new 允许 canonical 缺失，后续 delta 必须能从空基线创建首版；
+   - 创建时记录不可变 `change.json.baseRevision`，并在两份 delta 中记录各自 canonical base 元数据；后续不得为消除并行变化而改写 `baseRevision`。
+3. 读取 `skills/devflow-specify/SKILL.md` 并执行：澄清来源/目标/范围 → 编写 `srs.md` → 以稳定 ID 和 `ADDED / MODIFIED / REMOVED / RENAMED` 编写 `delta-spec.md` → 初始化 `traceability.md` 与 `tasks.md` 骨架 → 自检。
+4. 所有工件只写入当前 change 根。生命周期、门禁和 artifact 状态写 `change.json`；`tasks.md` 只保存任务结构与后续 TDD 证据。
+5. 行为基线不变的缺陷可以在 `delta-spec.md` 明确 N/A，但必须引用 canonical stable ID 并证明不改变接口、错误语义、状态机、阈值或兼容承诺。
+6. 完成后把 R1 置为 `pending`，进入 `/devflow-review`：独立评审 `srs.md + delta-spec.md` 相对 canonical spec/空基线，记录写入同一 `reviews/`。R1 未通过前不进入设计。

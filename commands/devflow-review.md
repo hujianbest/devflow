@@ -1,11 +1,17 @@
 ---
-description: DevFlow 独立评审——以独立上下文评审规格/设计/测试/代码，作者永不自审
+description: DevFlow 独立评审——以只读 reviewer 执行 R1、R2、R3 或 canonical sync，并在同一 reviews 目录闭环
 ---
 
-执行 DevFlow 独立评审（工作流的 R1/R2/R3 必经门禁，也可对任意目标单独发起）。
+执行 DevFlow 独立评审。
 
-1. 确认评审目标（spec / design / 测试 / 代码；用户未指明时按工件状态推断并确认）。
-2. 读取 `skills/devflow-review/SKILL.md`，按其协议派发 `devflow-reviewer` subagent（agent name: `devflow-reviewer`，角色定义见 `agents/devflow-reviewer.md`）执行独立评审：输入只给被评审产物、上游工件、对应 rubric 与适用的语言/领域技能，不给作者推理过程。
-3. **落盘评审记录**到同一组件根/工件根下 `features/<id>/reviews/<目标>-review-<日期>.md`（或团队覆盖路径，复审加 `-r2` 轮次）：findings 表含 Resolution 列、verdict、抽查记录。没有记录的评审等于没有评审。
-4. verdict 为需修改或重新设计时：把 plan.md 对应门禁置为 `rework`，记录评审路径与返工目标；作者按 findings 返工并逐条回写 Resolution（修复+commit / 人接受+理由 / 债务+去向），然后发起复审；critical/important 未闭环不放行。R3 测试/代码问题默认回 `/devflow-build`（`devflow-tdd`）定向返工；若问题指向规格或设计漂移，则回对应上游阶段并重新经过受影响门禁。不停在评审上下文里自修，也不直接进入收尾。
-5. 按 plan.md 运行模式处理确认：attended 呈人同意后更新门禁表进入下一阶段；unattended 不停顿但记录照写、critical 照样阻塞。评审者不直接修改任何产物；可由 AI 修复的 findings 先自动回对应作者阶段，只有缺业务事实、专家裁决或 3 轮仍不通过时才停下问人。
+1. 读取当前 `specs/changes/ARXXX-<topic>/change.json` 确定 gate；用户明确指定 gate 时仍要校验工件状态。存在多个可能目标或状态矛盾时先确认，不猜。
+2. 读取 `skills/devflow-review/SKILL.md` 和对应 rubric，组装 Review Pack：
+   - R1：`srs.md + delta-spec.md` 相对 `specs/spec.md`/空基线；
+   - R2：`delta-design.md` 相对 canonical design/spec 与已通过 R1 的输入；
+   - R3：测试+代码 diff，相对 SRS、两份 delta、canonical、`tasks.md`、`traceability.md`、真实 TDD/套件输出和主控 Agent 的隔离 mutation 证据；
+   - canonical sync：同步前后 canonical、canonical-only Git diff、SRS、两份 delta、base revision 和 R1-R3 记录。
+3. 派发全新上下文的 `devflow-reviewer`（`agents/devflow-reviewer.md`）。reviewer 只读，不编辑任何工件、代码、review 或 manifest，也不运行命令；输入不足返回阻塞。
+4. 主控 Agent 将 reviewer 返回原样落盘到当前 change 的 `reviews/r1-review-...`、`r2-review-...`、`r3-review-...` 或 `canonical-sync-review-...`；复审追加轮次。记录落盘后才更新 `change.json`：失败写 blocked/rework；reviewer 通过时，attended 的 R1-R3 要等人工确认才 passed，canonical sync 在任何模式都等最终人工确认才 passed。R1 passed 同时把 SRS/delta-spec artifacts 写为 accepted；R2 passed 把 delta-design 写为 accepted；R3 只核验 tasks/traceability 已由 TDD 写为 complete。
+5. verdict 非通过时回对应作者阶段定向返工，逐条回填原记录 Resolution，再发起独立复审。R3 普通问题回 `/devflow-build`；明确合并错误回 `/devflow-ship` 重新同步；规格/设计问题回对应上游。reviewer 不下场修复。
+6. critical/important 未闭环、record 与 gate 不一致或超过 3 轮仍失败时不得推进；第 3 轮后停止自动循环并把最小决策点交给人。
+7. attended 下 R1/R2/R3 通过后呈人确认再推进；unattended 不停顿但评审和记录不减少。canonical sync 通过后仍须由 `/devflow-ship` 展示最终 diff 并取得人工归档确认。
