@@ -204,6 +204,7 @@ devflow/
 ├── docs/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md
+│   ├── ai-rd-transformation-plan.md  # Full-lifecycle AI R&D transformation plan (zh)
 │   ├── guides/
 │   └── asserts/
 ├── scripts/                        # Repository consistency checks
