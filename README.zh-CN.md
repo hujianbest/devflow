@@ -204,6 +204,7 @@ devflow/
 ├── docs/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md
+│   ├── ai-rd-transformation-plan.md  # 设计/开发/测试全流程 AI 研发变革方案
 │   ├── guides/
 │   └── asserts/
 ├── scripts/                        # 仓库一致性检查
