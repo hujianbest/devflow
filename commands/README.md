@@ -12,5 +12,6 @@ DevFlow 的 slash-style 阶段入口，属于平台适配层。每个 command �
 | [`/devflow-review`](devflow-review.md) | 独立评审 | `devflow-review` |
 | [`/devflow-ship`](devflow-ship.md) | 收尾 | `devflow-ship`（DoD + canonical sync + closeout + archive） |
 | [`/devflow-fix`](devflow-fix.md) | 缺陷修复 | `devflow-fix` |
+| [`/devflow-learn`](devflow-learn.md) | 知识沉淀 | `devflow-learn`（仅处理已归档 change，不属于交付 gate） |
 
-所有 command 共同遵守 `using-devflow` 的行为准则：工件优先、暴露假设、范围纪律、验证而非声称、作者不自审。`devflow-clean-code` 与语言/领域技能不设独立 command——它们在设计、实现、评审内部被消费。
+所有 command 共同遵守 `using-devflow` 的行为准则：工件优先、暴露假设、范围纪律、验证而非声称、作者不自审。`devflow-clean-code` 与语言/领域技能不设独立 command——它们在设计、实现、评审内部被消费；`devflow-learn` 是 Ship 之后的可选工具，不改变交付结果。

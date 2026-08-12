@@ -25,6 +25,21 @@ DevFlow 维护两类真相：
 
 canonical 文档的 `baseline-ready` 不是文件存在的同义词。它表示 provenance 完整、影响契约或架构边界的 unknown 已关闭、独立 reviewer 已通过且人已最终确认。
 
+## 开工前检索 learning
+
+目标组件和工作主题明确后，在设计方案或修改代码前，按需检索仓库
+`docs/learnings/`：
+
+1. 先按 `status: active`、`component`、`componentRoot`、`learningType`、`tags`
+   和 `canonicalRefs` 缩小候选；
+2. 再搜索当前错误签名、符号、模块名或决策术语；
+3. 只完整读取强匹配文档，不在入口加载整个知识库；
+4. 把命中的适用范围、证据和限制作为调查或设计输入。
+
+Learning 只提供经验，不是新的 gate 或 canonical。它与当前 spec/design、代码或测试
+冲突时，以当前真相为准，并报告 stale 信号；不得为了套用旧经验而修改当前事实。
+知识库不存在或没有强匹配时继续正常流程，不创建空目录或索引。
+
 ## 交付结构与状态
 
 [交付结构契约](references/delivery-contract.md) 是路径、字段、状态枚举和归档不变量的唯一权威；使用 [change.json 模板](references/change-template.json) 创建 manifest。
@@ -63,6 +78,7 @@ baseline preflight
   → 独立 sync reviewer
   → 人确认 canonical diff
   → closeout.md + 完整归档
+  → 可选 devflow-learn: 提炼一条可复用经验
 ```
 
 ### 阶段边界
@@ -149,6 +165,7 @@ diff、独立复核、人工确认、closeout 和整目录归档。运行环境�
 | `devflow-review` | 独立执行 R1、R2、R3 与 sync 复核 |
 | `devflow-ship` | canonical sync、DoD、closeout 与归档 |
 | `devflow-fix` | 缺陷复现、根因与最小修复；仍受同一 preflight 和门禁约束 |
+| `devflow-learn` | 从已归档 change 中提炼可检索经验；不属于交付 gate |
 
 ## 直接参考
 

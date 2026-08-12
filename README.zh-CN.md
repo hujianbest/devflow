@@ -39,8 +39,9 @@ DevFlow 提供 slash-style 阶段入口，作为很薄的平台适配层。真�
 | 评审工件 | `/devflow-review` | `devflow-review` | 作者不自审 |
 | 关闭工程工作 | `/devflow-ship` | `devflow-ship` | DoD 通过再 closeout |
 | 修复缺陷 | `/devflow-fix` | `devflow-fix` | 先复现再修复 |
+| 沉淀工程经验 | `/devflow-learn` | `devflow-learn` | 只记录已归档且有证据的结论 |
 
-`devflow-clean-code`、语言规范和领域规范没有独立命令。它们是质量叠加约束，在设计、实现、评审阶段内部被消费。
+`devflow-clean-code`、语言规范和领域规范没有独立命令。它们是质量叠加约束，在设计、实现、评审阶段内部被消费。`devflow-learn` 是 Ship 之后的可选工具，不是交付 gate。
 
 ---
 
@@ -135,6 +136,7 @@ DevFlow 包含工作流/入口技能、质量叠加技能和工具技能。质�
 | Skill | 做什么 | 什么时候用 |
 |-------|--------|------------|
 | [coding-standards-creator](skills/coding-standards-creator/SKILL.md) | 把团队内部编码规范转化为新的 `<language>-coding-standards` skill | 团队需要新增或修订某语言规范 |
+| [devflow-learn](skills/devflow-learn/SKILL.md) | 从已归档 change 中提炼有证据、可检索的经验 | 复盘已完成工作、记录根因或设计取舍、避免重复踩坑 |
 
 语言规范按约定扩展：工作触及语言 X，就加载已存在的 `<x>-coding-standards`。新增语言技能遵循同一份[结构契约](skills/coding-standards-creator/references/coding-standards-skill-contract.md)，所以阶段技能不需要为每种语言改写。领域技能按各自 frontmatter description 触发；新增领域技能只要把适用语境、边界和易混淆场景写清楚，就能作为 Quality Stack 的一部分被消费。
 
@@ -195,6 +197,7 @@ devflow/
 │   ├── devflow-review/             # 独立评审门禁
 │   ├── devflow-ship/               # DoD、canonical sync、archive
 │   ├── devflow-fix/                # 缺陷路径
+│   ├── devflow-learn/              # 归档后的可选知识沉淀
 │   ├── devflow-clean-code/         # 语言无关 Clean Code
 │   ├── *-coding-standards/         # 语言级叠加约束，按命名约定发现
 │   ├── *-development/              # 领域开发叠加约束，按 description 发现
@@ -205,6 +208,7 @@ devflow/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md
 │   ├── guides/
+│   ├── learnings/                  # 项目使用后生成的仓库级知识库
 │   └── asserts/
 ├── scripts/                        # 仓库一致性检查
 ├── tests/

@@ -214,6 +214,44 @@ def test_agent_valid_frontmatter_passes(tmp_path):
     assert result == []
 
 
+def test_devflow_learn_必需文件缺失时校验失败(tmp_path):
+    validator = load_validator()
+    skill = tmp_path / "skills" / "devflow-learn"
+    skill.mkdir(parents=True)
+    (skill / "SKILL.md").write_text("# 知识沉淀\n", encoding="utf-8")
+
+    result = validator.validate_learning_skill(tmp_path)
+
+    assert any("learning-schema.json" in error and "必需文件缺失" in error for error in result)
+    assert any("validate_learning.py" in error and "必需文件缺失" in error for error in result)
+
+
+def test_devflow_learn_schema_必须拒绝未知字段(tmp_path):
+    validator = load_validator()
+    skill = tmp_path / "skills" / "devflow-learn"
+    for relative in (
+        "SKILL.md",
+        "references/learning-contract.md",
+        "references/learning-templates.md",
+        "references/learning-review-rubric.md",
+        "scripts/validate_learning.py",
+        "evals/evals.json",
+    ):
+        path = skill / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("{}\n", encoding="utf-8")
+    schema_path = skill / "references" / "learning-schema.json"
+    schema_path.write_text(
+        '{"additionalProperties": true, "required": [], "categoryMapping": {}}\n',
+        encoding="utf-8",
+    )
+
+    result = validator.validate_learning_skill(tmp_path)
+
+    assert any("必须拒绝未声明字段" in error for error in result)
+    assert any("类型与目录映射不完整" in error for error in result)
+
+
 def test_repository_passes_validation():
     validator = load_validator()
 

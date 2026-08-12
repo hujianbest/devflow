@@ -1,6 +1,6 @@
 ---
 title: DevFlow 知识沉淀技能设计
-status: proposed
+status: implemented
 date: 2026-08-11
 ---
 

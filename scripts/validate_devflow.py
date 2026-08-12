@@ -20,6 +20,7 @@ EXPECTED_SKILLS = {
     "devflow-review",
     "devflow-ship",
     "devflow-fix",
+    "devflow-learn",
     "c-coding-standards",
     "cpp-coding-standards",
     "java-coding-standards",
@@ -40,15 +41,10 @@ EXPECTED_COMMANDS = {
     "devflow-review.md",
     "devflow-ship.md",
     "devflow-fix.md",
+    "devflow-learn.md",
 }
 
 REQUIRED_CONTRACT_TOKENS = {
-    "skills/using-devflow/SKILL.md": (
-        "specs/changes/",
-        "change.json",
-        "componentMode",
-        "devflow-init",
-    ),
     "skills/devflow-init/SKILL.md": (
         "澄清而不臆造",
         "baseline-ready",
@@ -89,8 +85,27 @@ REQUIRED_CONTRACT_TOKENS = {
     "skills/devflow-design/SKILL.md": ("delta-design.md", "specs/design.md"),
     "skills/devflow-tdd/SKILL.md": ("tasks.md", "change.json"),
     "skills/devflow-review/SKILL.md": ("reviews/", "canonical"),
-    "skills/devflow-ship/SKILL.md": ("specs/archive/", "closeout.md", "canonical"),
     "skills/devflow-fix/SKILL.md": ("specs/changes/", "tasks.md"),
+    "skills/devflow-learn/SKILL.md": (
+        "docs/learnings/",
+        "change.json.archive.status",
+        "learning-schema.json",
+        "validate_learning.py",
+        "sensitivity: restricted",
+    ),
+    "skills/using-devflow/SKILL.md": (
+        "specs/changes/",
+        "change.json",
+        "componentMode",
+        "devflow-init",
+        "docs/learnings/",
+    ),
+    "skills/devflow-ship/SKILL.md": (
+        "specs/archive/",
+        "closeout.md",
+        "canonical",
+        "devflow-learn",
+    ),
     "INTRODUCTION.md": ("devflow-init", "delta-spec.md", "tasks.md", "canonical sync"),
     "docs/devflow-core-architecture.md": (
         "specs/changes/",
@@ -377,6 +392,59 @@ def validate_eval_json(root: Path = ROOT) -> list[str]:
     return errors
 
 
+def validate_learning_skill(root: Path = ROOT) -> list[str]:
+    """校验 devflow-learn 的打包结构与 schema 核心约束。"""
+    errors: list[str] = []
+    skill_root = root / "skills" / "devflow-learn"
+    required_paths = (
+        "SKILL.md",
+        "references/learning-contract.md",
+        "references/learning-schema.json",
+        "references/learning-templates.md",
+        "references/learning-review-rubric.md",
+        "scripts/validate_learning.py",
+        "evals/evals.json",
+    )
+    for relative in required_paths:
+        path = skill_root / relative
+        if not path.is_file():
+            errors.append(f"{path}: devflow-learn 必需文件缺失")
+
+    schema_path = skill_root / "references" / "learning-schema.json"
+    if not schema_path.is_file():
+        return errors
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        errors.append(f"{schema_path}: learning schema 不是有效 JSON：{exc}")
+        return errors
+
+    if schema.get("additionalProperties") is not False:
+        errors.append(f"{schema_path}: learning schema 必须拒绝未声明字段")
+    expected_mapping = {
+        "problem-solution": "problem-solutions",
+        "design-decision": "design-decisions",
+        "engineering-practice": "engineering-practices",
+    }
+    if schema.get("categoryMapping") != expected_mapping:
+        errors.append(f"{schema_path}: learning 类型与目录映射不完整")
+    required = set(schema.get("required", []))
+    for field in (
+        "learningId",
+        "learningType",
+        "component",
+        "componentRoot",
+        "status",
+        "sensitivity",
+        "sourceChanges",
+        "sourceArchives",
+        "tags",
+    ):
+        if field not in required:
+            errors.append(f"{schema_path}: 缺少必需字段 `{field}`")
+    return errors
+
+
 def run_all(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     errors.extend(validate_markdown_links(root))
@@ -389,6 +457,7 @@ def run_all(root: Path = ROOT) -> list[str]:
     errors.extend(validate_no_legacy_references(root))
     errors.extend(validate_no_skill_design_doc_references(root))
     errors.extend(validate_eval_json(root))
+    errors.extend(validate_learning_skill(root))
     return errors
 
 

@@ -311,8 +311,9 @@ DevFlow 2.0 的基本想法是通用的：三层质量模型 + human-on-the-loop
 | 技能 | 作用 |
 |---|---|
 | `coding-standards-creator` | 把团队内部编码规范转化为新的 `<language>-coding-standards` 技能 |
+| `devflow-learn` | 从已归档 change 中提炼一条有证据、可检索的工程经验 |
 
-语言规范按 `<language>-coding-standards` 的命名约定扩展。任何遵循结构契约的语言技能都能被设计、实现、评审和 DoD 当作叠加约束使用，不改变 DevFlow 主流程。
+`devflow-learn` 只在 Ship 完成后按需运行。它不增加交付 gate，不修改 canonical 或 archive；捕获失败不影响已经完成的交付。语言规范按 `<language>-coding-standards` 的命名约定扩展。任何遵循结构契约的语言技能都能被设计、实现、评审和 DoD 当作叠加约束使用，不改变 DevFlow 主流程。
 
 这就是 DevFlow 2.0 的边界：主流程保持通用，语言和领域规则按场景加载，不把所有细节塞进一条流程里。
 
@@ -336,6 +337,7 @@ DevFlow 2.0 的基本想法是通用的：三层质量模型 + human-on-the-loop
 | `/devflow-review` | 独立评审 |
 | `/devflow-fix` | 缺陷修复 |
 | `/devflow-ship` | 收尾 |
+| `/devflow-learn` | 从已归档 change 沉淀工程经验 |
 
 ### 普通 AR
 

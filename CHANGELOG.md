@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Added `change.json` as the structured source for change identity, component mode, immutable base revision, risk profile, artifact graph, gates, and archive state.
 - Added Java and Python coding-standard overlays, frontend and backend domain overlays, and `coding-standards-creator`.
 - Added repository validators and per-skill eval scenarios.
+- Added `devflow-learn`, a Chinese-first optional post-Ship tool that extracts one evidence-backed learning from an archived change into `docs/learnings/`, with strict schema validation, overlap handling, grounding review, and sensitive-content blocking.
 
 ### Changed
 
@@ -28,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Specification, design, test/code, and canonical sync reviews use independent read-only reviewer contexts. Authors resolve findings and reviewers verify the resolution.
 - Language and domain skills are additive constraints discovered by convention; they do not alter lifecycle topology.
 - Defect work uses the same canonical, delta, TDD, review, sync, and archive contract, with evidence-backed N/A only when the corresponding canonical semantics are unchanged.
+- `using-devflow` now performs targeted active-learning lookup before work, while `devflow-ship` may offer knowledge capture after archival without making it a delivery gate.
 
 ### Removed
 

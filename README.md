@@ -39,8 +39,9 @@ DevFlow provides slash-style phase entries as a thin platform adapter. The autho
 | Review an artifact | `/devflow-review` | `devflow-review` | Authors do not self-review |
 | Close engineering work | `/devflow-ship` | `devflow-ship` | DoD before closeout |
 | Fix a defect | `/devflow-fix` | `devflow-fix` | Reproduce before repair |
+| Capture engineering knowledge | `/devflow-learn` | `devflow-learn` | Record only archived, evidence-backed conclusions |
 
-`devflow-clean-code`, language standards, and domain standards do not have separate commands. They are quality overlays consumed inside design, implementation, and review.
+`devflow-clean-code`, language standards, and domain standards do not have separate commands. They are quality overlays consumed inside design, implementation, and review. `devflow-learn` is an optional post-Ship tool, not a delivery gate.
 
 ---
 
@@ -135,6 +136,7 @@ DevFlow bundles workflow/entry skills, quality overlays, and tooling skills. Qua
 | Skill | What it does | Use when |
 |-------|--------------|----------|
 | [coding-standards-creator](skills/coding-standards-creator/SKILL.md) | Converts internal team coding standards into a new `<language>-coding-standards` skill | A team needs to add or revise a language standard |
+| [devflow-learn](skills/devflow-learn/SKILL.md) | Extracts evidence-backed, searchable lessons from archived changes | Reviewing completed work, recording root causes or design tradeoffs, or preventing repeated mistakes |
 
 Language standards extend by convention: work touching language X can load `<x>-coding-standards` when present. New language skills follow the shared [structural contract](skills/coding-standards-creator/references/coding-standards-skill-contract.md), so phase skills do not need to be rewritten for each language. Domain skills trigger from their own frontmatter descriptions; a new domain skill becomes part of the Quality Stack by clearly describing its context, boundaries, and near-misses.
 
@@ -195,6 +197,7 @@ devflow/
 │   ├── devflow-review/             # Independent review gates
 │   ├── devflow-ship/               # DoD, canonical sync, archive
 │   ├── devflow-fix/                # Defect path
+│   ├── devflow-learn/              # Optional post-archive knowledge capture
 │   ├── devflow-clean-code/         # Language-neutral clean code
 │   ├── *-coding-standards/         # Language overlays, discovered by naming convention
 │   ├── *-development/              # Domain overlays, discovered by description
@@ -205,6 +208,7 @@ devflow/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md
 │   ├── guides/
+│   ├── learnings/                  # Repository knowledge store created on first use
 │   └── asserts/
 ├── scripts/                        # Repository consistency checks
 ├── tests/

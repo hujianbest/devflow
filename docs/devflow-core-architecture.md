@@ -34,13 +34,14 @@ skills/
   devflow-review/            # R1/R2/R3 与 canonical sync 独立评审
   devflow-ship/              # DoD、Agent 智能同步、closeout、archive
   devflow-fix/               # 缺陷复现、根因与最小修复
+  devflow-learn/             # archive 之后的可选知识沉淀
   devflow-clean-code/        # 通用整洁代码约束
   *-coding-standards/        # 语言扩展
   *-development/             # 领域扩展
   coding-standards-creator/  # 语言规范生成工具
 ```
 
-`devflow-init` 是进入常规阶段前的基线初始化能力，不是每个工作项都经过的阶段。叠加 skill 提供质量判据，不独立改变生命周期。
+`devflow-init` 是进入常规阶段前的基线初始化能力，不是每个工作项都经过的阶段。`devflow-learn` 是 Ship 之后的可选工具，不是生命周期节点或 gate。叠加 skill 提供质量判据，不独立改变生命周期。
 
 ## 4. 组件工件模型
 
@@ -96,6 +97,8 @@ specify → R1 → design → R2 → tdd → R3 → ship
    └rework─┘       └rework─┘      └rework┘
 
 缺陷：fix → R1/R2（验证 delta 或 N/A）→ tdd → R3 → ship
+
+可选反馈环：archive → learn → 后续 change 开工前按需检索
 ```
 
 门禁状态只存在 `change.json`；任务状态和 RED/GREEN/REFACTOR 证据只存在 `tasks.md`。恢复时先读 `change.json` 确定阶段，再读 `tasks.md` 确定任务断点，并用 `reviews/` 校验状态没有漂移。
@@ -116,7 +119,18 @@ specify → R1 → design → R2 → tdd → R3 → ship
 
 DevFlow 不提供“警告后继续”、跳过 sync 或带未完成任务归档。同步使用普通文件编辑，Git diff 与历史负责审计、冲突发现和恢复；禁止破坏性 reset。
 
-## 8. 角色分离
+## 8. 知识反馈环
+
+`devflow-learn` 只从已经完成 gate 并归档的 change 提取非平凡经验，写入仓库级
+`docs/learnings/`。知识库按问题解决、设计决策和工程实践分类；Markdown frontmatter
+提供稳定 ID、组件、来源、状态、敏感级别和检索标签。
+
+Learning 的权威级别低于当前 canonical、代码和测试。`using-devflow` 在目标组件与主题
+明确后先做 grep-first 检索，只读取强匹配的 `active` 文档；冲突时使用当前真相并标记
+stale 信号。知识捕获不回写 archive，不增加交付 gate，失败时也不改变 Ship 结果。
+schema、机械校验、语义复核和敏感信息阻断共同约束写入质量。
+
+## 9. 角色分离
 
 - **主控 Agent**：编排阶段、维护 `change.json`、执行 canonical sync 和目录归档。
 - **implementer**：只执行一个 tasks 任务并返回证据，不改变门禁或归档。
@@ -125,7 +139,7 @@ DevFlow 不提供“警告后继续”、跳过 sync 或带未完成任务归档
 
 作者不自审，评审者不动手修，人做最终把关。
 
-## 9. 平台适配
+## 10. 平台适配
 
 `commands/` 是 thin pointer，权威步骤位于 skills。OpenCode、Cursor 等运行时只需发现 skills、commands 与 agents，并具备读取、编辑和移动文件的能力。
 

@@ -7,7 +7,7 @@ Thanks for your interest in DevFlow. This document describes how to contribute t
 DevFlow is intentionally narrow:
 
 - It targets the **development stage**: from an accepted requirement through specification, design, TDD implementation, and independent review.
-- It is organized as **phase skills** (`devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-review`, `devflow-ship`, `devflow-fix`, plus the `using-devflow` entry), **overlay skills** (`devflow-clean-code`, the `<language>-coding-standards` family, and domain development skills discovered by description), and **tooling skills** (`coding-standards-creator`).
+- It is organized as **phase skills** (`devflow-specify`, `devflow-design`, `devflow-tdd`, `devflow-review`, `devflow-ship`, `devflow-fix`, plus the `using-devflow` entry), **overlay skills** (`devflow-clean-code`, the `<language>-coding-standards` family, and domain development skills discovered by description), and **tooling skills** (`coding-standards-creator`, plus the optional post-Ship `devflow-learn`).
 - New language standards are created with `coding-standards-creator` and must satisfy its structural contract (`skills/coding-standards-creator/references/coding-standards-skill-contract.md`); phase skills reference language standards by convention, so adding a language must not require touching them.
 - It does **not** cover product discovery, system / integration / acceptance testing, release operations, or runtime incident response.
 
@@ -42,6 +42,7 @@ The body has no mandatory section schema. Recommended shape: overview (core prin
 - The three-layer model and workflow live in `using-devflow`; other skills reference it instead of restating it.
 - Boundaries between skills: specification carries no implementation detail; design decisions are not re-made in TDD; language rules live in coding-standards skills, domain risks in domain skills. When you move a rule, update both sides in the same PR.
 - Review criteria live in `skills/devflow-review/references/*-rubric.md` and must stay consistent with the author-side skill they check.
+- Knowledge capture must remain downstream of a completed archive, advisory to canonical truth, non-blocking to Ship, and constrained by grounding, overlap, schema, and sensitivity checks.
 
 ## Validation
 
@@ -52,7 +53,7 @@ python3 scripts/validate_devflow.py
 python3 -m pytest tests/
 ```
 
-The validator checks markdown links, skill frontmatter, the required skill set, and whether active instructions use the current lifecycle vocabulary, paths, and state contract.
+The validator checks markdown links, skill frontmatter, the required skill set, the `devflow-learn` package/schema contract, and whether active instructions use the current lifecycle vocabulary, paths, and state contract. Changes to learning validation should also cover archived-source gates, strict frontmatter parsing, duplicate identity, and sensitive-content rejection.
 
 ## Pull request expectations
 
