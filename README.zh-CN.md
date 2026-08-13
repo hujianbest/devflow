@@ -114,20 +114,20 @@ DevFlow 包含工作流/入口技能、质量叠加技能和工具技能。质�
 
 | Skill | 做什么 | 什么时候用 |
 |-------|--------|------------|
-| [using-devflow](skills/using-devflow/SKILL.md) | 入口、工作流地图、工件约定、恢复规则、行为准则 | 开始、恢复，或不确定 DevFlow 下一步该做什么 |
-| [devflow-init](skills/devflow-init/SKILL.md) | 从既有组件逆向建立 spec/design 基线，不臆造未知意图 | 既有组件缺少 baseline-ready canonical 文档 |
-| [devflow-specify](skills/devflow-specify/SKILL.md) | 产出可测试 SRS 与 delta spec：EARS、BDD 验收、NFR QAS、追溯矩阵 | 功能/变更需要先明确需求 |
-| [devflow-design](skills/devflow-design/SKILL.md) | 产出 delta design、边界、契约、错误模型、取舍和测试设计 | delta spec 已批准，需要技术设计 |
-| [devflow-tdd](skills/devflow-tdd/SKILL.md) | 用 RED -> GREEN -> REFACTOR 实现，记录任务证据，约束断言强度和 mock 边界 | 设计已批准，进入实现 |
-| [devflow-review](skills/devflow-review/SKILL.md) | 独立评审规格、设计、测试或代码，产出 findings 和 verdict | 阶段工件准备过门禁 |
-| [devflow-ship](skills/devflow-ship/SKILL.md) | 核验 DoD、智能同步 canonical、写 closeout 并归档 | 评审闭环，工程工作准备收尾 |
-| [devflow-fix](skills/devflow-fix/SKILL.md) | 缺陷处理：复现、根因、最小修复边界、TDD 修复 | 遇到回归、bug、hotfix 或已发布行为缺陷 |
+| [using-devflow](coding-skills/using-devflow/SKILL.md) | 入口、工作流地图、工件约定、恢复规则、行为准则 | 开始、恢复，或不确定 DevFlow 下一步该做什么 |
+| [devflow-init](coding-skills/devflow-init/SKILL.md) | 从既有组件逆向建立 spec/design 基线，不臆造未知意图 | 既有组件缺少 baseline-ready canonical 文档 |
+| [devflow-specify](coding-skills/devflow-specify/SKILL.md) | 产出可测试 SRS 与 delta spec：EARS、BDD 验收、NFR QAS、追溯矩阵 | 功能/变更需要先明确需求 |
+| [devflow-design](coding-skills/devflow-design/SKILL.md) | 产出 delta design、边界、契约、错误模型、取舍和测试设计 | delta spec 已批准，需要技术设计 |
+| [devflow-tdd](coding-skills/devflow-tdd/SKILL.md) | 用 RED -> GREEN -> REFACTOR 实现，记录任务证据，约束断言强度和 mock 边界 | 设计已批准，进入实现 |
+| [devflow-review](coding-skills/devflow-review/SKILL.md) | 独立评审规格、设计、测试或代码，产出 findings 和 verdict | 阶段工件准备过门禁 |
+| [devflow-ship](coding-skills/devflow-ship/SKILL.md) | 核验 DoD、智能同步 canonical、写 closeout 并归档 | 评审闭环，工程工作准备收尾 |
+| [devflow-fix](coding-skills/devflow-fix/SKILL.md) | 缺陷处理：复现、根因、最小修复边界、TDD 修复 | 遇到回归、bug、hotfix 或已发布行为缺陷 |
 
 ### 质量叠加技能
 
 | Skill | 做什么 | 什么时候用 |
 |-------|--------|------------|
-| [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | 语言无关的整洁代码标准：命名、函数、控制流、错误处理、注释、重构 | 编写、重构或评审实现代码与测试代码 |
+| [devflow-clean-code](coding-skills/devflow-clean-code/SKILL.md) | 语言无关的整洁代码标准：命名、函数、控制流、错误处理、注释、重构 | 编写、重构或评审实现代码与测试代码 |
 | `<language>-coding-standards` 技能 | 语言级规则、惯用法、工具链纪律与正反例 | 工作触及对应语言的源码、测试或构建脚本；按命名约定发现 |
 | `<domain>-development` / 领域开发技能 | 领域特有设计约束、实现红线与验证证据 | 工作项语境命中某领域技能的 description |
 
@@ -135,10 +135,10 @@ DevFlow 包含工作流/入口技能、质量叠加技能和工具技能。质�
 
 | Skill | 做什么 | 什么时候用 |
 |-------|--------|------------|
-| [coding-standards-creator](skills/coding-standards-creator/SKILL.md) | 把团队内部编码规范转化为新的 `<language>-coding-standards` skill | 团队需要新增或修订某语言规范 |
-| [devflow-learn](skills/devflow-learn/SKILL.md) | 从已归档 change 中提炼有证据、可检索的经验 | 复盘已完成工作、记录根因或设计取舍、避免重复踩坑 |
+| [coding-standards-creator](coding-skills/coding-standards-creator/SKILL.md) | 把团队内部编码规范转化为新的 `<language>-coding-standards` skill | 团队需要新增或修订某语言规范 |
+| [devflow-learn](coding-skills/devflow-learn/SKILL.md) | 从已归档 change 中提炼有证据、可检索的经验 | 复盘已完成工作、记录根因或设计取舍、避免重复踩坑 |
 
-语言规范按约定扩展：工作触及语言 X，就加载已存在的 `<x>-coding-standards`。新增语言技能遵循同一份[结构契约](skills/coding-standards-creator/references/coding-standards-skill-contract.md)，所以阶段技能不需要为每种语言改写。领域技能按各自 frontmatter description 触发；新增领域技能只要把适用语境、边界和易混淆场景写清楚，就能作为 Quality Stack 的一部分被消费。
+语言规范按约定扩展：工作触及语言 X，就加载已存在的 `<x>-coding-standards`。新增语言技能遵循同一份[结构契约](coding-skills/coding-standards-creator/references/coding-standards-skill-contract.md)，所以阶段技能不需要为每种语言改写。领域技能按各自 frontmatter description 触发；新增领域技能只要把适用语境、边界和易混淆场景写清楚，就能作为 Quality Stack 的一部分被消费。
 
 ---
 

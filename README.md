@@ -114,20 +114,20 @@ DevFlow bundles workflow/entry skills, quality overlays, and tooling skills. Qua
 
 | Skill | What it does | Use when |
 |-------|--------------|----------|
-| [using-devflow](skills/using-devflow/SKILL.md) | Entry, workflow map, artifact conventions, recovery rules, behavior rules | Starting, resuming, or asking what DevFlow should do next |
-| [devflow-init](skills/devflow-init/SKILL.md) | Reverse-engineers baseline spec/design from an existing component without inventing unknown intent | An existing component lacks baseline-ready canonical documents |
-| [devflow-specify](skills/devflow-specify/SKILL.md) | Produces a testable SRS and delta spec with EARS, BDD acceptance, NFR QAS, and traceability | A feature/change needs requirements before design or code |
-| [devflow-design](skills/devflow-design/SKILL.md) | Produces a delta design with boundaries, contracts, error model, tradeoffs, and test design | An approved delta spec needs technical design |
-| [devflow-tdd](skills/devflow-tdd/SKILL.md) | Implements with RED -> GREEN -> REFACTOR, task evidence, assertion quality, and mock-boundary discipline | Design is approved and implementation starts |
-| [devflow-review](skills/devflow-review/SKILL.md) | Independently reviews specs, designs, tests, or code with findings and verdicts | A phase artifact is ready to pass a gate |
-| [devflow-ship](skills/devflow-ship/SKILL.md) | Checks DoD, intelligently syncs canonical docs, writes closeout, and archives the change | Reviews are closed and engineering work is ready to finish |
-| [devflow-fix](skills/devflow-fix/SKILL.md) | Handles defects through reproduction, root cause, minimal fix boundary, and TDD repair | A regression, bug, hotfix, or shipped-behavior defect appears |
+| [using-devflow](coding-skills/using-devflow/SKILL.md) | Entry, workflow map, artifact conventions, recovery rules, behavior rules | Starting, resuming, or asking what DevFlow should do next |
+| [devflow-init](coding-skills/devflow-init/SKILL.md) | Reverse-engineers baseline spec/design from an existing component without inventing unknown intent | An existing component lacks baseline-ready canonical documents |
+| [devflow-specify](coding-skills/devflow-specify/SKILL.md) | Produces a testable SRS and delta spec with EARS, BDD acceptance, NFR QAS, and traceability | A feature/change needs requirements before design or code |
+| [devflow-design](coding-skills/devflow-design/SKILL.md) | Produces a delta design with boundaries, contracts, error model, tradeoffs, and test design | An approved delta spec needs technical design |
+| [devflow-tdd](coding-skills/devflow-tdd/SKILL.md) | Implements with RED -> GREEN -> REFACTOR, task evidence, assertion quality, and mock-boundary discipline | Design is approved and implementation starts |
+| [devflow-review](coding-skills/devflow-review/SKILL.md) | Independently reviews specs, designs, tests, or code with findings and verdicts | A phase artifact is ready to pass a gate |
+| [devflow-ship](coding-skills/devflow-ship/SKILL.md) | Checks DoD, intelligently syncs canonical docs, writes closeout, and archives the change | Reviews are closed and engineering work is ready to finish |
+| [devflow-fix](coding-skills/devflow-fix/SKILL.md) | Handles defects through reproduction, root cause, minimal fix boundary, and TDD repair | A regression, bug, hotfix, or shipped-behavior defect appears |
 
 ### Quality Overlays
 
 | Skill | What it does | Use when |
 |-------|--------------|----------|
-| [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | Language-neutral clean code standards: naming, functions, control flow, errors, comments, refactoring | Writing, refactoring, or reviewing implementation and test code |
+| [devflow-clean-code](coding-skills/devflow-clean-code/SKILL.md) | Language-neutral clean code standards: naming, functions, control flow, errors, comments, refactoring | Writing, refactoring, or reviewing implementation and test code |
 | `<language>-coding-standards` skills | Language-level rules, idioms, tooling discipline, and examples | Work touches that language's source, tests, or build scripts; discovered by naming convention |
 | `<domain>-development` / domain skills | Domain-specific design constraints, implementation red lines, and evidence requirements | Work context matches a domain skill's frontmatter description |
 
@@ -135,10 +135,10 @@ DevFlow bundles workflow/entry skills, quality overlays, and tooling skills. Qua
 
 | Skill | What it does | Use when |
 |-------|--------------|----------|
-| [coding-standards-creator](skills/coding-standards-creator/SKILL.md) | Converts internal team coding standards into a new `<language>-coding-standards` skill | A team needs to add or revise a language standard |
-| [devflow-learn](skills/devflow-learn/SKILL.md) | Extracts evidence-backed, searchable lessons from archived changes | Reviewing completed work, recording root causes or design tradeoffs, or preventing repeated mistakes |
+| [coding-standards-creator](coding-skills/coding-standards-creator/SKILL.md) | Converts internal team coding standards into a new `<language>-coding-standards` skill | A team needs to add or revise a language standard |
+| [devflow-learn](coding-skills/devflow-learn/SKILL.md) | Extracts evidence-backed, searchable lessons from archived changes | Reviewing completed work, recording root causes or design tradeoffs, or preventing repeated mistakes |
 
-Language standards extend by convention: work touching language X can load `<x>-coding-standards` when present. New language skills follow the shared [structural contract](skills/coding-standards-creator/references/coding-standards-skill-contract.md), so phase skills do not need to be rewritten for each language. Domain skills trigger from their own frontmatter descriptions; a new domain skill becomes part of the Quality Stack by clearly describing its context, boundaries, and near-misses.
+Language standards extend by convention: work touching language X can load `<x>-coding-standards` when present. New language skills follow the shared [structural contract](coding-skills/coding-standards-creator/references/coding-standards-skill-contract.md), so phase skills do not need to be rewritten for each language. Domain skills trigger from their own frontmatter descriptions; a new domain skill becomes part of the Quality Stack by clearly describing its context, boundaries, and near-misses.
 
 ---
 
