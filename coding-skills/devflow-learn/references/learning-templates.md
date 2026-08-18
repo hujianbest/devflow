@@ -10,7 +10,7 @@ frontmatter 数组统一使用 block 形式。标量包含 `: `、` #`，或以 
 
 ```markdown
 ---
-schemaVersion: "1.0"
+schemaVersion: "1.1"
 documentType: devflow-learning
 learningId: component-problem-solution-topic
 learningType: problem-solution
@@ -28,6 +28,8 @@ tags:
   - topic
 canonicalRefs:
   - SPEC-FR-001
+relatedLearnings:
+  - related-learning-id
 ---
 
 # 清晰的问题标题
@@ -39,10 +41,12 @@ canonicalRefs:
 ## 症状
 
 - 只保留识别复发所需的最小错误签名或行为。
+<!-- claim: CLM-001; kind: historical; evidence: EV-001 -->
 
 ## 根因
 
 说明完整因果链，区分故障发生位置和无效状态产生的原因。
+<!-- claim: CLM-002; kind: historical; evidence: EV-002 -->
 
 ## 无效尝试
 
@@ -52,6 +56,7 @@ canonicalRefs:
 
 说明真正解决问题的修复或做法。只有代码片段比路径和符号引用提供更多信息时才保留，
 并控制在必要范围内。
+<!-- claim: CLM-003; kind: guidance; evidence: EV-002,EV-003 -->
 
 ## 生效原理
 
@@ -65,12 +70,13 @@ canonicalRefs:
 ## 预防
 
 - 写明防止复发的回归测试、不变量、设计检查或流程约束。
+<!-- claim: CLM-004; kind: current; evidence: EV-003 -->
 
 ## 证据
 
-- Source change：`path/to/component/specs/archive/YYYY-MM-DD-AR001-topic`
-- 当前 canonical：`path/to/component/specs/spec.md#SPEC-FR-001`
-- 代码与测试锚点：`src/file.c`、`tests/file_test.cpp`
+- EV-001 | archive | `path/to/component/specs/archive/YYYY-MM-DD-AR001-topic/tasks.md::## 症状`
+- EV-002 | archive | `path/to/component/specs/archive/YYYY-MM-DD-AR001-topic/tasks.md::## 根因`
+- EV-003 | current-test | `path/to/component/tests/file_test.cpp::test_regression_case`
 
 ## 相关 learning
 
@@ -81,7 +87,7 @@ canonicalRefs:
 
 ```markdown
 ---
-schemaVersion: "1.0"
+schemaVersion: "1.1"
 documentType: devflow-learning
 learningId: component-design-decision-topic
 learningType: design-decision
@@ -99,6 +105,8 @@ tags:
   - topic
 canonicalRefs:
   - DEC-001
+relatedLearnings:
+  - related-learning-id
 ---
 
 # 清晰的决策标题
@@ -106,10 +114,12 @@ canonicalRefs:
 ## 背景与约束
 
 说明为什么必须做出该决策。
+<!-- claim: CLM-001; kind: historical; evidence: EV-001 -->
 
 ## 决策
 
 说明选定方案，不复制完整 canonical design。
+<!-- claim: CLM-002; kind: guidance; evidence: EV-001,EV-002 -->
 
 ## 备选方案
 
@@ -118,6 +128,7 @@ canonicalRefs:
 ## 理由与后果
 
 说明取舍，包括选定方案主动接受的成本。
+<!-- claim: CLM-003; kind: historical; evidence: EV-001 -->
 
 ## 适用范围
 
@@ -126,9 +137,8 @@ canonicalRefs:
 
 ## 证据
 
-- Source change：`path/to/component/specs/archive/YYYY-MM-DD-AR001-topic`
-- 设计决策：`path/to/component/specs/archive/YYYY-MM-DD-AR001-topic/delta-design.md#DEC-001`
-- 当前 canonical：`path/to/component/specs/design.md`
+- EV-001 | archive | `path/to/component/specs/archive/YYYY-MM-DD-AR001-topic/delta-design.md::DEC-001`
+- EV-002 | current-canonical | `path/to/component/specs/design.md::DEC-001`
 
 ## 相关 learning
 
@@ -139,7 +149,7 @@ canonicalRefs:
 
 ```markdown
 ---
-schemaVersion: "1.0"
+schemaVersion: "1.1"
 documentType: devflow-learning
 learningId: component-engineering-practice-topic
 learningType: engineering-practice
@@ -155,6 +165,8 @@ sourceArchives:
   - path/to/component/specs/archive/YYYY-MM-DD-AR001-topic
 tags:
   - topic
+relatedLearnings:
+  - related-learning-id
 ---
 
 # 清晰的实践标题
@@ -162,14 +174,17 @@ tags:
 ## 触发信号
 
 说明这条实践解决的重复摩擦或失败。
+<!-- claim: CLM-001; kind: historical; evidence: EV-001 -->
 
 ## 做法
 
 写明具体动作、检查或流程。
+<!-- claim: CLM-002; kind: guidance; evidence: EV-001,EV-002 -->
 
 ## 原因
 
 说明它防止的失败，以及支持该做法的证据。
+<!-- claim: CLM-003; kind: current; evidence: EV-002 -->
 
 ## 示例
 
@@ -182,8 +197,8 @@ tags:
 
 ## 证据
 
-- Source change：`path/to/component/specs/archive/YYYY-MM-DD-AR001-topic`
-- Review/task 锚点：`path/to/component/specs/archive/YYYY-MM-DD-AR001-topic/reviews/...`
+- EV-001 | archive | `path/to/component/specs/archive/YYYY-MM-DD-AR001-topic/reviews/r3-review.md::Finding`
+- EV-002 | current-test | `path/to/component/tests/test_workflow.py::test_guard`
 
 ## 相关 learning
 

@@ -315,7 +315,7 @@ canonicalRefs:
 ## 13. Skill 包结构
 
 ```text
-skills/devflow-learn/
+coding-skills/devflow-learn/
 ├── SKILL.md
 ├── references/
 │   ├── learning-contract.md
@@ -337,19 +337,19 @@ commands/
 
 新增：
 
-- `skills/devflow-learn/SKILL.md`
-- `skills/devflow-learn/references/learning-contract.md`
-- `skills/devflow-learn/references/learning-schema.json`
-- `skills/devflow-learn/references/learning-templates.md`
-- `skills/devflow-learn/references/learning-review-rubric.md`
-- `skills/devflow-learn/scripts/validate_learning.py`
-- `skills/devflow-learn/evals/evals.json`
+- `coding-skills/devflow-learn/SKILL.md`
+- `coding-skills/devflow-learn/references/learning-contract.md`
+- `coding-skills/devflow-learn/references/learning-schema.json`
+- `coding-skills/devflow-learn/references/learning-templates.md`
+- `coding-skills/devflow-learn/references/learning-review-rubric.md`
+- `coding-skills/devflow-learn/scripts/validate_learning.py`
+- `coding-skills/devflow-learn/evals/evals.json`
 - `commands/devflow-learn.md`
 
 修改：
 
-- `skills/devflow-ship/SKILL.md`
-- `skills/using-devflow/SKILL.md`
+- `coding-skills/devflow-ship/SKILL.md`
+- `coding-skills/using-devflow/SKILL.md`
 - `scripts/validate_devflow.py`
 - `tests/test_validate_devflow.py`
 - 新增或拆分 learning validator 测试
@@ -383,13 +383,19 @@ python scripts/validate_devflow.py
 python -m pytest tests/
 ```
 
-## 16. 后续能力
+## 16. 2026-08-14 继承增强
 
-当知识数量和实际漂移问题证明有需要时，再独立设计 `devflow-learn-refresh`：
+知识价值取决于真实性、可发现性、适用性、新鲜度和运行可靠性的乘积，因此从
+`ce-compound` 适配继承以下约束，而不是照搬会话扫描或多代理规模：
 
-- 扫描 stale、重叠和被替代的 learning；
-- 产生 Keep、Update、Consolidate、Replace、Delete 建议；
-- 只读审计与实际修改分开授权；
-- apply、commit 和 PR 不与审计默认绑定。
+- schema 1.1 使用 claim/evidence 正文契约，机械检查 locator，独立 reviewer 逐
+  claim 返回 verified、contradicted 或 unverifiable；
+- lookup 使用确定性上限、active-only 指导和一跳 related 扩展；
+- 复杂来源先构造有字节上限的窄 evidence pack；
+- refresh 作为 `devflow-learn` 的独立模式：audit 只读，apply 需要批准 plan 和
+  未漂移 digest；
+- store 校验维护双向 related 与无环 supersession；
+- CLI 使用统一 JSON envelope 和唯一终止状态，便于自动化验证。
 
-在此之前，`status` 和 `lastVerifiedAt` 已为维护流程预留必要信息。
+仍不引入本机会话扫描、Lightweight 降级、可配置知识根、自动删除、自动 Git 操作、
+索引数据库或网络正确性依赖。

@@ -9,6 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SKILLS_ROOT_NAME = "coding-skills"
 
 EXPECTED_SKILLS = {
     "using-devflow",
@@ -45,14 +46,14 @@ EXPECTED_COMMANDS = {
 }
 
 REQUIRED_CONTRACT_TOKENS = {
-    "skills/devflow-init/SKILL.md": (
+    "coding-skills/devflow-init/SKILL.md": (
         "澄清而不臆造",
         "baseline-ready",
         "specs/spec.md",
         "specs/design.md",
     ),
-    "skills/devflow-specify/SKILL.md": ("srs.md", "delta-spec.md", "change.json"),
-    "skills/devflow-specify/references/component-spec-template.md": (
+    "coding-skills/devflow-specify/SKILL.md": ("srs.md", "delta-spec.md", "change.json"),
+    "coding-skills/devflow-specify/references/component-spec-template.md": (
         "## 1. 目的",
         "## 2. 需求",
         "### SPEC-FR-001",
@@ -65,7 +66,7 @@ REQUIRED_CONTRACT_TOKENS = {
         "## 4. 未知项",
         "## 5. 修订与确认",
     ),
-    "skills/devflow-specify/references/delta-spec-template.md": (
+    "coding-skills/devflow-specify/references/delta-spec-template.md": (
         "## 组件目的变更",
         "## ADDED 需求",
         "## MODIFIED 需求",
@@ -77,30 +78,30 @@ REQUIRED_CONTRACT_TOKENS = {
         "删除原因",
         "## 无规格变化",
     ),
-    "skills/devflow-fix/references/fix-template.md": (
+    "coding-skills/devflow-fix/references/fix-template.md": (
         "## MODIFIED 需求",
         "## 无规格变化（仅缺陷恢复适用）",
         "manifest: change.json",
     ),
-    "skills/devflow-design/SKILL.md": ("delta-design.md", "specs/design.md"),
-    "skills/devflow-tdd/SKILL.md": ("tasks.md", "change.json"),
-    "skills/devflow-review/SKILL.md": ("reviews/", "canonical"),
-    "skills/devflow-fix/SKILL.md": ("specs/changes/", "tasks.md"),
-    "skills/devflow-learn/SKILL.md": (
+    "coding-skills/devflow-design/SKILL.md": ("delta-design.md", "specs/design.md"),
+    "coding-skills/devflow-tdd/SKILL.md": ("tasks.md", "change.json"),
+    "coding-skills/devflow-review/SKILL.md": ("reviews/", "canonical"),
+    "coding-skills/devflow-fix/SKILL.md": ("specs/changes/", "tasks.md"),
+    "coding-skills/devflow-learn/SKILL.md": (
         "docs/learnings/",
         "change.json.archive.status",
         "learning-schema.json",
         "validate_learning.py",
         "sensitivity: restricted",
     ),
-    "skills/using-devflow/SKILL.md": (
+    "coding-skills/using-devflow/SKILL.md": (
         "specs/changes/",
         "change.json",
         "componentMode",
         "devflow-init",
         "docs/learnings/",
     ),
-    "skills/devflow-ship/SKILL.md": (
+    "coding-skills/devflow-ship/SKILL.md": (
         "specs/archive/",
         "closeout.md",
         "canonical",
@@ -177,7 +178,7 @@ def iter_markdown_files(root: Path):
 
 def iter_active_markdown_files(root: Path):
     """Active instructions and user docs, excluding explicit history / changelog."""
-    for sub in ("skills", "commands", "agents"):
+    for sub in (SKILLS_ROOT_NAME, "commands", "agents"):
         base = root / sub
         if base.exists():
             yield from (p for p in base.rglob("*.md"))
@@ -211,7 +212,7 @@ def validate_markdown_links(root: Path = ROOT) -> list[str]:
 
 def validate_skill_frontmatter(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
-    for skill in root.glob("skills/*/SKILL.md"):
+    for skill in root.glob(f"{SKILLS_ROOT_NAME}/*/SKILL.md"):
         text = skill.read_text(encoding="utf-8", errors="ignore")
         if not text.startswith("---\n"):
             errors.append(f"{skill}: missing YAML frontmatter")
@@ -257,19 +258,19 @@ def validate_agent_frontmatter(root: Path = ROOT) -> list[str]:
 
 def validate_skill_set(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
-    skills_root = root / "skills"
+    skills_root = root / SKILLS_ROOT_NAME
     if not skills_root.exists():
         return [f"{skills_root}: skills directory is missing"]
 
     present = {p.name for p in skills_root.iterdir() if p.is_dir()}
     for missing in sorted(EXPECTED_SKILLS - present):
-        errors.append(f"skills/{missing}: expected skill is missing")
+        errors.append(f"{SKILLS_ROOT_NAME}/{missing}: expected skill is missing")
     for legacy in sorted(present & LEGACY_SKILL_NAMES):
-        errors.append(f"skills/{legacy}: legacy skill should be removed")
+        errors.append(f"{SKILLS_ROOT_NAME}/{legacy}: legacy skill should be removed")
     for name in sorted(present):
         if name.endswith("-coding-standards") and not CODING_STANDARDS_NAME.match(name):
             errors.append(
-                f"skills/{name}: must follow the <language>-coding-standards naming convention"
+                f"{SKILLS_ROOT_NAME}/{name}: must follow the <language>-coding-standards naming convention"
             )
     return errors
 
@@ -283,6 +284,16 @@ def validate_command_set(root: Path = ROOT) -> list[str]:
     present = {p.name for p in commands_root.glob("devflow*.md")}
     for missing in sorted(EXPECTED_COMMANDS - present):
         errors.append(f"commands/{missing}: expected command is missing")
+    return errors
+
+
+def validate_repository_skill_paths(root: Path = ROOT) -> list[str]:
+    """仓库源码路径必须使用 coding-skills，不能退回已迁移的 skills 根。"""
+    errors: list[str] = []
+    for path in (root / "commands").glob("devflow*.md"):
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        if re.search(r"(?<![-A-Za-z0-9])skills/(?:using-devflow|devflow-|coding-)", text):
+            errors.append(f"{path}: 仍引用已迁移的仓库 skills/ 根")
     return errors
 
 
@@ -303,7 +314,7 @@ def validate_delivery_contract(root: Path = ROOT) -> list[str]:
 def validate_spec_template_shape(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
 
-    component_path = root / "skills/devflow-specify/references/component-spec-template.md"
+    component_path = root / SKILLS_ROOT_NAME / "devflow-specify/references/component-spec-template.md"
     if component_path.exists():
         text = component_path.read_text(encoding="utf-8", errors="ignore")
         ordered = ("## 1. 目的", "## 2. 需求", "#### 场景", "## 3. 来源追溯")
@@ -311,7 +322,7 @@ def validate_spec_template_shape(root: Path = ROOT) -> list[str]:
         if any(position < 0 for position in positions) or positions != sorted(positions):
             errors.append(f"{component_path}: Purpose/Requirements/Scenario/Provenance order is invalid")
 
-    delta_path = root / "skills/devflow-specify/references/delta-spec-template.md"
+    delta_path = root / SKILLS_ROOT_NAME / "devflow-specify/references/delta-spec-template.md"
     if delta_path.exists():
         text = delta_path.read_text(encoding="utf-8", errors="ignore")
         headings = (
@@ -347,7 +358,7 @@ def find_legacy_references(text: str) -> list[str]:
 def validate_no_legacy_references(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     active_paths = list(iter_active_markdown_files(root))
-    active_paths.extend(root.glob("skills/*/evals/*.json"))
+    active_paths.extend(root.glob(f"{SKILLS_ROOT_NAME}/*/evals/*.json"))
     for path in active_paths:
         text = path.read_text(encoding="utf-8", errors="ignore")
         for hit in find_legacy_references(text):
@@ -359,7 +370,7 @@ def validate_no_skill_design_doc_references(root: Path = ROOT) -> list[str]:
     """Packaged skills must stay deployable without the repo-level docs/ tree."""
     errors: list[str] = []
     docs_root = root / "docs"
-    skills_root = root / "skills"
+    skills_root = root / SKILLS_ROOT_NAME
     if not docs_root.exists() or not skills_root.exists():
         return errors
 
@@ -380,7 +391,7 @@ def validate_no_skill_design_doc_references(root: Path = ROOT) -> list[str]:
 
 def validate_eval_json(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
-    for path in root.glob("skills/*/evals/*.json"):
+    for path in root.glob(f"{SKILLS_ROOT_NAME}/*/evals/*.json"):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
@@ -395,13 +406,14 @@ def validate_eval_json(root: Path = ROOT) -> list[str]:
 def validate_learning_skill(root: Path = ROOT) -> list[str]:
     """校验 devflow-learn 的打包结构与 schema 核心约束。"""
     errors: list[str] = []
-    skill_root = root / "skills" / "devflow-learn"
+    skill_root = root / SKILLS_ROOT_NAME / "devflow-learn"
     required_paths = (
         "SKILL.md",
         "references/learning-contract.md",
         "references/learning-schema.json",
         "references/learning-templates.md",
         "references/learning-review-rubric.md",
+        "references/learning-refresh-protocol.md",
         "scripts/validate_learning.py",
         "evals/evals.json",
     )
@@ -421,6 +433,8 @@ def validate_learning_skill(root: Path = ROOT) -> list[str]:
 
     if schema.get("additionalProperties") is not False:
         errors.append(f"{schema_path}: learning schema 必须拒绝未声明字段")
+    if schema.get("properties", {}).get("schemaVersion", {}).get("const") != "1.1":
+        errors.append(f"{schema_path}: learning schemaVersion 必须是 1.1")
     expected_mapping = {
         "problem-solution": "problem-solutions",
         "design-decision": "design-decisions",
@@ -442,6 +456,24 @@ def validate_learning_skill(root: Path = ROOT) -> list[str]:
     ):
         if field not in required:
             errors.append(f"{schema_path}: 缺少必需字段 `{field}`")
+    properties = schema.get("properties", {})
+    for field in ("relatedLearnings", "supersededBy", "statusReason"):
+        if field not in properties:
+            errors.append(f"{schema_path}: 缺少维护字段 `{field}`")
+
+    validator_path = skill_root / "scripts" / "validate_learning.py"
+    if validator_path.is_file():
+        validator_text = validator_path.read_text(encoding="utf-8", errors="ignore")
+        for token in (
+            "lookup",
+            "validate-store",
+            "discoverability",
+            "refresh-audit",
+            "refresh-plan-check",
+            "CLAIM_RE",
+        ):
+            if token not in validator_text:
+                errors.append(f"{validator_path}: 缺少 learning 运行契约 `{token}`")
     return errors
 
 
@@ -452,6 +484,7 @@ def run_all(root: Path = ROOT) -> list[str]:
     errors.extend(validate_agent_frontmatter(root))
     errors.extend(validate_skill_set(root))
     errors.extend(validate_command_set(root))
+    errors.extend(validate_repository_skill_paths(root))
     errors.extend(validate_delivery_contract(root))
     errors.extend(validate_spec_template_shape(root))
     errors.extend(validate_no_legacy_references(root))

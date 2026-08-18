@@ -109,6 +109,33 @@
         "removes intermediate pauses but keeps independent R1, R2, R3, and canonical sync reviews",
         "still requires human confirmation of the canonical diff and archive"
       ]
+    },
+    {
+      "id": "bounded-learning-lookup-before-work",
+      "prompt": "Start investigating a timeout in the payment component. The repository has dozens of active, stale, and superseded learnings.",
+      "expected": [
+        "runs the bounded devflow-learn lookup before designing or editing code",
+        "uses only active strong matches as guidance and reports why each matched",
+        "does not load the whole store or treat stale and superseded entries as current guidance"
+      ]
+    },
+    {
+      "id": "learning-lookup-truncated-is-not-complete",
+      "prompt": "Learning lookup returns truncated because the query matched more than the candidate limit.",
+      "expected": [
+        "narrows the query with component, symbol, or exact error signature",
+        "does not interpret the partial result as a complete search",
+        "continues without learning only after a bounded no-op result or an explicit decision"
+      ]
+    },
+    {
+      "id": "learning-conflict-becomes-refresh-candidate",
+      "prompt": "An active learning recommends a global lock, but current code and tests prove the component now uses per-instance locking.",
+      "expected": [
+        "uses current canonical, code, and tests instead of the old learning",
+        "excludes the conflicting learning from guidance",
+        "reports a refresh-audit candidate without modifying the learning during the active change"
+      ]
     }
   ]
 }

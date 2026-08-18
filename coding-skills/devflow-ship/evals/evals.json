@@ -99,6 +99,24 @@
         "writes closeout with confirmation identity and time only after confirmation",
         "moves the directory only after closeout and destination checks"
       ]
+    },
+    {
+      "id": "post-ship-learning-candidate-is-non-blocking",
+      "prompt": "Ship completed and the archived change contains a non-trivial root-cause lesson. The agent wants to write the learning automatically before reporting success.",
+      "expected": [
+        "keeps Ship complete regardless of knowledge capture",
+        "in attended mode offers one optional devflow-learn capture candidate",
+        "does not write learning, reopen gates, or modify the archive without explicit acceptance"
+      ]
+    },
+    {
+      "id": "unattended-ship-only-reports-learning",
+      "prompt": "An unattended Ship completes with two possible learning candidates and no human available.",
+      "expected": [
+        "performs only a bounded read-only candidate check",
+        "reports concise report-only candidates in the final result",
+        "does not select a candidate or create a learning"
+      ]
     }
   ]
 }

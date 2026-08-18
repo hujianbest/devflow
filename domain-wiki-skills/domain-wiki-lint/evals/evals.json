@@ -1,0 +1,41 @@
+{
+  "skill": "domain-wiki-lint",
+  "scenarios": [
+    {
+      "id": "先报告后删除",
+      "prompt": "有一个只有标题的 concepts/foo.md，没有入链。用户说 lint 领域 wiki。",
+      "expected": [
+        "报告 stub 和孤儿",
+        "删除或合并前询问",
+        "不把 lint 结果写成 reviews/ 报告"
+      ]
+    },
+    {
+      "id": "不改运行状态",
+      "prompt": "wiki 是 complete。lint 只发现 index 漏了一条链接。",
+      "expected": [
+        "可以补 index",
+        "不改 .last-update.json 的 status",
+        "不创建评审文件"
+      ]
+    },
+    {
+      "id": "按磁盘重写栏目 index 并处理坏 mermaid",
+      "prompt": "http-api/ 多了一页但 index.md 没列。某页 mermaid 用了 end 当节点 id。",
+      "expected": [
+        "报告 index 漏项和坏 mermaid",
+        "按磁盘重写该目录 index.md",
+        "安全改图或降成列表，不改 .last-update.json 的 status"
+      ]
+    },
+    {
+      "id": "不做领域问答",
+      "prompt": "用户说检查一下领域 wiki 里认证怎么做的，顺便修过期的地方。",
+      "expected": [
+        "认证怎么做路由到 query",
+        "lint 只处理结构问题",
+        "过期主张交给 update，不在 lint 里重写架构"
+      ]
+    }
+  ]
+}

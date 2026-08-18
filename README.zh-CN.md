@@ -27,7 +27,7 @@ DevFlow 是一层可复用的工作流能力，面向在真实软件项目中使
 
 ## 命令
 
-DevFlow 提供 slash-style 阶段入口，作为很薄的平台适配层。真正的流程权威在 `skills/<name>/SKILL.md`；命令只表达意图并加载对应技能。
+DevFlow 提供 slash-style 阶段入口，作为很薄的平台适配层。仓库内真正的流程权威在 `coding-skills/<name>/SKILL.md`；命令只表达意图并加载对应技能。
 
 | 你要做什么 | 命令 | 技能 | 核心原则 |
 |------------|------|------|----------|
@@ -55,7 +55,7 @@ git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
 
 # 把全部 DevFlow skills、agents 和 commands 安装到 OpenCode 全局目录
 mkdir -p ~/.config/opencode/skills ~/.config/opencode/agents ~/.config/opencode/commands
-cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
+cp -R ~/.config/opencode/devflow/coding-skills/* ~/.config/opencode/skills/
 cp ~/.config/opencode/devflow/agents/*.md ~/.config/opencode/agents/
 cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 ```
@@ -136,9 +136,13 @@ DevFlow 包含工作流/入口技能、质量叠加技能和工具技能。质�
 | Skill | 做什么 | 什么时候用 |
 |-------|--------|------------|
 | [coding-standards-creator](coding-skills/coding-standards-creator/SKILL.md) | 把团队内部编码规范转化为新的 `<language>-coding-standards` skill | 团队需要新增或修订某语言规范 |
-| [devflow-learn](coding-skills/devflow-learn/SKILL.md) | 从已归档 change 中提炼有证据、可检索的经验 | 复盘已完成工作、记录根因或设计取舍、避免重复踩坑 |
+| [devflow-learn](coding-skills/devflow-learn/SKILL.md) | 提炼逐声明落地的经验，执行有界检索，并只读审计 stale/related 知识 | 复盘已完成工作、复用既有证据或维护 `docs/learnings/` |
 
 语言规范按约定扩展：工作触及语言 X，就加载已存在的 `<x>-coding-standards`。新增语言技能遵循同一份[结构契约](coding-skills/coding-standards-creator/references/coding-standards-skill-contract.md)，所以阶段技能不需要为每种语言改写。领域技能按各自 frontmatter description 触发；新增领域技能只要把适用语境、边界和易混淆场景写清楚，就能作为 Quality Stack 的一部分被消费。
+
+### Domain Wiki
+
+[`domain-wiki-skills/`](domain-wiki-skills/README.md) 是另一套集合，在 `wiki/` 维护编译式仓库 wiki：按栏目做全仓初始化、按 git 外科更新或补全覆盖、按索引查询、摄入原文和巡检。落盘只保留领域 wiki 结果。构建产物和导出文档树默认不是源。它不写产品规格，也不依赖其他技能集合。
 
 ---
 
@@ -188,7 +192,7 @@ SKILL.md
 
 ```text
 devflow/
-├── skills/                         # 工作流、质量、语言与领域 skills
+├── coding-skills/                  # 工作流、质量、语言与领域 skills
 │   ├── using-devflow/              # 入口与恢复规则
 │   ├── devflow-init/               # 既有组件基线初始化
 │   ├── devflow-specify/            # SRS、delta spec 与追溯
@@ -202,6 +206,7 @@ devflow/
 │   ├── *-coding-standards/         # 语言级叠加约束，按命名约定发现
 │   ├── *-development/              # 领域开发叠加约束，按 description 发现
 │   └── coding-standards-creator/   # 语言规范生成器
+├── domain-wiki-skills/               # 编译式 wiki：init、update、query
 ├── commands/                       # slash-style 阶段入口
 ├── agents/                         # devflow-reviewer / devflow-implementer 子代理角色
 ├── docs/

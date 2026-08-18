@@ -8,7 +8,7 @@
 - 布局：
 
 ```text
-skills/<language>-coding-standards/
+coding-skills/<language>-coding-standards/
   SKILL.md            # 高频高危规则（~300 行内）
   references/         # 可选：低频细则、团队规则号对照表、框架专项
   evals/evals.json    # 必需：≥3 个压力场景

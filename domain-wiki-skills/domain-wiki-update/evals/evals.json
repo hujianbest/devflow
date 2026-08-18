@@ -1,0 +1,50 @@
+{
+  "skill": "domain-wiki-update",
+  "scenarios": [
+    {
+      "id": "complete 且无源变化则 no-op",
+      "prompt": "wiki/.last-update.json 为 complete，git 只有 wiki/ 自己的旧提交。用户说更新领域 wiki。",
+      "expected": [
+        "判定 no-op",
+        "不改概念页，不刷新 updatedAt",
+        "不创建评审文件"
+      ]
+    },
+    {
+      "id": "小变更只改相关页",
+      "prompt": "上次 gitHead 之后只改了两个存储文件。architecture 页里有过期的写入路径描述。",
+      "expected": [
+        "先写 impact plan",
+        "最多改 1-2 页，替换过期句子",
+        "不重写 quickstart，除非导航或产品行为变了"
+      ]
+    },
+    {
+      "id": "interrupted 不得跳过",
+      "prompt": "上次 update 写到一半失败，status 为 interrupted。工作区现在是干净的。",
+      "expected": [
+        "不把 interrupted 当成 complete",
+        "继续或重做未完成的更新",
+        "完成后 status 为 complete，不写 reviews/"
+      ]
+    },
+    {
+      "id": "不对照导出文档树",
+      "prompt": "用户说刷新领域 wiki。工作区改了两个存储文件。仓库里还有 dist/ 和一份导出文档树。",
+      "expected": [
+        "git 摘要和盘点跳过构建产物与导出文档树",
+        "只按源码和本 wiki/ 做 impact plan",
+        "不打开那些目录来对齐文风或栏目"
+      ]
+    },
+    {
+      "id": "用户要求补全则走 completeness pass",
+      "prompt": "wiki/ 已有 8 个概念页和一长段 Backlog。用户说建成完整领域 wiki，对齐全仓覆盖。",
+      "expected": [
+        "不把 complete 当成 no-op",
+        "重新盘点并写骨架，补齐已识别领域",
+        "不受 1-2 页外科预算限制，不创建 reviews/"
+      ]
+    }
+  ]
+}

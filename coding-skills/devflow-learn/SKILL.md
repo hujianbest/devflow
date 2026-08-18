@@ -40,15 +40,31 @@ Learning 与当前真相冲突时，当前真相优先；报告 stale 信号，�
 - 校验字段时以
   [learning-schema.json](references/learning-schema.json) 为机器契约；
 - 写入前的只读检查使用
-  [learning-review-rubric.md](references/learning-review-rubric.md)。
+  [learning-review-rubric.md](references/learning-review-rubric.md)；
+- 执行 refresh 审计或应用时读
+  [learning-refresh-protocol.md](references/learning-refresh-protocol.md)。
 
 ## 输入与运行方式
 
 入口：
 
 ```text
-/devflow-learn <archive-path-or-AR> [learning hint]
+/devflow-learn capture <archive-path-or-AR> [learning hint]
+/devflow-learn lookup <query> [component]
+/devflow-learn refresh-audit [component-root]
+/devflow-learn refresh-apply <approved-plan>
 ```
+
+模式必须唯一：
+
+- `capture`：创建或更新一条 learning；
+- `lookup`：只读检索，不写文件；
+- `report-only`：执行捕获分析与复核，但不写文件；
+- `refresh-audit`：只读生成维护 plan；
+- `refresh-apply`：只应用用户明确批准且 digest 未漂移的 plan。
+
+省略模式但显然在“记录已解决问题”时按 `capture`；意图不唯一或同时出现冲突模式时
+返回 `blocked` 并询问。非交互环境不得把不确定模式猜成可写模式。
 
 来源解析规则：
 
@@ -60,6 +76,24 @@ Learning 与当前真相冲突时，当前真相优先；报告 stale 信号，�
 显式用户调用表示用户希望进行捕获，但在多个候选或敏感级别不明确时仍需询问。
 调用方明确要求 unattended、report-only、无提示或没有用户可回答时，只生成候选报告，
 不创建或更新 learning。
+
+## 有界检索
+
+`lookup` 与所有 DevFlow 开工前检索统一调用 bundled validator 的 `lookup` 子命令：
+
+```text
+python <skill-dir>/scripts/validate_learning.py lookup \
+  --repo-root <repo-root> --query "<terms>" \
+  [--component <id>] [--component-root <path>] [--learning-type <type>]
+```
+
+先读 frontmatter，再在候选不足时搜索正文；最多扫描 500 份、保留 20 个元数据候选、
+返回 5 个结果。超过上限必须报告 `truncated` 并要求收窄，不能把部分结果解释为无匹配。
+只把 `active` 用作指导，stale/superseded 只报告诊断。每个结果说明命中字段和适用边界。
+
+首次使用或用户要求检查集成时运行 `discoverability` 子命令。它只检查 `AGENTS.md`、
+`CLAUDE.md` 和 README 是否说明 `docs/learnings/` 或 `devflow-learn`。若存在 gap，
+只报告建议；由显式初始化/配置流程修改指令文件，capture 不得顺手修改。
 
 ## 捕获门槛
 
@@ -116,6 +150,10 @@ Learning 与当前真相冲突时，当前真相优先；报告 stale 信号，�
 - 哪些证据证明它；
 - 哪些场景不适用。
 
+复杂 archive 或 overlap 候选较多时，先读取契约中的 Evidence pack 规则，再运行
+`pack` 子命令。主控只把 claim 引用的短摘录交给综合/复核上下文；临时产物写入操作系统
+临时目录，不进入仓库。不能构造 pack 时报告降级，不以整份 archive 替代。
+
 ## 知识库与文件名
 
 知识库固定为：
@@ -155,6 +193,10 @@ Learning 与当前真相冲突时，当前真相优先；报告 stale 信号，�
 
 语义去重不能只靠文件名或标签。
 
+`relatedLearnings` 使用稳定 ID 且必须双向。中度重叠创建新文档时，同一次写入同时更新
+两端；任一端无法安全修改就阻塞，不留下单向边。旧指导被替代时，旧文档使用
+`status: superseded`、`statusReason` 和 `supersededBy`，禁止形成 replacement cycle。
+
 ## 隐私与敏感信息
 
 默认只读取仓库中的 archive、canonical、代码和测试，不读取本机会话历史。
@@ -175,20 +217,48 @@ Learning 与当前真相冲突时，当前真相优先；报告 stale 信号，�
 1. 读取模板并组装完整 Markdown；
 2. 所有路径写成 repo-relative `/` 路径；
 3. 主控 Agent 写入目标文件；研究/复核子代理不得写文件；
-4. 运行：
+4. 每条事实或指导使用 `CLM-*` claim marker，并在 `## 证据` 用 `EV-*` locator 建立
+   claim → evidence 关系；历史声明只引用 archive，当前声明至少引用一项当前证据；
+5. 运行：
 
    ```text
-   python <skill-dir>/scripts/validate_learning.py <learning-path> --repo-root <repo-root>
+   python <skill-dir>/scripts/validate_learning.py validate \
+     <learning-path> --repo-root <repo-root>
+   python <skill-dir>/scripts/validate_learning.py validate-store \
+     --repo-root <repo-root>
    ```
 
-5. 校验失败时修正并重跑，未通过前不得报告完成；
-6. 使用 `learning-review-rubric.md` 派一个全新只读上下文复核事实、重复、
+6. 校验失败时修正并重跑，未通过前不得报告完成；
+7. 使用 `learning-review-rubric.md` 派一个全新只读上下文逐 claim 复核事实、重复、
    applicability 和敏感信息；
-7. 若平台没有独立上下文能力，由主控执行同一 rubric，并在结果中说明独立复核缺失；
-8. 语义复核发现 contradicted claim 时以引用的当前证据修正文档，再重跑脚本。
+8. reviewer 为每条 claim 返回 `verified`、`contradicted` 或 `unverifiable` 及定义位置；
+9. 若平台没有独立上下文能力，由主控执行同一 rubric，并在结果中说明独立复核缺失；
+10. contradicted 以引用证据修正；unverifiable 缩窄、归因或删除，再重跑脚本。
 
 校验或复核只允许修改本次目标 learning，以及首次 bootstrap 的 store README。
 不得顺手刷新其他文档、代码或 canonical。
+
+## Refresh 维护
+
+运行：
+
+```text
+python <skill-dir>/scripts/validate_learning.py refresh-audit \
+  --repo-root <repo-root>
+python <skill-dir>/scripts/validate_learning.py refresh-plan-check \
+  --repo-root <repo-root> --plan <approved-plan.json>
+```
+
+`refresh-audit` 始终只读，按 `keep`、`mark-stale`、`link-supersession`、
+`repair-related` 或 `manual-rewrite-required` 分类。年龄不是 stale 证据，无法验证也
+不等于错误。审计输出包含 plan ID、store digest、每个文件 before digest 和 write set。
+
+需要 Update、Consolidate、Split、Replace 或 Delete 时，按
+`learning-refresh-protocol.md` 的证据边界执行；这些高影响动作不能由脚本自动完成。
+
+只有用户明确批准该 plan 后才进入 `refresh-apply`。主控只能修改 write set；digest
+漂移、需要删除/合并/拆分/重写、或替代关系证据不足时阻塞并重新审计或询问。apply 后
+重跑 `validate-store` 和独立逐 claim 复核。Ship、lookup 与 capture 都不能顺手 apply。
 
 ## 完成输出
 
@@ -204,7 +274,10 @@ Learning 与当前真相冲突时，当前真相优先；报告 stale 信号，�
 校验: 通过
 复核: <独立复核通过 | 自检通过，运行环境不支持独立上下文>
 敏感级别: <public | internal>
+Grounding: <N verified | 0 contradicted | 0 unverifiable>
+终止状态: complete
 ```
 
 report-only 时报告候选、来源和未写入原因。无合格候选或前置条件失败时以
-`知识沉淀已跳过` 结束。
+`终止状态: skipped` 结束；需要用户选择或证据不足时使用 `终止状态: blocked`。
+每次调用只出现一个最终终止状态。

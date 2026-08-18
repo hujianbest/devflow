@@ -30,15 +30,18 @@ canonical 文档的 `baseline-ready` 不是文件存在的同义词。它表示 
 目标组件和工作主题明确后，在设计方案或修改代码前，按需检索仓库
 `docs/learnings/`：
 
-1. 先按 `status: active`、`component`、`componentRoot`、`learningType`、`tags`
-   和 `canonicalRefs` 缩小候选；
-2. 再搜索当前错误签名、符号、模块名或决策术语；
-3. 只完整读取强匹配文档，不在入口加载整个知识库；
-4. 把命中的适用范围、证据和限制作为调查或设计输入。
+1. 调用 `devflow-learn` bundled validator 的 `lookup` 子命令，传入 component、
+   componentRoot、当前错误签名、符号、模块名或决策术语；
+2. 工具先按 `status: active`、`learningType`、`tags` 和 `canonicalRefs` 过滤，
+   候选不足时才搜索正文；
+3. 最多读取返回的 5 个强匹配文档，不在入口加载整个知识库或递归遍历关系图；
+4. 把 learning ID、命中原因、适用范围、证据和限制作为调查或设计输入；
+5. 返回 `truncated` 时收窄查询，禁止把截断结果解释为完整结果。
 
 Learning 只提供经验，不是新的 gate 或 canonical。它与当前 spec/design、代码或测试
 冲突时，以当前真相为准，并报告 stale 信号；不得为了套用旧经验而修改当前事实。
-知识库不存在或没有强匹配时继续正常流程，不创建空目录或索引。
+知识库不存在或返回 `no-op` 时继续正常流程，不创建空目录或索引。发现 stale 信号只
+输出 `refresh-audit` 候选；不得在当前交付中顺手修改 learning。
 
 ## 交付结构与状态
 

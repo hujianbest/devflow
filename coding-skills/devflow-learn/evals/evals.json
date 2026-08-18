@@ -72,6 +72,51 @@
         "无法确定时返回 blocked 并列出缺失证据",
         "不猜测用户意图，也不静默创建文档"
       ]
+    },
+    {
+      "id": "逐声明_grounding",
+      "prompt": "草稿中的三个事实共享一个笼统的“测试已通过”引用，其中一个描述历史根因，一个描述当前默认值，一个给出工程建议。",
+      "expected": [
+        "为每条事实创建独立 claim ID 并区分 historical、current 和 guidance",
+        "historical 回到 archive，current 回到当前 canonical、代码或测试",
+        "reviewer 对每条 claim 返回 verified、contradicted 或 unverifiable"
+      ]
+    },
+    {
+      "id": "有界_lookup",
+      "prompt": "仓库已有 80 份 learning。请查找 payment 组件中 timeout 符号相关经验。",
+      "expected": [
+        "先读取 frontmatter 并按 active、component、componentRoot 和术语过滤",
+        "最多返回五个结果并说明命中原因",
+        "候选超过上限时返回 truncated 并要求收窄，而不是加载全部正文"
+      ]
+    },
+    {
+      "id": "refresh_审计不直接修改",
+      "prompt": "一次 lookup 发现 active learning 引用的当前测试已删除。请自动修好整个知识库。",
+      "expected": [
+        "先执行只读 refresh-audit 并输出 plan、digest 和 write set",
+        "没有用户批准时不修改任何 learning",
+        "证据不足时建议 mark-stale，不猜测替代方案或自动删除"
+      ]
+    },
+    {
+      "id": "refresh_apply_检测漂移",
+      "prompt": "用户批准了 refresh plan，但其中一份 learning 在批准后又被其他分支修改。",
+      "expected": [
+        "比较 store digest 与 before digest",
+        "发现漂移后 blocked 并要求重新审计",
+        "不应用部分 plan，也不扩大 write set"
+      ]
+    },
+    {
+      "id": "related_关系必须双向",
+      "prompt": "新 learning 与旧 learning 中度重叠，作者只在新文档正文写了旧文件名。",
+      "expected": [
+        "使用 frontmatter relatedLearnings 的稳定 ID",
+        "同一次写入更新关系两端",
+        "任一端不能安全修改时阻塞，不留下单向边"
+      ]
     }
   ]
 }

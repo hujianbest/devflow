@@ -1,6 +1,6 @@
 # DevFlow Commands
 
-DevFlow 的 slash-style 阶段入口，属于平台适配层。每个 command 只做一件事：声明用户意图属于哪个阶段，并把对应技能加载进上下文。**判据与步骤的唯一权威是 `skills/<name>/SKILL.md`，command 不复制其内容。**
+DevFlow 的 slash-style 阶段入口，属于平台适配层。每个 command 只做一件事：声明用户意图属于哪个阶段，并把对应技能加载进上下文。**仓库内判据与步骤的唯一权威是 `coding-skills/<name>/SKILL.md`，command 不复制其内容。**
 
 | Command | 阶段 | 对应技能 |
 |---|---|---|
@@ -14,4 +14,15 @@ DevFlow 的 slash-style 阶段入口，属于平台适配层。每个 command �
 | [`/devflow-fix`](devflow-fix.md) | 缺陷修复 | `devflow-fix` |
 | [`/devflow-learn`](devflow-learn.md) | 知识沉淀 | `devflow-learn`（仅处理已归档 change，不属于交付 gate） |
 
+领域 wiki command 是另一组入口，权威在 `domain-wiki-skills/<name>/SKILL.md`，不进入交付阶段表：
+
+| Command | 做什么 | 对应技能 |
+|---|---|---|
+| [`/domain-wiki-init`](domain-wiki-init.md) | 全仓首版编译 | `domain-wiki-init` |
+| [`/domain-wiki-update`](domain-wiki-update.md) | 外科更新或补全覆盖 | `domain-wiki-update` |
+| [`/domain-wiki-query`](domain-wiki-query.md) | 先读 index 再作答 | `domain-wiki-query` |
+| [`/domain-wiki-ingest`](domain-wiki-ingest.md) | 摄入一份原文 | `domain-wiki-ingest` |
+| [`/domain-wiki-lint`](domain-wiki-lint.md) | 结构巡检 | `domain-wiki-lint` |
+
 所有 command 共同遵守 `using-devflow` 的行为准则：工件优先、暴露假设、范围纪律、验证而非声称、作者不自审。`devflow-clean-code` 与语言/领域技能不设独立 command——它们在设计、实现、评审内部被消费；`devflow-learn` 是 Ship 之后的可选工具，不改变交付结果。
+

@@ -25,13 +25,25 @@
 
 ### 事实落地
 
-- 历史事实由 archive 工件支持；
-- 当前行为声明由当前 canonical、代码或测试支持；
-- 引用的路径、稳定 ID、测试结果和失败尝试均准确；
-- 已删除或重命名的路径明确标记为历史路径；
-- 草稿不臆造证据中没有的业务意图或设计理由。
+逐个读取 `<!-- claim: ... -->`，不能只给整篇印象：
 
-对每条被证据否定或无法验证的重要声明，引用证据并提出范围更窄的真实表述。
+- `historical`：回到对应 archive locator，引用支持该历史事实的原文；
+- `current`：回到当前 canonical、代码或测试的定义位置；
+- `guidance`：核对证据能否支持该建议，并检查适用与不适用边界；
+- 可计数声明：核对正文列举数量与声明一致；
+- 已删除或重命名的路径必须明确标为历史路径；
+- 不臆造证据中没有的业务意图或设计理由。
+
+每条 claim 返回：
+
+```text
+CLM-001 | historical | verified | <仓库相对路径::anchor + 引文>
+CLM-002 | current | contradicted | <定义位置 + 修正方向>
+CLM-003 | guidance | unverifiable | <缺失证据 + 缩窄或删除方向>
+```
+
+判定只允许 `verified`、`contradicted`、`unverifiable`。`contradicted` 必须按引用证据
+修正文档；`unverifiable` 必须缩窄、明确归因或删除，不能用聊天补全。
 
 ### 与 canonical 分工
 
@@ -65,6 +77,8 @@
 - `lastVerifiedAt` 与本次评审一致；
 - source path 和 related learning ID 均可解析；
 - `active` 有当前证据支持；存在未确认漂移时使用 `stale`。
+- `superseded` 有明确 `supersededBy`，且不存在 replacement cycle；
+- refresh 只处理已批准 plan 的写集，审计者没有直接修改文件。
 
 ## Verdict
 
@@ -82,6 +96,7 @@
 
 重叠: none | low | moderate | high
 敏感级别: public | internal | restricted
+Grounding: <已验证数量> verified | <矛盾数量> contradicted | <无法验证数量> unverifiable
 ```
 
 `通过` 要求没有 critical 或 important finding。`阻塞` 表示缺少必需证据或仓库敏感

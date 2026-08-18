@@ -27,7 +27,7 @@ The project is runtime-agnostic by design. You can use it as a standalone skill 
 
 ## Commands
 
-DevFlow provides slash-style phase entries as a thin platform adapter. The authoritative workflow lives in `skills/<name>/SKILL.md`; commands only express intent and load the right skill.
+DevFlow provides slash-style phase entries as a thin platform adapter. The authoritative source in this repository lives in `coding-skills/<name>/SKILL.md`; commands only express intent and load the right skill.
 
 | What you're doing | Command | Skill | Key principle |
 |-------------------|---------|-------|---------------|
@@ -55,7 +55,7 @@ git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
 
 # Install all DevFlow skills, agents, and commands
 mkdir -p ~/.config/opencode/skills ~/.config/opencode/agents ~/.config/opencode/commands
-cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
+cp -R ~/.config/opencode/devflow/coding-skills/* ~/.config/opencode/skills/
 cp ~/.config/opencode/devflow/agents/*.md ~/.config/opencode/agents/
 cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 ```
@@ -136,9 +136,13 @@ DevFlow bundles workflow/entry skills, quality overlays, and tooling skills. Qua
 | Skill | What it does | Use when |
 |-------|--------------|----------|
 | [coding-standards-creator](coding-skills/coding-standards-creator/SKILL.md) | Converts internal team coding standards into a new `<language>-coding-standards` skill | A team needs to add or revise a language standard |
-| [devflow-learn](coding-skills/devflow-learn/SKILL.md) | Extracts evidence-backed, searchable lessons from archived changes | Reviewing completed work, recording root causes or design tradeoffs, or preventing repeated mistakes |
+| [devflow-learn](coding-skills/devflow-learn/SKILL.md) | Extracts claim-grounded lessons, performs bounded lookup, and audits stale/related knowledge without automatic writes | Reviewing completed work, reusing prior evidence, or maintaining `docs/learnings/` |
 
 Language standards extend by convention: work touching language X can load `<x>-coding-standards` when present. New language skills follow the shared [structural contract](coding-skills/coding-standards-creator/references/coding-standards-skill-contract.md), so phase skills do not need to be rewritten for each language. Domain skills trigger from their own frontmatter descriptions; a new domain skill becomes part of the Quality Stack by clearly describing its context, boundaries, and near-misses.
+
+### Domain Wiki
+
+A separate collection under [`domain-wiki-skills/`](domain-wiki-skills/README.md) maintains a compiled repository wiki in `wiki/`. Init covers the real domains in the repo by section; update can be surgical or a completeness pass. It also covers index-first query, ingest, and lint. Only wiki results are written to disk. Build output and exported documentation trees are not sources. The collection does not write product specs and does not depend on other skill collections.
 
 ---
 
@@ -188,7 +192,7 @@ Key design choices:
 
 ```text
 devflow/
-├── skills/                         # Workflow, quality, language, and domain skills
+├── coding-skills/                  # Workflow, quality, language, and domain skills
 │   ├── using-devflow/              # Entry and recovery rules
 │   ├── devflow-init/               # Existing-component baseline initialization
 │   ├── devflow-specify/            # SRS, delta spec, traceability
@@ -202,6 +206,7 @@ devflow/
 │   ├── *-coding-standards/         # Language overlays, discovered by naming convention
 │   ├── *-development/              # Domain overlays, discovered by description
 │   └── coding-standards-creator/   # Language-standard generator
+├── domain-wiki-skills/               # Compiled wiki: init, update, query
 ├── commands/                       # Slash-style phase entries
 ├── agents/                         # devflow-reviewer and devflow-implementer personas
 ├── docs/

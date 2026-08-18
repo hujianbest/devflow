@@ -1,6 +1,6 @@
 # DevFlow Core Architecture
 
-> 本文定义 DevFlow 从核心理念到 skill、工件和角色的架构映射。字段、状态、路径与归档规则见 [`delivery-contract.md`](../skills/using-devflow/references/delivery-contract.md)。
+> 本文定义 DevFlow 从核心理念到 skill、工件和角色的架构映射。字段、状态、路径与归档规则见 [`delivery-contract.md`](../coding-skills/using-devflow/references/delivery-contract.md)。
 
 ## 1. 架构目标
 
@@ -25,7 +25,7 @@ DevFlow 的目标是：**在 SDD 范式下生成 Clean Code，而不是仅仅能
 ## 3. Skill 体系
 
 ```text
-skills/
+coding-skills/
   using-devflow/             # 入口、baseline preflight、恢复与工件契约
   devflow-init/              # 既有组件缺基线时，从代码逆向建立 canonical 文档
   devflow-specify/           # srs + delta-spec + traceability 初始化
@@ -126,9 +126,11 @@ DevFlow 不提供“警告后继续”、跳过 sync 或带未完成任务归档
 提供稳定 ID、组件、来源、状态、敏感级别和检索标签。
 
 Learning 的权威级别低于当前 canonical、代码和测试。`using-devflow` 在目标组件与主题
-明确后先做 grep-first 检索，只读取强匹配的 `active` 文档；冲突时使用当前真相并标记
-stale 信号。知识捕获不回写 archive，不增加交付 gate，失败时也不改变 Ship 结果。
-schema、机械校验、语义复核和敏感信息阻断共同约束写入质量。
+明确后执行有界 grep-first 检索，只读取至多五份强匹配的 `active` 文档；截断时必须
+收窄查询，冲突时使用当前真相并产生 refresh 候选。每条 learning 用 claim/evidence
+关系区分 archive 历史事实、当前行为与工程指导，机械校验 locator，独立 reviewer
+逐 claim 核对语义。Refresh 的只读审计与批准后 apply 分权，并用 digest 和 write set
+限制修改范围。知识捕获不回写 archive，不增加交付 gate，失败时也不改变 Ship 结果。
 
 ## 9. 角色分离
 
@@ -141,6 +143,6 @@ schema、机械校验、语义复核和敏感信息阻断共同约束写入质�
 
 ## 10. 平台适配
 
-`commands/` 是 thin pointer，权威步骤位于 skills。OpenCode、Cursor 等运行时只需发现 skills、commands 与 agents，并具备读取、编辑和移动文件的能力。
+`commands/` 是 thin pointer，仓库内权威步骤位于 `coding-skills/`。安装时可以复制到运行时约定的 skills root；OpenCode、Cursor 等运行时只需发现 skills、commands 与 agents，并具备读取、编辑和移动文件的能力。
 
 组件根 `AGENTS.md` 可以增加项目约束和模板要求，但不能把 canonical、changes 或 archive 移出固定的 `specs/` 契约。

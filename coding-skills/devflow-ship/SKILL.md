@@ -17,7 +17,7 @@ Ship 只完成三件事：
 
 ## 输入与权威协议
 
-先读取 `skills/using-devflow/SKILL.md` 并核对目标 change。随后完整读取并按顺序执行：
+先读取 `coding-skills/using-devflow/SKILL.md` 并核对目标 change。随后完整读取并按顺序执行：
 
 1. `references/definition-of-done.md`
 2. `references/sync-archive-protocol.md`
@@ -55,9 +55,10 @@ Ship 只完成三件事：
 - 完整 Git diff 已展示并进入项目验证流程。
 
 完成 Ship 后，如果 archive 中存在可能改变未来调查、设计或工程选择的非平凡经验，
-可以向用户提供一次可选的 `devflow-learn` 建议，并概括候选主题。只有用户接受或显式
-调用时才进入知识沉淀；不要自动写入。捕获失败、被跳过或没有合格候选都不影响已经
-完成的 Ship，也不得回写 archive 或 change gate。
+执行一次有上限的只读候选判断：无合格候选时不增加提示；attended 有候选时向用户提供
+一次可选的 `devflow-learn capture` 建议；unattended 只在最终结果中输出
+`report-only` 候选，不自动写入。只有用户接受或显式调用时才进入知识沉淀。捕获失败、
+被跳过或没有合格候选都不影响已经完成的 Ship，也不得回写 archive 或 change gate。
 
 ## 缺口路由
 

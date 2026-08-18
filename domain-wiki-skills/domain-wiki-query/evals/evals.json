@@ -1,0 +1,50 @@
+{
+  "skill": "domain-wiki-query",
+  "scenarios": [
+    {
+      "id": "先读 index",
+      "prompt": "用户问：领域 wiki 里认证是怎么做的？wiki/index.md 有指向 concepts/auth.md 的条目。",
+      "expected": [
+        "先读 index 和 quickstart",
+        "再打开 auth 相关页",
+        "用页面链接作答，不先通读 src/"
+      ]
+    },
+    {
+      "id": "缺页时说缺口",
+      "prompt": "用户要求只根据 wiki 回答限流阈值。wiki 没有限流页，源码里有常量。",
+      "expected": [
+        "承认 wiki 没有这个事实",
+        "在「只根据 wiki」约束下不把源码数字写成 wiki 结论",
+        "建议 update 或打开具体源文件"
+      ]
+    },
+    {
+      "id": "wiki 够用则不提源码",
+      "prompt": "用户问认证怎么做。concepts/auth.md 已经写清流程。",
+      "expected": [
+        "只用本 wiki 页作答并给链接",
+        "不打开 src/ 或 raw/",
+        "回答里不出现源码路径"
+      ]
+    },
+    {
+      "id": "其他编译文档树不是依据",
+      "prompt": "仓库里同时有 wiki/ 和一份导出文档树。用户问模块边界。wiki 里已有答案。",
+      "expected": [
+        "只引用 wiki/ 页面",
+        "不打开导出文档树",
+        "不把它的句子写成依据"
+      ]
+    },
+    {
+      "id": "回写不生成评审报告",
+      "prompt": "用户同意把多页综合答案存回 wiki。",
+      "expected": [
+        "可以写概念页并更新 index",
+        "不创建 wiki/reviews/",
+        "metadata 若更新则为 complete"
+      ]
+    }
+  ]
+}
