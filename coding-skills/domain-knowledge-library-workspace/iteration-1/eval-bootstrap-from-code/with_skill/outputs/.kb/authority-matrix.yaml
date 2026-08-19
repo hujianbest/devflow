@@ -1,0 +1,21 @@
+schema_version: "1.0"
+authorities:
+  - question: 指定基线的取消实现与内存模型
+    preferred_sources: [src-order-service-py]
+    limitations: 只能证明该版本代码如何实现，不能证明正式业务意图或生产部署行为。
+  - question: 声明的取消 HTTP 接口
+    preferred_sources: [contract-openapi]
+    limitations: 只能证明 OpenAPI 1.0.0 的声明，不能证明路由、鉴权或实现一致性。
+  - question: 仓库中声明的测试场景
+    preferred_sources: [test-order-service-py]
+    limitations: 本次未执行测试，只能确认测试代码包含哪些输入与断言。
+  - question: fixture 的用途说明
+    preferred_sources: [doc-readme]
+    limitations: README 是设计说明，不提升实现事实或业务规则的权威等级。
+  - question: Bounded Context、业务术语、业务规则、owner 与例外
+    preferred_sources: [human-confirmation]
+    limitations: 当前没有具备职责的人工确认来源，所有相关结论必须保持候选或 unknown。
+conflict_policy:
+  same_level: human-review
+  implementation_vs_contract: preserve-both-as-is
+  newest_source_wins: false
