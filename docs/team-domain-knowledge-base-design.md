@@ -27,7 +27,7 @@ date: 2026-08-19
 最终建设一个 Skill：
 
 ```text
-domain-knowledge-builder
+domain-knowledge-library
 ```
 
 该 Skill 负责知识库冷启动、增量深化、材料摄入、代码同步、审核、审计和来源追溯。
@@ -717,7 +717,7 @@ GraphRAG 只在大量问题确实需要跨领域多跳和全局归纳时引入�
 
 ```yaml
 ---
-name: domain-knowledge-builder
+name: domain-knowledge-library
 description: >
   从一个或多个既有代码仓库冷启动团队业务领域知识库，并持续维护面向
   Coding Agent 的 OKF Knowledge Bundle。用于逆向分析代码、测试、API、
@@ -746,7 +746,7 @@ trace      追溯某条知识的证据和形成过程
 ### 12.3 Skill 包结构
 
 ```text
-domain-knowledge-builder/
+domain-knowledge-library/
 ├── SKILL.md
 ├── references/
 │   ├── architecture.md
