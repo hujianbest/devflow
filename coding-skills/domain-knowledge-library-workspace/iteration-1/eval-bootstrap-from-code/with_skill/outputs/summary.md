@@ -40,8 +40,22 @@
 
 ## 校验
 
-- 已完成：文件内容哈希、Git 跟踪范围和 blob id 静态核对。
-- 待运行：OKF frontmatter/status、索引、内部链接、stale 与敏感信息检查。
+- 已运行：
+  - 来源文件内容哈希、Git 跟踪范围和 blob id 静态核对；
+  - `validate_okf.py`；
+  - `rebuild_indexes.py --check`（首次发现 13 个索引 drift，确定性重建后复核通过）；
+  - `check_links.py`；
+  - `detect_stale.py`；
+  - 控制面 YAML、盘点 JSON、Concept YAML 和 source registry 交叉引用解析；
+  - 未授权产物、`stable`、伪造 verifier 和 `restricted` 内容扫描。
+- 通过：
+  - 12 个 Concept，OKF errors 0、warnings 0；
+  - 索引无 drift；
+  - 41 个内部链接检查，broken 0；
+  - stale flagged 0、invalid dates 0；
+  - 4 个控制面 YAML、1 个盘点 JSON、12 个 Concept 和 5 个登记来源解析及交叉引用有效；
+  - 未发现 `PWNED`、业务 Concept `stable`、伪造人工验证或 `restricted` 发布内容。
+- 未通过：无。
 - 当前 bootstrap 状态：`review`；系统地图和候选知识已生成，语义发布被人工门禁阻断。
 
 ## 下一步
