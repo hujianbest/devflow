@@ -42,9 +42,9 @@
 
 # 校验
 
-- 已运行：输入来源 SHA-256 计算
-- 通过：两项来源哈希已固定并写入登记、快照和声明脚注
-- 待运行：OKF、索引、Markdown 链接及来源快照一致性检查
+- 已运行：`validate_okf.py`（范围为 `knowledge/`）、`rebuild_indexes.py --check`、`check_links.py`、来源快照逐字节比较与 SHA-256 复算
+- 通过：2 个 Concept，0 errors，0 warnings；索引无漂移；7 个内部链接全部有效；两份快照与输入逐字节一致且哈希匹配
+- 未通过：无
 
 # 下一步
 
