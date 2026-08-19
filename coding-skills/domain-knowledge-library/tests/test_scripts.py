@@ -113,6 +113,23 @@ class ScriptTests(unittest.TestCase):
             self.assertEqual(trace_payload["sources"][0]["id"], "code-v1")
             self.assertTrue(trace_payload["footnotes"][0]["matches_source"])
 
+    def test_link_checker_rejects_control_plane_escape(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            kb_root = Path(temp)
+            knowledge = kb_root / "knowledge"
+            knowledge.mkdir()
+            (kb_root / ".kb" / "conflicts").mkdir(parents=True)
+            (kb_root / ".kb" / "conflicts" / "C-1.md").write_text(
+                "# Conflict\n", encoding="utf-8"
+            )
+            (knowledge / "rule.md").write_text(
+                concept() + "\n[Conflict](../.kb/conflicts/C-1.md)\n",
+                encoding="utf-8",
+            )
+            result = run_script("check_links.py", str(knowledge), check=False)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("escapes bundle", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -129,6 +129,8 @@ Confirmed  具备责任的人员确认的业务语义
 - 根 `log.md`；
 - 控制状态。
 
+`knowledge/` 是可独立分发的 Bundle。正式 Concept 的相对 Markdown 链接必须留在 `knowledge/` 内，不能反向链接 `.kb/` 控制面；如需关联 proposal、conflict 或 review queue，只在正文记录稳定治理 ID，由 `.kb/` 文件单向链接回 Concept。
+
 任一硬门禁失败时，不留下部分发布结果。保留提案和失败原因。
 
 ## 5. 模式概要

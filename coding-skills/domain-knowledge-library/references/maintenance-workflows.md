@@ -93,6 +93,7 @@
 
 - 同一材料影响的 Concept 作为一个变更集；
 - index、log 和来源登记一起更新；
+- `knowledge/` 页面只记录 proposal/conflict/review 的稳定 ID，不链接 Bundle 外的 `.kb/` 路径；
 - 任何硬门禁失败时不部分发布；
 - 返回每项声明的处理结果。
 

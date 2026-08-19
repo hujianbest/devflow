@@ -56,6 +56,8 @@ OKF 使用相对 Bundle 的文件路径（去掉 `.md`）作为 Concept ID。
 - `index.md` 和 `log.md` 是保留文件，不是普通 Concept。
 - 文件名使用稳定、可读的 kebab-case。
 - 不把日期放进普通 Concept 文件名；ADR 可保留序号。
+- `knowledge/` 内的相对 Markdown 链接必须解析到 Bundle 内部。
+- Concept 不得链接 `.kb/`；用 `conflict_id`、`proposal_id` 或 `review_id` 纯文本关联，控制面文件可以单向链接回 Concept。
 
 ## 3. 类型 Profile
 
@@ -324,6 +326,7 @@ blocked:
 - `stable` 的业务 Concept 至少有一个 `human:` verifier。
 - 关键声明脚注能解析到 `sources[].id`。
 - Concept 内部链接不存在意外断链。
+- Concept 不存在逃逸 Bundle 或指向 `.kb/` 的相对链接。
 - index 与文件一致。
 - 不存在循环来源和自我引用。
 - `restricted` 内容不进入当前可见仓库。
