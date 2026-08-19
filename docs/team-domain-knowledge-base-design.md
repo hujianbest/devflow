@@ -353,7 +353,7 @@ stale_after: 2026-11-19
 
 - 适用于普通实物订单；
 - 历史业务身份 B 存在兼容路径；
-- 目标架构见[取消流程重构决策](/decisions/cancel-flow-v3.md)。
+- 目标架构应关联对应的取消流程重构决策 Concept。
 
 # 使用前核对
 
@@ -979,4 +979,3 @@ domain-knowledge-builder/
 - [Anthropic: Contextual Retrieval](https://www.anthropic.com/engineering/contextual-retrieval)
 - [Microsoft Research: GraphRAG](https://www.microsoft.com/en-us/research/project/graphrag/)
 - [Microsoft RAG Evaluators](https://learn.microsoft.com/en-us/azure/foundry/concepts/evaluation-evaluators/rag-evaluators)
-
