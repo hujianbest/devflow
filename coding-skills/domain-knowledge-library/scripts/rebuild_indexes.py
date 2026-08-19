@@ -71,8 +71,12 @@ def render_index(directory: Path, root: Path) -> str:
 def index_directories(root: Path) -> list[Path]:
     directories = {root}
     for concept in root.rglob("*.md"):
-        if ".kb" not in concept.parts:
-            directories.add(concept.parent)
+        if ".kb" in concept.parts:
+            continue
+        current = concept.parent
+        while current != root:
+            directories.add(current)
+            current = current.parent
     return sorted(directories, key=lambda path: (len(path.relative_to(root).parts), path.as_posix()), reverse=True)
 
 

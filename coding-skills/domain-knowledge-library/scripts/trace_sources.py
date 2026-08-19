@@ -18,7 +18,7 @@ def scalar(frontmatter: str, key: str) -> str | None:
 
 
 def parse_sources(frontmatter: str) -> list[dict]:
-    section = re.search(r"(?ms)^sources:\s*\n(?P<body>(?:^[ \t]+.*\n?)*)", frontmatter)
+    section = re.search(r"(?ms)^sources:[ \t]*\n(?P<body>(?:^[ \t]+.*\n?)*)", frontmatter)
     if not section:
         return []
     body = section.group("body")

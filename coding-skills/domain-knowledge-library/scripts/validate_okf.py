@@ -53,7 +53,7 @@ def parse_concept(path: Path) -> tuple[Concept | None, str | None]:
 
 
 def source_blocks(frontmatter: str) -> list[str]:
-    match = re.search(r"(?ms)^sources:\s*\n(?P<body>(?:^[ \t]+.*\n?)*)", frontmatter)
+    match = re.search(r"(?ms)^sources:[ \t]*\n(?P<body>(?:^[ \t]+.*\n?)*)", frontmatter)
     if not match:
         return []
     body = match.group("body")
