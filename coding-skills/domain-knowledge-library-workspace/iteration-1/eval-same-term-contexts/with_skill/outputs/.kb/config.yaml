@@ -1,0 +1,15 @@
+schema_version: "1.0"
+knowledge_root: knowledge
+default_sensitivity: internal
+repositories:
+  - id: billing-service
+    path: /workspace/coding-skills/domain-knowledge-library/evals/fixtures/same-term-contexts/billing-service
+    include: [README.md, src]
+    exclude: [.git, vendor, generated, node_modules, dist, build]
+  - id: identity-service
+    path: /workspace/coding-skills/domain-knowledge-library/evals/fixtures/same-term-contexts/identity-service
+    include: [README.md, src]
+    exclude: [.git, vendor, generated, node_modules, dist, build]
+policies:
+  execute_source_code: false
+  publish_inferred_business_semantics: false

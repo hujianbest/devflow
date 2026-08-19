@@ -1,0 +1,38 @@
+schema_version: "1.0"
+sources:
+  - id: billing-readme
+    kind: git-file
+    resource: git+https://github.com/hujianbest/devflow.git@440bf01d2ea2f0b65813790e0c1febcadf04410e#domain-knowledge-library/evals/fixtures/same-term-contexts/billing-service/README.md
+    revision: 440bf01d2ea2f0b65813790e0c1febcadf04410e
+    role: design-intent
+    content_hash: sha256:5323e8c902a3a6ca3badc0b351823c0f156449ae6af96858e5df365269ba4621
+    sensitivity: internal
+    acquired_at: 2026-08-19T17:10:00Z
+  - id: billing-account-code
+    kind: git-file
+    resource: git+https://github.com/hujianbest/devflow.git@440bf01d2ea2f0b65813790e0c1febcadf04410e#domain-knowledge-library/evals/fixtures/same-term-contexts/billing-service/src/account.py
+    revision: 440bf01d2ea2f0b65813790e0c1febcadf04410e
+    role: implementation
+    content_hash: sha256:8ed5f38682ca085bdd3fc73c46a0d77ce81968ab9eda3e9375233132a877227c
+    sensitivity: internal
+    acquired_at: 2026-08-19T17:10:00Z
+  - id: identity-readme
+    kind: git-file
+    resource: git+https://github.com/hujianbest/devflow.git@440bf01d2ea2f0b65813790e0c1febcadf04410e#domain-knowledge-library/evals/fixtures/same-term-contexts/identity-service/README.md
+    revision: 440bf01d2ea2f0b65813790e0c1febcadf04410e
+    role: design-intent
+    content_hash: sha256:5151c73531cf79d66c5f3fc98637213c8fdb2050cd23e4bceb700a8dfc2659a4
+    sensitivity: internal
+    acquired_at: 2026-08-19T17:10:00Z
+  - id: identity-account-code
+    kind: git-file
+    resource: git+https://github.com/hujianbest/devflow.git@440bf01d2ea2f0b65813790e0c1febcadf04410e#domain-knowledge-library/evals/fixtures/same-term-contexts/identity-service/src/account.py
+    revision: 440bf01d2ea2f0b65813790e0c1febcadf04410e
+    role: implementation
+    content_hash: sha256:f9b9ddce039fb755ccb23f97aa3b87b2d455f254280781834434042910079e17
+    sensitivity: internal
+    acquired_at: 2026-08-19T17:10:00Z
+limitations:
+  parse_failures: []
+  unsupported_formats: []
+  access_restrictions: []

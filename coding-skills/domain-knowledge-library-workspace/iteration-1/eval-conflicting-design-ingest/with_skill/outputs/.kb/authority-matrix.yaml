@@ -1,0 +1,16 @@
+schema_version: "1.0"
+questions:
+  - scope: current-order-cancellation-implementation
+    preferred_roles: [implementation, test-observation]
+    source_ids: [cancel-code-v1]
+  - scope: proposed-order-cancellation-design
+    preferred_roles: [design-intent]
+    source_ids: [cancel-design-v2]
+    requires_human_confirmation: order-domain-owner
+  - scope: warehouse-interception-contract
+    preferred_roles: [contract, human-confirmation]
+    requires_human_confirmation: warehouse-team
+policies:
+  design_intent_does_not_prove_implementation: true
+  implementation_does_not_approve_business_intent: true
+  require_view_for_shipped_cancellation_answers: true

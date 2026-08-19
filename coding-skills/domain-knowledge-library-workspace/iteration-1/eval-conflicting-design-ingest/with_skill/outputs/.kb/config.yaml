@@ -1,0 +1,11 @@
+schema_version: "1.0"
+knowledge_root: knowledge
+default_sensitivity: internal
+repositories:
+  - id: order-service
+    path: .kb/sources/order-service
+    include: ["*.py"]
+    exclude: []
+policies:
+  execute_source_code: false
+  publish_inferred_business_semantics: false
