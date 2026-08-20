@@ -9,6 +9,7 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 
 BUSINESS_TYPES = {
@@ -23,6 +24,7 @@ BUSINESS_TYPES = {
 VALID_STATUS = {"draft", "stable", "deprecated"}
 VALID_VIEW = {"as-is", "to-be", "historical"}
 RESERVED = {"index.md", "log.md"}
+URI_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 
 
 @dataclass
@@ -65,6 +67,22 @@ def source_blocks(frontmatter: str) -> list[str]:
         return []
     starts.append(len(body))
     return [body[starts[index] : starts[index + 1]] for index in range(len(starts) - 1)]
+
+
+def local_resource_target(resource: str, concept_path: Path, root: Path) -> Path | None:
+    value = resource.strip().strip("\"'")
+    if not value or URI_RE.match(value):
+        return None
+    value = value.split("#", 1)[0].split("?", 1)[0]
+    if value.startswith("/"):
+        return (root / value.lstrip("/")).resolve()
+    return (concept_path.parent / value).resolve()
+
+
+def references_control_plane(resource: str) -> bool:
+    value = resource.strip().strip("\"'").replace("\\", "/")
+    path = unquote(urlsplit(value).path)
+    return ".kb" in {part for part in path.split("/") if part}
 
 
 def validate_concept(concept: Concept, root: Path) -> list[dict]:
@@ -113,6 +131,22 @@ def validate_concept(concept: Concept, root: Path) -> list[dict]:
             error("source-missing-id", "each source requires a stable id")
         if not resource:
             error("source-missing-resource", "each source requires a resource")
+        else:
+            resource_value = resource.group(1).strip()
+            if references_control_plane(resource_value):
+                error(
+                    "source-resource-control-plane",
+                    f"source resource cannot point to .kb control-plane content: {resource_value}",
+                )
+            target = local_resource_target(resource_value, concept.path, root)
+            if target is not None:
+                try:
+                    target.relative_to(root)
+                except ValueError:
+                    error(
+                        "source-resource-escapes-bundle",
+                        f"source resource must stay in the bundle or use an immutable URI: {resource_value}",
+                    )
     if len(ids) != len(set(ids)):
         error("duplicate-source-id", "source ids must be unique inside a concept")
 
@@ -170,6 +204,10 @@ def main() -> int:
     root = args.knowledge_root.resolve()
     if not root.is_dir():
         parser.error(f"knowledge root is not a directory: {root}")
+    if (root / "knowledge").is_dir() or (root / ".kb").is_dir():
+        parser.error(
+            "expected the published knowledge/ directory, not the knowledge-base root"
+        )
     result = validate(root)
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -93,7 +93,9 @@
 
 - 同一材料影响的 Concept 作为一个变更集；
 - index、log 和来源登记一起更新；
-- `knowledge/` 页面只记录 proposal/conflict/review 的稳定 ID，不链接 Bundle 外的 `.kb/` 路径；
+- proposal、conflict、review queue 分别先分配不可复用的 `proposal_id`、`conflict_id`、`review_id`；
+- `knowledge/` 页面只以纯文本记录这些稳定 ID，不链接 Bundle 外的 `.kb/` 路径；
+- Concept 来源使用版本化 URI、`urn:sha256:<digest>` 或 Bundle 内路径，不以相对路径指向 `.kb/sources/`；
 - 任何硬门禁失败时不部分发布；
 - 返回每项声明的处理结果。
 

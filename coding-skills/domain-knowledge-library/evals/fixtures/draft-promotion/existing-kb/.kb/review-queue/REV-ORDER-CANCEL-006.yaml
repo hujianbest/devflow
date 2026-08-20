@@ -1,0 +1,12 @@
+review_id: REV-ORDER-CANCEL-006
+status: pending
+concept_id: BR-ORDER-CANCEL-006
+concept_path: knowledge/domains/order-fulfillment/rules/order-cancellation.md
+requested_at: 2026-08-18T09:05:00Z
+required_actor: human:order-domain-owner
+claim: SHIPPED 状态的普通实物订单不可取消。
+scope:
+  context: order-fulfillment
+  systems: [order-service]
+  environments: [production]
+  products: [physical-order]

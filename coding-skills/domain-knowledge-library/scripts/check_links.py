@@ -54,6 +54,10 @@ def main() -> int:
     root = args.knowledge_root.resolve()
     if not root.is_dir():
         parser.error(f"knowledge root is not a directory: {root}")
+    if (root / "knowledge").is_dir() or (root / ".kb").is_dir():
+        parser.error(
+            "expected the published knowledge/ directory, not the knowledge-base root"
+        )
 
     broken: list[tuple[str, str]] = []
     checked = 0

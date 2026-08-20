@@ -130,6 +130,62 @@ class ScriptTests(unittest.TestCase):
             self.assertEqual(result.returncode, 1)
             self.assertIn("escapes bundle", result.stdout)
 
+    def test_validate_rejects_source_resource_escape(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            kb_root = Path(temp)
+            knowledge = kb_root / "knowledge"
+            knowledge.mkdir()
+            (kb_root / ".kb" / "sources").mkdir(parents=True)
+            escaped = concept().replace(
+                "git+https://example/repo.git@abc#src/order.py",
+                "../.kb/sources/order.py",
+            )
+            (knowledge / "rule.md").write_text(escaped, encoding="utf-8")
+
+            result = run_script(
+                "validate_okf.py", str(knowledge), "--json", check=False
+            )
+            payload = json.loads(result.stdout)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "source-resource-escapes-bundle",
+                {finding["code"] for finding in payload["findings"]},
+            )
+
+    def test_validate_rejects_control_plane_file_uri(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            knowledge = Path(temp) / "knowledge"
+            knowledge.mkdir()
+            escaped = concept().replace(
+                "git+https://example/repo.git@abc#src/order.py",
+                "file:.kb/sources/order.py",
+            )
+            (knowledge / "rule.md").write_text(escaped, encoding="utf-8")
+
+            result = run_script(
+                "validate_okf.py", str(knowledge), "--json", check=False
+            )
+            payload = json.loads(result.stdout)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "source-resource-control-plane",
+                {finding["code"] for finding in payload["findings"]},
+            )
+
+    def test_validators_reject_knowledge_base_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            kb_root = Path(temp)
+            (kb_root / "knowledge").mkdir()
+            (kb_root / ".kb").mkdir()
+
+            for script in ("validate_okf.py", "check_links.py"):
+                result = run_script(script, str(kb_root), check=False)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn(
+                    "expected the published knowledge/ directory",
+                    result.stderr,
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

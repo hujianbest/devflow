@@ -1,0 +1,8 @@
+version: 1
+sources:
+  - id: cancel-policy-2026-01
+    resource: urn:policy:POL-ORDER-CANCEL-2026-01
+    role: business-policy
+    owner: human:order-domain-owner
+    captured_at: 2026-08-18T08:00:00Z
+    content_sha256: f690acd80d4e8d65a9e379f166cee462fadd81bd6d1d8f2dbfe50b777cb34f6c

@@ -1,0 +1,8 @@
+version: 1
+sources:
+  - id: order-api-1.4.0
+    resource: urn:fixture:api-sync:old-openapi.yaml
+    role: contract
+    version: 1.4.0
+    captured_at: 2026-07-01T08:00:00Z
+    content_sha256: 05db75f88e9f66e2fca421a4fe173f4ce74cb388484be532af7dd8209fc75b6a

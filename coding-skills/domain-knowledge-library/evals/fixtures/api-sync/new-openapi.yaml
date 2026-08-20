@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: Order API
+  version: 2.0.0
+paths:
+  /v2/orders/{orderId}/cancellations:
+    post:
+      operationId: cancelOrder
+      responses:
+        "202":
+          description: Cancellation accepted for asynchronous processing
+  /orders/{orderId}:
+    get:
+      operationId: getOrder
+      responses:
+        "200":
+          description: Order returned

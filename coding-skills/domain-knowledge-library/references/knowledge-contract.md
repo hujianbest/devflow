@@ -58,6 +58,7 @@ OKF 使用相对 Bundle 的文件路径（去掉 `.md`）作为 Concept ID。
 - 不把日期放进普通 Concept 文件名；ADR 可保留序号。
 - `knowledge/` 内的相对 Markdown 链接必须解析到 Bundle 内部。
 - Concept 不得链接 `.kb/`；用 `conflict_id`、`proposal_id` 或 `review_id` 纯文本关联，控制面文件可以单向链接回 Concept。
+- Concept 的 `sources[].resource` 不得使用逃逸到 `.kb/sources/` 的相对路径。对控制面中的本地快照使用原始版本化 URI 或 `urn:sha256:<digest>`，再由 source registry 记录快照位置。
 
 ## 3. 类型 Profile
 
@@ -197,6 +198,17 @@ stale_after: 2026-11-19
 [^cancel-service]: CancelService 在指定 commit 下的实现
 ```
 
+推荐的本地不可变来源写法：
+
+```yaml
+sources:
+  - id: cancel-design-v2
+    resource: urn:sha256:<digest>
+    role: design-intent
+```
+
+`.kb/source-registry.yaml` 使用同一个 source id 记录原始位置、摘要和控制面快照。Concept 不直接链接该快照。
+
 ## 6. 证据等级
 
 在 proposal 和 review 中给每项主张标记：
@@ -327,7 +339,10 @@ blocked:
 - 关键声明脚注能解析到 `sources[].id`。
 - Concept 内部链接不存在意外断链。
 - Concept 不存在逃逸 Bundle 或指向 `.kb/` 的相对链接。
+- 每个 `.kb/proposals/`、`.kb/conflicts/` 和 `.kb/review-queue/` 条目分别具有稳定的 `proposal_id`、`conflict_id` 或 `review_id`；跨面关联只记录这些 ID。
 - index 与文件一致。
 - 不存在循环来源和自我引用。
 - `restricted` 内容不进入当前可见仓库。
 - 未标记的推断数量为零。
+
+校验时把 `<kb-root>/knowledge` 分别传给 `validate_okf.py`、`check_links.py`、`rebuild_indexes.py` 和 `detect_stale.py`。传入 `<kb-root>` 会把控制面混入发布边界，校验器应拒绝这种调用。

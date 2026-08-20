@@ -2,4 +2,5 @@
 /.agents/
 /tmp/
 /coding-skills/*-workspace/
+/coding-skills/domain-knowledge-library-workspace/
 __pycache__/
