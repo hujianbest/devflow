@@ -1,7 +1,0 @@
-version: 1
-sources:
-  - id: cancel-implementation-v1
-    resource: urn:fixture:refine-ingest:cancel-implementation-v1
-    role: implementation
-    captured_at: 2026-08-01T08:00:00Z
-    content_sha256: 97c794a33b78f24626e9223c99860ef44c407ddc6717f8f76f420e6b6de56f9d
