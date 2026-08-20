@@ -1,5 +1,5 @@
 ---
-name: domain-wiki-init
+name: domain-knowledge-init
 description: 为仓库建立覆盖全仓真实领域的首版领域 wiki。用户要求初始化领域 wiki、生成仓库 wiki、从源码编译完整领域 wiki、全仓分析建设领域 wiki 时使用。不用于刷新已有 wiki、查询已编译 wiki，或撰写产品规格。
 ---
 
@@ -41,7 +41,7 @@ description: 为仓库建立覆盖全仓真实领域的首版领域 wiki。用�
 
 ### 2. 拒绝覆盖
 
-若 `wiki/` 已有概念页或非空 `index.md`：停止，报告现有状态，建议 `domain-wiki-update`。用户要补全覆盖时走 update 的 completeness pass，不要假装成一次静默 init。
+若 `wiki/` 已有概念页或非空 `index.md`：停止，报告现有状态，建议 `domain-knowledge-update`。用户要补全覆盖时走 update 的 completeness pass，不要假装成一次静默 init。
 只有人明确要求重建时才继续，并先说明会替换哪些页面。
 
 ### 3. 脚手架

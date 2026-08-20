@@ -1,5 +1,5 @@
 {
-  "skill": "domain-wiki-query",
+  "skill": "domain-knowledge-query",
   "scenarios": [
     {
       "id": "先读 index",

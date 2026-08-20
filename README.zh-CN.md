@@ -142,7 +142,7 @@ DevFlow 包含工作流/入口技能、质量叠加技能和工具技能。质�
 
 ### Domain Wiki
 
-[`domain-wiki-skills/`](domain-wiki-skills/README.md) 是另一套集合，在 `wiki/` 维护编译式仓库 wiki：按栏目做全仓初始化、按 git 外科更新或补全覆盖、按索引查询、摄入原文和巡检。落盘只保留领域 wiki 结果。构建产物和导出文档树默认不是源。它不写产品规格，也不依赖其他技能集合。
+[`domain-knowledge-library/`](domain-knowledge-library/README.md) 是另一套集合，在 `wiki/` 维护编译式仓库 wiki：按栏目做全仓初始化、按 git 外科更新或补全覆盖、按索引查询、摄入原文和巡检。落盘只保留领域 wiki 结果。构建产物和导出文档树默认不是源。它不写产品规格，也不依赖其他技能集合。
 
 ---
 
@@ -206,7 +206,7 @@ devflow/
 │   ├── *-coding-standards/         # 语言级叠加约束，按命名约定发现
 │   ├── *-development/              # 领域开发叠加约束，按 description 发现
 │   └── coding-standards-creator/   # 语言规范生成器
-├── domain-wiki-skills/               # 编译式 wiki：init、update、query
+├── domain-knowledge-library/               # 编译式 wiki：init、update、query
 ├── commands/                       # slash-style 阶段入口
 ├── agents/                         # devflow-reviewer / devflow-implementer 子代理角色
 ├── docs/

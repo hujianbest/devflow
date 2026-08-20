@@ -1,5 +1,5 @@
 {
-  "skill": "domain-wiki-ingest",
+  "skill": "domain-knowledge-ingest",
   "scenarios": [
     {
       "id": "一次一个源",

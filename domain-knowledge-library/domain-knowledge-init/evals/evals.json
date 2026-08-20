@@ -1,5 +1,5 @@
 {
-  "skill": "domain-wiki-init",
+  "skill": "domain-knowledge-init",
   "scenarios": [
     {
       "id": "拒绝覆盖已有 wiki",

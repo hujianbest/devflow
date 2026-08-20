@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Added Java and Python coding-standard overlays, frontend and backend domain overlays, and `coding-standards-creator`.
 - Added repository validators and per-skill eval scenarios.
 - Added `devflow-learn`, a Chinese-first optional post-Ship tool that extracts one evidence-backed learning from an archived change into `docs/learnings/`, with strict schema validation, overlap handling, grounding review, and sensitive-content blocking.
-- Added `domain-wiki-skills/`, a skill-native wiki suite (`domain-wiki-*`) for init, git-scoped update, index-first query, ingest, and lint. Only wiki results are written to disk; there is no review-report artifact. Each skill owns its contract.
+- Added `domain-knowledge-library/`, a skill-native wiki suite (`domain-knowledge-*`) for init, git-scoped update, index-first query, ingest, and lint. Only wiki results are written to disk; there is no review-report artifact. Each skill owns its contract.
 
 ### Changed
 
@@ -33,11 +33,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `using-devflow` now performs targeted active-learning lookup before work, while `devflow-ship` may offer knowledge capture after archival without making it a delivery gate.
 - Repository skill sources now consistently use `coding-skills/`; commands, validators, tests, and installation examples no longer reference the removed source root.
 - `devflow-learn` now validates claim/evidence grounding, performs bounded lookup and evidence-pack extraction, validates the full related/supersession graph, and separates refresh audit from explicitly approved apply.
-- `domain-wiki-init` compiles a complete first wiki by section using a skeleton coverage review. The old 8-page first-pass cap is no longer a completion condition. `domain-wiki-update` can run a completeness pass when the user asks to fill the wiki.
+- `domain-knowledge-init` compiles a complete first wiki by section using a skeleton coverage review. The old 8-page first-pass cap is no longer a completion condition. `domain-knowledge-update` can run a completeness pass when the user asks to fill the wiki.
 - Domain wiki coverage gates now require a real page per interface family, UI surface, and named flow. A table inside an overview does not count as coverage. Inventory signals are surface types, not a specific framework layout.
 - Domain wiki skills now treat only repo source, hand-written docs, named originals, and the detected wiki root as evidence. Query stays silent about source when the wiki is enough; ingest treats raw as untrusted; lint regenerates directory indexes and reports mermaid heuristics.
 - Domain wiki skills no longer route to or name coding-skills workflows. They only compile `wiki/` and do not author product specs or other documentation trees.
-- Renamed `devflow-knowledge-*` / `knowledge-skills/` to `domain-wiki-*` / `domain-wiki-skills/`. The compiled wiki root is `wiki/`.
+- Renamed `devflow-knowledge-*` / `knowledge-skills/` to `domain-knowledge-*` / `domain-knowledge-library/`. The compiled wiki root is `wiki/`.
 
 ### Removed
 

@@ -1,5 +1,5 @@
 ---
-name: domain-wiki-update
+name: domain-knowledge-update
 description: 按 git 增量或新证据外科更新已有领域 wiki；用户要求补全、建成完整领域 wiki 或对齐全仓覆盖时做 completeness pass。源码刚合入、文档过期、刷新或补全领域 wiki 时使用。不用于首建 wiki、普通提问、摄入一份外部原文，或改写产品代码与规格。
 ---
 
@@ -13,7 +13,7 @@ description: 按 git 增量或新证据外科更新已有领域 wiki；用户要
 [skeleton-protocol.md](references/skeleton-protocol.md)、
 [coverage-gates.md](references/coverage-gates.md)。
 
-探测 wiki 根：用户给出的目录 → `wiki/INSTRUCTIONS.md` → `wiki/index.md` 与 `log.md` 同时存在。找不到则走 `domain-wiki-init`，不要把本技能假装成 init。
+探测 wiki 根：用户给出的目录 → `wiki/INSTRUCTIONS.md` → `wiki/index.md` 与 `log.md` 同时存在。找不到则走 `domain-knowledge-init`，不要把本技能假装成 init。
 
 ## 硬规则
 
@@ -34,7 +34,7 @@ description: 按 git 增量或新证据外科更新已有领域 wiki；用户要
 
 ### 1. 定位
 
-没有 wiki 根：路由 `domain-wiki-init`。不要把 update 假装成 init 命令，只是走首建流程。
+没有 wiki 根：路由 `domain-knowledge-init`。不要把 update 假装成 init 命令，只是走首建流程。
 
 读 `INSTRUCTIONS.md`、`quickstart.md` 的 Backlog、`.last-update.json`。
 

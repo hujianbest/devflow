@@ -1,5 +1,5 @@
 ---
-name: domain-wiki-query
+name: domain-knowledge-query
 description: 用已编译的领域 wiki 回答问题。用户问 wiki 怎么说、先查领域 wiki、按文档作答、检索领域 wiki 时使用。不用于初始化或刷新 wiki、摄入新原文，或在没有 wiki 时通读源码充作查询。
 ---
 

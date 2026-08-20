@@ -1,5 +1,5 @@
 ---
-name: domain-wiki-ingest
+name: domain-knowledge-ingest
 description: 把一份不可变原文编译进领域 wiki。用户要求摄入文章、ADR、纪要、raw 目录中的新文件时使用。不用于从整仓源码做首建或 git 增量更新、普通提问，或把未定稿讨论写进 wiki。
 ---
 
@@ -10,7 +10,7 @@ description: 把一份不可变原文编译进领域 wiki。用户要求摄入�
 按需读 [wiki-contract.md](references/wiki-contract.md) 和
 [frontmatter.md](references/frontmatter.md)。
 
-探测 wiki 根：用户给出的目录 → `wiki/INSTRUCTIONS.md` → `wiki/index.md` 与 `log.md` 同时存在。没有 wiki 时先 `domain-wiki-init`（sources 模式）。未定稿讨论不能当源事实。
+探测 wiki 根：用户给出的目录 → `wiki/INSTRUCTIONS.md` → `wiki/index.md` 与 `log.md` 同时存在。没有 wiki 时先 `domain-knowledge-init`（sources 模式）。未定稿讨论不能当源事实。
 
 ## 硬规则
 

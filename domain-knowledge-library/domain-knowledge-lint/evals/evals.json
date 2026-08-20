@@ -1,5 +1,5 @@
 {
-  "skill": "domain-wiki-lint",
+  "skill": "domain-knowledge-lint",
   "scenarios": [
     {
       "id": "先报告后删除",

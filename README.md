@@ -142,7 +142,7 @@ Language standards extend by convention: work touching language X can load `<x>-
 
 ### Domain Wiki
 
-A separate collection under [`domain-wiki-skills/`](domain-wiki-skills/README.md) maintains a compiled repository wiki in `wiki/`. Init covers the real domains in the repo by section; update can be surgical or a completeness pass. It also covers index-first query, ingest, and lint. Only wiki results are written to disk. Build output and exported documentation trees are not sources. The collection does not write product specs and does not depend on other skill collections.
+A separate collection under [`domain-knowledge-library/`](domain-knowledge-library/README.md) maintains a compiled repository wiki in `wiki/`. Init covers the real domains in the repo by section; update can be surgical or a completeness pass. It also covers index-first query, ingest, and lint. Only wiki results are written to disk. Build output and exported documentation trees are not sources. The collection does not write product specs and does not depend on other skill collections.
 
 ---
 
@@ -206,7 +206,7 @@ devflow/
 │   ├── *-coding-standards/         # Language overlays, discovered by naming convention
 │   ├── *-development/              # Domain overlays, discovered by description
 │   └── coding-standards-creator/   # Language-standard generator
-├── domain-wiki-skills/               # Compiled wiki: init, update, query
+├── domain-knowledge-library/               # Compiled wiki: init, update, query
 ├── commands/                       # Slash-style phase entries
 ├── agents/                         # devflow-reviewer and devflow-implementer personas
 ├── docs/

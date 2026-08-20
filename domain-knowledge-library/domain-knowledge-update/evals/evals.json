@@ -1,5 +1,5 @@
 {
-  "skill": "domain-wiki-update",
+  "skill": "domain-knowledge-update",
   "scenarios": [
     {
       "id": "complete 且无源变化则 no-op",

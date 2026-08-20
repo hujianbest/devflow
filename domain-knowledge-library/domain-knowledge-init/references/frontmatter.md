@@ -8,7 +8,7 @@ type: Architecture overview
 title: 运行时分层
 description: 进程如何接请求、落到存储，以及失败时谁负责。
 tags: [runtime, storage]
-generated: { by: domain-wiki-init/agent, at: 2026-08-18T00:00:00Z }
+generated: { by: domain-knowledge-init/agent, at: 2026-08-18T00:00:00Z }
 ---
 ```
 

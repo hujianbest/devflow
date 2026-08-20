@@ -1,5 +1,5 @@
 ---
-name: domain-wiki-lint
+name: domain-knowledge-lint
 description: 巡检领域 wiki 的结构健康：断链、孤儿页、stub、过期声明、front matter 与 log 漂移。用户要求检查领域 wiki、lint wiki、清理过期页面时使用。不代替 init/update 后的独立质量评审，也不用于回答领域问题或摄入新源。
 ---
 
@@ -9,7 +9,7 @@ description: 巡检领域 wiki 的结构健康：断链、孤儿页、stub、过
 
 按需读 [wiki-contract.md](references/wiki-contract.md)。
 
-探测 wiki 根：用户给出的目录 → `wiki/INSTRUCTIONS.md` → `wiki/index.md` 与 `log.md` 同时存在。找不到就询问。领域问题走 `domain-wiki-query`，不要在本技能里重写架构。
+探测 wiki 根：用户给出的目录 → `wiki/INSTRUCTIONS.md` → `wiki/index.md` 与 `log.md` 同时存在。找不到就询问。领域问题走 `domain-knowledge-query`，不要在本技能里重写架构。
 
 ## 检查项
 
