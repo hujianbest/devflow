@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
+- Added `docs/devflow-agent-knowledge-options.md`, which maps knowledge-compilation ideas onto DevFlow's existing skill, learning, and domain-wiki layers and lists feasible precipitation paths without adding a delivery gate.
 - Added `devflow-init` to establish reviewed canonical baselines for existing components without inventing unknown requirements or design intent.
 - Added `devflow-ship` for Definition of Done checks, semantic canonical sync, independent sync review, human confirmation, closeout, and whole-change archival.
 - Added `change.json` as the structured source for change identity, component mode, immutable base revision, risk profile, artifact graph, gates, and archive state.

@@ -132,6 +132,10 @@ Learning 的权威级别低于当前 canonical、代码和测试。`using-devflo
 逐 claim 核对语义。Refresh 的只读审计与批准后 apply 分权，并用 digest 和 write set
 限制修改范围。知识捕获不回写 archive，不增加交付 gate，失败时也不改变 Ship 结果。
 
+Skill、learning 与领域 wiki 的分层、晋升和明确不做项见
+[`devflow-agent-knowledge-options.md`](devflow-agent-knowledge-options.md)。该文是选项讨论，
+不改变本节的权威规则。
+
 ## 9. 角色分离
 
 - **主控 Agent**：编排阶段、维护 `change.json`、执行 canonical sync 和目录归档。
