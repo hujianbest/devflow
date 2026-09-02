@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Added Java and Python coding-standard overlays, frontend and backend domain overlays, and `coding-standards-creator`.
 - Added repository validators and per-skill eval scenarios.
 - Added `devflow-learn`, a Chinese-first optional post-Ship tool that extracts one evidence-backed learning from an archived change into `docs/learnings/`, with strict schema validation, overlap handling, grounding review, and sensitive-content blocking.
-- Added `domain-knowledge-library/`, a skill-native wiki suite (`domain-knowledge-*`) for init, git-scoped update, index-first query, ingest, and lint. Only wiki results are written to disk; there is no review-report artifact. Each skill owns its contract.
+- Added `domain-knowledge-library/`, a knowledge-management workflow for legacy systems built from three skills (`using-domain-knowledge`, `domain-knowledge-maintain`, `domain-knowledge-expand`), a read-only `domain-knowledge-reviewer` agent, four `/domain-knowledge*` commands, a dependency-free `kb.py` (init / validate / index / stale / proposals / inventory / audit / lock), and five Cursor project hooks (`sessionStart` entry injection, `postToolUse` draft/stale/to-be reminders, `preToolUse` write protection with secret scanning, `beforeShellExecution` guard, `stop` write-back prompt). Business semantics publish as `draft` and need a `human:` verifier for `stable`; task agents write proposals to `.kb/proposals/` instead of editing `knowledge/`.
 
 ### Changed
 

@@ -140,9 +140,17 @@ DevFlow bundles workflow/entry skills, quality overlays, and tooling skills. Qua
 
 Language standards extend by convention: work touching language X can load `<x>-coding-standards` when present. New language skills follow the shared [structural contract](skills/coding-standards-creator/references/coding-standards-skill-contract.md), so phase skills do not need to be rewritten for each language. Domain skills trigger from their own frontmatter descriptions; a new domain skill becomes part of the Quality Stack by clearly describing its context, boundaries, and near-misses.
 
-### Domain Wiki
+### Domain Knowledge Workflow
 
-A separate collection under [`domain-knowledge-library/`](domain-knowledge-library/README.md) maintains a compiled repository wiki in `wiki/`. Init covers the real domains in the repo by section; update can be surgical or a completeness pass. It also covers index-first query, ingest, and lint. Only wiki results are written to disk. Build output and exported documentation trees are not sources. The collection does not write product specs and does not depend on other skill collections.
+A separate collection under [`domain-knowledge-library/`](domain-knowledge-library/README.md) runs a knowledge-management workflow for legacy systems: it compiles evidence into an OKF Bundle (`knowledge/`) that Coding Agents and Design Agents consume, with humans judging truth and agents doing the bookkeeping. Seven loops map onto three skills, one reviewer agent, and five Cursor hooks:
+
+| Loop | Runs as | Command |
+|------|---------|---------|
+| ① bootstrap, ④ ingest, ⑤ sync, ⑥ review, ⑦ audit | `domain-knowledge-maintain` + `scripts/kb.py` | `/domain-knowledge-maintain <mode>` |
+| ② consume, ③ capture (every task) | `using-domain-knowledge` + hooks (`sessionStart` entry, `postToolUse` draft reminders, `preToolUse` write protection, `stop` write-back prompt) | `/domain-knowledge`, `/domain-knowledge-capture` |
+| expand (optional, on request) | `domain-knowledge-expand` | `/domain-knowledge-expand <scope>` |
+
+Business semantics are published as `draft` immediately and promoted to `stable` only with a `human:` verifier; task agents never edit `knowledge/` directly and instead write proposals to `.kb/proposals/`. The collection does not write product specs and does not depend on other skill collections.
 
 ---
 
@@ -206,9 +214,9 @@ devflow/
 │   ├── *-coding-standards/         # Language overlays, discovered by naming convention
 │   ├── *-development/              # Domain overlays, discovered by description
 │   └── coding-standards-creator/   # Language-standard generator
-├── domain-knowledge-library/               # Compiled wiki: init, update, query
+├── domain-knowledge-library/       # Knowledge workflow: using / maintain / expand skills, kb.py, Cursor hooks
 ├── commands/                       # Slash-style phase entries
-├── agents/                         # devflow-reviewer and devflow-implementer personas
+├── agents/                         # devflow-reviewer, devflow-implementer, domain-knowledge-reviewer
 ├── docs/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md

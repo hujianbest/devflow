@@ -1,0 +1,68 @@
+{
+  "skill": "domain-knowledge-expand",
+  "scenarios": [
+    {
+      "id": "scope 为全部时停止",
+      "prompt": "用户说：把所有接口都建成页面。",
+      "expected": [
+        "停止并要求具体 scope",
+        "说明按风险排序而不是扫平",
+        "不生成任何 Concept"
+      ]
+    },
+    {
+      "id": "按风险排序并给清单",
+      "prompt": "scope 是 order-core 的 cancel 模块，候选有 30 个接口、8 张表、6 个 Topic，上限 20。",
+      "expected": [
+        "按事故半径、资金权限、变更频率、跨 Context 密度排序",
+        "先给出清单让用户裁，不自行超上限",
+        "未深化对象列在完成输出中"
+      ]
+    },
+    {
+      "id": "只写指针不复制正文",
+      "prompt": "用户希望 Data Model 页里贴完整 DDL，方便不打开仓库就看。",
+      "expected": [
+        "拒绝复制 DDL",
+        "写结构指针（迁移文件 + rev）、所有权、字段业务含义",
+        "指出 Bundle 不复制权威源"
+      ]
+    },
+    {
+      "id": "expanded_by 必带",
+      "prompt": "生成了 5 个 API Endpoint Concept。",
+      "expected": [
+        "每条 frontmatter 含 expanded_by: domain-knowledge-expand 与 status: draft",
+        "kb.py validate --check-index 通过",
+        "对应 Module 页入口清单更新为链接"
+      ]
+    },
+    {
+      "id": "机械事实与业务含义分开",
+      "prompt": "一个 Topic 的 schema 明确，但它对应哪个领域事件只是推测。",
+      "expected": [
+        "契约指针、生产者消费者标 Observed/Derived，可由 tool 验证",
+        "领域事件对应关系标 Inferred，保持 draft",
+        "不把推测写成确认"
+      ]
+    },
+    {
+      "id": "配置不写生产值",
+      "prompt": "用户要求在 Configuration 页记录当前生产环境的开关值。",
+      "expected": [
+        "只写声明指针与影响的行为",
+        "生产值指向配置中心",
+        "说明 Bundle 不镜像运行状态"
+      ]
+    },
+    {
+      "id": "顺手深化被拒",
+      "prompt": "scope 是 cancel 模块，但相邻的 refund 模块只差两步就能一起做完。",
+      "expected": [
+        "不深化 scope 之外的对象",
+        "在完成输出中建议另起一次 expand",
+        "锁按时释放"
+      ]
+    }
+  ]
+}

@@ -370,8 +370,7 @@ def validate_no_skill_design_doc_references(root: Path = ROOT) -> list[str]:
     """Packaged skills must stay deployable without the repo-level docs/ tree."""
     errors: list[str] = []
     docs_root = root / "docs"
-    skills_root = root / SKILLS_ROOT_NAME
-    if not docs_root.exists() or not skills_root.exists():
+    if not docs_root.exists():
         return errors
 
     design_doc_paths = sorted(
@@ -379,13 +378,16 @@ def validate_no_skill_design_doc_references(root: Path = ROOT) -> list[str]:
         for path in docs_root.rglob("*")
         if path.is_file()
     )
-    for skill_doc in skills_root.rglob("*.md"):
-        text = skill_doc.read_text(encoding="utf-8", errors="ignore")
-        for design_doc_path in design_doc_paths:
-            if design_doc_path in text:
-                errors.append(
-                    f"{skill_doc}: packaged skill references non-deployed design doc {design_doc_path}"
-                )
+    for skills_root in (root / SKILLS_ROOT_NAME, root / "domain-knowledge-library"):
+        if not skills_root.exists():
+            continue
+        for skill_doc in skills_root.rglob("*.md"):
+            text = skill_doc.read_text(encoding="utf-8", errors="ignore")
+            for design_doc_path in design_doc_paths:
+                if design_doc_path in text:
+                    errors.append(
+                        f"{skill_doc}: packaged skill references non-deployed design doc {design_doc_path}"
+                    )
     return errors
 
 
@@ -477,8 +479,132 @@ def validate_learning_skill(root: Path = ROOT) -> list[str]:
     return errors
 
 
+DOMAIN_KNOWLEDGE_ROOT_NAME = "domain-knowledge-library"
+DOMAIN_KNOWLEDGE_SKILLS = {
+    "using-domain-knowledge",
+    "domain-knowledge-maintain",
+    "domain-knowledge-expand",
+}
+DOMAIN_KNOWLEDGE_REQUIRED_PATHS = (
+    "README.md",
+    "domain-knowledge-maintain/references/bundle-contract.md",
+    "domain-knowledge-maintain/references/bootstrap-workflow.md",
+    "domain-knowledge-maintain/references/ingest-workflow.md",
+    "domain-knowledge-maintain/references/sync-workflow.md",
+    "domain-knowledge-maintain/references/review-workflow.md",
+    "domain-knowledge-maintain/references/audit-workflow.md",
+    "domain-knowledge-maintain/references/templates.md",
+    "domain-knowledge-maintain/scripts/kb.py",
+    "using-domain-knowledge/references/consume-protocol.md",
+    "using-domain-knowledge/references/capture-protocol.md",
+    "using-domain-knowledge/references/proposal-template.md",
+    "domain-knowledge-expand/references/expand-workflow.md",
+    "hooks/hooks.json",
+    "hooks/install.sh",
+    "hooks/kb_common.py",
+    "hooks/kb_session_start.py",
+    "hooks/kb_read_guard.py",
+    "hooks/kb_write_guard.py",
+    "hooks/kb_shell_guard.py",
+    "hooks/kb_capture_prompt.py",
+)
+DOMAIN_KNOWLEDGE_COMMANDS = {
+    "domain-knowledge.md",
+    "domain-knowledge-capture.md",
+    "domain-knowledge-maintain.md",
+    "domain-knowledge-expand.md",
+}
+DOMAIN_KNOWLEDGE_HOOK_EVENTS = {"sessionStart", "postToolUse", "preToolUse", "beforeShellExecution", "stop"}
+
+
+def validate_domain_knowledge_collection(root: Path = ROOT) -> list[str]:
+    """domain-knowledge-library 是独立集合：三技能、hooks、命令与 reviewer 必须齐全且自洽。"""
+    errors: list[str] = []
+    base = root / DOMAIN_KNOWLEDGE_ROOT_NAME
+    if not base.exists():
+        return [f"{base}: domain knowledge collection is missing"]
+
+    for relative in DOMAIN_KNOWLEDGE_REQUIRED_PATHS:
+        if not (base / relative).is_file():
+            errors.append(f"{base / relative}: domain knowledge collection file is missing")
+
+    for name in sorted(DOMAIN_KNOWLEDGE_SKILLS):
+        skill = base / name / "SKILL.md"
+        if not skill.is_file():
+            errors.append(f"{skill}: expected skill is missing")
+            continue
+        text = skill.read_text(encoding="utf-8", errors="ignore")
+        if not text.startswith("---\n"):
+            errors.append(f"{skill}: missing YAML frontmatter")
+            continue
+        end = text.find("\n---", 4)
+        frontmatter = text[4:end] if end != -1 else ""
+        name_match = re.search(r"^name:\s*([A-Za-z0-9_-]+)\s*$", frontmatter, re.MULTILINE)
+        if not name_match or name_match.group(1) != name:
+            errors.append(f"{skill}: name must equal directory {name}")
+        if "\ndescription:" not in f"\n{frontmatter}":
+            errors.append(f"{skill}: missing description")
+        evals = base / name / "evals" / "evals.json"
+        if not evals.is_file():
+            errors.append(f"{evals}: missing evals")
+        else:
+            try:
+                data = json.loads(evals.read_text(encoding="utf-8"))
+                if not isinstance(data.get("scenarios"), list) or not data["scenarios"]:
+                    errors.append(f"{evals}: missing non-empty scenarios list")
+            except json.JSONDecodeError as exc:
+                errors.append(f"{evals}: invalid JSON: {exc}")
+
+    commands_root = root / "commands"
+    present = {p.name for p in commands_root.glob("domain-knowledge*.md")} if commands_root.exists() else set()
+    for missing in sorted(DOMAIN_KNOWLEDGE_COMMANDS - present):
+        errors.append(f"commands/{missing}: expected command is missing")
+    for command in sorted(present):
+        text = (commands_root / command).read_text(encoding="utf-8", errors="ignore")
+        if f"{DOMAIN_KNOWLEDGE_ROOT_NAME}/" not in text:
+            errors.append(f"commands/{command}: must point at {DOMAIN_KNOWLEDGE_ROOT_NAME}/<skill>/SKILL.md")
+
+    reviewer = root / "agents" / "domain-knowledge-reviewer.md"
+    if not reviewer.is_file():
+        errors.append(f"{reviewer}: domain knowledge reviewer agent is missing")
+
+    hooks_json = base / "hooks" / "hooks.json"
+    if hooks_json.is_file():
+        try:
+            hooks = json.loads(hooks_json.read_text(encoding="utf-8"))
+            events = set((hooks.get("hooks") or {}).keys())
+            for missing in sorted(DOMAIN_KNOWLEDGE_HOOK_EVENTS - events):
+                errors.append(f"{hooks_json}: missing hook event {missing}")
+            for event, entries in (hooks.get("hooks") or {}).items():
+                for entry in entries:
+                    command = str(entry.get("command", ""))
+                    script = command.split()[-1] if command else ""
+                    if not script.startswith(".cursor/hooks/domain-kb/"):
+                        errors.append(f"{hooks_json}: {event} command must live under .cursor/hooks/domain-kb/")
+                    elif not (base / "hooks" / Path(script).name).is_file():
+                        errors.append(f"{hooks_json}: {event} references missing script {Path(script).name}")
+        except json.JSONDecodeError as exc:
+            errors.append(f"{hooks_json}: invalid JSON: {exc}")
+
+    contract = base / "domain-knowledge-maintain" / "references" / "bundle-contract.md"
+    if contract.is_file():
+        text = contract.read_text(encoding="utf-8", errors="ignore")
+        for token in ("draft", "stable", "deprecated", "expanded_by", "sources", "verified", ".kb/proposals/", "maintenance.lock"):
+            if token not in text:
+                errors.append(f"{contract}: missing bundle contract token {token}")
+
+    kb_script = base / "domain-knowledge-maintain" / "scripts" / "kb.py"
+    if kb_script.is_file():
+        text = kb_script.read_text(encoding="utf-8", errors="ignore")
+        for token in ("validate", "index", "stale", "proposals", "inventory", "audit", "lock", "unlock", "init", "expanded_by"):
+            if token not in text:
+                errors.append(f"{kb_script}: missing kb.py subcommand or gate `{token}`")
+    return errors
+
+
 def run_all(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
+    errors.extend(validate_domain_knowledge_collection(root))
     errors.extend(validate_markdown_links(root))
     errors.extend(validate_skill_frontmatter(root))
     errors.extend(validate_agent_frontmatter(root))

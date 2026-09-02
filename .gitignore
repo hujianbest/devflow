@@ -2,6 +2,5 @@
 /.agents/
 /tmp/
 /skills/*-workspace/
-/skills/domain-knowledge-library-workspace/
-/skills/domain-knowledge-library/evals/
+/domain-knowledge-library/*-workspace/
 __pycache__/

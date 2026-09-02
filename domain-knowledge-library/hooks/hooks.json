@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "python3 .cursor/hooks/domain-kb/kb_session_start.py",
+        "timeout": 10
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "python3 .cursor/hooks/domain-kb/kb_read_guard.py",
+        "matcher": "Read",
+        "timeout": 10
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "python3 .cursor/hooks/domain-kb/kb_write_guard.py",
+        "matcher": "Write|StrReplace|Edit|Delete",
+        "timeout": 10,
+        "failClosed": false
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "python3 .cursor/hooks/domain-kb/kb_shell_guard.py",
+        "matcher": "knowledge/|\\.kb/",
+        "timeout": 10
+      }
+    ],
+    "stop": [
+      {
+        "command": "python3 .cursor/hooks/domain-kb/kb_capture_prompt.py",
+        "timeout": 10,
+        "loop_limit": 1
+      }
+    ]
+  }
+}

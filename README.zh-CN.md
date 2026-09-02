@@ -140,9 +140,17 @@ DevFlow 包含工作流/入口技能、质量叠加技能和工具技能。质�
 
 语言规范按约定扩展：工作触及语言 X，就加载已存在的 `<x>-coding-standards`。新增语言技能遵循同一份[结构契约](skills/coding-standards-creator/references/coding-standards-skill-contract.md)，所以阶段技能不需要为每种语言改写。领域技能按各自 frontmatter description 触发；新增领域技能只要把适用语境、边界和易混淆场景写清楚，就能作为 Quality Stack 的一部分被消费。
 
-### Domain Wiki
+### 领域知识工作流
 
-[`domain-knowledge-library/`](domain-knowledge-library/README.md) 是另一套集合，在 `wiki/` 维护编译式仓库 wiki：按栏目做全仓初始化、按 git 外科更新或补全覆盖、按索引查询、摄入原文和巡检。落盘只保留领域 wiki 结果。构建产物和导出文档树默认不是源。它不写产品规格，也不依赖其他技能集合。
+[`domain-knowledge-library/`](domain-knowledge-library/README.md) 是另一套集合，为存量系统运行一套知识管理工作流：把证据编译成 Coding Agent 与 Design Agent 共同消费的 OKF Bundle（`knowledge/`），Agent 记账，人裁真假。七个循环落到三个 skill、一个 reviewer agent 和五个 Cursor hooks：
+
+| 循环 | 落点 | 命令 |
+|------|------|------|
+| ① bootstrap、④ ingest、⑤ sync、⑥ review、⑦ audit | `domain-knowledge-maintain` + `scripts/kb.py` | `/domain-knowledge-maintain <mode>` |
+| ② consume、③ capture（每个任务） | `using-domain-knowledge` + hooks（`sessionStart` 入口注入、`postToolUse` draft 提醒、`preToolUse` 写保护、`stop` 回写追问） | `/domain-knowledge`、`/domain-knowledge-capture` |
+| expand（可选、按需） | `domain-knowledge-expand` | `/domain-knowledge-expand <scope>` |
+
+业务语义校验通过即以 `draft` 发布，只有带 `human:` 验证才能晋级 `stable`；任务 Agent 不直接改 `knowledge/`，而是写提案到 `.kb/proposals/`。它不写产品规格，也不依赖其他技能集合。
 
 ---
 
@@ -206,9 +214,9 @@ devflow/
 │   ├── *-coding-standards/         # 语言级叠加约束，按命名约定发现
 │   ├── *-development/              # 领域开发叠加约束，按 description 发现
 │   └── coding-standards-creator/   # 语言规范生成器
-├── domain-knowledge-library/               # 编译式 wiki：init、update、query
+├── domain-knowledge-library/       # 知识工作流：using / maintain / expand 技能、kb.py、Cursor hooks
 ├── commands/                       # slash-style 阶段入口
-├── agents/                         # devflow-reviewer / devflow-implementer 子代理角色
+├── agents/                         # devflow-reviewer / devflow-implementer / domain-knowledge-reviewer 子代理角色
 ├── docs/
 │   ├── devflow-philosophy.md
 │   ├── devflow-core-architecture.md

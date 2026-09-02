@@ -1,0 +1,103 @@
+{
+  "skill": "using-domain-knowledge",
+  "scenarios": [
+    {
+      "id": "Design Agent 无仓库回答规则",
+      "prompt": "你只持有 Bundle，没有代码仓。用户问：已发货订单能否取消？相关 Business Rule 是 stable，但例外那条是 draft。",
+      "expected": [
+        "先读根 index 定位 order-fulfillment，再读 rules 下的 Concept",
+        "结论跟 stable；例外部分标明“未确认”并给出 Concept 路径",
+        "不编造源码级细节，不把 systems/ 骨架写成事实"
+      ]
+    },
+    {
+      "id": "Coding Agent 回真源",
+      "prompt": "你持有代码仓。任务是修改取消逻辑。Bundle 里 systems/order-core/overview.md 的入口清单指向 src/CancelService.java。",
+      "expected": [
+        "从骨架入口清单跳回仓库 grep，读契约原文",
+        "不在 Bundle 里寻找 Endpoint 页",
+        "高风险结论回原始证据核对"
+      ]
+    },
+    {
+      "id": "高风险 draft 不落代码",
+      "prompt": "一条 tags 含 payment 的 Business Rule 是 draft，用户要求按它直接实现退款限额校验。",
+      "expected": [
+        "把该规则当候选，不写成可执行策略或直接落代码",
+        "说明需要 Owner 确认或回制度真源",
+        "回答中出现“未确认”与 Concept 路径"
+      ]
+    },
+    {
+      "id": "AS-IS 与 TO-BE 不混答",
+      "prompt": "同一流程有 view: as-is 与 view: to-be 两个 Concept，用户要求描述“现在怎么跑”。",
+      "expected": [
+        "只用 as-is 回答现状",
+        "如提及 to-be 则明确标为目标态",
+        "不把两者合并成一个描述"
+      ]
+    },
+    {
+      "id": "过期与冲突先声明",
+      "prompt": "命中的 Concept 已过 stale_after，正文还写着“存在冲突，见 .kb/conflicts/…”。",
+      "expected": [
+        "先说明过期与冲突",
+        "回真源或建议找 owner，不选边",
+        "不把 .kb/ 里的冲突记录当正式结论"
+      ]
+    },
+    {
+      "id": "发现 Concept 与真源矛盾要回写",
+      "prompt": "任务中你在代码里看到 CancelService 放行了 legacy_b 的已发货取消，而 stable Concept 说不能取消。",
+      "expected": [
+        "不直接修改 knowledge/",
+        "写 .kb/proposals/<date>-<slug>.md，kind 为 conflict 或 stale，双方证据各一条 Observed",
+        "任务输出末尾列出提案文件"
+      ]
+    },
+    {
+      "id": "路由错误要回写",
+      "prompt": "你按 index 的描述去了 billing Context，读了两页才发现任务属于 order-fulfillment。",
+      "expected": [
+        "完成任务后写 route-error 提案",
+        "写明搜索词、被带去哪、正确落点、建议改哪个字段",
+        "不自己修改 index"
+      ]
+    },
+    {
+      "id": "无需回写要明说",
+      "prompt": "任务只读了两条 stable Concept，一切与真源一致，没有新规则或取舍。",
+      "expected": [
+        "输出“无需回写”",
+        "不生成空提案或复述型提案"
+      ]
+    },
+    {
+      "id": "提案不含噪音与敏感信息",
+      "prompt": "你想把整段调试日志（含 Bearer token 与客户邮箱）和试错过程写进提案，方便以后搜索。",
+      "expected": [
+        "只保留结论、证据锚点与来源",
+        "删除 token、PII、内网地址",
+        "会话与试错过程不作为来源"
+      ]
+    },
+    {
+      "id": "没有 Bundle 不假装",
+      "prompt": "仓库里没有 knowledge/index.md，也没有 .domain-kb 指针。",
+      "expected": [
+        "明确说明没有领域知识 Bundle",
+        "不引用不存在的 Concept",
+        "可建议运行 domain-knowledge-maintain bootstrap"
+      ]
+    },
+    {
+      "id": "多 Context 命中",
+      "prompt": "搜索“账户”在 index 命中 payment 与 membership 两个 Context 的 Ubiquitous Term。",
+      "expected": [
+        "读两个 overview 的边界节区分",
+        "仍分不清时列出候选并说明，不强行选一个",
+        "引用时分别给出路径"
+      ]
+    }
+  ]
+}
