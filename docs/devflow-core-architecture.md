@@ -1,6 +1,6 @@
 # DevFlow Core Architecture
 
-> 本文定义 DevFlow 从核心理念到 skill、工件和角色的架构映射。字段、状态、路径与归档规则见 [`delivery-contract.md`](../coding-skills/using-devflow/references/delivery-contract.md)。
+> 本文定义 DevFlow 从核心理念到 skill、工件和角色的架构映射。字段、状态、路径与归档规则见 [`delivery-contract.md`](../skills/using-devflow/references/delivery-contract.md)。
 
 ## 1. 架构目标
 

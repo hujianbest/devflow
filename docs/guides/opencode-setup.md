@@ -6,7 +6,7 @@ This guide explains how to use DevFlow through the [OpenCode](https://opencode.a
 
 DevFlow integrates with OpenCode through:
 
-- The [`using-devflow`](../../coding-skills/using-devflow/SKILL.md) entry skill — the three-layer quality model, workflow map, artifact conventions, and behavior rules.
+- The [`using-devflow`](../../skills/using-devflow/SKILL.md) entry skill — the three-layer quality model, workflow map, artifact conventions, and behavior rules.
 - OpenCode's built-in `skill` tool, which automatically discovers any `SKILL.md` under `skills/`.
 - DevFlow subagents under `agents/`, used by review and implementation phases.
 - Slash-style commands under `commands/` for teams that prefer explicit phase entry.
@@ -105,7 +105,7 @@ Each file carries a YAML frontmatter with `description`, `mode: subagent`, and `
 
 ## Agent expectations
 
-For DevFlow to work on OpenCode, the agent must follow the behavior rules in [`using-devflow`](../../coding-skills/using-devflow/SKILL.md):
+For DevFlow to work on OpenCode, the agent must follow the behavior rules in [`using-devflow`](../../skills/using-devflow/SKILL.md):
 
 - Surface assumptions before implementing; never silently fill in vague requirements.
 - For an existing component without baseline-ready canonical docs, stop and use `devflow-init`; clarify rather than fabricate.

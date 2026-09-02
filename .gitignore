@@ -1,7 +1,7 @@
 /.idea/
 /.agents/
 /tmp/
-/coding-skills/*-workspace/
-/coding-skills/domain-knowledge-library-workspace/
-/coding-skills/domain-knowledge-library/evals/
+/skills/*-workspace/
+/skills/domain-knowledge-library-workspace/
+/skills/domain-knowledge-library/evals/
 __pycache__/
