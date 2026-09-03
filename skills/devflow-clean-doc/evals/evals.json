@@ -1,0 +1,131 @@
+{
+  "skill": "devflow-clean-doc",
+  "scenarios": [
+    {
+      "id": "polishing-must-not-delete-thresholds",
+      "prompt": "An agent rewrites an EARS requirement 'WHEN 收到 SetConfig 请求 THE 配置模块 SHALL 在 50 ms 内返回结果' into the smoother sentence '配置模块会尽快响应 SetConfig 请求'.",
+      "expected": [
+        "rejects the rewrite as a normative-layer violation, not a style preference",
+        "restores the EARS keywords and the 50 ms threshold verbatim",
+        "limits readability work to the surrounding explanation text"
+      ]
+    },
+    {
+      "id": "vague-wording-is-a-content-defect",
+      "prompt": "An SRS contains 'NFR-003: 系统应快速响应，必要时重试'. The author asks to make the document more readable before R1.",
+      "expected": [
+        "refuses to replace 快速/必要时 with another vague synonym",
+        "keeps the original text and registers a blocking Open Question for threshold, interval, and source",
+        "routes the gap to devflow-specify with an owner instead of resolving it by rewriting"
+      ]
+    },
+    {
+      "id": "base-excerpt-must-stay-verbatim",
+      "prompt": "While improving readability of delta-spec.md, the agent reflows a MODIFIED operation's base excerpt from '校验失败时清空配置并继续启动。' into '原实现在校验失败后会清空配置，然后继续启动。'",
+      "expected": [
+        "identifies the base excerpt as verbatim baseline evidence that must not change",
+        "reverts the rewrite so the digest comparison still holds",
+        "notes that canonical sync evidence breaks when excerpts are paraphrased"
+      ]
+    },
+    {
+      "id": "canonical-heading-rename-needs-delta-operation",
+      "prompt": "During a readability pass on specs/design.md, the agent wants to rename the section heading '4.2 配置持久化' to '4.2 配置的持久化与恢复' because the new title reads better.",
+      "expected": [
+        "treats the canonical heading as a stable display name rather than prose",
+        "requires a delta RENAMED operation with from/to and reference updates instead of an in-place edit",
+        "keeps stable entity keys and section numbering unchanged"
+      ]
+    },
+    {
+      "id": "cold-read-test-drives-the-verdict",
+      "prompt": "A delta-design.md reads fluently, but a reviewer cannot tell what stays unchanged without opening the source code.",
+      "expected": [
+        "runs the five cold-read questions and records which one fails",
+        "classifies it as a readability defect when the fact exists but is hard to locate",
+        "classifies it as a content defect routed back to devflow-design when the fact is absent"
+      ]
+    },
+    {
+      "id": "no-new-facts-during-rewrite",
+      "prompt": "To make a sentence flow better, the agent adds a causal clause: '为避免弱网下打满连接池，本次把重试次数从 3 次改为 1 次'—the connection-pool reason appears nowhere in the source documents.",
+      "expected": [
+        "flags the added rationale as an unsourced new assertion",
+        "removes it or confirms it with the author or upstream source first",
+        "keeps any confirmed content addition in a separate diff from the readability rewrite"
+      ]
+    },
+    {
+      "id": "terminology-drift-unification",
+      "prompt": "A design document refers to the same object as 会话, 链路, 连接, and session in different sections.",
+      "expected": [
+        "unifies the term across the document and gives the Chinese-English pair on first use",
+        "adds a glossary with a forbidden-synonyms column when three or more terms are confusable",
+        "does not rename identifiers, error codes, or anything inside backticks"
+      ]
+    },
+    {
+      "id": "template-parroting-needs-reviewable-na",
+      "prompt": "The 数据迁移 section of delta-design.md says only '本节用于描述本次变更涉及的数据迁移与回滚方案'.",
+      "expected": [
+        "flags template parroting because a reviewer cannot tell analysis from filler",
+        "requires either real content or a reviewable N/A with a concrete anchor",
+        "does not delete the section to hide unanalyzed risk"
+      ]
+    },
+    {
+      "id": "separate-expression-and-content-diffs",
+      "prompt": "One commit mixes a large readability rewrite with a threshold change from 50 ms to 80 ms and a new acceptance case.",
+      "expected": [
+        "requires one diff one purpose: expression rewrite separate from content revision",
+        "asks the reviewer to treat the mixed diff as unresolved until it is split",
+        "keeps stable IDs, thresholds, and acceptance text out of the rewrite batch"
+      ]
+    },
+    {
+      "id": "reviewer-stays-read-only",
+      "prompt": "During R2, the reviewer finds long noun-heavy sentences and asks whether to just rewrite the section directly in the review context.",
+      "expected": [
+        "keeps the reviewer read-only and produces findings instead of edits",
+        "assigns severity by reader risk: ambiguity is critical, cold-read failure is important, wording is minor",
+        "routes the rework back to the author stage with a Resolution slot"
+      ]
+    },
+    {
+      "id": "severity-not-inflated-for-style",
+      "prompt": "A reviewer wants to block R1 because some Chinese and English words are missing a space and a few headings could be shorter, while the requirements themselves are testable and unambiguous.",
+      "expected": [
+        "classifies spacing and heading wording as minor and non-blocking",
+        "keeps the gate decision based on testability and unambiguity",
+        "still requires a Resolution entry for accepted minor findings"
+      ]
+    },
+    {
+      "id": "no-rewrite-of-structured-and-review-files",
+      "prompt": "The agent proposes to polish change.json field values and to reword a reviewer's finding text in reviews/r1-review-2026-09-03.md so the archive reads better.",
+      "expected": [
+        "excludes change.json and other structured files from readability work",
+        "keeps reviewer wording, verdict, severity, and Resolution text verbatim on disk",
+        "allows a separately labeled readable summary in handoff notes only"
+      ]
+    },
+    {
+      "id": "meaning-preserving-verification",
+      "prompt": "An agent finishes a readability pass over srs.md and reports 'documentation is now much clearer' with no other evidence.",
+      "expected": [
+        "rejects the vague self-check and requires a concrete doc_readability_check",
+        "requires ID counts, numbers with units, backtick contents, and SHALL/Given/When/Then counts to match before and after",
+        "reverts the pass when any comparison fails instead of arguing the rewrite is equivalent"
+      ]
+    },
+    {
+      "id": "chinese-mixed-script-and-units",
+      "prompt": "A specification writes '超时50ms', '使用CRC32校验', 'P99响应时间基本不超过50', and uses half-width punctuation in Chinese sentences.",
+      "expected": [
+        "adds spacing between Chinese and Latin/digits and normalizes full-width punctuation",
+        "keeps identifiers and error codes in backticks and unchanged",
+        "treats the missing unit and statistical basis in 'P99 基本不超过 50' as a content defect for devflow-specify rather than a formatting fix"
+      ]
+    }
+  ]
+}
