@@ -141,6 +141,20 @@ def test_用技能名引用其他技能的文件时通过(tmp_path):
     assert validator.validate_skill_loading_by_name(tmp_path) == []
 
 
+def test_两个_skill_root_下技能重名会被拒绝(tmp_path):
+    validator = load_validator()
+    write_skill(tmp_path, "using-domain-knowledge")
+    duplicate = tmp_path / "domain-knowledge-library" / "using-domain-knowledge"
+    duplicate.mkdir(parents=True)
+    (duplicate / "SKILL.md").write_text(
+        "---\nname: using-domain-knowledge\ndescription: test\n---\n", encoding="utf-8"
+    )
+
+    result = validator.validate_skill_name_uniqueness(tmp_path)
+
+    assert any("按名加载会产生歧义" in error for error in result)
+
+
 def test_delivery_contract_requires_canonical_tokens(tmp_path):
     validator = load_validator()
     for relative_path, tokens in validator.REQUIRED_CONTRACT_TOKENS.items():

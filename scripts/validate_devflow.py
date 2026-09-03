@@ -293,14 +293,29 @@ SKILL_FILE_PATH_RE = re.compile(
 )
 
 
-def _installed_skill_names(root: Path) -> set[str]:
-    names: set[str] = set()
+def _skill_dirs(root: Path) -> list[Path]:
+    dirs: list[Path] = []
     for base in (root / SKILLS_ROOT_NAME, root / DOMAIN_KNOWLEDGE_ROOT_NAME):
         if base.exists():
-            names.update(
-                path.name for path in base.iterdir() if (path / "SKILL.md").is_file()
-            )
-    return names
+            dirs.extend(path for path in base.iterdir() if (path / "SKILL.md").is_file())
+    return dirs
+
+
+def _installed_skill_names(root: Path) -> set[str]:
+    return {path.name for path in _skill_dirs(root)}
+
+
+def validate_skill_name_uniqueness(root: Path = ROOT) -> list[str]:
+    """技能名在所有 skill root 之间必须唯一，否则按名加载无法确定目标。"""
+    errors: list[str] = []
+    seen: dict[str, Path] = {}
+    for path in sorted(_skill_dirs(root)):
+        previous = seen.get(path.name)
+        if previous is not None:
+            errors.append(f"{path}: 技能名与 {previous} 重复，按名加载会产生歧义")
+        else:
+            seen[path.name] = path
+    return errors
 
 
 def validate_skill_loading_by_name(root: Path = ROOT) -> list[str]:
@@ -661,6 +676,7 @@ def run_all(root: Path = ROOT) -> list[str]:
     errors.extend(validate_command_set(root))
     errors.extend(validate_repository_skill_paths(root))
     errors.extend(validate_skill_loading_by_name(root))
+    errors.extend(validate_skill_name_uniqueness(root))
     errors.extend(validate_delivery_contract(root))
     errors.extend(validate_spec_template_shape(root))
     errors.extend(validate_no_legacy_references(root))
