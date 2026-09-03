@@ -117,8 +117,8 @@ description: 为既有组件逆向建立或补齐 DevFlow canonical baseline。�
 
 canonical 基线要被人逐条确认，动笔前加载 `writing-readable-doc` 并按它写：每节第一句给判断，术语一次固定，需求块与 QAS 按模板原样写，unknown 明确标出而不是用模糊词糊过去。
 
-需要创建或补齐规格时，读取
-[组件规格模板](../devflow-specify/references/component-spec-template.md)：
+需要创建或补齐规格时，读取 `devflow-specify` 的
+`references/component-spec-template.md`：
 
 - 写组件当前全量可观察契约，不写本次 init 的过程叙事；
 - 使用稳定 requirement ID；
@@ -131,8 +131,8 @@ canonical 基线要被人逐条确认，动笔前加载 `writing-readable-doc` �
 
 ### 6. 起草组件设计基线
 
-需要创建或补齐设计时，读取
-[组件设计模板](../devflow-design/references/component-design-template.md)：
+需要创建或补齐设计时，读取 `devflow-design` 的
+`references/component-design-template.md`：
 
 - 描述当前组件边界、单元、依赖、接口实现、状态与数据、错误恢复、并发资源、构建部署和测试接缝；
 - 每个设计结论引用证据和相关 requirement ID；
@@ -208,7 +208,7 @@ reviewer verdict 为 `rework` 或 `blocked` 时，作者按 findings 修订或�
 
 ## 直接参考
 
-- [组件规格模板](../devflow-specify/references/component-spec-template.md)
-- [组件设计模板](../devflow-design/references/component-design-template.md)
+- `devflow-specify` 的 `references/component-spec-template.md`：组件规格模板
+- `devflow-design` 的 `references/component-design-template.md`：组件设计模板
 - [逆向分析清单](references/reverse-engineering-checklist.md)
 - [baseline 评审清单](references/baseline-review-checklist.md)

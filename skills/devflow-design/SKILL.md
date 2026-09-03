@@ -91,7 +91,7 @@ canonical 与工作树；设计基线缺失、draft 或目标章节发生重叠�
 
 ### 2. 按 profile 展开
 
-先读 `../using-devflow/references/risk-profiles.md`，按
+先读 `using-devflow` 的 `references/risk-profiles.md`，按
 `change.json.profile.name`、`reasons`、`requiredEvidence` 和
 `requiredReviewers` 展开：
 
@@ -267,8 +267,8 @@ R3 或实现发现设计错误时：
 
 ## 支撑参考
 
-| 文件 | 用途 |
+| 参考 | 用途 |
 |---|---|
 | `references/delta-design-template.md` | 本 AR 的设计增量、决策与 Case Index |
 | `references/component-design-template.md` | `specs/design.md` 组件设计基线 |
-| `../using-devflow/references/risk-profiles.md` | profile 触发器、附加证据与 reviewer |
+| `using-devflow` 的 `references/risk-profiles.md` | profile 触发器、附加证据与 reviewer |

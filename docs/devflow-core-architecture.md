@@ -144,6 +144,6 @@ Learning 的权威级别低于当前 canonical、代码和测试。`using-devflo
 
 ## 10. 平台适配
 
-`commands/` 是 thin pointer，仓库内权威步骤位于 `skills/`。安装时可以复制到运行时约定的 skills root；OpenCode、Cursor 等运行时只需发现 skills、commands 与 agents，并具备读取、编辑和移动文件的能力。
+`commands/` 是 thin pointer，仓库内权威步骤位于 `skills/`。命令、技能和 agent 一律按技能名加载技能，不写仓库路径，这样安装到运行时的 skills root 后仍然成立。安装时可以复制到运行时约定的 skills root；OpenCode、Cursor 等运行时只需发现 skills、commands 与 agents，并具备读取、编辑和移动文件的能力。
 
 组件根 `AGENTS.md` 可以增加项目约束和模板要求，但不能把 canonical、changes 或 archive 移出固定的 `specs/` 契约。

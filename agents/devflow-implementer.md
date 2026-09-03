@@ -38,15 +38,15 @@ permission:
 - 相关 canonical spec/design 基线摘录
 - `tasks.md` 当前任务全文：Case ID、Given/When/Then、允许文件、步骤、完成定义、依赖
 - 测试命令、完整套件命令、构建/静态分析命令
-- Quality Stack：`required_skill_files` 及用途，至少含 `devflow-tdd`、`devflow-clean-code` 和适用语言/领域规则
+- Quality Stack：`required_skills` 的技能名及用途，至少含 `devflow-tdd`、`devflow-clean-code` 和适用语言/领域规则
 - R3 返工时：review 路径、finding ID/严重级/分类/方向、关联任务及所需验证
 
 缺 Acceptance/Case、允许文件、验证命令、canonical/delta 约束或 Quality Stack 任一关键项，立即返回 `NEEDS_CONTEXT`。
 
 ## 启动协议
 
-1. 读取所有 `required_skill_files`；
-2. 在返回的 `loaded_skills` 中列出实际读取路径；
+1. 按名称加载 `required_skills` 中的每个技能；
+2. 在返回的 `loaded_skills` 中列出实际加载的技能名；
 3. 核对任务与 SRS/delta/canonical 一致；
 4. 核对只存在一个当前任务，依赖已满足；
 5. 确认允许文件边界。
@@ -86,7 +86,7 @@ task_id: <id>
 resolved_findings: [<review-path#finding-id>...] / N/A
 files_touched: [<path>...]
 loaded_skills:
-  - <skill-name>: <skill-file-path>
+  - <skill-name>
 evidence:
   red: <命令 + 关键失败输出 + 代码/diff 锚点>
   green: <命令 + 当前测试/完整套件/构建摘要 + 代码/diff 锚点>

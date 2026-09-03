@@ -40,6 +40,7 @@ The body has no mandatory section schema. Recommended shape: overview (core prin
 ## Cross-skill consistency
 
 - The three-layer model and workflow live in `using-devflow`; other skills reference it instead of restating it.
+- Skills, commands, and agents load skills **by name** (`using-devflow`), never by repository path (`skills/using-devflow/SKILL.md`) and never through a cross-skill relative path (`../devflow-tdd/references/...`). To point at a file inside another skill, name the skill and the file within it. Repository paths break once skills are installed into a runtime skills root, and cross-skill relative paths break independent installability. `validate_devflow.py` enforces this.
 - Boundaries between skills: specification carries no implementation detail; design decisions are not re-made in TDD; language rules live in coding-standards skills, domain risks in domain skills. When you move a rule, update both sides in the same PR.
 - Review criteria live in `skills/devflow-review/references/*-rubric.md` and must stay consistent with the author-side skill they check.
 - Knowledge capture must remain downstream of a completed archive, advisory to canonical truth, non-blocking to Ship, and constrained by grounding, overlap, schema, and sensitivity checks.

@@ -288,6 +288,48 @@ def validate_command_set(root: Path = ROOT) -> list[str]:
     return errors
 
 
+SKILL_FILE_PATH_RE = re.compile(
+    r"(?:coding-skills|skills|domain-knowledge-library)/[A-Za-z0-9_-]+/SKILL\.md"
+)
+
+
+def _installed_skill_names(root: Path) -> set[str]:
+    names: set[str] = set()
+    for base in (root / SKILLS_ROOT_NAME, root / DOMAIN_KNOWLEDGE_ROOT_NAME):
+        if base.exists():
+            names.update(
+                path.name for path in base.iterdir() if (path / "SKILL.md").is_file()
+            )
+    return names
+
+
+def validate_skill_loading_by_name(root: Path = ROOT) -> list[str]:
+    """技能、命令与 agent 只能用技能名加载技能，不写技能的仓库路径或跨技能相对路径。
+
+    技能安装到运行时的 skills root 后，仓库路径全部失效；跨技能相对路径还会让技能
+    无法独立安装。引用别的技能里的文件时写「技能名 + 该技能内的相对文件名」。
+    """
+    errors: list[str] = []
+    names = _installed_skill_names(root)
+    targets: list[Path] = []
+    for sub in (SKILLS_ROOT_NAME, "commands", "agents", DOMAIN_KNOWLEDGE_ROOT_NAME):
+        base = root / sub
+        if base.exists():
+            targets.extend(base.rglob("*.md"))
+
+    for path in sorted(targets):
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        match = SKILL_FILE_PATH_RE.search(text)
+        if match:
+            errors.append(f"{path}: 用仓库路径 {match.group(0)} 加载技能，应改为技能名")
+        for name in sorted(names):
+            if f"../{name}/" in text:
+                errors.append(
+                    f"{path}: 用跨技能相对路径 ../{name}/ 引用，应改为「{name} 的 <文件名>」"
+                )
+    return errors
+
+
 def validate_repository_skill_paths(root: Path = ROOT) -> list[str]:
     """活动指令必须使用 skills/ 源码根，不能引用已废弃的 coding-skills/ 根。"""
     errors: list[str] = []
@@ -566,8 +608,10 @@ def validate_domain_knowledge_collection(root: Path = ROOT) -> list[str]:
         errors.append(f"commands/{missing}: expected command is missing")
     for command in sorted(present):
         text = (commands_root / command).read_text(encoding="utf-8", errors="ignore")
-        if f"{DOMAIN_KNOWLEDGE_ROOT_NAME}/" not in text:
-            errors.append(f"commands/{command}: must point at {DOMAIN_KNOWLEDGE_ROOT_NAME}/<skill>/SKILL.md")
+        if not any(f"`{name}`" in text for name in DOMAIN_KNOWLEDGE_SKILLS):
+            errors.append(
+                f"commands/{command}: 必须按技能名加载 {DOMAIN_KNOWLEDGE_ROOT_NAME} 中的技能"
+            )
 
     reviewer = root / "agents" / "domain-knowledge-reviewer.md"
     if not reviewer.is_file():
@@ -616,6 +660,7 @@ def run_all(root: Path = ROOT) -> list[str]:
     errors.extend(validate_skill_set(root))
     errors.extend(validate_command_set(root))
     errors.extend(validate_repository_skill_paths(root))
+    errors.extend(validate_skill_loading_by_name(root))
     errors.extend(validate_delivery_contract(root))
     errors.extend(validate_spec_template_shape(root))
     errors.extend(validate_no_legacy_references(root))

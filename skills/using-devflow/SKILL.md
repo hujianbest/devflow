@@ -155,6 +155,8 @@ diff、独立复核、人工确认、closeout 和整目录归档。运行环境�
 6. 作者不自审；每个阶段由独立上下文评审并落盘记录。运行模式只决定是否在评审后等待人工确认。
 7. 交付文档要能被人冷读。**开始写或修改任何文档工件之前先加载 `writing-readable-doc`**，边写边遵守；把工件置为 `ready-for-review` 或请求 canonical diff 人工确认之前再自检一次。稳定 ID、阈值、EARS、Given/When/Then、QAS 五要素与 delta 基线摘录逐字不动；发现模糊阈值或缺失事实时回责任阶段补，不靠润色掩盖。
 
+加载任何技能都用技能名，不用仓库路径：技能安装到运行时的 skills root 后，`skills/<name>/SKILL.md` 这类路径全部失效。需要别的技能里的某个文件时，写技能名加该技能内的相对文件名，例如 `devflow-tdd` 的 `references/tasks-template.md`。
+
 语言规范与领域技能是各阶段的叠加约束，不是额外生命周期节点。触及语言 X 时加载可用的 `<x>-coding-standards`；语境命中领域技能 description 时加载该技能。文档可读性同样是叠加约束，由 `writing-readable-doc` 承载：`devflow-init`、`devflow-specify`、`devflow-design`、`devflow-fix`、`devflow-ship` 和 `devflow-learn` 只要开始产出自然语言文档就自动加载它。
 
 ## 技能地图

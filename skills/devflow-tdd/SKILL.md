@@ -158,7 +158,7 @@ Context Pack 只包含：
 - 允许触碰的精确文件；
 - RED、完整套件和构建命令；
 - finding 摘录（返工时）；
-- Quality Stack 的 `required_skill_files`：至少本技能、`devflow-clean-code`、
+- Quality Stack 的 `required_skills`（用技能名，不写路径）：至少本技能、`devflow-clean-code`、
   适用语言规范和命中 profile/领域的技能路径。
 
 返回契约：

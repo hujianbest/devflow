@@ -73,6 +73,7 @@ description: 在编写、修改或评审 <语言> 代码（<源文件/测试/构
 - SKILL.md ≤ ~300 行：装不下说明取舍没做完——按"事故密度 × 出现频率"裁剪，长尾进 references/
 - references/ 文件按主题命名（如 `concurrency-rules.md`、`team-rule-mapping.md`），SKILL.md 给出明确指针
 - 团队内部规则编号与技能规则的对照表（审计需要时）放 references/，不占主文件
+- 引用别的技能时只写技能名（如 `devflow-clean-code`），不写仓库路径或 `../<skill>/` 相对路径；确需别的技能里的某个文件时，写「技能名 + 该技能内的相对文件名」。技能装进运行时的 skills root 后，仓库路径全部失效
 
 ## 7. 消费点（语言技能如何被 DevFlow 使用）
 
@@ -81,7 +82,7 @@ description: 在编写、修改或评审 <语言> 代码（<源文件/测试/构
 | 消费方 | 用法 |
 |---|---|
 | `devflow-design` | 设计接口契约/错误模型时遵循语言的错误策略与所有权表达 |
-| `devflow-tdd` / implementer subagent | 实现与重构时遵循；Context Pack 的 `required_skill_files` 同时列出 `devflow-clean-code` 与适用语言技能路径，返回的 `loaded_skills` 必须覆盖二者 |
+| `devflow-tdd` / implementer subagent | 实现与重构时遵循；Context Pack 的 `required_skills` 同时列出 `devflow-clean-code` 与适用语言技能的名称，返回的 `loaded_skills` 必须覆盖二者 |
 | `devflow-review` code rubric | "语言与领域规则"节逐项检查 |
 | `devflow-ship` DoD | 适用约束审计表中每种语言一行（clean / documented-debt / critical-open / N/A） |
 | `using-devflow` | 按命名约定发现：工作项触及语言 X 的代码 → 叠加 `<x>-coding-standards`（存在时） |

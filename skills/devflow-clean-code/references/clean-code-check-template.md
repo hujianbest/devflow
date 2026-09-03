@@ -6,10 +6,10 @@
 
 ```markdown
 loaded_skills:
-- skills/devflow-tdd/SKILL.md
-- skills/devflow-clean-code/SKILL.md
-- skills/<language>-coding-standards/SKILL.md  # 如适用
-- skills/<domain-skill>/SKILL.md               # 如适用
+- devflow-tdd
+- devflow-clean-code
+- <language>-coding-standards  # 如适用
+- <domain-skill>               # 如适用
 
 evidence:
 - RED: <命令> -> <关键失败摘要> @ <commit 或 working tree 标识>

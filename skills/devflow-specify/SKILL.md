@@ -27,10 +27,10 @@ description: 在开始新的 AR、澄清增量需求、建立 DevFlow change 交
 - `traceability.md`：固定链 `需求条目 → Spec Section → Design Section/Case → Task → Code/Test → Evidence`。
 - `change.json`：身份、`componentMode`、profile、基线、artifact 图、门禁和归档状态的唯一结构化来源。
 
-使用 `references/srs-template.md`、`references/delta-spec-template.md`、
-`references/component-spec-template.md`、`references/traceability-template.md`、
-`../devflow-tdd/references/tasks-template.md`，以及入口技能中的
-`../using-devflow/references/change-template.json` 和交付结构契约。
+使用本技能的 `references/srs-template.md`、`references/delta-spec-template.md`、
+`references/component-spec-template.md`、`references/traceability-template.md`，
+`devflow-tdd` 的 `references/tasks-template.md`，以及 `using-devflow` 的
+`references/change-template.json` 和交付结构契约。
 
 ## 不变量
 
@@ -48,9 +48,9 @@ description: 在开始新的 AR、澄清增量需求、建立 DevFlow change 交
 先确定目标组件根、`changeId: ARXXX` 和 kebab-case `topic`。目录名必须等于
 `<changeId>-<topic>`；任一身份不一致时停下修正，不创建第二套目录。
 
-读取已有 `change.json`。不存在时，以
-`../using-devflow/references/change-template.json` 建立严格 JSON，并遵循
-`../using-devflow/references/delivery-contract.md`。在获得可靠事实前不要猜
+读取已有 `change.json`。不存在时，以 `using-devflow` 的
+`references/change-template.json` 建立严格 JSON，并遵循同一技能的
+`references/delivery-contract.md`。在获得可靠事实前不要猜
 `componentMode`。`baseRevision`、`executionMode` 或 profile 的
 `name/risk/reasons/requiredEvidence/requiredReviewers` 缺失时也要澄清。
 
@@ -245,13 +245,13 @@ NFR 不覆盖所有质量维度，只写本 AR 适用项。`“足够快”`、`
 
 ## 支撑参考
 
-| 文件 | 用途 |
+| 参考 | 用途 |
 |---|---|
 | `references/srs-template.md` | 本 AR 增量需求模板 |
 | `references/delta-spec-template.md` | 组件规格的局部增量模板 |
 | `references/component-spec-template.md` | `specs/spec.md` 组件规格基线模板 |
-| `../using-devflow/references/change-template.json` | change 身份、profile、artifact 图与门禁骨架 |
-| `../using-devflow/references/delivery-contract.md` | 字段、状态、路径与归档硬契约 |
-| `../using-devflow/references/risk-profiles.md` | standard/elevated/critical 选择与证据 |
+| `using-devflow` 的 `references/change-template.json` | change 身份、profile、artifact 图与门禁骨架 |
+| `using-devflow` 的 `references/delivery-contract.md` | 字段、状态、路径与归档硬契约 |
+| `using-devflow` 的 `references/risk-profiles.md` | standard/elevated/critical 选择与证据 |
 | `references/traceability-template.md` | 固定端到端追溯链 |
-| `../devflow-tdd/references/tasks-template.md` | `tasks.md` 骨架与任务结构 |
+| `devflow-tdd` 的 `references/tasks-template.md` | `tasks.md` 骨架与任务结构 |

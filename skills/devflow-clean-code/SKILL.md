@@ -254,7 +254,7 @@ Clean Code 的 DRY 是"同一知识只有一个权威表达"，不是"长得像�
 
 测试代码同样适用本文：名字说明行为，fixture 小而清楚，无死测试、无注释掉的旧断言、无大段复制粘贴。但测试的第一目标是**读者一眼看懂它验证什么行为**，所以不要为了 DRY 把 Given/When/Then 藏进三层 helper。
 
-测试代码额外遵循 FIRST 思路：快速、独立、可重复、自验证、及时。具体断言强度、fixture、mock/fake 边界见 `../devflow-tdd/references/test-quality.md`。
+测试代码额外遵循 FIRST 思路：快速、独立、可重复、自验证、及时。具体断言强度、fixture、mock/fake 边界见 `devflow-tdd` 的 `references/test-quality.md`。
 
 测试结构可以用 AAA / Given-When-Then，但不要让模板压过可读性。好测试名直接说行为和条件：`returns empty list when no market matches query`；坏测试名只说实现或情绪：`works`、`test search`、`should handle stuff`。
 

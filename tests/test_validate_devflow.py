@@ -99,6 +99,48 @@ def test_废弃根检查覆盖命令之外的活动指令(tmp_path):
     assert any("domain-knowledge-library" in error for error in result)
 
 
+def test_命令不能用仓库路径加载技能(tmp_path):
+    validator = load_validator()
+    write_skill(tmp_path, "using-devflow")
+    commands = tmp_path / "commands"
+    commands.mkdir()
+    (commands / "devflow.md").write_text(
+        "1. 读取 `skills/using-devflow/SKILL.md` 及其直接 references。\n", encoding="utf-8"
+    )
+
+    result = validator.validate_skill_loading_by_name(tmp_path)
+
+    assert any("devflow.md" in error and "应改为技能名" in error for error in result)
+
+
+def test_技能之间不能用跨技能相对路径引用(tmp_path):
+    validator = load_validator()
+    write_skill(tmp_path, "devflow-tdd")
+    write_skill(tmp_path, "devflow-specify")
+    (tmp_path / "skills" / "devflow-specify" / "SKILL.md").write_text(
+        "---\nname: devflow-specify\ndescription: test\n---\n"
+        "使用 `../devflow-tdd/references/tasks-template.md` 建立骨架。\n",
+        encoding="utf-8",
+    )
+
+    result = validator.validate_skill_loading_by_name(tmp_path)
+
+    assert any("../devflow-tdd/" in error for error in result)
+
+
+def test_用技能名引用其他技能的文件时通过(tmp_path):
+    validator = load_validator()
+    write_skill(tmp_path, "devflow-tdd")
+    write_skill(tmp_path, "devflow-specify")
+    (tmp_path / "skills" / "devflow-specify" / "SKILL.md").write_text(
+        "---\nname: devflow-specify\ndescription: test\n---\n"
+        "加载 `devflow-tdd` 技能，使用它的 `references/tasks-template.md` 建立骨架。\n",
+        encoding="utf-8",
+    )
+
+    assert validator.validate_skill_loading_by_name(tmp_path) == []
+
+
 def test_delivery_contract_requires_canonical_tokens(tmp_path):
     validator = load_validator()
     for relative_path, tokens in validator.REQUIRED_CONTRACT_TOKENS.items():
