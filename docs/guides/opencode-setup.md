@@ -66,7 +66,8 @@ OpenCode reads each skill's YAML frontmatter `description` (triggering condition
 | "Design the approved spec" | `devflow-design` (+ applicable language/domain skills) |
 | "Implement the next task" | `devflow-tdd` + `devflow-clean-code` (+ language/domain skills) |
 | "Review the tests / the code" | `devflow-review` (dispatches an independent reviewer subagent) |
-| "这份 spec/design 看不懂，送审前先改一下" | `devflow-clean-doc` (expression layer only; vague thresholds go back to specify/design) |
+| "Write the SRS / design / closeout" | the phase skill + `writing-readable-doc` (auto-loaded whenever a document is produced) |
+| "这份 spec/design 看不懂，改一下" | `writing-readable-doc` (expression layer only; vague thresholds go back to specify/design) |
 | "Fix DTS67890" | `devflow-fix` |
 
 ### Lifecycle mapping
@@ -87,7 +88,7 @@ FIX       devflow-fix            → defect SRS/delta → R1/R2 → TDD + R3
 
 The run mode (`attended` / `unattended`) is confirmed once and recorded in `change.json`; `unattended` removes human pauses but never removes reviews, records, critical-finding blocking, canonical diff review, or final archive confirmation.
 
-Overlay skills (`devflow-clean-code`, `devflow-clean-doc`, the applicable `<language>-coding-standards`, and domain skills whose descriptions match the work item) are consumed inside these phases; they are constraints, not phases. New language standards are generated from internal team documents via `coding-standards-creator`; new domain skills join by describing their trigger context in frontmatter.
+Overlay skills (`devflow-clean-code`, `writing-readable-doc`, the applicable `<language>-coding-standards`, and domain skills whose descriptions match the work item) are consumed inside these phases; they are constraints, not phases. New language standards are generated from internal team documents via `coding-standards-creator`; new domain skills join by describing their trigger context in frontmatter.
 
 ### DevFlow subagents
 

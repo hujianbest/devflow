@@ -115,6 +115,8 @@ description: 为既有组件逆向建立或补齐 DevFlow canonical baseline。�
 
 ### 5. 起草组件规格基线
 
+canonical 基线要被人逐条确认，动笔前加载 `writing-readable-doc` 并按它写：每节第一句给判断，术语一次固定，需求块与 QAS 按模板原样写，unknown 明确标出而不是用模糊词糊过去。
+
 需要创建或补齐规格时，读取
 [组件规格模板](../devflow-specify/references/component-spec-template.md)：
 

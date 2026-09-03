@@ -39,6 +39,8 @@ DTS/事故/缺陷单是 `srs.md` 的来源锚点；change 身份仍来自 `chang
 
 ## 1. 复现并写入 SRS
 
+写 `srs.md`、delta 和 `tasks.md` 的缺陷分析之前加载 `writing-readable-doc`：缺陷文档同样要过 R1/R2，复现步骤和根因写不清楚，评审者只能凭信任放行。
+
 `srs.md` 只记录需求事实：
 
 - 当前问题、目标结果、缺陷来源和整体成功标准；

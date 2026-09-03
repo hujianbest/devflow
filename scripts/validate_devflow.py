@@ -18,7 +18,7 @@ EXPECTED_SKILLS = {
     "devflow-design",
     "devflow-tdd",
     "devflow-clean-code",
-    "devflow-clean-doc",
+    "writing-readable-doc",
     "devflow-review",
     "devflow-ship",
     "devflow-fix",

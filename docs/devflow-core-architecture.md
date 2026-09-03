@@ -20,7 +20,7 @@ DevFlow 的目标是：**在 SDD 范式下生成 Clean Code，而不是仅仅能
 | TDD | 功能正确：证明做对 | `devflow-design` 测试设计、`devflow-tdd`、R3 |
 | Clean Code | 内在质量：值得长期持有 | `devflow-design`、`devflow-clean-code`、语言/领域扩展、R3 |
 
-`devflow-review` 在阶段出口提供独立判断；人负责业务、架构和最终归档确认。人要能审查，前提是文档可以冷读，`devflow-clean-doc` 在 R1、R2 和 canonical diff 确认之前约束文档表达，但不改变规范语义。
+`devflow-review` 在阶段出口提供独立判断；人负责业务、架构和最终归档确认。人要能审查，前提是文档可以冷读。`writing-readable-doc` 在各阶段产出文档时就被加载，约束表达与信息组织，但不改变规范语义。
 
 ## 3. Skill 体系
 
@@ -36,7 +36,7 @@ skills/
   devflow-fix/               # 缺陷复现、根因与最小修复
   devflow-learn/             # archive 之后的可选知识沉淀
   devflow-clean-code/        # 通用整洁代码约束
-  devflow-clean-doc/         # 面向中文的交付文档可读性约束
+  writing-readable-doc/      # 面向中文的交付文档写作约束
   *-coding-standards/        # 语言扩展
   *-development/             # 领域扩展
   coding-standards-creator/  # 语言规范生成工具

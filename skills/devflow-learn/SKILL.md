@@ -214,7 +214,7 @@ python <skill-dir>/scripts/validate_learning.py lookup \
 
 ## 写入、校验与只读复核
 
-1. 读取模板并组装完整 Markdown；
+1. 加载 `writing-readable-doc`，再读取模板并组装完整 Markdown：经验条目要被后来的人和 agent 冷读，写不清适用场景就等于没沉淀；`CLM-*`、`EV-*` 等 marker 与引用按模板原样写；
 2. 所有路径写成 repo-relative `/` 路径；
 3. 主控 Agent 写入目标文件；研究/复核子代理不得写文件；
 4. 每条事实或指导使用 `CLM-*` claim marker，并在 `## 证据` 用 `EV-*` locator 建立

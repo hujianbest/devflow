@@ -1,6 +1,6 @@
 # 中文工程写作细则
 
-本文是 `devflow-clean-doc` 的表达层细则。所有例子取自 DevFlow 文档的真实形态（`srs.md`、`delta-spec.md`、`delta-design.md`、`specs/spec.md`、`specs/design.md`）。改写时先确认目标句属于表达层，规范层的判定见 `rewrite-protocol.md`。
+本文是 `writing-readable-doc` 的表达层细则，写初稿和改写既有文档时都适用。所有例子取自 DevFlow 文档的真实形态（`srs.md`、`delta-spec.md`、`delta-design.md`、`specs/spec.md`、`specs/design.md`）。改写时先确认目标句属于表达层，规范层的判定见 `rewrite-protocol.md`。
 
 ## 一、句子
 

@@ -37,6 +37,7 @@ Ship 只完成三件事：
 ## 执行不变量
 
 - 主控 Agent 读取完整 SRS、delta 和 canonical 后执行语义同步；未涉及内容保持不变。
+- 写 `closeout.md` 或把 delta 文字并入 canonical 之前加载 `writing-readable-doc`：canonical 是长期真相，最终 diff 还要人逐段确认。合并时统一术语与抽象层级，但不得把语义合并和表达调整混进同一批 diff。
 - base 后存在并行变化、目标不唯一或语义有歧义时阻塞并询问。
 - canonical-only diff 必须经过独立只读 reviewer；N/A 或空 diff 不豁免。
 - 人确认最终 diff 和归档前，canonical sync 不得通过。

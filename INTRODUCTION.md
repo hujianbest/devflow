@@ -301,7 +301,7 @@ DevFlow 2.0 的基本想法是通用的：三层质量模型 + human-on-the-loop
 | 技能 | 作用 |
 |---|---|
 | `devflow-clean-code` | 语言无关的整洁代码标准 |
-| `devflow-clean-doc` | 面向中文的文档可读性标准，让人能冷读审查 spec 与 design |
+| `writing-readable-doc` | 面向中文的文档写作标准，写文档时自动加载，让人能冷读审查 spec 与 design |
 | `c-coding-standards` | C 语言规则与惯用法 |
 | `cpp-coding-standards` | C++ 规则与惯用法 |
 | `embedded-development` | 嵌入式约束 |

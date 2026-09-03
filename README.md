@@ -128,7 +128,7 @@ DevFlow bundles workflow/entry skills, quality overlays, and tooling skills. Qua
 | Skill | What it does | Use when |
 |-------|--------------|----------|
 | [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | Language-neutral clean code standards: naming, functions, control flow, errors, comments, refactoring | Writing, refactoring, or reviewing implementation and test code |
-| [devflow-clean-doc](skills/devflow-clean-doc/SKILL.md) | Chinese-first readability standards for delivery documents: cold-read test, document smells, meaning-preserving rewrite | Writing or reviewing srs.md, delta specs/designs, and canonical docs that a human must review |
+| [writing-readable-doc](skills/writing-readable-doc/SKILL.md) | Chinese-first writing standards for delivery documents: judgement-first structure, document smells, cold-read test, meaning-preserving rewrite | Loaded before writing or editing any document a human must review — srs.md, both deltas, canonical spec/design, closeout, learnings |
 | `<language>-coding-standards` skills | Language-level rules, idioms, tooling discipline, and examples | Work touches that language's source, tests, or build scripts; discovered by naming convention |
 | `<domain>-development` / domain skills | Domain-specific design constraints, implementation red lines, and evidence requirements | Work context matches a domain skill's frontmatter description |
 
@@ -212,7 +212,7 @@ devflow/
 │   ├── devflow-fix/                # Defect path
 │   ├── devflow-learn/              # Optional post-archive knowledge capture
 │   ├── devflow-clean-code/         # Language-neutral clean code
-│   ├── devflow-clean-doc/          # Chinese-first document readability
+│   ├── writing-readable-doc/       # Chinese-first document writing
 │   ├── *-coding-standards/         # Language overlays, discovered by naming convention
 │   ├── *-development/              # Domain overlays, discovered by description
 │   └── coding-standards-creator/   # Language-standard generator

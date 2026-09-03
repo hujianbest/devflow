@@ -1,9 +1,9 @@
 ---
-name: devflow-clean-doc
-description: 在编写、改写或评审 DevFlow 文档（srs.md、delta-spec.md、delta-design.md、specs/spec.md、specs/design.md、reviews/、closeout.md）时使用；工件置为 ready-for-review、送 R1/R2 人工评审或 canonical diff 人工确认之前必须自检一次。也在有人反馈文档晦涩难懂、看不下去、AI 味重、术语前后不一、句子太长、审查成本太高时使用。面向中文技术写作：只改表达与信息组织，不改需求、阈值、稳定 ID 与规范语义。不用于代码注释与标识符命名（见 devflow-clean-code），不用于 change.json 等结构化文件。
+name: writing-readable-doc
+description: 开始写或修改任何交付文档之前加载，边写边遵守：srs.md、delta-spec.md、delta-design.md、specs/spec.md、specs/design.md、tasks.md 的说明文字、reviews/、closeout.md、docs/learnings/ 等。DevFlow 的 init、specify、design、fix、ship、learn 一旦要产出自然语言文档就自动加载本技能；工件置为 ready-for-review、送 R1/R2 人工评审或请求 canonical diff 人工确认之前再自检一次。也在有人反馈文档晦涩难懂、看不下去、AI 味重、术语前后不一、句子太长、审查成本太高时用于改写。面向中文技术写作：只管表达与信息组织，不改需求、阈值、稳定 ID 与规范语义。不用于代码注释与标识符命名（见 devflow-clean-code），不用于 change.json 等结构化文件。
 ---
 
-# DevFlow 文档可读性（中文写作）
+# 可读的文档写作（中文）
 
 ## 总览
 
@@ -11,11 +11,13 @@ DevFlow 的门禁靠人。R1、R2 和 canonical diff 确认都要求人在有限
 
 所以本技能的目标不是“文笔好”，是**可审查**：评审者只读文档，不看聊天记录、不翻代码，就能判断这次要改什么、为什么这样改、什么保持不变、怎么验证、风险在哪。
 
-只有一条边界必须先立住：**规范层逐字不动，表达层可以改。** 阈值、稳定 ID、EARS 语句、Given/When/Then、QAS 五要素、delta 的基线摘录都是合并与验收的依据，一个字改错就破坏证据链。可读性改写永远是表达层的工作。
+**本技能主要在写之前加载，不是写完之后补救。** 第一遍就按规则写，成本只是换个句式；写完再改，要受保义约束、要做集合比对、要拆成独立 diff，还要冒改坏规范内容的风险。文档已经写出来时也用本技能，但那是次优路径。
+
+只有一条边界必须先立住：**规范层逐字不动，表达层可以改。** 阈值、稳定 ID、EARS 语句、Given/When/Then、QAS 五要素、delta 的基线摘录都是合并与验收的依据，一个字改错就破坏证据链。可读性工作永远只发生在表达层。
 
 ## 适用边界
 
-本技能覆盖 DevFlow 产出的自然语言文档：`srs.md`、`delta-spec.md`、`delta-design.md`、`specs/spec.md`、`specs/design.md`、`tasks.md` 的说明性文字、`reviews/` 的 finding 叙述、`closeout.md`。
+本技能覆盖交付文档中的自然语言：`srs.md`、`delta-spec.md`、`delta-design.md`、`specs/spec.md`、`specs/design.md`、`tasks.md` 的说明性文字、`reviews/` 的 finding 叙述、`closeout.md`、`docs/learnings/` 的经验正文。
 
 不覆盖：
 
@@ -25,9 +27,29 @@ DevFlow 的门禁靠人。R1、R2 和 canonical diff 确认都要求人在有限
 
 写作语言是中文；代码标识符、协议名、错误码、路径、命令保持英文原形并放进反引号。
 
+## 写初稿时
+
+动笔前先做三件事，它们决定文档能不能被读懂，事后再补代价最大：
+
+1. **定判断**：逐节写下这一节要让评审者得到哪个判断，把它当成该节第一句。写不出判断的章节，说明这节要么没内容，要么不该存在。
+2. **定术语**：开写前固定每个概念的用词，一个概念一个词，首次出现给中英对照。术语漂移是评审者最贵的负担，事后统一还要逐处核对是否指同一对象。
+3. **定规范片段的位置**：EARS Statement、Given/When/Then、QAS 五要素、阈值、稳定 ID、delta 的基线摘录与 selector，一律按模板原样写。它们一旦写下就属于规范层，之后任何人都不能为了通顺去动它们。
+
+写的过程中守住这几条，其余细则见 `references/zh-writing-rules.md`：
+
+- 每节第一句是判断，背景和推导放后面。
+- 一句一事。写完一句就自问：评审者能对这句说“不对”吗？不能就删掉或换成事实。
+- 动词优先，不写“对……进行……的处理”。
+- 三项以上并列且维度相同，直接写表格，别写成长段。
+- 中英之间空一格，数字带单位、比较符和统计口径。
+- 不写“综上所述”式收尾段，结论已经在开头。
+- 写不出阈值、来源或保留语义时，写成 Open Question 或可审查的 N/A 理由，不要用 `通常`、`必要时`、`合理的` 填空。
+
+初稿阶段没有基线，不需要跑保义比对。**保义流程只在修改已存在的文字时适用**，见下面两节。
+
 ## 冷读测试
 
-改写前先做冷读测试。只给评审者这份文档（外加它显式引用的 canonical 章节），不给聊天记录、不给代码，要求回答五个问题：
+初稿写完先自测一次；改写既有文档时，先对原文做一次基线冷读，再对改写结果做一次。只给这份文档（外加它显式引用的 canonical 章节），不给聊天记录、不给代码，要求回答五个问题：
 
 | 问题 | 通过标准 |
 |---|---|
@@ -45,7 +67,7 @@ DevFlow 的门禁靠人。R1、R2 和 canonical diff 确认都要求人在有限
 
 ## 保义改写红线
 
-改写前先把文档切成两层。下列内容**逐字不动**：
+修改已有文字前，先把文档切成两层。下列内容**逐字不动**；写初稿时，这份清单同样告诉你哪些片段必须按模板写、写完就不再润色：
 
 - 稳定 ID 与其编号：`FR-xxx`、`IFR-xxx`、`NFR-xxx`、`CON-xxx`、`ASM-xxx`、`EXC-xxx`、`DS-xxx`、`DD-xxx`、`DEC-xxx`、`TC-xxx`、canonical 章节路径与实体键。
 - EARS 语句的关键词与结构（`WHEN` / `WHILE` / `IF` / `WHERE` / `THE` / `SHALL`）。
@@ -199,6 +221,7 @@ rg -c 'SHALL|Given|When|Then' <doc>                                             
 
 | 模式 | 入口 | 动作 | 产出 |
 |---|---|---|---|
+| 写初稿 | `devflow-init`、`devflow-specify`、`devflow-design`、`devflow-fix`、`devflow-ship`、`devflow-learn` 开始产出文档时自动加载 | 定判断 → 定术语 → 规范片段按模板写 → 按写作规则出文 | 第一遍就可冷读的文档，无需事后改写 |
 | 作者自检 | 工件置 `ready-for-review` 之前 | 冷读测试 → 异味扫描 → 保义改写 → 登记内容缺陷 | 请求评审时附 `doc_readability_check` |
 | R1/R2 评审 | `devflow-review` | reviewer 按本技能判据出 finding，只读不动手 | `reviews/` 中的 finding 与严重级 |
 | 人工要求改写 | 有人反馈“看不懂” | 只改表达层，逐条给出改写点与保义证据 | 改写 diff + 未改的内容缺陷清单 |
@@ -225,6 +248,8 @@ doc_readability_check:
 
 只写“已优化可读性”“文档已通顺”不算自检，等同没做。
 
+初稿场景下没有被修改的既有文字，`保义` 一项写 `N/A：本次为新写内容，无既有文字被改动`，其余各项照常给结论。
+
 ## 严重级与去向
 
 | 严重级 | 判据 | 去向 |
@@ -239,6 +264,7 @@ doc_readability_check:
 
 | 话术 | 现实 |
 |---|---|
+| 「先写完，最后统一润色一遍」 | 事后改写要受保义约束、做集合比对、拆独立 diff，还可能改坏规范内容。写的时候换个句式几乎不花时间 |
 | 「写得详细一点总没错」 | 审查预算有限。不能被反驳的句子只占版面，不产生判断 |
 | 「这些话是模板要求的」 | 模板要求的是那一项判断，不是那段文字。没有内容就写可审查的 N/A 理由 |
 | 「评审时他不懂可以问我」 | 独立评审拿不到作者上下文；canonical 文档半年后也没人可问 |
@@ -250,6 +276,7 @@ doc_readability_check:
 
 ## 自检清单
 
+- [ ] 写之前已定判断、定术语，并确认哪些片段属于规范层、按模板写
 - [ ] 冷读测试五问都能只凭文档回答；不能回答的已分类为可读性缺陷或内容缺陷
 - [ ] 规范层逐字未动：ID、阈值与单位、EARS 关键词、Given/When/Then、QAS 五要素、基线摘录、selector、preservation clause
 - [ ] canonical 章节标题未被顺手改写；确需改名的走 delta `RENAMED`
@@ -260,7 +287,7 @@ doc_readability_check:
 - [ ] 三项以上的并列已表格化，每列一个维度
 - [ ] 中英之间有空格，标点全角，数字带单位、比较符和统计口径
 - [ ] 模糊词没有被换词掩盖，已登记为 Open Question 或 finding，并写明去向与 owner
-- [ ] 表达层改写与内容修订分属不同 diff
+- [ ] 表达层改写与内容修订分属不同 diff（初稿无既有文字改动时写 N/A）
 - [ ] `doc_readability_check` 已给出，且每项是具体结论而不是“已优化”
 
 ## 支撑参考

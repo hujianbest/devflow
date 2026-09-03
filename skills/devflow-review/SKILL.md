@@ -58,7 +58,7 @@ R1/R2 遇到有理由的 `N/A` delta 仍要评审其“不需要 canonical 变�
 - 表中要求的完整工件，canonical 同时提供当前内容和可取得的 base 内容；
 - R3 的实现/测试 diff、实际测试输出、主控 Agent 在隔离副本中产生的 mutation 证据和 `tasks.md` 证据；
 - sync 的同步前 canonical、同步后 canonical、`git diff -- specs/spec.md specs/design.md` 输出；
-- 对应 rubric；代码评审另加 `devflow-clean-code` 与适用语言/领域规则；R1、R2 与 canonical sync 另加 `devflow-clean-doc` 作为可读性判据；
+- 对应 rubric；代码评审另加 `devflow-clean-code` 与适用语言/领域规则；R1、R2 与 canonical sync 另加 `writing-readable-doc` 作为可读性判据；
 - 复审时提供上一轮记录及实际返工 diff。
 
 不要只给摘要。缺少关键输入时 reviewer 返回 `BLOCKED` 和缺项，不猜测 verdict。

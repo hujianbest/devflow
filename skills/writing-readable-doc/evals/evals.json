@@ -1,6 +1,24 @@
 {
-  "skill": "devflow-clean-doc",
+  "skill": "writing-readable-doc",
   "scenarios": [
+    {
+      "id": "load-before-writing-not-after",
+      "prompt": "A devflow-specify run is about to write the first draft of srs.md. The agent plans to dump the content first and 'polish it later before R1'.",
+      "expected": [
+        "loads the skill before drafting rather than as a post-hoc polish pass",
+        "fixes judgement-first structure, terminology, and sentence shape while writing",
+        "notes that rewriting existing text costs more because it must satisfy the meaning-preserving protocol"
+      ]
+    },
+    {
+      "id": "draft-has-no-baseline-to-preserve",
+      "prompt": "An agent writing a brand-new closeout.md asks which ID and threshold counts it should diff before and after.",
+      "expected": [
+        "explains the meaning-preserving comparison applies to modifying existing text, not to a first draft",
+        "still requires normative fragments to be written by template rather than freely worded",
+        "reports the preservation line of doc_readability_check as N/A with that reason"
+      ]
+    },
     {
       "id": "polishing-must-not-delete-thresholds",
       "prompt": "An agent rewrites an EARS requirement 'WHEN 收到 SetConfig 请求 THE 配置模块 SHALL 在 50 ms 内返回结果' into the smoother sentence '配置模块会尽快响应 SetConfig 请求'.",

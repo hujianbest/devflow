@@ -95,6 +95,8 @@ preflight 成功后把 `gates.baselinePreflight.status` 置为 `passed` 并附�
 
 ### 4. 写本 AR 的 SRS
 
+动笔前加载 `writing-readable-doc` 并按它写：每节第一句给判断，术语先固定，EARS Statement、Given/When/Then 和 QAS 五要素按模板原样写。写完再润色的代价远高于第一遍写对。
+
 `srs.md` 把需求分类写入独立章节：
 
 - 功能性需求：`FR-xxx` 与接口功能需求 `IFR-xxx`；
@@ -205,7 +207,7 @@ ID。发现 remove/modify、remove/add 或多个互相覆盖的操作时阻塞�
 
 ### 7. 进入 R1
 
-置为 `ready-for-review` 前，按 `devflow-clean-doc` 做一次可读性自检，并附 `doc_readability_check`：R1 由人评审，读不懂的 SRS 只会被空过或整体打回。改写只动表达层；EARS Statement、Given/When/Then、QAS 五要素、阈值、Source 和稳定 ID 逐字不动。`快速`、`必要时`、`合理的` 这类模糊词是本阶段的内容缺陷，回到第 4 步补阈值与来源或写成 blocking Open Question，不用换词掩盖。
+置为 `ready-for-review` 前，按 `writing-readable-doc` 再自检一次并附 `doc_readability_check`：R1 由人评审，读不懂的 SRS 只会被空过或整体打回。此时的改动只动表达层；EARS Statement、Given/When/Then、QAS 五要素、阈值、Source 和稳定 ID 逐字不动。`快速`、`必要时`、`合理的` 这类模糊词是本阶段的内容缺陷，回到第 4 步补阈值与来源或写成 blocking Open Question，不用换词掩盖。
 
 自检通过后，仅把 `change.json.gates.r1.status` 从 `blocked` 或 `rework`
 置为 `pending`，保留 `reviewRecords` 与既有 evidence，并加入本轮工件锚点。
@@ -239,7 +241,7 @@ NFR 不覆盖所有质量维度，只写本 AR 适用项。`“足够快”`、`
 - [ ] `tasks.md` 只是骨架，生命周期门禁只在 `change.json`。
 - [ ] traceability 使用固定六列链，且每条可测需求条目有且仅有一组可扩展行。
 - [ ] 无 blocking Open Question；R1 仅被置为 `pending`。
-- [ ] 已按 `devflow-clean-doc` 自检可读性并给出 `doc_readability_check`；改写只触及表达层。
+- [ ] 写作时已加载 `writing-readable-doc`，送审前自检并给出 `doc_readability_check`；对既有文字的改动只触及表达层。
 
 ## 支撑参考
 

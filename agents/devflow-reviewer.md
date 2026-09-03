@@ -39,7 +39,7 @@ permission:
 - `delta-spec.md`
 - `specs/spec.md` 的 base/current 内容；new 组件可明确为空基线
 
-- `devflow-clean-doc` 作为可读性判据
+- `writing-readable-doc` 作为可读性判据
 
 检查 SRS 可测试性、SRS↔delta 双向覆盖、稳定 ID/operation、相对 canonical 的旧语义和未涉及内容保留意图。同时做冷读测试：只用工件回答“改什么、为什么、什么不变、怎么验证、风险在哪”。
 
@@ -48,7 +48,7 @@ permission:
 - 已通过 R1 的 SRS 与 delta-spec
 - `delta-design.md`
 - `specs/spec.md`、`specs/design.md` 的 base/current 内容；new 组件可为空基线
-- `devflow-clean-doc` 作为可读性判据
+- `writing-readable-doc` 作为可读性判据
 
 检查 delta-design 相对 canonical design/spec 的正确性、规格覆盖、契约、复杂度、测试设计和未涉及设计语义。冷读测试不通过的位置按可读性 finding 记录，事实缺失的按内容 finding 记录。
 
