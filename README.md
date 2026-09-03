@@ -128,6 +128,7 @@ DevFlow bundles workflow/entry skills, quality overlays, and tooling skills. Qua
 | Skill | What it does | Use when |
 |-------|--------------|----------|
 | [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | Language-neutral clean code standards: naming, functions, control flow, errors, comments, refactoring | Writing, refactoring, or reviewing implementation and test code |
+| [devflow-clean-doc](skills/devflow-clean-doc/SKILL.md) | Chinese-first readability standards for delivery documents: cold-read test, document smells, meaning-preserving rewrite | Writing or reviewing srs.md, delta specs/designs, and canonical docs that a human must review |
 | `<language>-coding-standards` skills | Language-level rules, idioms, tooling discipline, and examples | Work touches that language's source, tests, or build scripts; discovered by naming convention |
 | `<domain>-development` / domain skills | Domain-specific design constraints, implementation red lines, and evidence requirements | Work context matches a domain skill's frontmatter description |
 
@@ -211,6 +212,7 @@ devflow/
 │   ├── devflow-fix/                # Defect path
 │   ├── devflow-learn/              # Optional post-archive knowledge capture
 │   ├── devflow-clean-code/         # Language-neutral clean code
+│   ├── devflow-clean-doc/          # Chinese-first document readability
 │   ├── *-coding-standards/         # Language overlays, discovered by naming convention
 │   ├── *-development/              # Domain overlays, discovered by description
 │   └── coding-standards-creator/   # Language-standard generator

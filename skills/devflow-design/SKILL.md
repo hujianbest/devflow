@@ -220,6 +220,12 @@ QAS 的 Stimulus Source、Stimulus、Environment、Response 与 Response Measure
 在 `traceability.md` 的 `Design Section/Case` 列填写组件模板章节路径/实体键与
 `DEC/TC` 锚点，不改列结构，不填写尚未产生的 Task/Code/Evidence。
 
+置为 `ready-for-review` 前，按 `devflow-clean-doc` 做一次可读性自检，并附
+`doc_readability_check`。设计文档最常见的两类可读性缺陷是模板复读（章节只复述模板说明）
+和保留语义写成一句“其余不变”。改写只动表达层：operation 类型、target、selector、
+基线摘录与 digest、preservation clause、契约六项、Case 的 Given/When/Then 与阈值逐字不动；
+canonical 章节标题的改名只能走 `RENAMED`。
+
 自检通过后：
 
 - 将 `change.json.artifacts.deltaDesign.status` 置为 `ready-for-review`；
@@ -255,6 +261,7 @@ R3 或实现发现设计错误时：
 - [ ] Case Index 覆盖全部 FR/IFR Acceptance、NFR 完整 QAS、CON Verification、回归和 profile 风险。
 - [ ] traceability 的 Design Section/Case 已回填，无本阶段 `TBD(design)`。
 - [ ] R2 只被置为 `pending`，canonical design 未在本阶段改写。
+- [ ] 已按 `devflow-clean-doc` 自检可读性并给出 `doc_readability_check`；改写只触及表达层。
 
 ## 支撑参考
 

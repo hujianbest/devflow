@@ -153,8 +153,9 @@ diff、独立复核、人工确认、closeout 和整目录归档。运行环境�
 4. 只修改本变更声明的范围；旁路问题只记录，不顺手修复。
 5. 用测试、构建、diff、评审记录和追溯证明结果。
 6. 作者不自审；每个阶段由独立上下文评审并落盘记录。运行模式只决定是否在评审后等待人工确认。
+7. 交付文档要能被人冷读。把文档工件置为 `ready-for-review`，或请求 canonical diff 人工确认之前，用 `devflow-clean-doc` 自检一次：只改表达层，稳定 ID、阈值、EARS、Given/When/Then、QAS 五要素与 delta 基线摘录逐字不动；发现模糊阈值或缺失事实时回责任阶段补，不靠改写掩盖。
 
-语言规范与领域技能是各阶段的叠加约束，不是额外生命周期节点。触及语言 X 时加载可用的 `<x>-coding-standards`；语境命中领域技能 description 时加载该技能。
+语言规范与领域技能是各阶段的叠加约束，不是额外生命周期节点。触及语言 X 时加载可用的 `<x>-coding-standards`；语境命中领域技能 description 时加载该技能。文档可读性同样是叠加约束，由 `devflow-clean-doc` 承载。
 
 ## 技能地图
 
@@ -165,6 +166,7 @@ diff、独立复核、人工确认、closeout 和整目录归档。运行环境�
 | `devflow-design` | 写本 AR 的 delta design 与测试设计 |
 | `devflow-tdd` | 按任务执行 RED→GREEN→REFACTOR 并留证据 |
 | `devflow-clean-code` | 约束实现与重构质量 |
+| `devflow-clean-doc` | 约束交付文档的中文可读性，让人能冷读审查；不改规范语义 |
 | `devflow-review` | 独立执行 R1、R2、R3 与 sync 复核 |
 | `devflow-ship` | canonical sync、DoD、closeout 与归档 |
 | `devflow-fix` | 缺陷复现、根因与最小修复；仍受同一 preflight 和门禁约束 |

@@ -128,6 +128,7 @@ DevFlow 包含工作流/入口技能、质量叠加技能和工具技能。质�
 | Skill | 做什么 | 什么时候用 |
 |-------|--------|------------|
 | [devflow-clean-code](skills/devflow-clean-code/SKILL.md) | 语言无关的整洁代码标准：命名、函数、控制流、错误处理、注释、重构 | 编写、重构或评审实现代码与测试代码 |
+| [devflow-clean-doc](skills/devflow-clean-doc/SKILL.md) | 面向中文的文档可读性标准：冷读测试、文档异味、保义改写 | 编写或评审 srs.md、两份 delta 与 canonical 文档，尤其在送人工评审之前 |
 | `<language>-coding-standards` 技能 | 语言级规则、惯用法、工具链纪律与正反例 | 工作触及对应语言的源码、测试或构建脚本；按命名约定发现 |
 | `<domain>-development` / 领域开发技能 | 领域特有设计约束、实现红线与验证证据 | 工作项语境命中某领域技能的 description |
 
@@ -211,6 +212,7 @@ devflow/
 │   ├── devflow-fix/                # 缺陷路径
 │   ├── devflow-learn/              # 归档后的可选知识沉淀
 │   ├── devflow-clean-code/         # 语言无关 Clean Code
+│   ├── devflow-clean-doc/          # 面向中文的文档可读性
 │   ├── *-coding-standards/         # 语言级叠加约束，按命名约定发现
 │   ├── *-development/              # 领域开发叠加约束，按 description 发现
 │   └── coding-standards-creator/   # 语言规范生成器

@@ -58,7 +58,7 @@ R1/R2 遇到有理由的 `N/A` delta 仍要评审其“不需要 canonical 变�
 - 表中要求的完整工件，canonical 同时提供当前内容和可取得的 base 内容；
 - R3 的实现/测试 diff、实际测试输出、主控 Agent 在隔离副本中产生的 mutation 证据和 `tasks.md` 证据；
 - sync 的同步前 canonical、同步后 canonical、`git diff -- specs/spec.md specs/design.md` 输出；
-- 对应 rubric；代码评审另加 `devflow-clean-code` 与适用语言/领域规则；
+- 对应 rubric；代码评审另加 `devflow-clean-code` 与适用语言/领域规则；R1、R2 与 canonical sync 另加 `devflow-clean-doc` 作为可读性判据；
 - 复审时提供上一轮记录及实际返工 diff。
 
 不要只给摘要。缺少关键输入时 reviewer 返回 `BLOCKED` 和缺项，不猜测 verdict。
@@ -150,6 +150,7 @@ Resolution 有空项时不得复审为通过。复审必须核对 Resolution 与
 - R2：逐条核对 SRS → delta spec → delta design，确认测试 Case ID 双向覆盖。
 - R3：为 2-3 个关键测试定义 mutation 并核验主控 Agent 提供的隔离执行证据；reviewer 不编辑工作树。优先读错误路径、资源路径和行为回归。
 - sync：逐条建立 delta operation → canonical diff 映射，再反查每段 canonical diff 都有 delta 来源；对未涉及章节做语义保留抽查。
+- 可读性：R1/R2 先做冷读测试（改什么、为什么、什么不变、怎么验证、风险在哪），只用工件回答。事实在文档里但要翻代码才能拼出来记 `important`；同一条需求或契约能读出两种可执行行为记 `critical`；纯措辞、连接词与中英空格记 `minor`，不阻塞门禁。发现阈值、ID、EARS、Given/When/Then 或基线摘录被润色破坏时按 `critical` 处理，并要求回退改写。事实根本不在文档里属于内容缺陷，按 rubric 原有条目判定，不要降级成写作问题。
 
 ## 支撑参考
 
