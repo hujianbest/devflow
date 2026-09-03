@@ -2,7 +2,7 @@
 
 一套让 AI Agent 长期维护存量系统时"少猜错落点、不碰不变量、看清出处、记得昨天"的知识管理工作流。它把证据编译成可脱离代码仓独立发布的 OKF Bundle，供 Coding Agent 和 Design Agent 共同消费；Agent 记账，人只裁真假。
 
-集合独立于 `coding-skills/`，不依赖 DevFlow 交付链，也不写产品规格。
+集合独立于 `skills/`，不依赖 DevFlow 交付链，也不写产品规格。
 
 ## 七个循环与落点
 

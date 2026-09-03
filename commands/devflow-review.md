@@ -4,6 +4,6 @@ description: DevFlow 独立评审——以只读 reviewer 执行 R1、R2、R3 �
 
 执行 DevFlow 独立评审。
 
-1. 读取 `coding-skills/using-devflow/SKILL.md`，定位唯一待评审 gate。
-2. 读取 `coding-skills/devflow-review/SKILL.md`、对应 rubric 和 `agents/devflow-reviewer.md`。
+1. 读取 `skills/using-devflow/SKILL.md`，定位唯一待评审 gate。
+2. 读取 `skills/devflow-review/SKILL.md`、对应 rubric 和 `agents/devflow-reviewer.md`。
 3. 完整执行 Review Pack、只读独立评审、记录落盘、Resolution 与复审协议；verdict 和门禁以该 SKILL 为准。

@@ -559,7 +559,7 @@ draft → stable → deprecated
 
 ### 11.1 实现落点（2026-09-03）
 
-实现放在仓库的 `domain-knowledge-library/` 集合，与 `coding-skills/` 并列、互不依赖。七个循环与工件的对应：
+实现放在仓库的 `domain-knowledge-library/` 集合，与 `skills/` 并列、互不依赖。七个循环与工件的对应：
 
 | 设计中的东西 | 落到哪 |
 |---|---|

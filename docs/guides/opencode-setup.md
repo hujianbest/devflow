@@ -24,7 +24,7 @@ git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
 
 # Install DevFlow skills, agents, and commands into OpenCode's global directories.
 mkdir -p ~/.config/opencode/skills ~/.config/opencode/agents ~/.config/opencode/commands
-cp -R ~/.config/opencode/devflow/coding-skills/* ~/.config/opencode/skills/
+cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
 cp ~/.config/opencode/devflow/agents/*.md ~/.config/opencode/agents/
 cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 ```
@@ -36,7 +36,7 @@ cd /path/to/your-component-repo
 git subtree add --prefix .devflow https://github.com/hujianbest/devflow.git --squash main
 
 mkdir -p .opencode/skills .opencode/agents .opencode/commands
-cp -R .devflow/coding-skills/* .opencode/skills/
+cp -R .devflow/skills/* .opencode/skills/
 cp .devflow/agents/*.md .opencode/agents/
 cp .devflow/commands/devflow*.md .opencode/commands/
 ```
@@ -102,7 +102,7 @@ Each file carries a YAML frontmatter with `description`, `mode: subagent`, and `
 
 **How dispatch works on OpenCode**: when a DevFlow skill says "dispatch the `devflow-implementer` subagent", the primary agent (Build) invokes the built-in `task` tool with the agent name `devflow-implementer` and a prompt containing the Context Pack. OpenCode matches the name against registered subagents and spawns a fresh context. The `description` in the agent frontmatter is what lets the model pick the right subagent — without it, OpenCode cannot route the dispatch.
 
-`devflow-review` dispatches an **independent subagent** named `devflow-reviewer`, seeded with the agent definition plus the matching rubric from `coding-skills/devflow-review/references/`. The reviewer is read-only on the artifact under review (`edit: deny` in frontmatter): it returns findings + verdict, never edits. The human confirms the verdict.
+`devflow-review` dispatches an **independent subagent** named `devflow-reviewer`, seeded with the agent definition plus the matching rubric from `skills/devflow-review/references/`. The reviewer is read-only on the artifact under review (`edit: deny` in frontmatter): it returns findings + verdict, never edits. The human confirms the verdict.
 
 ## Agent expectations
 

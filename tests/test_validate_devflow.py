@@ -14,7 +14,7 @@ def load_validator():
 
 
 def write_skill(root: Path, name: str):
-    skill_dir = root / "coding-skills" / name
+    skill_dir = root / "skills" / name
     skill_dir.mkdir(parents=True, exist_ok=True)
     (skill_dir / "SKILL.md").write_text(
         f"---\nname: {name}\ndescription: test\n---\n# {name}\n", encoding="utf-8"
@@ -34,7 +34,7 @@ def test_markdown_link_checker_reports_missing_relative_links(tmp_path):
 
 def test_frontmatter_name_must_match_directory(tmp_path):
     validator = load_validator()
-    skill_dir = tmp_path / "coding-skills" / "devflow-tdd"
+    skill_dir = tmp_path / "skills" / "devflow-tdd"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text(
         "---\nname: wrong-name\ndescription: test\n---\n", encoding="utf-8"
@@ -67,17 +67,36 @@ def test_expected_command_set_is_enforced(tmp_path):
     assert any("devflow-init.md" in error and "missing" in error for error in result)
 
 
-def test_commands_不能引用已迁移的_skills_源码根(tmp_path):
+def test_活动指令不能引用已废弃的_coding_skills_根(tmp_path):
     validator = load_validator()
     commands = tmp_path / "commands"
     commands.mkdir()
     (commands / "devflow.md").write_text(
-        "读取 `skills/using-devflow/SKILL.md`。\n", encoding="utf-8"
+        "读取 `coding-skills/using-devflow/SKILL.md`。\n", encoding="utf-8"
+    )
+    (commands / "devflow-specify.md").write_text(
+        "读取 `skills/devflow-specify/SKILL.md`。\n", encoding="utf-8"
     )
 
     result = validator.validate_repository_skill_paths(tmp_path)
 
-    assert any("已迁移" in error for error in result)
+    assert any("devflow.md" in error and "已废弃" in error for error in result)
+    assert not any("devflow-specify.md" in error for error in result)
+
+
+def test_废弃根检查覆盖命令之外的活动指令(tmp_path):
+    validator = load_validator()
+    skill = tmp_path / "skills" / "using-devflow" / "SKILL.md"
+    skill.parent.mkdir(parents=True)
+    skill.write_text("同步顺序见 `coding-skills/devflow-ship/SKILL.md`。\n", encoding="utf-8")
+    domain_readme = tmp_path / "domain-knowledge-library" / "README.md"
+    domain_readme.parent.mkdir(parents=True)
+    domain_readme.write_text("集合独立于 `coding-skills/`。\n", encoding="utf-8")
+
+    result = validator.validate_repository_skill_paths(tmp_path)
+
+    assert any("using-devflow" in error and "已废弃" in error for error in result)
+    assert any("domain-knowledge-library" in error for error in result)
 
 
 def test_delivery_contract_requires_canonical_tokens(tmp_path):
@@ -87,7 +106,7 @@ def test_delivery_contract_requires_canonical_tokens(tmp_path):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("\n".join(tokens), encoding="utf-8")
 
-    using_devflow = tmp_path / "coding-skills" / "using-devflow" / "SKILL.md"
+    using_devflow = tmp_path / "skills" / "using-devflow" / "SKILL.md"
     using_devflow.write_text("specs/changes/\nchange.json\ndevflow-init\n", encoding="utf-8")
 
     result = validator.validate_delivery_contract(tmp_path)
@@ -97,7 +116,7 @@ def test_delivery_contract_requires_canonical_tokens(tmp_path):
 
 def test_spec_template_shape_requires_new_component_purpose(tmp_path):
     validator = load_validator()
-    references = tmp_path / "coding-skills" / "devflow-specify" / "references"
+    references = tmp_path / "skills" / "devflow-specify" / "references"
     references.mkdir(parents=True)
     (references / "component-spec-template.md").write_text(
         "## 1. 目的\n## 2. 需求\n#### 场景\n## 3. 来源追溯\n",
@@ -180,7 +199,7 @@ def test_packaged_skills_cannot_reference_repository_design_docs(tmp_path):
     design_doc = tmp_path / "docs" / "devflow-core-architecture.md"
     design_doc.parent.mkdir(parents=True)
     design_doc.write_text("# Architecture\n", encoding="utf-8")
-    skill = tmp_path / "coding-skills" / "using-devflow" / "SKILL.md"
+    skill = tmp_path / "skills" / "using-devflow" / "SKILL.md"
     skill.parent.mkdir(parents=True)
     skill.write_text("See `docs/devflow-core-architecture.md`.\n", encoding="utf-8")
 
@@ -229,7 +248,7 @@ def test_agent_valid_frontmatter_passes(tmp_path):
 
 def test_devflow_learn_必需文件缺失时校验失败(tmp_path):
     validator = load_validator()
-    skill = tmp_path / "coding-skills" / "devflow-learn"
+    skill = tmp_path / "skills" / "devflow-learn"
     skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text("# 知识沉淀\n", encoding="utf-8")
 
@@ -241,7 +260,7 @@ def test_devflow_learn_必需文件缺失时校验失败(tmp_path):
 
 def test_devflow_learn_schema_必须拒绝未知字段(tmp_path):
     validator = load_validator()
-    skill = tmp_path / "coding-skills" / "devflow-learn"
+    skill = tmp_path / "skills" / "devflow-learn"
     for relative in (
         "SKILL.md",
         "references/learning-contract.md",

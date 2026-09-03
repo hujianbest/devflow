@@ -315,7 +315,7 @@ canonicalRefs:
 ## 13. Skill 包结构
 
 ```text
-coding-skills/devflow-learn/
+skills/devflow-learn/
 ├── SKILL.md
 ├── references/
 │   ├── learning-contract.md
@@ -337,19 +337,19 @@ commands/
 
 新增：
 
-- `coding-skills/devflow-learn/SKILL.md`
-- `coding-skills/devflow-learn/references/learning-contract.md`
-- `coding-skills/devflow-learn/references/learning-schema.json`
-- `coding-skills/devflow-learn/references/learning-templates.md`
-- `coding-skills/devflow-learn/references/learning-review-rubric.md`
-- `coding-skills/devflow-learn/scripts/validate_learning.py`
-- `coding-skills/devflow-learn/evals/evals.json`
+- `skills/devflow-learn/SKILL.md`
+- `skills/devflow-learn/references/learning-contract.md`
+- `skills/devflow-learn/references/learning-schema.json`
+- `skills/devflow-learn/references/learning-templates.md`
+- `skills/devflow-learn/references/learning-review-rubric.md`
+- `skills/devflow-learn/scripts/validate_learning.py`
+- `skills/devflow-learn/evals/evals.json`
 - `commands/devflow-learn.md`
 
 修改：
 
-- `coding-skills/devflow-ship/SKILL.md`
-- `coding-skills/using-devflow/SKILL.md`
+- `skills/devflow-ship/SKILL.md`
+- `skills/using-devflow/SKILL.md`
 - `scripts/validate_devflow.py`
 - `tests/test_validate_devflow.py`
 - 新增或拆分 learning validator 测试

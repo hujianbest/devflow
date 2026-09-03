@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "coding-skills" / "devflow-learn" / "scripts" / "validate_learning.py"
+SCRIPT = ROOT / "skills" / "devflow-learn" / "scripts" / "validate_learning.py"
 
 
 def load_validator():

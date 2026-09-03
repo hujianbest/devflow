@@ -32,12 +32,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Language and domain skills are additive constraints discovered by convention; they do not alter lifecycle topology.
 - Defect work uses the same canonical, delta, TDD, review, sync, and archive contract, with evidence-backed N/A only when the corresponding canonical semantics are unchanged.
 - `using-devflow` now performs targeted active-learning lookup before work, while `devflow-ship` may offer knowledge capture after archival without making it a delivery gate.
-- Repository skill sources now consistently use `coding-skills/`; commands, validators, tests, and installation examples no longer reference the removed source root.
+- Repository skill sources live under `skills/`; commands, validators, tests, documentation, and installation examples all point at that root, and the validator now rejects any active instruction that still references the removed `coding-skills/` root.
 - `devflow-learn` now validates claim/evidence grounding, performs bounded lookup and evidence-pack extraction, validates the full related/supersession graph, and separates refresh audit from explicitly approved apply.
 - `domain-knowledge-init` compiles a complete first wiki by section using a skeleton coverage review. The old 8-page first-pass cap is no longer a completion condition. `domain-knowledge-update` can run a completeness pass when the user asks to fill the wiki.
 - Domain wiki coverage gates now require a real page per interface family, UI surface, and named flow. A table inside an overview does not count as coverage. Inventory signals are surface types, not a specific framework layout.
 - Domain wiki skills now treat only repo source, hand-written docs, named originals, and the detected wiki root as evidence. Query stays silent about source when the wiki is enough; ingest treats raw as untrusted; lint regenerates directory indexes and reports mermaid heuristics.
-- Domain wiki skills no longer route to or name coding-skills workflows. They only compile `wiki/` and do not author product specs or other documentation trees.
+- Domain wiki skills no longer route to or name DevFlow workflow skills. They only compile `wiki/` and do not author product specs or other documentation trees.
 - Renamed `devflow-knowledge-*` / `knowledge-skills/` to `domain-knowledge-*` / `domain-knowledge-library/`. The compiled wiki root is `wiki/`.
 
 ### Removed

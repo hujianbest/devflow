@@ -27,7 +27,7 @@ The project is runtime-agnostic by design. You can use it as a standalone skill 
 
 ## Commands
 
-DevFlow provides slash-style phase entries as a thin platform adapter. The authoritative source in this repository lives in `coding-skills/<name>/SKILL.md`; commands only express intent and load the right skill.
+DevFlow provides slash-style phase entries as a thin platform adapter. The authoritative source in this repository lives in `skills/<name>/SKILL.md`; commands only express intent and load the right skill.
 
 | What you're doing | Command | Skill | Key principle |
 |-------------------|---------|-------|---------------|
@@ -55,7 +55,7 @@ git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
 
 # Install all DevFlow skills, agents, and commands
 mkdir -p ~/.config/opencode/skills ~/.config/opencode/agents ~/.config/opencode/commands
-cp -R ~/.config/opencode/devflow/coding-skills/* ~/.config/opencode/skills/
+cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
 cp ~/.config/opencode/devflow/agents/*.md ~/.config/opencode/agents/
 cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 ```
@@ -201,7 +201,7 @@ Key design choices:
 
 ```text
 devflow/
-├── coding-skills/                  # Workflow, quality, language, and domain skills
+├── skills/                         # Workflow, quality, language, and domain skills
 │   ├── using-devflow/              # Entry and recovery rules
 │   ├── devflow-init/               # Existing-component baseline initialization
 │   ├── devflow-specify/            # SRS, delta spec, traceability

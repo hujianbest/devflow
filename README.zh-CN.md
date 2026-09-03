@@ -27,7 +27,7 @@ DevFlow 是一层可复用的工作流能力，面向在真实软件项目中使
 
 ## 命令
 
-DevFlow 提供 slash-style 阶段入口，作为很薄的平台适配层。仓库内真正的流程权威在 `coding-skills/<name>/SKILL.md`；命令只表达意图并加载对应技能。
+DevFlow 提供 slash-style 阶段入口，作为很薄的平台适配层。仓库内真正的流程权威在 `skills/<name>/SKILL.md`；命令只表达意图并加载对应技能。
 
 | 你要做什么 | 命令 | 技能 | 核心原则 |
 |------------|------|------|----------|
@@ -55,7 +55,7 @@ git clone https://github.com/hujianbest/devflow.git ~/.config/opencode/devflow
 
 # 把全部 DevFlow skills、agents 和 commands 安装到 OpenCode 全局目录
 mkdir -p ~/.config/opencode/skills ~/.config/opencode/agents ~/.config/opencode/commands
-cp -R ~/.config/opencode/devflow/coding-skills/* ~/.config/opencode/skills/
+cp -R ~/.config/opencode/devflow/skills/* ~/.config/opencode/skills/
 cp ~/.config/opencode/devflow/agents/*.md ~/.config/opencode/agents/
 cp ~/.config/opencode/devflow/commands/devflow*.md ~/.config/opencode/commands/
 ```
@@ -201,7 +201,7 @@ SKILL.md
 
 ```text
 devflow/
-├── coding-skills/                  # 工作流、质量、语言与领域 skills
+├── skills/                         # 工作流、质量、语言与领域 skills
 │   ├── using-devflow/              # 入口与恢复规则
 │   ├── devflow-init/               # 既有组件基线初始化
 │   ├── devflow-specify/            # SRS、delta spec 与追溯

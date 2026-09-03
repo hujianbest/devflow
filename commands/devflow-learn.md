@@ -4,7 +4,7 @@ description: 从已归档 DevFlow change 中提炼一条有证据、可检索且
 
 执行 DevFlow 知识沉淀。
 
-1. 读取 `coding-skills/devflow-learn/SKILL.md` 及本次任务需要的直接 references。
+1. 读取 `skills/devflow-learn/SKILL.md` 及本次任务需要的直接 references。
 2. 解析唯一模式：`capture`、`lookup`、`report-only`、`refresh-audit` 或
    `refresh-apply`；冲突或不明确时询问。
 3. capture 严格执行捕获门槛、claim/evidence grounding、重叠判断、敏感信息检查、

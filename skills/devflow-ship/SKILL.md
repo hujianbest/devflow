@@ -17,7 +17,7 @@ Ship 只完成三件事：
 
 ## 输入与权威协议
 
-先读取 `coding-skills/using-devflow/SKILL.md` 并核对目标 change。随后完整读取并按顺序执行：
+先读取 `skills/using-devflow/SKILL.md` 并核对目标 change。随后完整读取并按顺序执行：
 
 1. `references/definition-of-done.md`
 2. `references/sync-archive-protocol.md`

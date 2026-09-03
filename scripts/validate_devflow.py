@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILLS_ROOT_NAME = "coding-skills"
+SKILLS_ROOT_NAME = "skills"
 
 EXPECTED_SKILLS = {
     "using-devflow",
@@ -47,14 +47,14 @@ EXPECTED_COMMANDS = {
 }
 
 REQUIRED_CONTRACT_TOKENS = {
-    "coding-skills/devflow-init/SKILL.md": (
+    "skills/devflow-init/SKILL.md": (
         "澄清而不臆造",
         "baseline-ready",
         "specs/spec.md",
         "specs/design.md",
     ),
-    "coding-skills/devflow-specify/SKILL.md": ("srs.md", "delta-spec.md", "change.json"),
-    "coding-skills/devflow-specify/references/component-spec-template.md": (
+    "skills/devflow-specify/SKILL.md": ("srs.md", "delta-spec.md", "change.json"),
+    "skills/devflow-specify/references/component-spec-template.md": (
         "## 1. 目的",
         "## 2. 需求",
         "### SPEC-FR-001",
@@ -67,7 +67,7 @@ REQUIRED_CONTRACT_TOKENS = {
         "## 4. 未知项",
         "## 5. 修订与确认",
     ),
-    "coding-skills/devflow-specify/references/delta-spec-template.md": (
+    "skills/devflow-specify/references/delta-spec-template.md": (
         "## 组件目的变更",
         "## ADDED 需求",
         "## MODIFIED 需求",
@@ -79,30 +79,30 @@ REQUIRED_CONTRACT_TOKENS = {
         "删除原因",
         "## 无规格变化",
     ),
-    "coding-skills/devflow-fix/references/fix-template.md": (
+    "skills/devflow-fix/references/fix-template.md": (
         "## MODIFIED 需求",
         "## 无规格变化（仅缺陷恢复适用）",
         "manifest: change.json",
     ),
-    "coding-skills/devflow-design/SKILL.md": ("delta-design.md", "specs/design.md"),
-    "coding-skills/devflow-tdd/SKILL.md": ("tasks.md", "change.json"),
-    "coding-skills/devflow-review/SKILL.md": ("reviews/", "canonical"),
-    "coding-skills/devflow-fix/SKILL.md": ("specs/changes/", "tasks.md"),
-    "coding-skills/devflow-learn/SKILL.md": (
+    "skills/devflow-design/SKILL.md": ("delta-design.md", "specs/design.md"),
+    "skills/devflow-tdd/SKILL.md": ("tasks.md", "change.json"),
+    "skills/devflow-review/SKILL.md": ("reviews/", "canonical"),
+    "skills/devflow-fix/SKILL.md": ("specs/changes/", "tasks.md"),
+    "skills/devflow-learn/SKILL.md": (
         "docs/learnings/",
         "change.json.archive.status",
         "learning-schema.json",
         "validate_learning.py",
         "sensitivity: restricted",
     ),
-    "coding-skills/using-devflow/SKILL.md": (
+    "skills/using-devflow/SKILL.md": (
         "specs/changes/",
         "change.json",
         "componentMode",
         "devflow-init",
         "docs/learnings/",
     ),
-    "coding-skills/devflow-ship/SKILL.md": (
+    "skills/devflow-ship/SKILL.md": (
         "specs/archive/",
         "closeout.md",
         "canonical",
@@ -289,12 +289,16 @@ def validate_command_set(root: Path = ROOT) -> list[str]:
 
 
 def validate_repository_skill_paths(root: Path = ROOT) -> list[str]:
-    """仓库源码路径必须使用 coding-skills，不能退回已迁移的 skills 根。"""
+    """活动指令必须使用 skills/ 源码根，不能引用已废弃的 coding-skills/ 根。"""
     errors: list[str] = []
-    for path in (root / "commands").glob("devflow*.md"):
+    paths = list(iter_active_markdown_files(root))
+    domain_root = root / DOMAIN_KNOWLEDGE_ROOT_NAME
+    if domain_root.exists():
+        paths.extend(domain_root.rglob("*.md"))
+    for path in paths:
         text = path.read_text(encoding="utf-8", errors="ignore")
-        if re.search(r"(?<![-A-Za-z0-9])skills/(?:using-devflow|devflow-|coding-)", text):
-            errors.append(f"{path}: 仍引用已迁移的仓库 skills/ 根")
+        if "coding-skills/" in text:
+            errors.append(f"{path}: 仍引用已废弃的仓库 coding-skills/ 根")
     return errors
 
 
